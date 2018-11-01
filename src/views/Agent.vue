@@ -314,11 +314,11 @@
         }
     }
 
-    #Agent .content{
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-    }
+#Agent .content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
 
     #Agent .box_3{
         flex-grow: 1;
