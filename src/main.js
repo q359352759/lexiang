@@ -2,7 +2,7 @@ import Vue from "vue";
 import App from "./App.vue";
 
 import axios from "axios";
-axios.defaults.baseURL = "http://122.114.169.178:8080";
+axios.defaults.baseURL = baseURL;
 // axios.defaults.baseURL = "http://192.168.1.11:8080";
 // axios.defaults.baseURL = 'http://172.20.10.2:8080';
 

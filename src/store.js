@@ -2,7 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import axios from "axios";
-axios.defaults.baseURL = "http://192.168.1.11:8080";
+axios.defaults.baseURL = baseURL;
+// axios.defaults.baseURL = "http://192.168.1.11:8080";
 // import $ from "jquery"
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 // axios.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -109,28 +110,30 @@ var vuex = new Vuex.Store({
         //获取个人信息
         setCurrent(state) {
             // console.log(this.state.loginDate)
-            if (!this.state.loginDate.access_token) {
+            if (!localStorage.id || localStorage.id=='' || localStorage.id==null || localStorage.id==undefined || localStorage.id=='undefined') {
+                alert('获取用户信息失败，请重新登录');
+                location.href="index.html#/login";
                 return;
             }
+            var id=localStorage.id
             axios({
                 method: "get",
-                url:
-                    "/api-u/users/current?access_token=" +
-                    this.state.loginDate.access_token,
-                data: qs.stringify({})
-            })
-                .then(x => {
-                   
+                url:'api-u/users/'+id
+            }).then(x => {
                     if (x.data.error) return;
+                if(x.data.code!=200){
+                    alert('获取用户信息失败，请重新登录');
+                    return;
+                }else{
                     console.log("获取个人信息", x);
-                    state.userInfo = x.data;
-                    localStorage.userInfo = JSON.stringify(x.data);
-                    // {"access_token":"3ca33ff6-3192-40c6-bea6-aff30ea8af14","token_type":"bearer","refresh_token":"df4b6595-39f6-4cc7-8467-369975091bf7","expires_in":28799,"scope":"app"}
-                })
-                .catch(error => {
-                    console.log("获取个人信息失败", error);
-                    // router.push("/login");
-                });
+                    state.userInfo = x.data.data;
+                    localStorage.userInfo = JSON.stringify(x.data.data);
+                }                  
+            }).catch(error => {
+                alert('获取用户信息失败，请重新登录');
+                location.href="index.html#/login";
+                // router.push("/login");
+            });
         }
     },
     actions: {
@@ -159,7 +162,7 @@ vuex.commit("setloginDate", loginDate);
 var weixinobj = localStorage.weixin;
 vuex.commit("setweixinobj", weixinobj);
 //获取个人信息
-vuex.commit("setCurrent");
+// vuex.commit("setCurrent");
 
 //获取地区
 if (

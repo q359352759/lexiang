@@ -102,7 +102,7 @@
         </div>
 
         <div id="zhengmianInput">
-            <input type="file" @change="input_change($event)" accept="*/image" name="" id="">
+            <input type="file" @change="input_change($event)" accept="image/*" name="" id="">
         </div>
     </div>
 </template>
@@ -110,462 +110,477 @@
 <script>
 import { VueCropper } from "vue-cropper";
 export default {
-  name: "RealName",
-  components: {
-    VueCropper
-  },
-  data() {
-    return {
-      add_loading: false, //正在添加
-      zhengmian_ok: false, //正面已上传百度认证
-      fanmian_ok: false, //反正已上传百度认证
-      zhengmian_loading: false,
-      fanmian_loading: false,
-      Cropper_show: false, //裁剪弹出框
-      Uncertified: false, //没有认证
-      zhengmian_img: "", //正面图片
-      fanmian_img: "", //反面
-      access_token: "",
-      Positive: true, //正面
-      option: {
-        img: "",
-        size: 1,
-        full: false,
-        outputType: "png",
-        canMove: true,
-        fixedBox: true, //裁剪框固定大小不动 true 固定
-        original: false,
-        canMoveBox: false,
-        autoCrop: true, //一开始就裁剪
-        outputType: "jpeg" //png,jpeg,webp
-      },
-      Positive_obj: {
-        //正面信息
-        address: "", //地址
-        idNumber: "", //身份证号码
-        birthday: "", //出生
-        name: "", //姓名
-        sex: "", //性别
-        nation: "" //名族
-      },
-      The_other_side: {
-        Invalid: "", //失效日期
-        Date_of_issue: "", //签发日期
-        issueArea: "" //签发机关
-      },
-      image_status: {
-        normal: "识别正常",
-        reversed_side: "身份证正反面颠倒",
-        non_idcard: "上传的图片中不包含身份证",
-        blurred: "身份证模糊",
-        other_type_card: "其他类型证照",
-        over_exposure: "身份证关键字段反光或过曝",
-        unknown: "未知状态"
-      }
-    };
-  },
-  computed: {
-    userinfo() {
-      return this.$store.state.userInfo;
-    }
-  },
+    name: "RealName",
+    components: {
+        VueCropper
+    },
+    data() {
+        return {
+            userinfo:'',        //用户信息
+            add_loading: false, //正在添加
+            zhengmian_ok: false, //正面已上传百度认证
+            fanmian_ok: false, //反正已上传百度认证
+            zhengmian_loading: false,
+            fanmian_loading: false,
+            Cropper_show: false, //裁剪弹出框
+            Uncertified: false, //没有认证
+            zhengmian_img: "", //正面图片
+            fanmian_img: "", //反面
+            access_token: "",
+            Positive: true, //正面
+            option: {
+                img: "",
+                size: 1,
+                full: false,
+                outputType: "png",
+                canMove: true,
+                fixedBox: true, //裁剪框固定大小不动 true 固定
+                original: false,
+                canMoveBox: false,
+                autoCrop: true, //一开始就裁剪
+                outputType: "jpeg" //png,jpeg,webp
+            },
+            Positive_obj: {
+                //正面信息
+                address: "", //地址
+                idNumber: "", //身份证号码
+                birthday: "", //出生
+                name: "", //姓名
+                sex: "", //性别
+                nation: "" //名族
+            },
+            The_other_side: {
+                Invalid: "", //失效日期
+                Date_of_issue: "", //签发日期
+                issueArea: "" //签发机关
+            },
+            image_status: {
+                normal: "识别正常",
+                reversed_side: "身份证正反面颠倒",
+                non_idcard: "上传的图片中不包含身份证",
+                blurred: "身份证模糊",
+                other_type_card: "其他类型证照",
+                over_exposure: "身份证关键字段反光或过曝",
+                unknown: "未知状态"
+            }
+        };
+    },
+    computed: {
+        // userinfo() {
+        //     return this.$store.state.userInfo;
+        // }
+    },
 
-  methods: {
-    //左转
-    rotateLeft() {
-      this.$refs.cropper.rotateLeft();
-    },
-    //右转
-    rotateRight() {
-      this.$refs.cropper.rotateRight();
-    },
-    //确认裁剪
-    confirm() {
-      this.Cropper_show = false;
-      this.$refs.cropper.getCropData(data => {
-        if (this.Positive) {
-          this.zhengmian_img = data;
-        } else {
-          this.fanmian_img = data;
-        }
-        this.idcard(this.Positive);
-      });
-    },
-    //关闭裁剪弹出框
-    close_1() {
-      this.Cropper_show = false;
-    },
-    //实时预览函数
-    realTime(data) {
-      this.previews = data;
-    },
-    //获取百度 token
-    get_token() {
-      this.$axios({
-        method: "get",
-        url: "/api-u/baidu/identify"
-      })
-        .then(x => {
-          console.log(x);
-          this.access_token = x.data;
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    //点击正面
-    zhengmian(x) {
-      this.Positive = x;
-      document
-        .getElementById("zhengmianInput")
-        .getElementsByTagName("input")[0]
-        .click();
-    },
-    input_change(e) {
-      console.log(e);
-      var that = this;
-      var file = e.target.files[0];
-      var reader = new FileReader();
-      reader.readAsDataURL(file); // 读出 base64
-      reader.onloadend = function() {
-        that.Cropper_show = true;
-        that.option.img = reader.result;
-      };
-    },
-    //获取身份信息
-    idcard(type) {
-      if (type) {
-        this.zhengmian_loading = true;
-      } else {
-        this.fanmian_loading = true;
-      }
-      var obj = {
-        id_card_side: this.Positive ? "front" : "back",
-        image: this.Positive
-          ? this.zhengmian_img.substring(this.zhengmian_img.indexOf("4") + 2)
-          : this.fanmian_img.substring(this.fanmian_img.indexOf("4") + 2),
-        detect_direction: true
-      };
-      this.$axios({
-        method: "post",
-        url:
-          "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=" +
-          this.access_token,
-        data: this.$qs.stringify(obj)
-      })
-        .then(x => {
-          console.log(x);
-          if (x.data.image_status == "normal") {
-            var words_result = x.data.words_result;
-            if (type) {
-              //表示正面的
-              this.zhengmian_ok = true;
-              this.zhengmian_loading = false;
-              this.Positive_obj = {
-                address: words_result["住址"].words, //地址
-                idNumber: words_result["公民身份号码"].words, //身份证号码
-                birthday: words_result["出生"].words, //出生
-                name: words_result["姓名"].words, //姓名
-                sex: words_result["性别"].words, //性别
-                nation: words_result["民族"].words //民族
-              };
-            } else {
-              this.fanmian_ok = true;
-              this.fanmian_loading = false;
-              this.The_other_side = {
-                Invalid: words_result["失效日期"].words, //失效日期
-                Date_of_issue: words_result["签发日期"].words, //签发日期
-                issueArea: words_result["签发机关"].words //签发机关
-              };
-            }
-          } else {
-            if (type) {
-              this.zhengmian_loading = false;
-            } else {
-              this.fanmian_loading = false;
-            }
-            mui.toast(this.image_status[x.data.image_status], {
-              duration: 2000,
-              type: "div"
+    methods: {
+        //左转
+        rotateLeft() {
+            this.$refs.cropper.rotateLeft();
+        },
+        //右转
+        rotateRight() {
+            this.$refs.cropper.rotateRight();
+        },
+        //确认裁剪
+        confirm() {
+            this.Cropper_show = false;
+            this.$refs.cropper.getCropData(data => {
+                if (this.Positive) {
+                    this.zhengmian_img = data;
+                } else {
+                    this.fanmian_img = data;
+                }
+                this.idcard(this.Positive);
             });
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
+        },
+        //关闭裁剪弹出框
+        close_1() {
+            this.Cropper_show = false;
+        },
+        //实时预览函数
+        realTime(data) {
+            this.previews = data;
+        },
+        //获取百度 token
+        get_token() {
+            this.$axios({
+                method: "get",
+                url: "/api-u/baidu/identify"
+            })
+                .then(x => {
+                    console.log(x);
+                    this.access_token = x.data;
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        },
+        //点击正面
+        zhengmian(x) {
+            this.Positive = x;
+            document
+                .getElementById("zhengmianInput")
+                .getElementsByTagName("input")[0]
+                .click();
+        },
+        input_change(e) {
+            console.log(e);
+            var that = this;
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.readAsDataURL(file); // 读出 base64
+            reader.onloadend = function() {
+                that.Cropper_show = true;
+                that.option.img = reader.result;
+            };
+        },
+        //获取身份信息
+        idcard(type) {
+            if (type) {
+                this.zhengmian_loading = true;
+            } else {
+                this.fanmian_loading = true;
+            }
+            var obj = {
+                id_card_side: this.Positive ? "front" : "back",
+                image: this.Positive
+                    ? this.zhengmian_img.substring(
+                          this.zhengmian_img.indexOf("4") + 2
+                      )
+                    : this.fanmian_img.substring(
+                          this.fanmian_img.indexOf("4") + 2
+                      ),
+                detect_direction: true
+            };
+            this.$axios({
+                method: "post",
+                url:
+                    "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=" +
+                    this.access_token,
+                data: this.$qs.stringify(obj)
+            })
+                .then(x => {
+                    console.log(x);
+                    if (x.data.image_status == "normal") {
+                        var words_result = x.data.words_result;
+                        if (type) {
+                            //表示正面的
+                            this.zhengmian_ok = true;
+                            this.zhengmian_loading = false;
+                            this.Positive_obj = {
+                                address: words_result["住址"].words, //地址
+                                idNumber: words_result["公民身份号码"].words, //身份证号码
+                                birthday: words_result["出生"].words, //出生
+                                name: words_result["姓名"].words, //姓名
+                                sex: words_result["性别"].words, //性别
+                                nation: words_result["民族"].words //民族
+                            };
+                        } else {
+                            this.fanmian_ok = true;
+                            this.fanmian_loading = false;
+                            this.The_other_side = {
+                                Invalid: words_result["失效日期"].words, //失效日期
+                                Date_of_issue: words_result["签发日期"].words, //签发日期
+                                issueArea: words_result["签发机关"].words //签发机关
+                            };
+                        }
+                    } else {
+                        if (type) {
+                            this.zhengmian_loading = false;
+                        } else {
+                            this.fanmian_loading = false;
+                        }
+                        mui.toast(this.image_status[x.data.image_status], {
+                            duration: 2000,
+                            type: "div"
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        },
+        // 开始提交
+        add() {
+            var this_1 = this;
+            if (!this.zhengmian_ok || !this.fanmian_ok) {
+                mui.toast("请先上传完整的证件照！", {
+                    duration: 2000,
+                    type: "div"
+                });
+                return;
+            }
+            this.add_loading = true;
+            var obj = {
+                userid: this.userinfo.username, //登录用的username  可以不传
+                name: this.Positive_obj.name, //真实姓名
+                nation: this.Positive_obj.nation, //民族
+                birthday: this.Positive_obj.birthday, //出生日期
+                address: this.Positive_obj.address, //地址
+                idNumber: this.Positive_obj.idNumber, //身份证号
+                issueArea: this.The_other_side.issueArea, //签证地
+                frontImg: this.zhengmian_img, //正面照
+                reverseImg: this.fanmian_img //背面照
+            };
+            this.$axios({
+                method: "post",
+                data: obj,
+                url: "/api-u/certification/add"
+            })
+                .then(x => {
+                    console.log("实名认证", x);
+                    if (x.data.error) {
+                        mui.alert(x.data.error, "提示", function() {}, "div");
+                    } else {
+                        this.$store.commit("setCurrent"); //获取个人信息
+                        mui.alert(
+                            "认证成功",
+                            "提示",
+                            function() {
+                                history.back();
+                            },
+                            "div"
+                        );
+                    }
+                    this.add_loading = false;
+                })
+                .catch(error => {
+                    this.add_loading = false;
+                    console.log("实名认证错误", error);
+                    mui.alert(
+                        "认证失败，稍后再试！",
+                        "提示",
+                        function() {},
+                        "div"
+                    );
+                });
+        }
     },
-    // 开始提交
-    add() {
-      var this_1 = this;
-      if (!this.zhengmian_ok || !this.fanmian_ok) {
-        mui.toast("请先上传完整的证件照！", {
-          duration: 2000,
-          type: "div"
-        });
-        return;
-      }
-      this.add_loading = true;
-      var obj = {
-        userid: this.userinfo.username, //登录用的username  可以不传
-        name: this.Positive_obj.name, //真实姓名
-        nation: this.Positive_obj.nation, //民族
-        birthday: this.Positive_obj.birthday, //出生日期
-        address: this.Positive_obj.address, //地址
-        idNumber: this.Positive_obj.idNumber, //身份证号
-        issueArea: this.The_other_side.issueArea, //签证地
-        frontImg: this.zhengmian_img, //正面照
-        reverseImg: this.fanmian_img //背面照
-      };
-      this.$axios({
-        method: "post",
-        data: obj,
-        url: "/api-u/certification/add"
-      })
-        .then(x => {
-          console.log("实名认证", x);
-          if (x.data.error) {
-            mui.alert(x.data.error, "提示", function() {}, "div");
-          } else {
-            this.$store.commit("setCurrent"); //获取个人信息
-            mui.alert(
-              "认证成功",
-              "提示",
-              function() {
-                history.back();
-              },
-              "div"
-            );
-          }
-          this.add_loading = false;
-        })
-        .catch(error => {
-          this.add_loading = false;
-          console.log("实名认证错误", error);
-          mui.alert("认证失败，稍后再试！", "提示", function() {}, "div");
-        });
+    beforeCreate: function() {
+        // console.group('------beforeCreate创建前状态------');
+    },
+    created: function() {
+        // console.group('------created创建完毕状态------');
+    },
+    beforeMount: function() {
+        // console.group('------beforeMount挂载前状态------');
+    },
+    mounted: function() {
+        if (this.$store.state.isweixin) {
+            document.getElementsByTagName("title")[0].innerText = "实名认证";
+        }
+
+        if(localStorage.userInfo && localStorage.userInfo!='' && localStorage.userInfo!=null && localStorage.userInfo!=undefined && localStorage.userInfo!='undefined'){
+            this.userinfo=JSON.parse(localStorage.userInfo);
+        }else{
+            alert('个人信息获取失败，请重新登录！')
+        }
+        this.$store.commit("setagentUser");
+        //获取百度  token
+        this.get_token();
+        console.log(this.userinfo);
+        // console.group('------mounted 挂载结束状态------');
+    },
+    beforeUpdate: function() {
+        // console.group('beforeUpdate 更新前状态===============》');
+    },
+    updated: function() {
+        // console.group('updated 更新完成状态===============》');
+    },
+    beforeDestroy: function() {
+        // console.group('beforeDestroy 销毁前状态===============》');
+    },
+    destroyed: function() {
+        // console.group('destroyed 销毁完成状态===============》');
+    },
+    watch: {
+        
     }
-  },
-  beforeCreate: function() {
-    // console.group('------beforeCreate创建前状态------');
-  },
-  created: function() {
-    // console.group('------created创建完毕状态------');
-  },
-  beforeMount: function() {
-    // console.group('------beforeMount挂载前状态------');
-  },
-  mounted: function() {
-    if (this.$store.state.isweixin) {
-      document.getElementsByTagName("title")[0].innerText = "实名认证";
-    }
-    //获取百度  token
-    this.get_token();
-    console.log(this.userinfo);
-    // console.group('------mounted 挂载结束状态------');
-  },
-  beforeUpdate: function() {
-    // console.group('beforeUpdate 更新前状态===============》');
-  },
-  updated: function() {
-    // console.group('updated 更新完成状态===============》');
-  },
-  beforeDestroy: function() {
-    // console.group('beforeDestroy 销毁前状态===============》');
-  },
-  destroyed: function() {
-    // console.group('destroyed 销毁完成状态===============》');
-  },
-  watch: {
-    userinfo(x) {
-      this.$store.commit("setagentUser");
-    }
-  }
 };
 </script>
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
 #RealName #zhengmianInput {
-  display: none;
+    display: none;
 }
 #RealName {
-  height: 100%;
-  .mui-content {
     height: 100%;
-    // background:#ffffff;
-  }
+    .mui-content {
+        height: 100%;
+        // background:#ffffff;
+    }
 }
 #RealName .mui-bar {
-  background: $header_background;
-  a {
-    color: #ffffff;
-  }
+    background: $header_background;
+    a {
+        color: #ffffff;
+    }
 }
 #RealName .mui-title {
-  color: #ffffff;
+    color: #ffffff;
 }
 #RealName .swiper-pagination-bullet-active {
-  background: $header_background;
+    background: $header_background;
 }
 
 #RealName .box_1 {
-  padding: 1px 10px;
-  li {
-    display: flex;
-    height: 2.1rem;
-    border-radius: 10px;
-    background: #e0e0e0;
-    font-size: 14px;
-    justify-content: space-between;
-    align-items: center;
-    margin: 0.2rem 0px 0px 0px;
-    color: #797979;
-    position: relative;
-  }
-  .zhengmian {
-    // padding: 0px 0.15rem 0px 0.25rem;
-    span {
-      margin: 0px 0px 0px 0.25rem;
+    padding: 1px 10px;
+    li {
+        display: flex;
+        height: 2.1rem;
+        border-radius: 10px;
+        background: #e0e0e0;
+        font-size: 14px;
+        justify-content: space-between;
+        align-items: center;
+        margin: 0.2rem 0px 0px 0px;
+        color: #797979;
+        position: relative;
     }
-    > div:nth-child(2) {
-      margin: 0px 0.15rem 0px 0px;
-      img {
-        width: 1.25rem;
-      }
+    .zhengmian {
+        // padding: 0px 0.15rem 0px 0.25rem;
+        span {
+            margin: 0px 0px 0px 0.25rem;
+        }
+        > div:nth-child(2) {
+            margin: 0px 0.15rem 0px 0px;
+            img {
+                width: 1.25rem;
+            }
+        }
+        > img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
     }
-    > img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+    .beimian {
+        // padding: 0px 0.3rem 0px 0.2rem;
+        span {
+            margin: 0px 0.3rem 0px 0px;
+        }
+        > div:nth-child(1) {
+            height: 100%;
+            padding: 0.25rem 0px 0px 0.2rem;
+            img {
+                width: 0.63rem;
+            }
+        }
+        > img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
     }
-  }
-  .beimian {
-    // padding: 0px 0.3rem 0px 0.2rem;
-    span {
-      margin: 0px 0.3rem 0px 0px;
-    }
-    > div:nth-child(1) {
-      height: 100%;
-      padding: 0.25rem 0px 0px 0.2rem;
-      img {
-        width: 0.63rem;
-      }
-    }
-    > img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  }
 }
 
 @keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 #RealName .loading {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  padding: 0px;
-  background: rgba(0, 0, 0, 0.2);
-  margin: 0px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  color: #ffffff;
-  > div {
-    // transform: rotate(90deg);
-    animation: rotate 3s linear infinite;
-  }
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+    background: rgba(0, 0, 0, 0.2);
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    color: #ffffff;
+    > div {
+        // transform: rotate(90deg);
+        animation: rotate 3s linear infinite;
+    }
 }
 #RealName .loading_1 {
-  position: fixed;
+    position: fixed;
 }
 
 #RealName .box_2 {
-  padding: 10px;
-  li {
-    display: flex;
-    align-items: center;
-    margin: 0px 0px 0.1rem 0px;
-    font-size: 0.14rem;
-    color: #484848;
-    > div:nth-child(1) {
-      width: 0.75rem;
-      flex-shrink: 0;
+    padding: 10px;
+    li {
+        display: flex;
+        align-items: center;
+        margin: 0px 0px 0.1rem 0px;
+        font-size: 0.14rem;
+        color: #484848;
+        > div:nth-child(1) {
+            width: 0.75rem;
+            flex-shrink: 0;
+        }
+        > div:nth-child(2) {
+            flex-grow: 1;
+            background: #ffffff;
+            padding: 5px;
+            min-height: 0.3rem;
+        }
     }
-    > div:nth-child(2) {
-      flex-grow: 1;
-      background: #ffffff;
-      padding: 5px;
-      min-height: 0.3rem;
-    }
-  }
 }
 #RealName .btn_1 {
-  width: 1.8rem;
-  height: 0.35rem;
-  display: block;
-  border-radius: 0.35rem;
-  background: $header_background;
-  margin: 0.2rem auto 0.2rem;
-  color: #ffffff;
-  border: none;
+    width: 1.8rem;
+    height: 0.35rem;
+    display: block;
+    border-radius: 0.35rem;
+    background: $header_background;
+    margin: 0.2rem auto 0.2rem;
+    color: #ffffff;
+    border: none;
 }
 #RealName .Cropper_box {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  background: #e5e5e5;
-  z-index: 10;
-  .cont_1 {
-    height: 100%;
-  }
-  .footer_1 {
-    position: absolute;
-    width: 100%;
+    position: fixed;
+    top: 0px;
     left: 0px;
-    bottom: 0px;
-    display: flex;
-    font-size: 20px;
-    color: #ffffff;
-    padding: 25px 0px;
-    justify-content: space-around;
-  }
-
-  .vue-cropper {
+    width: 100%;
+    height: 100%;
     background: #e5e5e5;
-  }
-  .cropper-modal {
-    background: rgba(181, 181, 181, 0.5);
-  }
-  .cropper-face {
-    background-size: cover;
-    background-color: rgba(0, 0, 0, 0);
-    opacity: 1;
-  }
-  .cropper-view-box {
-    outline: none;
-  }
+    z-index: 10;
+    .cont_1 {
+        height: 100%;
+    }
+    .footer_1 {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        bottom: 0px;
+        display: flex;
+        font-size: 20px;
+        color: #ffffff;
+        padding: 25px 0px;
+        justify-content: space-around;
+    }
+
+    .vue-cropper {
+        background: #e5e5e5;
+    }
+    .cropper-modal {
+        background: rgba(181, 181, 181, 0.5);
+    }
+    .cropper-face {
+        background-size: cover;
+        background-color: rgba(0, 0, 0, 0);
+        opacity: 1;
+    }
+    .cropper-view-box {
+        outline: none;
+    }
 }
 
 #RealName .Cropper_box.zhengmian .cropper-face {
-  background-image: url(/image/zhengmian.png);
+    background-image: url(../assets/image/zhengmian.png);
 }
 #RealName .Cropper_box.fanmian .cropper-face {
-  background-image: url(/image/fanmian.png);
+    background-image: url(../assets/image/fanmian.png);
 }
 </style>

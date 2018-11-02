@@ -1,9 +1,9 @@
 <template>
     <div id="Agent">
         <header class="mui-bar mui-bar-nav">
-            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <a @click="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '代理人'}}</h1>
-            <span @click="RegionalAgent()" class="quyu">区域代理</span>
+            <span v-if="isareaManager" @click="RegionalAgent()" class="quyu">区域代理</span>
         </header>
 
         <div class="mui-content">
@@ -14,7 +14,7 @@
                 <div class="text">
                     <div>{{agentUser.realName}}-业务代理人</div>
                     <div>
-                        {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? areaList[1].name : ''}}{{areaList[2] ? areaList[1].name : ''}}
+                        {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? areaList[1].name : ''}}{{areaList[2] ? areaList[2].name : ''}}
                     </div>
                 </div>
                 <div @click="go('/market')" class="market">业务市场</div>
@@ -26,7 +26,7 @@
                         <img src="image/d1.png" alt="" srcset="">
                     </div>
                     <div class="title">补贴</div>
-                    <div class="money">{{agentUser.subsidiesall}}</div>
+                    <div class="money">{{agentUser.subsidiesall ? agentUser.subsidiesall : 0}}</div>
                 </li>
                 <li :class="{'active':type_1==2}" @click="change_type(2)">
                     <div class="img_box">
@@ -47,7 +47,7 @@
                         <img src="image/d4.png" alt="" srcset="">
                     </div>
                     <div class="title">可提现</div>
-                    <div class="money">{{agentUser.sutotal}}</div>
+                    <div class="money">{{agentUser.sutotal ? agentUser.sutotal : 0}}</div>
                 </li>
             </ul>
 
@@ -80,8 +80,8 @@
                     <ul class="footer">
                         <li>直推：{{agentUser.directly}}人</li>
                         <li>间推：{{agentUser.indirect}}人</li>
-                        <li>直补：{{agentUser.result1}}元</li>
-                        <li>间补：{{agentUser.result2}}元</li>
+                        <li>直补：{{agentUser.result1 ? agentUser.result1 : 0}}元</li>
+                        <li>间补：{{agentUser.result2 ? agentUser.result2 : 0}}元</li>
                     </ul>
                 </div>
 
@@ -248,7 +248,8 @@ export default {
             },
             Account_obj: {}, //支付账号
             accout_password: "",
-            amount: 0 //提现金额
+            amount: 0, //提现金额
+            isareaManager:false
         };
     },
     filters: {
@@ -258,9 +259,15 @@ export default {
     },
     computed: {},
     methods: {
+        //返回我的页面
+        back(){
+            this.$router.push('/my')
+        },
         //输入金额
         amount_change(){
-            if(this.amount>this.agentUser.sutotal){
+            if(!this.agentUser.sutotal){
+                this.amount=0
+            }else if(this.amount>this.agentUser.sutotal){
                 this.amount=this.agentUser.sutotal
             }
         },
@@ -341,6 +348,13 @@ export default {
             this.radio_type_2 = !this.radio_type_2;
         },
         change_payment(x) {
+            if(!this.Account_obj.account){
+                mui.toast("请设置收款账号", {duration: 2000,type: "div"});
+                return;
+            }else if(this.amount==0 && x){
+                mui.toast("无提现金额", {duration: 2000,type: "div"});
+                return;
+            }
             this.payment = x;
             if(x){
                 this.accout_password='';
@@ -368,7 +382,7 @@ export default {
                         this.$router.push("/ApplicationAgent");
                     } else {
                         this.agentUser = x.data.data;
-                        this.amount = x.data.data.sutotal;
+                        this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
                         this.areaList = this.$store.getters.filter_area(
                             x.data.data.areaCode
                         );
@@ -419,6 +433,21 @@ export default {
             }).catch(error=>{
                 console.log(error)
             })
+        },
+        areaManager(){
+            this.$axios({
+                method:'get',
+                url:'/api-u/areaManager/findme?userid='+this.userInfo.username
+            }).then(x=>{
+                console.log('获取代理商信息',x)
+                if(x.data.data!='' && x.data.data!=null && x.data.data!='null'){
+                    this.isareaManager=false;
+                }else{
+                    this.isareaManager=true;
+                }
+            }).catch(error=>{
+                console.log('获取代理商信息错误',error);
+            })
         }
     },
     mounted: function() {
@@ -435,7 +464,8 @@ export default {
         this.subsidies();
         //查询支付宝账号
         this.findAccount();
-
+        //获取代理商信息
+        this.areaManager();
         // console.group('------mounted 挂载结束状态------');
     }
 };

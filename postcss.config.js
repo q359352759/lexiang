@@ -2,6 +2,19 @@ module.exports = {
   plugins: {
     autoprefixer: {}
   },
+  
+
+  // dev: {
+  //   env: 'localhost',
+  //   port: 8082,
+  //   autoOpenBrowser: true,
+  //   assetsSubDirectory: 'static',
+  //   assetsPublicPath: '/',
+  //   proxyTable: {},
+  //   cssSourceMap: false
+  // },
+
+
   // 部署生产环境和开发环境下的URL。
   // 默认情况下，Vue CLI 会假设你的应用是被部署在一个域名的根路径上
   //例如 https://www.my-app.com/。如果应用被部署在一个子路径上，你就需要用这个选项指定这个子路径。例如，如果你的应用被部署在 https://www.my-app.com/my-app/，则设置 baseUrl 为 /my-app/。
@@ -34,8 +47,8 @@ module.exports = {
 
   // 它支持webPack-dev-server的所有选项
   devServer: {
-    // 		host: "localhost",
-    // 		port: 1111, // 端口号
+    		// host: "localhost",
+    		// port: 1111, // 端口号
     // 		https: false, // https:{type:Boolean}
     // 		open: true, //配置自动启动浏览器
     // 		// proxy: 'http://localhost:4000' // 配置跨域处理,只有一个代理

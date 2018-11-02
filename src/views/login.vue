@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import {dateFtt} from '@/assets/js/currency'
 import circularNav from "@/components/circularNav.vue";
 export default {
     name: "login",
@@ -88,10 +89,21 @@ export default {
                             "setloginDate",
                             JSON.stringify(x.data)
                         );
-                        //获取用户信息
-                        this.$store.commit("setCurrent");
 
-                        this.$router.push("/my");
+                        this.$axios({
+                            method: "get",
+                            url:"/api-u/users/current?access_token=" +x.data.access_token,
+                            // data: qs.stringify({})
+                        }).then(x => {
+                            console.log("获取个人信息主要用户Id", x);
+                            localStorage.id=x.data.data;
+                            //获取用户信息
+                            this.$store.commit("setCurrent");
+                            this.$router.push("/my");
+                        }).catch(error => {
+                            console.log("获取个人信息失败", error);
+                            // router.push("/login");
+                        });                       
                     }
                 })
                 .catch(err => {

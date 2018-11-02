@@ -1,12 +1,12 @@
 <template>
     <div id="ApplicationAgent">
         <header class="mui-bar mui-bar-nav">
-            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <a @click="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '申请代理人'}}</h1>
         </header>
 
         <div class="mui-content">
-            <form @submit.prevent="add()">
+            <form @submit.prevent="selectOne()">
                 <table class="table_1">
                     <tbody>
                         <tr>
@@ -24,7 +24,7 @@
                         <tr>
                             <td>实名认证：</td>
                             <td @click="renzheng()">
-                                <span class="Authentication" :class="{'active':userInfo.iaiState==0}">{{userInfo.iaiState==0 ? '未认证' : '已认证'}}</span>
+                                <span class="Authentication" :class="{'active':userInfo.iaiState!=1}">{{userInfo.iaiState!=1 ? '未认证' : '已认证'}}</span>
                                 <i class="mui-icon mui-icon-arrowright mui-pull-right"></i>
                             </td>
                         </tr>
@@ -140,9 +140,13 @@ export default {
         // }
     },
     methods: {
+        //返回首页
+        back(){
+            this.$router.push('/my')
+        },
         //跳转至认证
         renzheng() {
-            if (this.userInfo.iaiState == 0) {
+            if (this.userInfo.iaiState != 1) {
                 this.$router.push("/RealName");
             } else {
                 this.$router.push("/AlreadyRealName");
@@ -173,8 +177,8 @@ export default {
                 //return false;
             });
         },
-        //注册
-        add() {
+        //查询有没有这个代理人
+        selectOne(){
             if (this.city.length == 0) {
                 mui.toast("请选择区域", { duration: 2000, type: "div" });
                 return;
@@ -186,17 +190,33 @@ export default {
                 });
                 return;
             }
+            this.$axios({
+                method:'get',
+                url:'/api-u/agentUser/selectOne?phone='+ this.referrerPhone
+            }).then(x=>{
+                if(x.data.code==200 && x.data.data!=null && x.data.data!='null'){
+                    this.add();
+                }else{
+                    mui.toast("没有此推荐人。", { duration: 2000, type: "div" });
+                }
+            }).catch(error=>{
+                mui.toast("系统错误，请稍后再试。", { duration: 2000, type: "div" });
+            })
+        },
+        //注册
+        add() {
+            var this_1=this;
             //先支付
             this.$axios({
                 method: "post",
                 // url: '/api-v/pay/getSandboxSignKey',
-                url: "/wxpay/h5pay/order",
+                url:'/api-u/users/weixinpay/order',
                 data: this.$qs.stringify({
                     openid: this.weixinobj.openid
                 })
             })
                 .then(x => {
-                    // this.registered();      //正式环境放在支付成功后面
+                    // this_1.registered();      //正式环境放在支付成功后面
                     console.log(x);
                     var data = x.data;
                     wx.chooseWXPay({
@@ -208,7 +228,7 @@ export default {
                         success: function(res) {
                             // 支付成功后的回调函数
                             console.log(res);
-                            this.registered();
+                            this_1.registered();
                         }
                     });
                 })
@@ -236,7 +256,8 @@ export default {
                 referrerPhone: this.referrerPhone, //推荐人电话号码
                 areaCode: areaCode, //区域code
                 realName: this.realName, //真实姓名
-                userid: this.$store.state.userInfo.username
+                userid: this.userInfo.username,
+                phone:this.userInfo.phone
             };
             this.$axios({
                 method: "post",
@@ -290,6 +311,8 @@ export default {
         if (localStorage.userInfo) {
             this.userInfo = JSON.parse(localStorage.userInfo);
         }
+
+        
 
         //获取代理人信息
         this.$axios({

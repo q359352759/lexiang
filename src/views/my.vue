@@ -112,7 +112,8 @@ export default {
     name: "my",
     components: { circularNav },
     data() {
-        return {};
+        return {
+        };
     },
     computed: {
         userInfo() {
@@ -165,7 +166,7 @@ export default {
         if (this.$store.state.isweixin) {
             document.getElementsByTagName("title")[0].innerText = "我的";
         }
-
+        this.$store.commit("setCurrent");
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
