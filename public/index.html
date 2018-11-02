@@ -1,26 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="utf-8">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;"  />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" />
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <link rel="stylesheet" type="text/css" href="mui/css/mui.min.css">
+
     <link rel="stylesheet" href="swiper4/css/swiper.css">
-    <link rel="stylesheet" href="fontClass/iconfont.css">
+    <!-- picker选择器 -->
+    <!-- <link href="mui/css/mui.picker.css" rel="stylesheet" /> -->
+    <link href="mui/css/mui.picker.min.css" rel="stylesheet" />
+    <link href="mui/css/mui.poppicker.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="fontClass3/iconfont.css">
     <title>lexiang</title>
-  </head>
-  <body>
-    
-    
-    
+    <style>
+        #loading{
+            position: fixed;
+            width: 50px;
+            height: 50px;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            margin: auto;
+            background: rgba(0,0,0,0.5);
+            z-index: 11;
+            text-align: center;
+            line-height: 50px;
+            border-radius: 10px;
+            display: none;
+            color: #ffffff;
+        }
+        #loading.active{
+            display: block;
+        }
+        #loading i{
+            display: inline-block;
+            animation: index_loading 1s linear infinite;
+        }
+        @keyframes index_loading {
+            from{
+                transform: rotate(0deg);
+            }to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- <div id="loading">
+        <i class="mui-icon mui-icon-spinner mui-spin"></i>
+    </div> -->
+
     <!-- <noscript>
       <strong>We're sorry but lexiang doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript> -->
     <div id="app"></div>
     <!-- built files will be auto injected -->
+
     <script src="swiper4/js/swiper.js"></script>
+
     <script src="mui/js/mui.js"></script>
+    <!-- picker 选择器 -->
+    <script src="mui/js/mui.picker.js"></script>
+    <script src="mui/js/mui.poppicker.js"></script>
+    <!-- <script src="mui/js/mui.poppicker.js"></script> -->
+    <!-- 时间选择器 -->
+    <script src="mui/js/mui.dtpicker.js"></script>
     <script src="js/rem.js"></script>
-  </body>
+
+    <!-- 微信JS -->
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <!-- <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script> -->
+    
+</body>
+
 </html>

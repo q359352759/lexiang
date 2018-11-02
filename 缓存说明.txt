@@ -1,0 +1,27 @@
+服务器网页的都登录地址
+http://122.114.123.20:1779/login
+gcdian gcdian2488
+
+
+localStorage.loginDate          //登录的信息    
+    {"access_token":"...","token_type":"bearer","refresh_token":"...","expires_in":28799,"scope":"app"}
+    {"access_token":"96cd310b-517f-4add-855a-e998de1ee02e","token_type":"bearer","refresh_token":"57610c02-120d-4468-aa5a-3d5a76bb6090","expires_in":28799,"scope":"app"}
+localStorage.weixin             //微信授权 返回的信息
+    {"access_token":"ACCESS_TOKEN","expires_in":7200,"refresh_token":"REFRESH_TOKEN","openid":"OPENID","scope":"SCOPE"}
+
+localStorage.userInfo 用户个人信息
+
+localStorage.area       地区
+
+
+
+appid   wxe81f5f8fa2e34ac6
+APPSECRET   f4418d64b763bba286f06907beff433f
+
+https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxe81f5f8fa2e34ac6&secret=f4418d64b763bba286f06907beff433f
+
+46dd526b
+
+
+
+    

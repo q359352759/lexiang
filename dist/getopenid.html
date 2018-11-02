@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;"  />
+    <title>用户授权</title>
+</head>
+<body>
+    <!-- <button onclick="getcode()">开始获取code</button>
+    <button onclick="access_token()">通过code换取网页授权access_token</button> -->
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script>
+
+        //获取CODE的微信页面
+        function getcode(){
+            var APPID='wxe81f5f8fa2e34ac6';
+            // var REDIRECT_URI='http://m.lxad.vip/test/dist/index.html#/ApplicationAgent';    //回调地址
+            var REDIRECT_URI='http://m.lxad.vip/test/dist/getopenid.html';    //回调地址
+            var SCOPE='snsapi_userinfo';                //应用授权作用域，snsapi_base （不弹出授权页面，直接跳转，只能获取用户openid），snsapi_userinfo （弹出授权页面，可通过openid拿到昵称、性别、所在地。并且， 即使在未关注的情况下，只要用户授权，也能获取其信息 ）
+            var url='https://open.weixin.qq.com/connect/oauth2/authorize?appid='+APPID+'&redirect_uri='+REDIRECT_URI+'&response_type=code&scope='+SCOPE+'&state=STATE#wechat_redirect';    
+            location.href=url;
+        }
+        
+        //获取url参数的方法
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+            var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+            if (r != null) return unescape(r[2]); return null; //返回参数值
+        }
+        //这个时候的会跳结果为 http://m.lxad.vip/test/dist/index.html?code=011jCjFb2kQKKO0Nu6Eb2eLHFb2jCjFT&state=STATE#/
+        
+        var CODE= getUrlParam('code');
+        var geturl= getUrlParam('url')
+        
+        //通过接口获取微信的相关信息
+        function access_token(){
+            $.ajax({
+                type: "get",
+                // url:'http://localhost:8081/url',
+                url:'http://122.114.169.178:8080/wxpay/h5pay/users/getCode',
+                data:{'code':CODE},
+                dataType:'json',
+                success: function (data) {
+                    console.log(data)
+                    if(data.errcode){
+                        alert('授权失败');
+                    }else{
+                        localStorage.weixin=JSON.stringify(data);
+                        setoken(data)
+                        if(!geturl || geturl==null){
+                            console.log('没有Url地址')
+                            location.href="http://m.lxad.vip/test/dist/index.html#/"
+                        }else{
+                            console.log('有地址')
+                            location.href="http://m.lxad.vip/test/dist/index.html#/"+geturl
+                        }
+                    }
+                    console.log(data)
+                }
+            });
+        }
+        //发送 参数给后端
+        function setoken(x){
+            $.ajax({
+                type: "post",
+                url: "http://122.114.169.178:8080/wxpay/h5pay/user/getToken",
+                data: x ,
+                dataType: "dataType",
+                success: function (response) {
+                    console.log(response)
+                }
+            });
+        }
+
+        
+
+
+
+        if(!CODE || CODE==null){
+            console.log('没有Code');
+            getcode();
+        }else{
+            access_token()
+        }
+        
+    </script>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
     <div id="AssetDetails">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">资产详情</h1>
+            <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '资产详情'}}</h1>
         </header>
 
         <div class="mui-content">
@@ -40,85 +40,111 @@
 </template>
 
 <script>
-    export default{
-        name:'AssetDetails',
-        components:{},
-        data(){
-            return{
-                list:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-            }
-        }
+export default {
+  name: "AssetDetails",
+  components: {},
+  data() {
+    return {
+      list: [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    };
+  },
+  mounted() {
+    if (this.$store.state.isweixin) {
+      document.getElementsByTagName("title")[0].innerText = "资产详情";
     }
+  }
+};
 </script>
 
 <style lang="scss">
-    #AssetDetails{
-        height: 100%;
-        .mui-content{
-            height: 100%;
-            // background:rgba(255, 255, 255, 1);
-            overflow: auto;
-        }
+@import "@/assets/css/config.scss";
+#AssetDetails {
+  height: 100%;
+  .mui-content {
+    height: 100%;
+    // background:rgba(255, 255, 255, 1);
+    overflow: auto;
+  }
+}
+#AssetDetails .mui-bar {
+  background: $header_background;
+  a {
+    color: #ffffff;
+  }
+}
+#AssetDetails .mui-title {
+  color: #ffffff;
+}
+#AssetDetails .box_1.active {
+  position: fixed;
+  top: 44px;
+  left: 0px;
+  width: 100%;
+}
+#AssetDetails .box_1 {
+  // white-space: nowrap;
+  text-align: center;
+  > li.header {
+    color: rgba(80, 80, 80, 1);
+    font-size: 14px;
+    background: #efeff4;
+  }
+  > li.list {
+    background: #ffffff;
+    > div:nth-child(1) {
+      color: rgba(80, 80, 80, 1);
+      font-size: 12px;
     }
-    #AssetDetails .mui-bar{
-        background: rgba(39, 172, 110, 1);
-        a{
-            color: #ffffff;
-        }
+    > div:nth-child(2) {
+      font-size: 12px;
+      color: rgba(80, 80, 80, 1);
     }
-    #AssetDetails .mui-title{
-        color: #ffffff;
+    > div:nth-child(3) {
+      color: rgba(255, 87, 51, 1);
+      font-size: 14px;
     }
-    #AssetDetails .box_1.active{
-        position: fixed;
-        top: 44px;
-        left: 0px;
-        width: 100%;
+  }
+  > li {
+    height: 32px;
+    display: flex;
+    line-height: 32px;
+    border-bottom: 1px solid #cccccc;
+    > div:nth-child(1) {
+      width: 30%;
+      // color: rgba(80, 80, 80, 1);
+      // font-size: 12px;
     }
-    #AssetDetails .box_1{
-        // white-space: nowrap;
-        text-align: center;
-        >li.header{
-            color: rgba(80, 80, 80, 1);
-	        font-size: 14px;
-            background: #efeff4;
-        }
-        >li.list{
-            background: #ffffff;
-            >div:nth-child(1){
-                color: rgba(80, 80, 80, 1);
-	            font-size: 12px;
-            }
-            >div:nth-child(2){
-                font-size: 12px;
-                color: rgba(80, 80, 80, 1);
-            }
-            >div:nth-child(3){
-                color: rgba(255, 87, 51, 1);
-            	font-size: 14px;
-            }
-        }
-        >li{
-            height: 32px;
-            display: flex;
-            line-height: 32px;
-            border-bottom: 1px solid #cccccc;
-            >div:nth-child(1){
-                width: 30%;
-                // color: rgba(80, 80, 80, 1);
-	            // font-size: 12px;
-            }
-            >div:nth-child(2){
-                width: 40%;
-                // font-size: 12px;
-                // color: rgba(80, 80, 80, 1);
-            }
-            >div:nth-child(3){
-                width: 30%;
-                // color: rgba(255, 87, 51, 1);
-            	// font-size: 14px;
-            }
-        }
+    > div:nth-child(2) {
+      width: 40%;
+      // font-size: 12px;
+      // color: rgba(80, 80, 80, 1);
     }
-
+    > div:nth-child(3) {
+      width: 30%;
+      // color: rgba(255, 87, 51, 1);
+      // font-size: 14px;
+    }
+  }
+}
 </style>

@@ -1,0 +1,20 @@
+$header_background:#25a86a;         //顶部绿色
+
+// 列表底部加载中，加载完成，没有数据
+// <div class="config_loading mui-text-center">拼命加载中···</div>
+// <div class="config_load mui-text-center">———没有更多了———</div>
+// <div class="config_No_data mui-text-center">暂无数据</div>
+.config_loading{
+    padding: 10px ;
+    font-size: 0.14rem;
+}
+.config_load{
+    padding: 10px ;
+    font-size: 0.14rem;
+}
+.config_No_data{
+    padding: 10px ;
+    font-size: 0.14rem;
+}
+
+

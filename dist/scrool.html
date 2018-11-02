@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="format-detection" content="telephone=no">
+    <title>禁止下拉</title>
+    <style type="text/css">
+		.scroll{
+            position: absolute;
+            right: 0px;
+            top: 300px;
+            height: 100px;
+            width: 100px;
+            background: #cccccc;
+	    }
+    </style>
+</head>
+<body>
+
+ <div>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+     可以下拉<br/>
+ </div>   
+<div id="scroll" class="scroll">
+    <div>紧张下拉</div>
+</div>
+</body>
+<script type="text/javascript">
+console.log(document.getElementsByClassName('scroll'))
+    document.getElementById('scroll').addEventListener('touchmove',function(e){
+    e.preventDefault()
+  },{ passive:false })
+</script>
+</html>
