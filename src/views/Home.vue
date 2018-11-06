@@ -52,7 +52,7 @@
             </div>
 
             <ul class="box_2">
-                <li v-for="(x,index) in type_list" :key="index">
+                <li v-for="(x,index) in type_list" :key="index" @click="Selection_type(x)">
                     <div class="img_box">
                         <img :src="x.url" alt="">
                     </div>
@@ -67,7 +67,7 @@
             </ul>
 
             <div class="box_4">
-                <ul v-for="(x, index) in list_2" :key="index">
+                <ul v-for="(x, index) in list_2" :key="index" @click="BusinessDetails()">
                     <li>
                         <div class="title_1">
                             一米阳光(富顺店)
@@ -124,22 +124,32 @@ export default {
         return {
             img_list: [], //轮播图
             type_list: [
-                { url: "image/fenlei/1.jpg", name: "直购" },
-                { url: "image/fenlei/2.jpg", name: "美食" },
-                { url: "image/fenlei/3.jpg", name: "休闲" },
-                { url: "image/fenlei/4.jpg", name: "丽人" },
-                { url: "image/fenlei/5.jpg", name: "教育" },
-                { url: "image/fenlei/6.jpg", name: "酒店" },
-                { url: "image/fenlei/7.jpg", name: "家装" },
-                { url: "image/fenlei/8.jpg", name: "汽车" },
-                { url: "image/fenlei/9.jpg", name: "购物" },
-                { url: "image/fenlei/10.jpg", name: "更多" }
+                { url: "image/fenlei/1.jpg", name: "直购" ,path:''},
+                { url: "image/fenlei/2.jpg", name: "美食" ,path:''},
+                { url: "image/fenlei/3.jpg", name: "休闲" ,path:''},
+                { url: "image/fenlei/4.jpg", name: "丽人" ,path:''},
+                { url: "image/fenlei/5.jpg", name: "教育" ,path:''},
+                { url: "image/fenlei/6.jpg", name: "酒店" ,path:''},
+                { url: "image/fenlei/7.jpg", name: "家装" ,path:''},
+                { url: "image/fenlei/8.jpg", name: "汽车" ,path:''},
+                { url: "image/fenlei/9.jpg", name: "购物" ,path:''},
+                { url: "image/fenlei/10.jpg", name: "更多" ,path:'/classification'}
             ],
             type_1: 1,
             list_2: [1, 2, 3]
         };
     },
     methods: {
+        //跳转商家详情
+        BusinessDetails(){
+            this.$router.push('/BusinessDetails');
+        },
+        //选择分类
+        Selection_type(x){
+            if(x.path!=''){
+                this.$router.push(x.path)
+            }
+        },
         //选择类型
         change_type_1(x) {
             this.type_1 = x;
@@ -253,7 +263,9 @@ export default {
     > li:nth-child(2) {
         display: flex;
         align-items: center;
+        flex-grow: 1;
         > div {
+            width: 100%;
             align-items: center;
             display: flex;
             background: #ffffff;

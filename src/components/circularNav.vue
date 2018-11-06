@@ -34,207 +34,209 @@
 // import HelloWorld from "@/components/HelloWorld.vue";
 // import Swiper from 'swiper';
 export default {
-  name: "circularNav",
-  components: {
-    // HelloWorld
-  },
-  data() {
-    return {
-      mask_show: false,
-      clientX: "",
-      clientY: "",
-      is_touchmove: false, //是否拖动
-      class_name: "right"
-    };
-  },
-  computed: {
-    // clientY(){
-    //     return this.$store.state.clientY;
-    // }
-  },
-  methods: {
-    //跳转代理
-    go_Agent() {
-      console.log(this.$store.state.agentUser);
-      if (
-        !this.$store.state.agentUser ||
-        this.$store.state.agentUser == null ||
-        this.$store.state.agentUser == ""
-      ) {
-        this.$router.push("/ApplicationAgent"); //跳转注册代理人页面
-      } else {
-        this.$router.push("/Agent"); //跳转代理人
-      }
+    name: "circularNav",
+    components: {
+        // HelloWorld
     },
-    change_mask_show(x) {
-      this.mask_show = x;
+    data() {
+        return {
+            mask_show: false,
+            clientX: "",
+            clientY: "",
+            is_touchmove: false, //是否拖动
+            class_name: "right"
+        };
     },
-    go(x) {
-      this.$router.push(x);
+    computed: {
+        // clientY(){
+        //     return this.$store.state.clientY;
+        // }
     },
-    //开始拖动
-    touchmove(x) {
-      this.mask_show = false;
-      this.is_touchmove = true;
-      var event = x.target;
-      var targetTouches = x.targetTouches[0];
-      var obj = {
-        clientX: targetTouches.clientX - 25,
-        clientY: targetTouches.clientY - 25
-      };
-      this.$store.state.clientX = targetTouches.clientX - 25;
-      this.$store.state.clientY = targetTouches.clientY - 25;
-      // this.$store.commit("setClient", obj);
-      // document.getElementById('move').style.left=clientX-25+'px'
-      // document.getElementById('move').style.top=clientY-25+'px'
-    },
-    //手指头松开
-    touchend(x) {
-      console.log(window.innerHeight);
-      console.log(this.$store.state.clientX);
-      var ww = window.innerWidth;
-      var wh = window.innerHeight;
-      if (this.$store.state.clientX - 25 > ww / 2) {
-        this.class_name = "right";
-      } else {
-        this.class_name = "left";
-      }
+    methods: {
+        //跳转代理
+        go_Agent() {
+            this.mask_show=false;
+            console.log(this.$store.state.agentUser);
+            if (
+                !this.$store.state.agentUser ||
+                this.$store.state.agentUser == null ||
+                this.$store.state.agentUser == ""
+            ) {
+                this.$router.push("/ApplicationAgent"); //跳转注册代理人页面
+            } else {
+                this.$router.push("/Agent"); //跳转代理人
+            }
+        },
+        change_mask_show(x) {
+            this.mask_show = x;
+        },
+        go(x) {
+            this.mask_show=false;
+            this.$router.push(x);
+        },
+        //开始拖动
+        touchmove(x) {
+            this.mask_show = false;
+            this.is_touchmove = true;
+            var event = x.target;
+            var targetTouches = x.targetTouches[0];
+            var obj = {
+                clientX: targetTouches.clientX - 25,
+                clientY: targetTouches.clientY - 25
+            };
+            this.$store.state.clientX = targetTouches.clientX - 25;
+            this.$store.state.clientY = targetTouches.clientY - 25;
+            // this.$store.commit("setClient", obj);
+            // document.getElementById('move').style.left=clientX-25+'px'
+            // document.getElementById('move').style.top=clientY-25+'px'
+        },
+        //手指头松开
+        touchend(x) {
+            // console.log(window.innerHeight);
+            // console.log(this.$store.state.clientX);
+            var ww = window.innerWidth;
+            var wh = window.innerHeight;
+            if (this.$store.state.clientX - 25 > ww / 2) {
+                this.class_name = "right";
+            } else {
+                this.class_name = "left";
+            }
 
-      if (this.$store.state.clientX > ww - 50) {
-        this.$store.state.clientX = ww - 50;
-      } else if (this.$store.state.clientX < 0) {
-        this.$store.state.clientX = 0;
-      }
+            if (this.$store.state.clientX > ww - 50) {
+                this.$store.state.clientX = ww - 50;
+            } else if (this.$store.state.clientX < 0) {
+                this.$store.state.clientX = 0;
+            }
 
-      if (this.$store.state.clientY < 90) {
-        this.$store.state.clientY = 90;
-      } else if (this.$store.state.clientY > wh - 90) {
-        this.$store.state.clientY = wh - 90;
-      }
+            if (this.$store.state.clientY < 90) {
+                this.$store.state.clientY = 90;
+            } else if (this.$store.state.clientY > wh - 90) {
+                this.$store.state.clientY = wh - 90;
+            }
+        }
+    },
+    beforeCreate: function() {
+        // console.group('------beforeCreate创建前状态------');
+    },
+    created: function() {
+        // console.group('------created创建完毕状态------');
+    },
+    beforeMount: function() {
+        // console.group('------beforeMount挂载前状态------');
+    },
+    mounted: function() {
+        //阻止这个页面下拉
+        document.getElementById("circularNav").addEventListener(
+            "touchmove",
+            function(e) {
+                // console.log(11);
+                e.preventDefault();
+            },
+            { passive: false }
+        );
+        // console.group('------mounted 挂载结束状态------');
+    },
+    beforeUpdate: function() {
+        // console.group('beforeUpdate 更新前状态===============》');
+    },
+    updated: function() {
+        // console.group('updated 更新完成状态===============》');
+    },
+    beforeDestroy: function() {
+        document
+            .getElementById("circularNav")
+            .removeEventListener("touchmove", function() {});
+        // console.group('beforeDestroy 销毁前状态===============》');
+    },
+    destroyed: function() {
+        // console.group('destroyed 销毁完成状态===============》');
     }
-  },
-  beforeCreate: function() {
-    // console.group('------beforeCreate创建前状态------');
-  },
-  created: function() {
-    // console.group('------created创建完毕状态------');
-  },
-  beforeMount: function() {
-    // console.group('------beforeMount挂载前状态------');
-  },
-  mounted: function() {
-    //阻止这个页面下拉
-    document.getElementById("circularNav").addEventListener(
-      "touchmove",
-      function(e) {
-        console.log(11);
-        e.preventDefault();
-      },
-      { passive: false }
-    );
-    // console.group('------mounted 挂载结束状态------');
-  },
-  beforeUpdate: function() {
-    // console.group('beforeUpdate 更新前状态===============》');
-  },
-  updated: function() {
-    // console.group('updated 更新完成状态===============》');
-  },
-  beforeDestroy: function() {
-    document
-      .getElementById("circularNav")
-      .removeEventListener("touchmove", function() {});
-    // console.group('beforeDestroy 销毁前状态===============》');
-  },
-  destroyed: function() {
-    // console.group('destroyed 销毁完成状态===============》');
-  }
 };
 </script>
 <style>
 #circularNav .mask {
-  position: fixed;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 10;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10;
 }
 #circularNav ul {
-  position: absolute;
-  z-index: 11;
+    position: absolute;
+    z-index: 11;
 }
 #circularNav ul > li:nth-child(1) {
-  width: 50px;
-  height: 50px;
-  border-radius: 100%;
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
 }
 #circularNav ul > li:nth-child(1) img {
-  width: 100%;
-  height: 100%;
-  border-radius: 100%;
-  opacity: 0.7;
+    width: 100%;
+    height: 100%;
+    border-radius: 100%;
+    opacity: 0.7;
 }
 #circularNav .min_1 {
-  text-align: center;
-  position: absolute;
-  transition: all 0.5s;
+    text-align: center;
+    position: absolute;
+    transition: all 0.5s;
 }
 /* #circularNav .min_1 div,
     #circularNav .min_1 div,
     #circularNav .min_1 div, */
 #circularNav .min_1 div {
-  width: 34px;
-  height: 34px;
-  text-align: center;
-  background: rgba(39, 172, 110, 1);
-  line-height: 35px;
-  margin: 0px auto;
-  border-radius: 50%;
-  color: #ffffff;
+    width: 34px;
+    height: 34px;
+    text-align: center;
+    background: rgba(39, 172, 110, 1);
+    line-height: 35px;
+    margin: 0px auto;
+    border-radius: 50%;
+    color: #ffffff;
 }
 #circularNav .min_1 div i {
-  font-size: 22px;
+    font-size: 22px;
 }
 #circularNav .min_1 div > img {
-  width: 100%;
+    width: 100%;
 }
 #circularNav .min_1 span {
-  font-size: 12px;
-  color: #ffffff;
+    font-size: 12px;
+    color: #ffffff;
 }
 
 #circularNav .right .min_11 {
-  top: -70px;
-  left: 7px;
+    top: -70px;
+    left: 7px;
 }
 #circularNav .right .min_12 {
-  top: -40px;
-  left: -40px;
+    top: -40px;
+    left: -40px;
 }
 #circularNav .right .min_13 {
-  top: 30px;
-  left: -40px;
+    top: 30px;
+    left: -40px;
 }
 #circularNav .right .min_14 {
-  bottom: -70px;
-  left: 7px;
+    bottom: -70px;
+    left: 7px;
 }
 #circularNav .left .min_11 {
-  top: -70px;
-  left: 7px;
+    top: -70px;
+    left: 7px;
 }
 #circularNav .left .min_12 {
-  top: -40px;
-  left: 60px;
+    top: -40px;
+    left: 60px;
 }
 #circularNav .left .min_13 {
-  top: 30px;
-  left: 60px;
+    top: 30px;
+    left: 60px;
 }
 #circularNav .left .min_14 {
-  bottom: -70px;
-  left: 7px;
+    bottom: -70px;
+    left: 7px;
 }
 </style>

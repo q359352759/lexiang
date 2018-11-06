@@ -67,4 +67,35 @@ function  dateFtt(val, format){
         return '--';
     }
 }
-export { Get_URL_parameters, dateFtt };
+
+//获取数字在数组中最接近那个数
+function limit(arr, num){
+    var newArr = [];
+    arr.map(function(x){
+        // 对数组各个数值求差值
+        newArr.push(Math.abs(x - num));
+    });
+    // 求最小值的索引
+    var index = newArr.indexOf(Math.min.apply(null, newArr));
+    // return arr[index];
+    return index;
+}
+
+function openloading(x){
+    if(x){
+        document.getElementById('loading').style.opacity='1';
+        document.getElementById('loading').style.display='block';
+    }else{
+        document.getElementById('loading').style.opacity='0';
+        setTimeout(function(){
+            document.getElementById('loading').style.display='none';
+        },500)
+    }
+}
+
+export { 
+    Get_URL_parameters, 
+    dateFtt, 
+    limit,
+    openloading
+};

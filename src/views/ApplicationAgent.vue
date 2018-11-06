@@ -268,22 +268,13 @@ export default {
             })
                 .then(x => {
                     console.log(x);
-                    if (x.data.code) {
-                        mui.toast(x.data.message, {
-                            duration: 2000,
-                            type: "div"
-                        });
+                    if (x.data.error) {
+                        mui.toast(x.data.message, {duration: 2000,type: "div"});
                     } else {
-                        mui.alert(
-                            "申请成功",
-                            "提示",
-                            function() {
-                                this_1.$store.commit("setagentUser"); //更新代理人信息
-
-                                this_1.$router.push("/Agent");
-                            },
-                            "div"
-                        );
+                        mui.alert("申请成功", "提示",function() {
+                            this_1.$store.commit("setagentUser"); //更新代理人信息
+                            this_1.$router.push("/Agent");
+                        },"div");
                     }
                 })
                 .catch(err => {
@@ -312,12 +303,10 @@ export default {
             this.userInfo = JSON.parse(localStorage.userInfo);
         }
 
-        
-
         //获取代理人信息
         this.$axios({
                 method: "get",
-                url: "/api-u/agentUser/me?userid=" + this.userInfo.phone
+                url: "/api-u/agentUser/me?userid=" + this.userInfo.username
             }).then(x => {
                 console.log("获取用户代理人信息", x);
                 if (x.data.code == 200) {
@@ -468,7 +457,7 @@ export default {
         color: #313131;
     }
     .region {
-        // max-width: 2.3rem;
+        max-width: 2.2rem;
         display: block;
         font-size: 14px;
         color: rgba(166, 166, 166, 1);

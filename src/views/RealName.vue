@@ -108,6 +108,7 @@
 </template>
 
 <script>
+import {openloading} from "@/assets/js/currency"
 import { VueCropper } from "vue-cropper";
 export default {
     name: "RealName",
@@ -312,6 +313,7 @@ export default {
             this.add_loading = true;
             var obj = {
                 userid: this.userinfo.username, //登录用的username  可以不传
+                phone:this.userinfo.phone,
                 name: this.Positive_obj.name, //真实姓名
                 nation: this.Positive_obj.nation, //民族
                 birthday: this.Positive_obj.birthday, //出生日期

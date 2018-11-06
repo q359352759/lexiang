@@ -3,7 +3,7 @@
         <header class="mui-bar mui-bar-nav">
             <a @click="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '代理人'}}</h1>
-            <span v-if="isareaManager" @click="RegionalAgent()" class="quyu">区域代理</span>
+            <span v-if="isareaManager" @click="RegionalAgent()" class="quyu">区域管理</span>
         </header>
 
         <div class="mui-content">
@@ -14,7 +14,7 @@
                 <div class="text">
                     <div>{{agentUser.realName}}-业务代理人</div>
                     <div>
-                        {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? areaList[1].name : ''}}{{areaList[2] ? areaList[2].name : ''}}
+                        {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? '/'+areaList[1].name : ''}}{{areaList[2] ? '/'+areaList[2].name : ''}}
                     </div>
                 </div>
                 <div @click="go('/market')" class="market">业务市场</div>
@@ -64,7 +64,7 @@
                     </ul>
                     <ul class="list" @scroll="butie_scroll($event)">
                         <li v-for="(x, index) in butie.list" :key="index">
-                            <div>{{x.realName}}}</div>
+                            <div>{{x.realName}}</div>
                             <div>{{x.updateTime | datatime('yyyy-MM-dd')}}</div>
                             <div>{{x.dtSubsidies}}</div>
                             <div>{{x.dtSubsidiesPlus}}</div>
@@ -212,8 +212,20 @@
                 </div>
             </div>
 
-        </div>
 
+            <form class="input_name" @submit.prevent="Submission()" :class="{'active':input_name_box}">
+                <div class="mask" @click="clese_1()"></div>
+                <ul class="">
+                    <li>该手机号对应多个账号，请输入真实姓名。</li>
+                    <li>
+                        <input type="text" v-model="name" required placeholder="请输入真实姓名">
+                    </li>
+                    <li>
+                        <button type="submit">确定</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
         <circularNav />
     </div>
 </template>
@@ -221,7 +233,7 @@
 <script>
 import circularNav from "@/components/circularNav.vue";
 import loading from "@/components/loading.vue";
-import { dateFtt } from "@/assets/js/currency";
+import { dateFtt,openloading } from "@/assets/js/currency";
 export default {
     name: "Agent",
     components: {
@@ -249,7 +261,10 @@ export default {
             Account_obj: {}, //支付账号
             accout_password: "",
             amount: 0, //提现金额
-            isareaManager:false
+            isareaManager:false,
+            CanBePresented:true,     //可以提现
+            input_name_box:false,
+            name:'',    
         };
     },
     filters: {
@@ -275,6 +290,14 @@ export default {
         PaymentPassword() {
             this.$router.push("/PaymentPassword");
         },
+        //关闭输入名字
+        clese_1(){
+            this.input_name_box=false;
+        },
+        //再次提交
+        Submission(){
+            this.Put_forward();
+        },
         //提现
         Put_forward() {
             var password_test = /^\d{6}$/; //6位数字验证
@@ -291,7 +314,12 @@ export default {
                 userid: this.userInfo.username,
                 payPassword:this.accout_password,
                 id:this.userInfo.id,
+                name:this.name,
             };
+            this.payment=false;
+            this.CanBePresented=false;
+            this.input_name_box=false;
+            openloading(true)
             this.$axios({
                 method: "get",
                 url: "/api-u/users/alipay",
@@ -301,17 +329,30 @@ export default {
             }).then(x => {
                 console.log(x);
                 if(x.data.code==200){
-                    this.payment=false;
                     this.getagentUser();
-                    mui.alert('提现已提交，请注意查收。','提示','好的',function(){},'div')
+                    if(!x.data.data){
+                        mui.alert('提现已提交，请注意查收。','提示','好的',function(){},'div')
+                    }else{
+                        mui.alert('已提交至审核，请注意查收。','提示','好的',function(){},'div')
+                    }
+                }else if(x.data.code=="PAYEE_USER_INFO_ERROR"){
+                    mui.toast('名字输入有误。',{duration: 2000,type: "div"});
+                    this.input_name_box=true;
+                }else if(x.data.code=="PAYEE_ACC_OCUPIED"){
+                    this.input_name_box=true;
                 }else if(x.data.code){
-                    mui.toast(x.data.message , { duration: 2000,type: "div"});
+                    mui.toast(x.data.msg,{duration: 2000,type: "div"});
                 }else{
                     mui.toast('系统错误，请稍后再试。' , { duration: 2000,type: "div"});
                 }
+                openloading(false)
+                this.CanBePresented=true;
             }).catch(error => {
                 console.log(error);
                 mui.toast("系统错误，请稍后再试。", { duration: 2000,type: "div"});
+                openloading(false)
+                this.CanBePresented=true;
+                this.input_name_box=false;
             });
         },
         //支付密码
@@ -348,19 +389,28 @@ export default {
             this.radio_type_2 = !this.radio_type_2;
         },
         change_payment(x) {
-            if(!this.Account_obj.account){
-                mui.toast("请设置收款账号", {duration: 2000,type: "div"});
-                return;
-            }else if(this.amount==0 && x){
-                mui.toast("无提现金额", {duration: 2000,type: "div"});
-                return;
-            }
-            this.payment = x;
             if(x){
+                if(!this.Account_obj.account){
+                    mui.toast("请设置收款账号", {duration: 2000,type: "div"});
+                    return;
+                }else if(this.amount==0 && x){
+                    mui.toast("无提现金额", {duration: 2000,type: "div"});
+                    return;
+                }else if(this.amount%1!=0 && x){
+                    mui.toast("请输入整数！", {duration: 2000,type: "div"});
+                    return;
+                }else if(!this.CanBePresented){
+                    mui.toast("提现处理中，请稍等。", {duration: 2000,type: "div"});
+                    return;
+                }
+                this.payment = x;
                 this.accout_password='';
+                this.name='';
                 setTimeout(function(){
                     document.getElementById('accout_password').focus();
                 },500)
+            }else{
+                this.payment = x;
             }
         },
         Account() {
@@ -373,9 +423,8 @@ export default {
         getagentUser() {
             this.$axios({
                 method: "get",
-                url: "/api-u/agentUser/me?userid=" + this.userInfo.phone
-            })
-                .then(x => {
+                url: "/api-u/agentUser/me?userid=" + this.userInfo.username
+            }).then(x => {
                     console.log("获取用户代理人信息", x);
                     if (x.data.code != 200) {
                         // this.agentUser = false;
@@ -441,9 +490,9 @@ export default {
             }).then(x=>{
                 console.log('获取代理商信息',x)
                 if(x.data.data!='' && x.data.data!=null && x.data.data!='null'){
-                    this.isareaManager=false;
-                }else{
                     this.isareaManager=true;
+                }else{
+                    this.isareaManager=false;
                 }
             }).catch(error=>{
                 console.log('获取代理商信息错误',error);
@@ -1019,6 +1068,61 @@ export default {
             margin: 16px auto;
             display: block;
             padding: 0px;
+        }
+    }
+}
+
+#Agent .input_name.active{
+    display: flex;
+}   
+#Agent .input_name{
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    .mask{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    ul{
+        background: #ffffff;
+        position: relative;
+        z-index: 1;
+        width: 2.98rem;
+        >li:nth-child(1){
+            padding: 0.13rem;
+            color: rgba(80, 80, 80, 1);
+        	font-size: 0.12rem;
+            text-align: center;
+        }
+        >li:nth-child(2){
+            padding: 0px 0.3rem;
+            height: 0.36rem;
+            input{
+                text-align: center;
+                background: rgba(166, 166, 166, 1);
+                margin: 0px;
+                padding: 0px;
+                height: 100%;
+                font-size: 0.14rem;
+            }
+        }
+        >li:nth-child(3){
+            padding: 0.15rem;
+            text-align: center;
+            button{
+                width: 1.23rem;
+            	height: 0.26rem;
+                color: rgba(255, 255, 255, 1);
+            	background-color: rgba(54, 140, 89, 1);
+                border-radius: 0.26rem;
+                padding: 0px;
+                border: none;
+            }
         }
     }
 }

@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import {dateFtt} from '@/assets/js/currency'
+import {dateFtt,openloading} from '@/assets/js/currency'
 import circularNav from "@/components/circularNav.vue";
 export default {
     name: "login",
@@ -59,6 +59,7 @@ export default {
         login() {
             // localStorage.loginDate='登录';
             // this.$router.push("/my");
+            openloading(true)
             this.$axios({
                 method: "post",
                 url: "/sys/login",
@@ -76,6 +77,7 @@ export default {
                     console.log(x);
                     // {"access_token":"3ca33ff6-3192-40c6-bea6-aff30ea8af14","token_type":"bearer","refresh_token":"df4b6595-39f6-4cc7-8467-369975091bf7","expires_in":28799,"scope":"app"}
                     if (x.data.code) {
+                        openloading(false)
                         //登录失败
                         // error_description
                         mui.toast(x.data.error_description, {
@@ -100,13 +102,16 @@ export default {
                             //获取用户信息
                             this.$store.commit("setCurrent");
                             this.$router.push("/my");
+                            openloading(false)
                         }).catch(error => {
                             console.log("获取个人信息失败", error);
+                            openloading(false)
                             // router.push("/login");
                         });                       
                     }
                 })
                 .catch(err => {
+                     openloading(false)
                     console.log(err);
                     mui.toast("登录失败。", { duration: 2000, type: "div" });
                 });
@@ -125,6 +130,7 @@ export default {
         if (this.$store.state.isweixin) {
             document.getElementsByTagName("title")[0].innerText = "登录";
         }
+        
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {

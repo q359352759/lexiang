@@ -11,7 +11,7 @@
                     <img v-if="userInfo.headImgUrl=='' || userInfo.headImgUrl==null" src="@/assets/image/lxlogo_180.png" alt="">
                 </li>
                 <li class="type_box">
-                    <div>{{(userInfo.nickname!='' && userInfo.nickname!=null) ? userInfo.nickname : "未设置"}}</div>
+                    <div>{{(userInfo.nickname!='' && userInfo.nickname!=null) ? userInfo.nickname : userInfo.phone}}</div>
                     <span><i class="icon iconfont icon-31erweima"></i></span>
                 </li>
                 <li class="explain_box">
@@ -60,6 +60,11 @@
             </div>
 
             <ul class="mui-table-view box_4">
+                <li class="mui-table-view-cell " @click="ApplicationShop()">
+                    <a class="mui-navigate-right">
+                        <span style="color:rgba(212, 48, 48, 1)">我要开店</span>
+                    </a>
+                </li>
                 <li class="mui-table-view-cell " @click="Advertising()">
                     <a class="mui-navigate-right">
                         <span style="color:rgba(212, 48, 48, 1)">广告机</span>
@@ -121,6 +126,10 @@ export default {
         }
     },
     methods: {
+        //申请店铺
+        ApplicationShop(){
+            this.$router.push('/ApplicationShop');
+        },
         //退出
         go_out() {
             this.$store.commit("setloginDate", "");

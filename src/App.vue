@@ -4,8 +4,14 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </div> -->
+    
         <transition :name="transitionName">
-            <router-view></router-view>
+            <keep-alive>
+                <router-view v-if="$route.meta.keepAlive"></router-view>
+            </keep-alive>
+        </transition>
+        <transition :name="transitionName">
+            <router-view v-if="!$route.meta.keepAlive"></router-view>
         </transition>
     </div>
 </template>
@@ -29,7 +35,8 @@ export default {
             var path = this.$route.path;
             var weixin = localStorage.weixin;
             if (!weixin || weixin == null || weixin == undefined) {
-                // location.href = "getopenid.html?url=" + path;
+                console.log('没有微信信息')
+                location.href = "getopenid.html?url=" + path;
             } else {
                 console.log("已有微信信息");
                 //检测是否登录
@@ -47,9 +54,10 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        var path = this.$route.path;
+        // var path = this.$route.path;
+        var path = window.location.hash;
         var loginDate = localStorage.loginDate;
-        var baimingdan = ["/login", "/register", "/RegistrationAgreement"]; //未登录可以访问的白名单
+        var baimingdan = ["#/login", "#/register", "#/RegistrationAgreement"]; //未登录可以访问的白名单
         if (!loginDate || loginDate == null || loginDate == undefined) {
             if (baimingdan.indexOf(path) == -1) {
                 console.log("没有登录准备跳转至登录");
@@ -157,6 +165,7 @@ export default {
 html,
 body {
     height: 100%;
+    line-height: initial;
 }
 
 #app {

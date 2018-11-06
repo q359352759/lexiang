@@ -46,7 +46,14 @@ var vuex = new Vuex.Store({
         todos: [
             { id: 1, text: "测试1", done: true },
             { id: 2, text: "测试2", done: false }
-        ]
+        ],
+        //申请店铺
+        apply_for_a_shop:{
+            creationTime:'',    //开始时间
+            endTime:'',         //结束时间
+            shopType:'1'        //1个人经营 2公司经营
+        }
+
     },
     getters: {
         doneTodos(state, getters) {
@@ -92,7 +99,7 @@ var vuex = new Vuex.Store({
             // console.log(this.state.userInfo)
             axios({
                 method: "get",
-                url: "/api-u/agentUser/me?userid=" + this.state.userInfo.phone
+                url: "/api-u/agentUser/me?userid=" + this.state.userInfo.username
             })
                 .then(x => {
                     console.log("获取用户代理人信息", x);
@@ -123,6 +130,7 @@ var vuex = new Vuex.Store({
                     if (x.data.error) return;
                 if(x.data.code!=200){
                     alert('获取用户信息失败，请重新登录');
+                    location.href="index.html#/login";
                     return;
                 }else{
                     console.log("获取个人信息", x);

@@ -24,6 +24,15 @@
     <style>
         #loading{
             position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 11;
+            transition: all 0.5s;
+        }
+        #loading>div{
+            position: absolute;
             width: 50px;
             height: 50px;
             top: 0px;
@@ -36,9 +45,9 @@
             text-align: center;
             line-height: 50px;
             border-radius: 10px;
-            display: none;
             color: #ffffff;
         }
+        
         #loading.active{
             display: block;
         }
@@ -59,7 +68,9 @@
 <body>
 
     <div id="loading">
-        <i class="mui-icon mui-icon-spinner mui-spin"></i>
+        <div>
+            <i class="mui-icon mui-icon-spinner mui-spin"></i>
+        </div>
     </div>
 
     <!-- <noscript>
@@ -68,8 +79,8 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
     <script>
-        var baseURL="http://122.114.169.178:8080";
-        // var baseURL="http://192.168.1.11:8080"
+        // var baseURL="http://122.114.169.178:8080";
+        var baseURL="http://192.168.1.11:8080"
     </script>
     <script src="swiper4/js/swiper.js"></script>
 

@@ -25,6 +25,17 @@ const market = resolve => { require.ensure(["./views/market.vue"], () => { resol
 const Advertising = resolve => { require.ensure(["./views/Advertising.vue"], () => { resolve(require("./views/Advertising.vue")); }); }; //广告机
 const croppertest = resolve => { require.ensure(["./views/croppertest.vue"], () => { resolve(require("./views/croppertest.vue")); }); }; //裁剪测试
 const RegionalAgent = resolve => { require.ensure(["./views/RegionalAgent.vue"], () => { resolve(require("./views/RegionalAgent.vue")); }); }; //区域代理
+const classification = resolve => { require.ensure(["./views/classification.vue"], () => { resolve(require("./views/classification.vue")); }); }; //更多分类
+const BusinessDetails = resolve => { require.ensure(["./views/BusinessDetails.vue"], () => { resolve(require("./views/BusinessDetails.vue")); }); }; //商家详情
+//申请店铺
+const ApplicationShop = resolve => { require.ensure(["./views/ApplyForAShop/ApplicationShop.vue"], () => { resolve(require("./views/ApplyForAShop/ApplicationShop.vue")); }); }; //申请店铺详情
+const TimeSlot = resolve => { require.ensure(["./views/ApplyForAShop/TimeSlot.vue"], () => { resolve(require("./views/ApplyForAShop/TimeSlot.vue")); }); }; //营业时间
+const BusinessLicense = resolve => { require.ensure(["./views/ApplyForAShop/BusinessLicense.vue"], () => { resolve(require("./views/ApplyForAShop/BusinessLicense.vue")); }); }; //营业执照
+
+
+
+
+
 
 const RegistrationAgreement = () => import("@/views/xieyi/RegistrationAgreement.vue"); //用户注册协议
 const BusinessAgreement = () => import("@/views/xieyi/BusinessAgreement.vue"); //业务代理合作协议
@@ -130,6 +141,31 @@ export default new Router({
             path: "/AgentAdvantage",
             name: "",
             component: AgentAdvantage
+        },{
+            path:'/classification',
+            name:'',
+            component:classification
+        },{
+            path:'/BusinessDetails',
+            name:'',
+            component:BusinessDetails
+        },
+        //申请店铺
+        {
+            path:'/ApplicationShop',
+            name:'',
+            component:ApplicationShop,
+            meta:{
+                keepAlive:true      //缓存当前页面
+            }
+        },{
+            path:'/TimeSlot',
+            name:'',
+            component:TimeSlot,
+        },{
+            path:'/BusinessLicense',
+            name:'',
+            component:BusinessLicense,
         }
     ]
 });

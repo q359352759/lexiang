@@ -12,7 +12,7 @@
                 </li>
                 <li class="text">
                     <h1>{{areaManager_obj.name}}</h1>
-                    <h2> {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? areaList[1].name : ''}}{{areaList[2] ? areaList[2].name : ''}}</h2>
+                    <h2> {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? '/'+areaList[1].name : ''}}{{areaList[2] ? '/'+areaList[2].name : ''}}</h2>
                 </li>
             </ul>
             <ul class="box_2">
@@ -43,9 +43,9 @@
                     <li></li>
                     <li v-for="(item, index) in zitui_obj.list" :key="index">
                         <div>{{item.name}}</div>
-                        <div>{{item.dtname}}（0）</div>
-                        <div>{{item.itname}}（0）</div>
-                        <div>0</div>
+                        <div>{{item.dtname ? item.dtname : '无'}}{{item.dtSubsidies ? '('+item.dtSubsidies+')' : ''}}</div>
+                        <div>{{item.itname ? item.itname : '无'}}{{item.itSubsidies ? '('+item.itSubsidies+')' : ''}}</div>
+                        <div>{{item.subsidies}}</div>
                     </li>
                     <loading :loadingtype="zitui_obj.loading" :nodata="!zitui_obj.loading && zitui_obj.list.length==0" :end="!zitui_obj.loading && zitui_obj.list.length==zitui_obj.total && zitui_obj.list.length!=0"/>                    
                 </ul>
@@ -68,9 +68,9 @@
                     <li></li>
                     <li v-for="(item, index) in tatui_obj.list" :key="index">
                         <div>{{item.name}}</div>
-                        <div>{{item.dtname}}（0）</div>
-                        <div>{{item.itname}}（0）</div>
-                        <div>0</div>
+                        <div>{{item.dtname}}{{item.dtSubsidies ? '('+item.dtSubsidies+')' : ''}}</div>
+                        <div>{{item.itname ? item.itname : '无'}}{{item.itSubsidies ? '('+item.itSubsidies+')' : ''}}</div>
+                        <div>{{item.subsidies}}</div>
                     </li>
                     <loading :loadingtype="tatui_obj.loading" :nodata="!tatui_obj.loading && tatui_obj.list.length==0" :end="!tatui_obj.loading && tatui_obj.list.length==tatui_obj.total && tatui_obj.list.length!=0"/>
                 </ul>
@@ -89,7 +89,10 @@
                     <ul class="money">
                         <li>提现金额： </li>
                         <li>
-                            <span>￥{{areaManager_obj.sutotal}}</span>
+                            <span>￥
+                                <!-- {{areaManager_obj.sutotal}} -->
+                                 <input type="text" v-model="amount" @input="amount_change()"/>
+                            </span>
                             <span>费率：4%</span>
                         </li>
                     </ul>
@@ -114,11 +117,11 @@
         <div class="payment" v-show="payment">
             <div class="mask"></div>
             <div class="payment_1">
-                <div class="forget">忘记密码？</div>
+                <div class="forget" @click="PaymentPassword()">忘记密码？</div>
                 <div class="close_1" @click="change_payment(false)"><i class="mui-icon mui-icon-closeempty"></i></div>
                 <div class="title">支付密码</div>
                 <div class="input_box">
-                    <input type="number" pattern="\d*">
+                    <input type="tel" id="accout_password"  maxlength="6" v-model="accout_password" @input="passwad_change()" pattern="\d*">
                     <ul>
                         <li></li>
                         <li></li>
@@ -128,13 +131,29 @@
                         <li></li>
                     </ul>
                 </div>
-                <button class="btn_2">确定</button>
+                <button @click="Put_forward()" class="btn_2">确定</button>
             </div>
         </div>
+
+        <form class="input_name" @submit.prevent="Submission()" :class="{'active':input_name_box}">
+            <div class="mask" @click="clese_1()"></div>
+            <ul class="">
+                <li>该手机号对应多个账号，请输入真实姓名。</li>
+                <li>
+                    <input type="text" v-model="name" required placeholder="请输入真实姓名">
+                </li>
+                <li>
+                    <button type="submit">确定</button>
+                </li>
+            </ul>
+        </form>
+
+
     </div>
 </template>
 
 <script>
+import {openloading} from "@/assets/js/currency"
 import loading from "@/components/loading.vue";
 export default {
     name: "",
@@ -177,13 +196,15 @@ export default {
             Account_obj: {}, //支付账号
             areaManager_obj:{},     //代理商信息
             userInfo:{},        //用户信息
-            areaList: [], //代理的地区,
+            areaList: [],       //代理的地区,
+            amount:0,           //提现金额
+            accout_password:'', //支付密码
             zitui_obj:{
                 page_index:0,
                 page_size:20,
                 list:[],
                 loading:true,
-                type:0,      //自推
+                type:0,         //自推
                 total:0         //人数
             },
             tatui_obj:{
@@ -193,11 +214,22 @@ export default {
                 loading:true,
                 type:1,      //他推
                 total:0      //人数
-            }
+            },
+            CanBePresented:true,     //可以提现
+            input_name_box:false,
+            name:'',        //收钱放名字
+            
         };
     },
     computed: {},
     methods: {
+        amount_change(){
+            if(!this.areaManager_obj.sutotal){
+                this.amount=0
+            }else if(this.amount>this.areaManager_obj.sutotal){
+                this.amount=this.areaManager_obj.sutotal
+            }
+        },
         BusinessAgreement(){
             this.$router.push('/BusinessAgreement?name='+this.areaManager_obj.name);
         },
@@ -230,11 +262,105 @@ export default {
         Account() {
             this.$router.push("/Account");
         },
+        //忘记密码
+        PaymentPassword(){
+            this.$router.push("/PaymentPassword");
+        },
+         //支付密码
+        passwad_change() {
+            if (this.accout_password.length > 6) {
+                this.accout_password = this.accout_password.substring(1);
+            }
+        },
+        //关闭输入名字
+        clese_1(){
+            this.input_name_box=false;
+        },
+        //再次提交
+        Submission(){
+            this.Put_forward();
+        },
+        //提现
+        Put_forward(){
+            var password_test = /^\d{6}$/; //6位数字验证
+            if (!password_test.test(this.accout_password)) {
+                mui.toast("支付密码为6位数字。", { duration: 2000,type: "div"});
+                return;
+            }
+            this.payment=false;
+            this.CanBePresented=false;
+            this.input_name_box=false;            
+            openloading(true)
+            var obj = {
+                account: this.Account_obj.account, //到账账号
+                amount: this.amount, //金额
+                userid: this.userInfo.username,
+                payPassword:this.accout_password,
+                id:this.userInfo.id,
+                name:this.name,
+            };
+            this.$axios({
+                method: "get",
+                url: "/api-u/users/alipay/agentmanager",
+                // data: this.$qs.stringify(obj),
+                // data:obj,
+                params:obj
+            }).then(x => {
+                console.log(x);
+                if(x.data.code==200){
+                    this.areaManager();
+                    if(!x.data.data){
+                        mui.alert('提现已提交，请注意查收。','提示','好的',function(){},'div')
+                    }else{
+                        mui.alert('已提交至审核，请注意查收。','提示','好的',function(){},'div')
+                    }
+                }else if(x.data.code=="PAYEE_USER_INFO_ERROR"){
+                    mui.toast('名字输入有误。',{duration: 2000,type: "div"});
+                    this.input_name_box=true;
+                }else if(x.data.code=="PAYEE_ACC_OCUPIED"){
+                    this.input_name_box=true;
+                }else if(x.data.code){
+                    mui.toast(x.data.message , { duration: 2000,type: "div"});
+                }else{
+                    mui.toast('系统错误，请稍后再试。' , { duration: 2000,type: "div"});
+                }
+                this.CanBePresented=true;
+                openloading(false)
+            }).catch(error => {
+                console.log(error);
+                mui.toast("系统错误，请稍后再试。", { duration: 2000,type: "div"});
+                openloading(false)
+                this.CanBePresented=true;
+                this.input_name_box=false;
+            });
+        },
         //打开关闭支付密码输入窗口
         change_payment(x) {
-            mui.toast("开发中！", { duration: 2000, type: "div" });
-            return
-            this.payment = x;
+            if(x){
+                if(!this.radio_type_2){
+                     mui.toast("请同意业务代理合作协议", {duration: 2000,type: "div"});
+                    return;
+                }else if(!this.Account_obj.account){
+                    mui.toast("请设置收款账号", {duration: 2000,type: "div"});
+                    return;
+                }else if(this.amount==0 && x){
+                    mui.toast("无提现金额", {duration: 2000,type: "div"});
+                    return;
+                }else if(this.amount%1!=0 && x){
+                    mui.toast("请输入整数！", {duration: 2000,type: "div"});
+                    return;
+                }else if(!this.CanBePresented){
+                     mui.toast("提现正在处理中，请稍等。", {duration: 2000,type: "div"});
+                    return;
+                }
+                this.payment = x;
+                this.accout_password='';
+                setTimeout(function(){
+                    document.getElementById('accout_password').focus();
+                },500)
+            }else{
+                this.payment = x;
+            }
         },
         //获取代理商信息
         areaManager(){
@@ -245,6 +371,7 @@ export default {
                 console.log('获取代理商信息',x)
                 if(x.data.data!='' && x.data.data!=null && x.data.data!='null'){
                     this.areaManager_obj=x.data.data;
+                    this.amount=this.areaManager_obj.sutotal;
                     this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
                 }else{
                     // this.isareaManager=true;
@@ -300,9 +427,7 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        if (this.$store.state.isweixin) {
-            document.getElementsByTagName("title")[0].innerText = "区域代理商";
-        }
+        document.getElementsByTagName("title")[0].innerText = "区域代理商";
         if(localStorage.userInfo && localStorage.userInfo!=''){
             this.userInfo=JSON.parse(localStorage.userInfo)
         }
@@ -500,6 +625,14 @@ export default {
             > span:nth-child(1) {
                 font-size: 27px;
                 line-height: initial;
+                display: flex;
+                input{
+                    padding: 0px;
+                    margin: 0px;
+                    border: none;
+                    font-size: 27px;
+                    border-bottom: 1px solid #cccccc;
+                }
             }
             > span:nth-child(2) {
                 font-size: 12px;
@@ -507,6 +640,8 @@ export default {
                 border-left: 1px solid rgba(80, 80, 80, 1);
                 height: 14px;
                 line-height: 14px;
+                white-space: nowrap;
+                margin: 0px 0px 0px 15px;
             }
         }
     }
@@ -541,6 +676,63 @@ export default {
     }
 }
 
+
+#RegionalAgent .input_name.active{
+    display: flex;
+}   
+#RegionalAgent .input_name{
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    .mask{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    ul{
+        background: #ffffff;
+        position: relative;
+        z-index: 1;
+        width: 2.98rem;
+        >li:nth-child(1){
+            padding: 0.13rem;
+            color: rgba(80, 80, 80, 1);
+        	font-size: 0.12rem;
+            text-align: center;
+        }
+        >li:nth-child(2){
+            padding: 0px 0.3rem;
+            height: 0.36rem;
+            input{
+                text-align: center;
+                background: rgba(166, 166, 166, 1);
+                margin: 0px;
+                padding: 0px;
+                height: 100%;
+                font-size: 0.14rem;
+            }
+        }
+        >li:nth-child(3){
+            padding: 0.15rem;
+            text-align: center;
+            button{
+                width: 1.23rem;
+            	height: 0.26rem;
+                color: rgba(255, 255, 255, 1);
+            	background-color: rgba(54, 140, 89, 1);
+                border-radius: 0.26rem;
+                padding: 0px;
+                border: none;
+            }
+        }
+    }
+}
+
+
 #RegionalAgent .payment {
     position: fixed;
     width: 100%;
@@ -570,6 +762,7 @@ export default {
             font-size: 10px;
             top: 10px;
             left: 24px;
+            z-index: 1;
         }
         .close_1 {
             position: absolute;
@@ -599,8 +792,13 @@ export default {
                 padding: 0px;
                 margin: 0px;
                 height: 100%;
-                letter-spacing: 30px;
+                letter-spacing: 31px;
                 padding: 0px 0px 0px 15px;
+                position: relative;
+                z-index: 1;
+                border: none;
+                background: none;
+                width: 130%;
             }
             > ul {
                 position: absolute;
@@ -609,10 +807,22 @@ export default {
                 width: 100%;
                 height: 100%;
                 display: flex;
+                border-right: 1px solid #cccccc;
                 li {
                     border-left: 1px solid #cccccc;
+                    border-top: 1px solid #cccccc;
+                    border-bottom: 1px solid #cccccc;
                     width: calc(100% / 6);
                 }
+            }
+            .subsidy {
+                position: absolute;
+                background: #ffffff;
+                width: 26px;
+                height: 100%;
+                top: 0px;
+                right: -26px;
+                z-index: 2;
             }
         }
         .btn_2 {
