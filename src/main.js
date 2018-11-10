@@ -18,6 +18,7 @@ axios.interceptors.response.use(
         return response;
     },
     function (error) {
+        console.log(error)
         if (error.response) {
             return error.response;
         }
@@ -46,7 +47,8 @@ router.beforeEach((to, from, next) => {
     if (!loginDate || loginDate == null || loginDate == undefined) {
         if (baimingdan.indexOf(toPath) == -1) {
             console.log("没有登录准备跳转至登录");
-            next({ path: "/login" });
+            // next({ path: "/login" });
+            next();
         } else {
             console.log("白名单");
             next();

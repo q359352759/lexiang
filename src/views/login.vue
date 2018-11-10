@@ -1,6 +1,6 @@
 <template>
     <div id="login">
-        <header class="mui-bar mui-bar-nav" v-show="!this.$store.state.isweixin">
+        <header class="mui-bar mui-bar-nav" >
             <!-- <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a> -->
             <h1 class="mui-title">登录</h1>
         </header>
@@ -31,23 +31,23 @@
                 <li>忘记密码？</li>
                 <li @click="register()">立即注册></li>
             </ul>
-
         </div>
 
-        <circularNav />
     </div>
 </template>
 
 <script>
 import {dateFtt,openloading} from '@/assets/js/currency'
-import circularNav from "@/components/circularNav.vue";
 export default {
     name: "login",
     components: {
-        circularNav
+    },
+    filters:{
+        
     },
     data() {
         return {
+            phone:'15123456789',
             username: "",
             password: ""
         };
@@ -127,9 +127,7 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        if (this.$store.state.isweixin) {
-            document.getElementsByTagName("title")[0].innerText = "登录";
-        }
+        
         
         // console.group('------mounted 挂载结束状态------');
     },

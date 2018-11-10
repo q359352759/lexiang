@@ -13,6 +13,8 @@
         <transition :name="transitionName">
             <router-view v-if="!$route.meta.keepAlive"></router-view>
         </transition>
+        
+        <router-view name="circularNav"></router-view>
     </div>
 </template>
 
@@ -36,7 +38,7 @@ export default {
             var weixin = localStorage.weixin;
             if (!weixin || weixin == null || weixin == undefined) {
                 console.log('没有微信信息')
-                location.href = "getopenid.html?url=" + path;
+                // location.href = "getopenid.html?url=" + path;
             } else {
                 console.log("已有微信信息");
                 //检测是否登录
@@ -61,7 +63,7 @@ export default {
         if (!loginDate || loginDate == null || loginDate == undefined) {
             if (baimingdan.indexOf(path) == -1) {
                 console.log("没有登录准备跳转至登录");
-                this.$router.push("/login");
+                // this.$router.push("/login");
             }
             return;
         }
@@ -94,14 +96,17 @@ export default {
             "onVoiceRecordEnd", //监听录音自动停止接口
             "playVoice", //播放语音接口
             "pauseVoice", //暂停播放接口
-            "chooseWXPay" //微信支付
+            "chooseWXPay", //微信支付
+            // "getLocation",  //获取地理位置接口
+            "openLocation", //使用微信内置地图查看位置接口
         ];
 
         // 获取js签名
         this.$axios({
             method: "post",
             // url: '/api-v/pay/getSandboxSignKey',
-            url: "http://m.lxad.vip/test/jssdk/jssdk.php"
+            // url: "http://m.lxad.vip/test/jssdk/jssdk.php"
+            url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
         })
             .then(x => {
                 console.log("jssdk签名", x);
@@ -162,6 +167,20 @@ export default {
 
 
 <style lang="scss">
+@import "@/assets/css/config.scss";
+
+.mui-bar{
+    background-color: $header_background;
+    a{
+        color: #ffffff;
+    }
+}
+.mui-title {
+    color: #ffffff;
+}
+
+
+
 html,
 body {
     height: 100%;

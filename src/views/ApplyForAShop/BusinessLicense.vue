@@ -35,7 +35,7 @@
                 </div>
             </div>
         </div>
-        <div class="btn_1">确定</div>
+        <div class="btn_1" @click="Sure()">确定</div>
 
 
         <div class="Cropper_box" v-show="Cropper_show">
@@ -96,6 +96,15 @@ export default {
         }
     },
     methods:{
+        //确定
+        Sure(){
+            if(!this.LicenseImge){
+                mui.toast('请选择营业执照！', {duration: 2000,type: "div"});
+                return;
+            }
+            this.$store.state.apply_for_a_shop.shopType=this.shopType;
+            history.back();
+        },
         //选择经营类型
         SelectionLicense(){
             this.shopTypePicker.show(x=>{
@@ -150,7 +159,7 @@ export default {
         var shopType=[
             {
                 value:'1',
-                text:'个人经营'
+                text:'个体经营'
             },{
                 value:'2',
                 text:'公司经营'

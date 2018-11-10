@@ -2,7 +2,7 @@
     <div id="AlreadyRealName">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{this.$store.state.isweixin ? "" : '实名认证'}}</h1>
+            <h1 class="mui-title">实名认证</h1>
         </header>
         <div class="mui-content">
             <div class="box_1">已认证</div>
@@ -13,7 +13,7 @@
                 </li>
                 <li>
                     <div>性别</div>
-                    <div>{{Authentication.sex}}</div>
+                    <div>{{Authentication.sex==0 ? '男' :'女'}}</div>
                 </li>
                 <li>
                     <div>名族</div>
@@ -38,7 +38,7 @@
                 <li>
                     <div>有效期</div>
                     <div>
-                        {{Authentication.Invalid}}
+                        {{Authentication.validity}}
                     </div>
                 </li>
             </ul>
@@ -47,13 +47,13 @@
                 <li>
                     <div>身份证正面：</div>
                     <div class="img_box">
-                        <img src="image/5.jpg" alt="" srcset="">
+                        <img :src="Authentication.reverseImg" alt="" srcset="">
                     </div>
                 </li>
                 <li>
                     <div>身份证反面：</div>
                     <div class="img_box">
-                        <img src="image/5.jpg" alt="" srcset="">
+                        <img :src="Authentication.frontImg" alt="" srcset="">
                     </div>
                 </li>
             </ul>
@@ -85,9 +85,6 @@ export default {
         };
     },
     mounted() {
-        if (this.$store.state.isweixin) {
-            document.getElementsByTagName("title")[0].innerText = "实名认证";
-        }
 
         this.$axios({
             method: "get",
@@ -167,6 +164,7 @@ export default {
         > div:nth-child(2) {
             width: 1.9rem;
             height: 1.17rem;
+            background: #ffffff;
             img {
                 width: 100%;
                 height: 100%;

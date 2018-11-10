@@ -2,6 +2,9 @@
 http://122.114.123.20:1779/login
 gcdian gcdian2488
 
+百度地图
+hGVFfKSy2aTqvO4iR3B2ogiu
+
 
 localStorage.loginDate          //登录的信息    
     {"access_token":"...","token_type":"bearer","refresh_token":"...","expires_in":28799,"scope":"app"}

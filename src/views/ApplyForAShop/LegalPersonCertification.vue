@@ -1,11 +1,21 @@
 <template>
-    <div id="RealName">
+    <div id="LegalPersonCertification">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">实名认证</h1>
+            <h1 class="mui-title">法人认证</h1>
         </header>
 
         <div class="mui-content">
+            <div>
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell" @click="select_shop_type()">
+                        <a class="mui-navigate-right">
+                            使用 <span>马云</span>的实名认证
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
 
             <ul class="box_1" v-show="!Uncertified">
                 <li class="zhengmian" @click="zhengmian(true)">
@@ -111,7 +121,7 @@
 import {openloading} from "@/assets/js/currency"
 import { VueCropper } from "vue-cropper";
 export default {
-    name: "RealName",
+    name: "LegalPersonCertification",
     components: {
         VueCropper
     },
@@ -321,9 +331,7 @@ export default {
                 idNumber: this.Positive_obj.idNumber, //身份证号
                 issueArea: this.The_other_side.issueArea, //签证地
                 frontImg: this.zhengmian_img, //正面照
-                reverseImg: this.fanmian_img, //背面照
-                sex:this.Positive_obj.sex=='男' ? 0 : 1,    //性别
-                validity:this.The_other_side.Invalid         //有效期
+                reverseImg: this.fanmian_img //背面照
             };
             this.$axios({
                 method: "post",
@@ -401,30 +409,30 @@ export default {
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
-#RealName #zhengmianInput {
+#LegalPersonCertification #zhengmianInput {
     display: none;
 }
-#RealName {
+#LegalPersonCertification {
     height: 100%;
     .mui-content {
         height: 100%;
         // background:#ffffff;
     }
 }
-#RealName .mui-bar {
+#LegalPersonCertification .mui-bar {
     background: $header_background;
     a {
         color: #ffffff;
     }
 }
-#RealName .mui-title {
+#LegalPersonCertification .mui-title {
     color: #ffffff;
 }
-#RealName .swiper-pagination-bullet-active {
+#LegalPersonCertification .swiper-pagination-bullet-active {
     background: $header_background;
 }
 
-#RealName .box_1 {
+#LegalPersonCertification .box_1 {
     padding: 1px 10px;
     li {
         display: flex;
@@ -484,7 +492,7 @@ export default {
     }
 }
 
-#RealName .loading {
+#LegalPersonCertification .loading {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -505,11 +513,11 @@ export default {
         animation: rotate 3s linear infinite;
     }
 }
-#RealName .loading_1 {
+#LegalPersonCertification .loading_1 {
     position: fixed;
 }
 
-#RealName .box_2 {
+#LegalPersonCertification .box_2 {
     padding: 10px;
     li {
         display: flex;
@@ -529,7 +537,7 @@ export default {
         }
     }
 }
-#RealName .btn_1 {
+#LegalPersonCertification .btn_1 {
     width: 1.8rem;
     height: 0.35rem;
     display: block;
@@ -539,7 +547,7 @@ export default {
     color: #ffffff;
     border: none;
 }
-#RealName .Cropper_box {
+#LegalPersonCertification .Cropper_box {
     position: fixed;
     top: 0px;
     left: 0px;
@@ -578,10 +586,10 @@ export default {
     }
 }
 
-#RealName .Cropper_box.zhengmian .cropper-face {
-    background-image: url(../assets/image/zhengmian.png);
+#LegalPersonCertification .Cropper_box.zhengmian .cropper-face {
+    background-image: url(../../assets/image/zhengmian.png);
 }
-#RealName .Cropper_box.fanmian .cropper-face {
-    background-image: url(../assets/image/fanmian.png);
+#LegalPersonCertification .Cropper_box.fanmian .cropper-face {
+    background-image: url(../../assets/image/fanmian.png);
 }
 </style>

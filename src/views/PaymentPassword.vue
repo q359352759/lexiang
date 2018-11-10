@@ -2,7 +2,7 @@
     <div id="PaymentPassword">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '修改支付密码'}}</h1>
+            <h1 class="mui-title">修改支付密码</h1>
         </header>
         <div class="mui-content">
             <form class="box_1" @submit.prevent="from()">
@@ -29,18 +29,14 @@
                 <button class="btn_1" type="submit">提交</button>
             </form>
         </div>
-        <circularNav />
     </div>
 </template>
 
 <script>
 import { openloading } from "@/assets/js/currency";
-
-import circularNav from "@/components/circularNav.vue";
 export default {
     name: "PaymentPassword",
     components: {
-        circularNav
     },
     data() {
         return {
@@ -157,10 +153,6 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        if (this.$store.state.isweixin) {
-            document.getElementsByTagName("title")[0].innerText =
-                "修改支付密码";
-        }
         if (
             localStorage.userInfo &&
             localStorage.userInfo != "" &&

@@ -2,7 +2,7 @@
     <div id="market">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '业务市场'}}</h1>
+            <h1 class="mui-title">业务市场</h1>
         </header>
         <div class="mui-content">
 
@@ -113,9 +113,6 @@ export default {
   mounted() {
     this.img_list = ["5.jpg", "6.jpg", "7.jpg"];
 
-    if (this.$store.state.isweixin) {
-      document.getElementsByTagName("title")[0].innerText = "业务市场";
-    }
     // console.group('------mounted 挂载结束状态------');
   },
   beforeUpdate: function() {

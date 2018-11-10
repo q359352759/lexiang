@@ -2,7 +2,7 @@
     <div id="register">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '注册'}}</h1>
+            <h1 class="mui-title">注册</h1>
         </header>
         <div class="mui-content">
             <form class="box_1" @submit.prevent="submit()">
@@ -36,17 +36,14 @@
                 <button class="btn_1" type="submit">立即注册</button>
             </form>
         </div>
-        <circularNav />
     </div>
 </template>
 
 <script>
 import {openloading} from '@/assets/js/currency'
-import circularNav from "@/components/circularNav.vue";
 export default {
     name: "register",
     components: {
-        circularNav
     },
     data() {
         return {
@@ -83,7 +80,8 @@ export default {
             })
                 .then(x => {
                     console.log(x);
-                    this.key = x.data.key;
+                    localStorage.keys=x.data.key
+                    // this.key = x.data.key;
                 })
                 .catch(err => {
                     console.log(err);
@@ -118,8 +116,8 @@ export default {
             //注册
             this.$axios({
                 method: "post",
-                // url:"/api-u/users-anon/register?phone=" +this.phone +"&key=" +this.key +"&code=" +this.code,
-                url:"/api-u/users-anon/register?phone=" +this.phone +"&code=" +this.code,
+                url:"/api-u/users-anon/register?phone=" +this.phone +"&key=" +localStorage.keys +"&code=" +this.code,
+                // url:"/api-u/users-anon/register?phone=" +this.phone +"&code=" +this.code,
                 // url:"/api-u/users-anon/register",
                 data: {
                     username: this.phone,
@@ -154,9 +152,6 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        if (this.$store.state.isweixin) {
-            // document.getElementsByTagName("title")[0].innerText = "注册";
-        }
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {

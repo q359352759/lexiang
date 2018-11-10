@@ -2,7 +2,7 @@
     <div id="BusinessDetails">
        <header class="mui-bar mui-bar-nav">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">{{this.$store.state.isweixin ? '' : '商家展示厅'}}</h1>
+			<h1 class="mui-title">商家展示厅</h1>
             <span class="header_1">
                 <i :class="{'active':isCollection}" @click="Collection()" class="icon iconfont icon-shoucang1"></i>
                 <i class="icon iconfont icon-fenxiang"></i>
@@ -157,7 +157,6 @@ export default {
     },
     mounted: function() {
         var this_1=this;
-        document.getElementsByTagName("title")[0].innerText = "商家展示厅";
 
         this.img_list = ["5.jpg", "6.jpg", "7.jpg"];
         this.slider= mui('.mui-slider_1').slider({

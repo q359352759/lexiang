@@ -2,7 +2,7 @@
     <div id="LoginPassword">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '修改登录密码'}}</h1>
+            <h1 class="mui-title">修改登录密码</h1>
         </header>
         <div class="mui-content">
             <form class="box_1">
@@ -29,16 +29,13 @@
                 <button class="btn_1" type="submit">立即注册</button>
             </form>
         </div>
-        <circularNav />
     </div>
 </template>
 
 <script>
-import circularNav from "@/components/circularNav.vue";
 export default {
   name: "LoginPassword",
   components: {
-    circularNav
   },
   data() {
     return {};
@@ -54,9 +51,7 @@ export default {
     // console.group('------beforeMount挂载前状态------');
   },
   mounted: function() {
-    if (this.$store.state.isweixin) {
-      document.getElementsByTagName("title")[0].innerText = "修改登录密码";
-    }
+    
     // console.group('------mounted 挂载结束状态------');
   },
   beforeUpdate: function() {

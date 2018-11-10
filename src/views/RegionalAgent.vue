@@ -2,7 +2,7 @@
     <div id="RegionalAgent">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '区域代理商'}}</h1>
+            <h1 class="mui-title">区域代理商</h1>
         </header>
 
         <div class="mui-content">
@@ -14,26 +14,49 @@
                     <h1>{{areaManager_obj.name}}</h1>
                     <h2> {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? '/'+areaList[1].name : ''}}{{areaList[2] ? '/'+areaList[2].name : ''}}</h2>
                 </li>
+                <li class="shangjia">
+                    <div>
+                        <i class="icon iconfont icon-dianpu1"></i>
+                    </div>
+                    <span>商家管理</span>
+                </li>
             </ul>
             <ul class="box_2">
-                <li @click="change_type(1)" :class="{'active':type_1==1}">
-                    <h1>自推</h1>
-                    <h2>{{zitui_obj.total}}人</h2>
+                <li :class="{'active':type_1==1}" @click="change_type(1)">
+                    <div class="img_box">
+                        <i class="icon iconfont icon-tuandui"></i>
+                    </div>
+                    <div class="title">团队补贴</div>
+                    <div class="money">{{areaManager_obj.subsidies}}</div>
                 </li>
-                <li @click="change_type(2)" :class="{'active':type_1==2}">
-                    <h1>他推</h1>
-                    <h2>{{tatui_obj.total}}人</h2>
+                <li :class="{'active':type_1==2}" @click="change_type(2)">
+                    <div class="img_box">
+                        <i class="icon iconfont icon-kejiziyuanshujufuwupingtai"></i>
+                    </div>
+                    <div class="title">平台分佣</div>
+                    <div class="money">0</div>
                 </li>
-                <li @click="change_type(3)" :class="{'active':type_1==3}">
-                    <h1>提现</h1>
-                    <h2>{{areaManager_obj.sutotal}}元</h2>
+                <li :class="{'active':type_1==3}" @click="change_type(3)">
+                    <div class="img_box">
+                        <i class="icon iconfont icon-jinrudianpu"></i>
+                    </div>
+                    <div class="title">店铺分佣</div>
+                    <div class="money">0</div>
+                </li>
+                <li :class="{'active':type_1==4}" @click="change_type(4)">
+                    <div class="img_box">
+                        <i class="icon iconfont icon-ketixianjine"></i>
+                    </div>
+                    <div class="title">可提现</div>
+                    <div class="money">0</div>
                 </li>
             </ul>
-            <!-- 自推 -->
+            <!-- 团队补贴-->
             <div class="content_1" v-show="type_1==1">
                 <ul class="box_3">
-                    <li>
+                    <li class="title">
                         <div>被推荐人</div>
+                        <div>类型</div>
                         <div>直推</div>
                         <div>间推</div>
                         <div>收益</div>
@@ -43,6 +66,7 @@
                     <li></li>
                     <li v-for="(item, index) in zitui_obj.list" :key="index">
                         <div>{{item.name}}</div>
+                        <div>{{item.type==0 ? '自推' : '他推'}}</div>
                         <div>{{item.dtname ? item.dtname : '无'}}{{item.dtSubsidies ? '('+item.dtSubsidies+')' : ''}}</div>
                         <div>{{item.itname ? item.itname : '无'}}{{item.itSubsidies ? '('+item.itSubsidies+')' : ''}}</div>
                         <div>{{item.subsidies}}</div>
@@ -50,52 +74,155 @@
                     <loading :loadingtype="zitui_obj.loading" :nodata="!zitui_obj.loading && zitui_obj.list.length==0" :end="!zitui_obj.loading && zitui_obj.list.length==zitui_obj.total && zitui_obj.list.length!=0"/>                    
                 </ul>
                 <ul class="footer_1">
-                    <li>总人数：{{zitui_obj.total}}</li>
-                    <li>总收益：{{areaManager_obj.sutotal}}元</li>
+                    <li>代理人：{{zitui_obj.total}}</li>
+                    <li>总收益：{{areaManager_obj.subsidies}}元</li>
                 </ul>
             </div>
-            <!-- 他推 -->
+            <!-- 平台分润 -->
             <div class="content_1" v-show="type_1==2">
-                <ul class="box_3">
-                    <li>
-                        <div>被推荐人</div>
-                        <div>直推</div>
-                        <div>间推</div>
-                        <div>收益</div>
+               <ul class="box_5">
+                    <li class="title">
+                        <div><div>客户</div></div>
+                        <div><div>订单</div></div>
+                        <div><div>时间</div></div>
+                        <div><div>代理人</div></div>
+                        <div><div>分润/元</div></div>
                     </li>
                 </ul>
-                <ul class="box_3 list"  @scroll="scroll($event,tatui_obj)">
+                <!-- <ul class="box_5 list">
                     <li></li>
-                    <li v-for="(item, index) in tatui_obj.list" :key="index">
-                        <div>{{item.name}}</div>
-                        <div>{{item.dtname}}{{item.dtSubsidies ? '('+item.dtSubsidies+')' : ''}}</div>
-                        <div>{{item.itname ? item.itname : '无'}}{{item.itSubsidies ? '('+item.itSubsidies+')' : ''}}</div>
-                        <div>{{item.subsidies}}</div>
+                    <li v-for="(item, index) in 5" :key="index">
+                        <div>
+                            <div>测试</div>
+                        </div>
+                        <div>
+                            <div>订单名</div>
+                        </div>
+                        <div>
+                            <div>2018.11.12</div>
+                            <div>17.20.30</div>
+                        </div>
+                        <div>
+                            <div>李四</div>
+                        </div>
+                        <div>
+                            <div>30</div>
+                        </div>
                     </li>
-                    <loading :loadingtype="tatui_obj.loading" :nodata="!tatui_obj.loading && tatui_obj.list.length==0" :end="!tatui_obj.loading && tatui_obj.list.length==tatui_obj.total && tatui_obj.list.length!=0"/>
+                    <loading :loadingtype="zitui_obj.loading" :nodata="!zitui_obj.loading && zitui_obj.list.length==0" :end="!zitui_obj.loading && zitui_obj.list.length==zitui_obj.total && zitui_obj.list.length!=0"/>                    
                 </ul>
                 <ul class="footer_1">
-                    <li>总人数：{{zitui_obj.total}}</li>
-                    <li>总收益：{{areaManager_obj.sutotal}}元</li>
-                </ul>
+                    <li>订单数：0</li>
+                    <li>分润：0元</li>
+                </ul> -->
+                <div class="kaifazhong"><div class="imb_box"><img src="image/kaifazhong.png" alt=""></div><div class="text">该功能正在研发中</div></div>
+
             </div>
 
-            <div class="content_2" v-show="type_1==3">
+             <!-- 店铺分润 -->
+            <div class="content_1" v-show="type_1==3">
+               <ul class="box_6">
+                    <li class="title">
+                        <div><div>客户</div></div>
+                        <div><div>商家</div></div>
+                        <div><div>订单</div></div>
+                        <div><div>时间</div></div>
+                        <div><div>代理人</div></div>
+                        <div><div>分润/元</div></div>
+                    </li>
+                </ul>
+                <!-- <ul class="box_6 list">
+                    <li></li>
+                    <li v-for="(item, index) in 6" :key="index">
+                        <div>
+                            <div>张三</div>
+                        </div>
+                        <div>
+                            <div>测试商家</div>
+                        </div>
+                        <div>
+                            <div>订单名</div>
+                        </div>
+                        <div>
+                            <div>2018.11.12</div>
+                            <div>17.20.30</div>
+                        </div>
+                        <div>
+                            <div>李四</div>
+                        </div>
+                        <div>
+                            <div>30</div>
+                        </div>
+                    </li>
+                    <loading :loadingtype="zitui_obj.loading" :nodata="!zitui_obj.loading && zitui_obj.list.length==0" :end="!zitui_obj.loading && zitui_obj.list.length==zitui_obj.total && zitui_obj.list.length!=0"/>                    
+                </ul>
+                <ul class="footer_1">
+                    <li>订单数：0</li>
+                    <li>分润：0元</li>
+                </ul> -->
+                <div class="kaifazhong"><div class="imb_box"><img src="image/kaifazhong.png" alt=""></div><div class="text">该功能正在研发中</div></div>
+
+            </div>
+
+            <div class="content_2" v-show="type_1==4">
                 <div class="box_4">
+                    <ul class="fenlei">
+                        <li>
+                            <div>市场补贴</div>
+                            <span>1000</span>
+                        </li>
+                        <li>
+                            <div>平台分润</div>
+                            <span>2000</span>
+                        </li>
+                        <li>
+                            <div>店铺分润</div>
+                            <span>2500</span>
+                        </li>
+                    </ul>
+                    <ul class="list_1">
+                        <li>
+                            <div>区域代理费：100000元</div>
+                            <div class="mui-text-center">《区域代理合同》</div>
+                        </li>
+                        <li>
+                            <div>已缴纳：58000元</div>
+                            <div class="mui-text-center">《代理费缴纳说明》</div>
+                        </li>
+                    </ul>
                     <ul class="Collect_Money" @click="Account()">
                         <li>收款账户：{{Account_obj.account}}</li>
                         <li><i class="mui-icon mui-icon-arrowright"></i></li>
                     </ul>
-                    <ul class="money">
+                    <ul class="money_1">
+                        <li>
+                            <div>
+                                本次提现金额：<span class="Quota">￥{{amount}}</span>
+                            </div>
+                            <div class="rate">
+                                费率：4%
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                            扣除代理费：￥3012.4
+                            </div>
+                        </li>
+                        <li>
+                            <div>
+                            实际到账：￥4518.6
+                            </div>
+                        </li>
+                    </ul>
+                    <!-- <ul class="money">
                         <li>提现金额： </li>
                         <li>
                             <span>￥
-                                <!-- {{areaManager_obj.sutotal}} -->
-                                 <input type="text" v-model="amount" @input="amount_change()"/>
+                                <input type="text" v-model="amount" @input="amount_change()"/>
                             </span>
                             <span>费率：4%</span>
                         </li>
-                    </ul>
+                    </ul> -->
                     <div class="Agreement">
                         <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_type_2}">
                             <i class="icon iconfont icon-xuanze"></i>
@@ -103,7 +230,7 @@
                         <span @click="change_radio_2()">我也阅读并同意</span>
                         <span @click="BusinessAgreement()">《业务代理合作协议》</span>
                         <span>
-                            <span @click="go('EmbodyRecord')">
+                            <span @click="go('/EmbodyRecord?type=1')">
                                 提现记录
                             </span>
                         </span>
@@ -166,31 +293,9 @@ export default {
                 1,
                 2,
                 3,
-                4,
-                5,
-                1,
-                2,
-                3,
-                4,
-                51,
-                2,
-                3,
-                4,
-                51,
-                2,
-                3,
-                4,
-                51,
-                2,
-                3,
-                4,
-                51,
-                2,
-                3,
-                4,
-                5
+                4
             ],
-            type_1: 1, //类型 1自推 2他推 3体现
+            type_1: 4, //类型 1团队补贴 2平台分佣 3店铺分佣 4可提现
             radio_type_2: true,
             payment: false,
             Account_obj: {}, //支付账号
@@ -204,16 +309,8 @@ export default {
                 page_size:20,
                 list:[],
                 loading:true,
-                type:0,         //自推
+                type:null,         //0自推1他推
                 total:0         //人数
-            },
-            tatui_obj:{
-                page_index:0,
-                page_size:20,
-                list:[],
-                loading:true,
-                type:1,      //他推
-                total:0      //人数
             },
             CanBePresented:true,     //可以提现
             input_name_box:false,
@@ -309,15 +406,9 @@ export default {
                 console.log(x);
                 if(x.data.code==200){
                     this.areaManager();
-                    if(!x.data.data){
-                        mui.alert('提现已提交，请注意查收。','提示','好的',function(){},'div')
-                    }else{
-                        mui.alert('已提交至审核，请注意查收。','提示','好的',function(){},'div')
-                    }
-                }else if(x.data.code=="PAYEE_USER_INFO_ERROR"){
-                    mui.toast('名字输入有误。',{duration: 2000,type: "div"});
-                    this.input_name_box=true;
-                }else if(x.data.code=="PAYEE_ACC_OCUPIED"){
+                    mui.alert(x.data.msg,'提示','好的',function(){},'div')
+                }else if(x.data.code=="PAYEE_USER_INFO_ERROR" || x.data.code=="PAYEE_ACC_OCUPIED"){
+                    mui.toast(x.data.msg,{duration: 2000,type: "div"});
                     this.input_name_box=true;
                 }else if(x.data.code){
                     mui.toast(x.data.message , { duration: 2000,type: "div"});
@@ -325,11 +416,11 @@ export default {
                     mui.toast('系统错误，请稍后再试。' , { duration: 2000,type: "div"});
                 }
                 this.CanBePresented=true;
-                openloading(false)
+                openloading(false);
             }).catch(error => {
                 console.log(error);
                 mui.toast("系统错误，请稍后再试。", { duration: 2000,type: "div"});
-                openloading(false)
+                openloading(false);
                 this.CanBePresented=true;
                 this.input_name_box=false;
             });
@@ -375,7 +466,6 @@ export default {
                     this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
                 }else{
                     // this.isareaManager=true;
-
                 }
             }).catch(error=>{
                 console.log('获取代理商信息错误',error);
@@ -427,33 +517,19 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        document.getElementsByTagName("title")[0].innerText = "区域代理商";
         if(localStorage.userInfo && localStorage.userInfo!=''){
             this.userInfo=JSON.parse(localStorage.userInfo)
         }
 
         //获取代理商信息
         this.areaManager();
-        //获取自推
+        //获取团队补贴
         this.subformanager(this.zitui_obj)
-        //获取他推
-        this.subformanager(this.tatui_obj)
         //获取支付账号
         this.findAccount();
-        // zitui_list:{
-        //         page_index:0,
-        //         page_size:50,
-        //         list:[],
-        //         loading:false,
+        
 
-        //     },
-        //     tatui_list:{
-        //         page_index:0,
-        //         page_size:50,
-        //         list:[],
-        //         loading:false,
-        //     }
-        // console.log(this.$store.getters.doneTodos)
+
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -513,6 +589,7 @@ export default {
         }
     }
     .text {
+        flex-grow: 1;
         line-height: initial;
         h1 {
             font-size: 0.14rem;
@@ -524,34 +601,68 @@ export default {
             font-weight: 100;
         }
     }
+    .shangjia{
+        flex-shrink: 0;
+        text-align: center;
+        i{
+            font-size: 20px;
+            color: #1894dc;
+        }
+        span{
+            font-size: 0.1rem;
+            color: #808080;
+        }
+    }
 }
 
 #RegionalAgent .box_2 {
     flex-shrink: 0;
-    margin: 5px 0px 5px;
-    min-height: 0.53rem;
-    background: #ffffff;
     display: flex;
-    text-align: center;
-    line-height: initial;
-    > li {
-        width: calc(100% / 3);
-        padding: 0.14rem 0px 7px;
-        h1 {
-            color: #505050;
-            font-size: 0.11rem;
-            font-weight: 100;
-        }
-        h2 {
-            color: #e33c64;
-            font-size: 0.11rem;
-            font-weight: 100;
+    margin: 0.05rem 0px 5px;
+    > li:nth-child(1) {
+        border: none;
+    }
+    li.active::after {
+        // background: #efeff4;
+        position: absolute;
+        width: 60%;
+        height: 2px;
+        left: 20%;
+        bottom: 0px;
+        content: "";
+        background: $header_background;
+    }
+    li {
+        width: 25%;
+        padding: 0.1rem 0px 0.08rem;
+        background: #ffffff;
+        text-align: center;
+        border-left: 1px solid #efeff4;
+        position: relative;
+        .img_box {
+            width: 0.37rem;
+            height: 0.37rem;
+            margin: 0px auto 3px;
+            background: $header_background;
+            border-radius: 100%;
+            color: #ffffff;
+            line-height: 0.35rem;
+            font-size: 20px;
         }
     }
-    > li.active {
-        background: #e5e5e5;
+    .title {
+        color: rgba(80, 80, 80, 1);
+        font-size: 0.11rem;
+        line-height: initial;
+        line-height: 0.16rem;
+    }
+    .money {
+        color: rgba(227, 60, 100, 1);
+        font-size: 0.11rem;
+        line-height: 0.16rem;
     }
 }
+
 
 #RegionalAgent .content_1 {
     flex-grow: 1;
@@ -572,11 +683,13 @@ export default {
         flex-shrink: 0;
     }
 }
+
 #RegionalAgent .box_3 {
     text-align: center;
     font-size: 0.13rem;
-    > li:nth-child(2n-1) {
-        background: #f0f0f0;
+    >li.title{
+        background: $header_background;
+        color: #ffffff;
     }
     > li:nth-child(2n) {
         background: #ffffff;
@@ -586,7 +699,7 @@ export default {
         border-bottom: 1px solid #d8d8d8;
         > div {
             padding: 0.1rem 0px;
-            width: 25%;
+            width: 20%;
             border-left: 1px solid #d8d8d8;
         }
         > div:nth-child(1) {
@@ -594,7 +707,116 @@ export default {
         }
     }
 }
+#RegionalAgent .box_5 {
+    text-align: center;
+    font-size: 0.13rem;
+    >li.title{
+        background: $header_background;
+        color: #ffffff;
+    }
+    > li:nth-child(2n) {
+        background: #ffffff;
+    }
+    > li {
+        display: flex;
+        border-bottom: 1px solid #d8d8d8;
+        > div {
+            min-height: 0.37rem;
+            width: 20%;
+            border-left: 1px solid #d8d8d8;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 3px 0px;
+            >div{
+                width: 100%;
+            }
+        }
+        > div:nth-child(1) {
+            border: none;
+        }
+    }
+}
+
+#RegionalAgent .box_6 {
+    text-align: center;
+    font-size: 0.13rem;
+    >li.title{
+        background: $header_background;
+        color: #ffffff;
+    }
+    > li:nth-child(2n) {
+        background: #ffffff;
+    }
+    > li {
+        display: flex;
+        border-bottom: 1px solid #d8d8d8;
+        > div {
+            min-height: 0.37rem;
+            width: calc(100% / 6);
+            border-left: 1px solid #d8d8d8;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            padding: 3px 0px;
+            >div{
+                width: 100%;
+            }
+        }
+        > div:nth-child(1) {
+            border: none;
+        }
+    }
+}
+
 #RegionalAgent .box_4 {
+    .fenlei{
+        display: flex;
+        text-align: center;
+        background: #ffffff;
+        margin: 0px 0px 5px 0px;
+        padding: 8px 0px;
+        font-size: 0.12rem;
+        color: #383838;
+        li{
+            width: calc(100% / 3);
+            position: relative;
+            div{
+                margin: 0px 0px 10px 0px;
+            }
+        }
+        li:nth-child(2)::after,
+        li:nth-child(3)::after{
+            position: absolute;
+            width: 1px;
+            height: 60%;
+            top: 20%;
+            left: 0px;
+            content: "";
+            background: #e5e5e5;
+        }
+    }
+    .list_1{
+        background: #ffffff;
+        margin: 5px 0px;
+        font-size: 0.12rem;
+        li{
+             padding: 0px 20px;
+            border-bottom: 1px solid #e5e5e5;
+            display: flex;
+            height: 0.37rem;
+            div{
+                width: 50%;
+                line-height: 0.37rem;
+            }
+            >div:nth-child(1){
+                color: #505050;
+            }
+            >div:nth-child(2){
+                color: #2a82e4;
+            }
+        }
+    }
     .Collect_Money {
         margin: 0px 0px 0px 0px;
         display: flex;
@@ -645,6 +867,27 @@ export default {
             }
         }
     }
+    .money_1{
+        background: #ffffff;
+        font-size: 0.12rem;
+        color: #505050;
+        li{
+            padding: 7px 20px;
+            display: flex;
+            align-items: flex-end;
+            >div:nth-child(1){
+                flex-grow: 1;
+            }
+            .rate{
+                border-left: 1px solid #e5e5e5;
+                padding: 0px 0px 0px 5px;
+            }
+        }
+        .Quota{
+            font-size: 21px;
+            font-weight: bold;
+        }
+    }
     .Agreement {
         display: flex;
         padding: 0px 20px;
@@ -687,6 +930,8 @@ export default {
     height: 100%;
     justify-content: center;
     align-items: center;
+    top: 0px;
+    left: 0px;
     .mask{
         position: absolute;
         width: 100%;
@@ -860,6 +1105,21 @@ export default {
     color: #ffffff;
     i {
         display: inline-block;
+    }
+}
+
+#RegionalAgent .kaifazhong {
+    margin: 0.8rem auto 0px;
+    .imb_box {
+        width: 1.28rem;
+        margin: 0px 0px 17px 0px;
+        img {
+            width: 100%;
+        }
+    }
+    .text {
+        color: #505050;
+        font-size: 0.14rem;
     }
 }
 </style>

@@ -104,21 +104,18 @@
 
             <button @click="ApplicationAgent()">申请成为代理人</button>
         </div>
-        <circularNav />
     </div>
 </template>
 
 <script>
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
-import circularNav from "@/components/circularNav.vue";
 
 // import Swiper from 'swiper';
 export default {
     name: "home",
     components: {
         // HelloWorld
-        circularNav
     },
     data() {
         return {
@@ -182,7 +179,6 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        document.getElementsByTagName("title")[0].innerText = "主页";
 
         this.img_list = ["5.jpg", "6.jpg", "7.jpg"];
         // var loginDate=localStorage.loginDate;

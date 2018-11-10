@@ -52,8 +52,21 @@ var vuex = new Vuex.Store({
             creationTime:'',    //开始时间
             endTime:'',         //结束时间
             shopType:'1'        //1个人经营 2公司经营
+        },
+        geographical_position:{
+            latitude:'',    // 纬度，浮点数，范围为90 ~ -90
+            longitude:'',    // 经度，浮点数，范围为180 ~ -180。
+            address:''
+        },
+        general_time:{  //通用时间
+            year:'',
+            month:'',
+            day:'',
+            end_year:'',
+            end_month:'',
+            end_day:'',
+            type:0,     //0按月 1表示按日
         }
-
     },
     getters: {
         doneTodos(state, getters) {
@@ -97,16 +110,18 @@ var vuex = new Vuex.Store({
         //获取代理人信息
         setagentUser(state) {
             // console.log(this.state.userInfo)
+            var userInfo=JSON.parse(localStorage.userInfo);
+
             axios({
                 method: "get",
-                url: "/api-u/agentUser/me?userid=" + this.state.userInfo.username
+                url: "/api-u/agentUser/me?userid=" + userInfo.username
             })
                 .then(x => {
                     console.log("获取用户代理人信息", x);
-                    if (x.data.code != 200) {
-                        state.agentUser = false;
-                    } else {
+                    if (x.data.code == 200) {
                         state.agentUser = x.data.data;
+                    } else {
+                        state.agentUser = false;                        
                     }
                 })
                 .catch(error => {
@@ -145,10 +160,10 @@ var vuex = new Vuex.Store({
         }
     },
     actions: {
-        // incrementAsync ({ commit }) {
-        //     //   commit('increment') // mutations中的方法
-        // }
-        // 调用 store.dispatch('increment')
+        actions_agentUser ({ dispatch,commit }) {        //获取代理人信息
+            commit('setagentUser');   // 等待 actionA 完成
+        }
+        // 调用 store.dispatch('actions_agentUser')
     },
     modules: {}
 });

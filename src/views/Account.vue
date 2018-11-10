@@ -68,15 +68,12 @@
             </form>
         </div>
 
-        <circularNav />
     </div>
 </template>
 
 <script>
-import circularNav from "@/components/circularNav.vue";
 export default {
     name: "",
-    components: { circularNav },
     data() {
         return {
             Popup: false, //添加支付宝弹出框

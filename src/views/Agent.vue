@@ -2,7 +2,7 @@
     <div id="Agent">
         <header class="mui-bar mui-bar-nav">
             <a @click="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '代理人'}}</h1>
+            <h1 class="mui-title">代理人</h1>
             <span v-if="isareaManager" @click="RegionalAgent()" class="quyu">区域管理</span>
         </header>
 
@@ -17,34 +17,49 @@
                         {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? '/'+areaList[1].name : ''}}{{areaList[2] ? '/'+areaList[2].name : ''}}
                     </div>
                 </div>
-                <div @click="go('/market')" class="market">业务市场</div>
+                <div class="market" @click="go('/AgentDistribution')">
+                    <div>
+                        <i class="icon iconfont icon-fenxiaoguanli1"></i>
+                    </div>
+                    <span>分销管理</span>
+                </div>
+                <div @click="go('/market')" class="market">
+                    <div>
+                        <i class="icon iconfont icon-fod-business"></i>
+                    </div>
+                    <span>业务市场</span>
+                </div>
             </div>
 
             <ul class="box_2">
                 <li :class="{'active':type_1==1}" @click="change_type(1)">
                     <div class="img_box">
-                        <img src="image/d1.png" alt="" srcset="">
+                        <!-- <img src="image/d1.png" alt="" srcset=""> -->
+                        <i class="icon iconfont icon-tuandui"></i>
                     </div>
-                    <div class="title">补贴</div>
+                    <div class="title">团队补贴</div>
                     <div class="money">{{agentUser.subsidiesall ? agentUser.subsidiesall : 0}}</div>
                 </li>
                 <li :class="{'active':type_1==2}" @click="change_type(2)">
                     <div class="img_box">
-                        <img src="image/d2.png" alt="" srcset="">
+                        <!-- <img src="image/d2.png" alt="" srcset=""> -->
+                        <i class="icon iconfont icon-kejiziyuanshujufuwupingtai"></i>
                     </div>
-                    <div class="title">广告机</div>
+                    <div class="title">平台分佣</div>
                     <div class="money">0</div>
                 </li>
                 <li :class="{'active':type_1==3}" @click="change_type(3)">
                     <div class="img_box">
-                        <img src="image/d3.png" alt="" srcset="">
+                        <!-- <img src="image/d3.png" alt="" srcset=""> -->
+                        <i class="icon iconfont icon-jinrudianpu"></i>
                     </div>
-                    <div class="title">分红</div>
+                    <div class="title">店铺分佣</div>
                     <div class="money">0</div>
                 </li>
                 <li :class="{'active':type_1==4}" @click="change_type(4)">
                     <div class="img_box">
-                        <img src="image/d4.png" alt="" srcset="">
+                        <!-- <img src="image/d4.png" alt="" srcset=""> -->
+                        <i class="icon iconfont icon-ketixianjine"></i>
                     </div>
                     <div class="title">可提现</div>
                     <div class="money">{{agentUser.sutotal ? agentUser.sutotal : 0}}</div>
@@ -88,21 +103,30 @@
                 <div class="box_4" v-show="type_1==2">
                     <!-- <ul class="title">
                         <li>客户</li>
-                        <li>销售日期</li>
-                        <li>套餐</li>
-                        <li>佣金</li>
+                        <li>订单</li>
+                        <li>时间</li>
+                        <li>佣金/元</li>
                     </ul>
                     <ul class="list">
                         <li v-for="x in list_1">
-                            <div>李四</div>
-                            <div>2018.01.16</div>
-                            <div>至尊套餐</div>
-                            <div>199</div>
+                            <div>
+                                <div>李四</div>
+                            </div>
+                            <div>
+                                <div>订单名</div>
+                            </div>
+                            <div>
+                                <div>2018.11.28</div>
+                                <div>18:.23.25</div>
+                            </div>
+                            <div>
+                                <div>199</div> 
+                            </div>
                         </li>
                     </ul>
                     <ul class="footer">
                         <li>客户：50人</li>
-                        <li>套餐数：50个</li>
+                        <li>订单数：50个</li>
                         <li>佣金：4900元</li>
                     </ul> -->
                     <div class="kaifazhong">
@@ -115,23 +139,38 @@
 
                 <div class="box_5" v-show="type_1==3">
                     <!-- <ul class="title">
-                        <li>姓名</li>
-                        <li>日期</li>
-                        <li>新增LB</li>
-                        <li>分红</li>
+                        <li>客户</li>
+                        <li>店铺</li>
+                        <li>订单</li>
+                        <li>时间</li>
+                        <li>佣金/元</li>
                     </ul>
                     <ul class="list">
                         <li v-for="x in  list_1">
-                            <div>王五</div>
-                            <div>2018-05-20</div>
-                            <div>100</div>
-                            <div>50</div>
+                            <div>
+                                <div>
+                                王五
+                                </div>
+                            </div>
+                            <div>
+                                <div>在易起科技在易起科技</div>
+                            </div>
+                            <div>
+                                <div>乐享广告机</div>
+                            </div>
+                            <div>
+                                <div>2018.11.28</div>
+                                <div>18.20.20</div>
+                            </div>
+                            <div>
+                                <div>50</div>
+                            </div>
                         </li>
                     </ul>
                     <ul class="footer">
                         <li>会员：50人</li>
                         <li>总LB：50个</li>
-                        <li>总分红：4900元</li>
+                        <li>总分润：4900元</li>
                     </ul> -->
                     <div class="kaifazhong">
                         <div class="imb_box">
@@ -152,7 +191,7 @@
                             <div>累计：0</div>
                         </li>
                         <li>
-                            <div>分红：0</div>
+                            <div>分润：0</div>
                             <div>累计：0</div>
                         </li>
                     </ul>
@@ -167,7 +206,7 @@
                                 <span>￥</span>
 
                                 <!-- {{agentUser.sutotal}} -->
-                                <input type="text" v-model="amount" @input="amount_change()"/>
+                                <input readonly type="text" v-model="amount" @input="amount_change()"/>
                             </span>
                             <span>费率：4%</span>
                         </li>
@@ -179,7 +218,7 @@
                         <span @click="change_radio_2()">我也阅读并同意</span>
                         <span @click="BusinessAgreement()">《业务代理合作协议》</span>
                         <span>
-                            <span @click="go('EmbodyRecord')">
+                            <span @click="go('/EmbodyRecord?type=0')">
                                 提现记录
                             </span>
                         </span>
@@ -226,18 +265,15 @@
                 </ul>
             </form>
         </div>
-        <circularNav />
     </div>
 </template>
 
 <script>
-import circularNav from "@/components/circularNav.vue";
 import loading from "@/components/loading.vue";
 import { dateFtt,openloading } from "@/assets/js/currency";
 export default {
     name: "Agent",
     components: {
-        circularNav,
         loading
     },
     data() {
@@ -330,18 +366,12 @@ export default {
                 console.log(x);
                 if(x.data.code==200){
                     this.getagentUser();
-                    if(!x.data.data){
-                        mui.alert('提现已提交，请注意查收。','提示','好的',function(){},'div')
-                    }else{
-                        mui.alert('已提交至审核，请注意查收。','提示','好的',function(){},'div')
-                    }
-                }else if(x.data.code=="PAYEE_USER_INFO_ERROR"){
-                    mui.toast('名字输入有误。',{duration: 2000,type: "div"});
-                    this.input_name_box=true;
-                }else if(x.data.code=="PAYEE_ACC_OCUPIED"){
+                    mui.alert(x.data.msg,'提示','好的',function(){},'div')
+                }else if(x.data.code=="PAYEE_USER_INFO_ERROR" || x.data.code=="PAYEE_ACC_OCUPIED"){
+                    mui.toast(x.data.msg,{duration: 2000,type: "div"});
                     this.input_name_box=true;
                 }else if(x.data.code){
-                    mui.toast(x.data.msg,{duration: 2000,type: "div"});
+                    mui.toast(x.data.message,{duration: 2000,type: "div"});
                 }else{
                     mui.toast('系统错误，请稍后再试。' , { duration: 2000,type: "div"});
                 }
@@ -504,9 +534,6 @@ export default {
             this.userInfo = JSON.parse(localStorage.userInfo);
         }
 
-        if (this.$store.state.isweixin) {
-            document.getElementsByTagName("title")[0].innerText = "代理人";
-        }
         //获取代理人信息
         this.getagentUser();
         //查看下级带来的收益
@@ -576,10 +603,12 @@ export default {
     }
     .text {
         overflow: hidden;
+        flex-grow: 1;
         > div:nth-child(1) {
             color: rgba(80, 80, 80, 1);
             font-size: 0.14rem;
             font-weight: bold;
+            margin: 3px 0px;
         }
         > div:nth-child(2) {
             color: rgba(128, 128, 128, 1);
@@ -590,12 +619,21 @@ export default {
         }
     }
     .market {
-        flex-grow: 1;
-        text-align: right;
-        color: rgba(42, 130, 228, 1);
-        font-size: 14px;
+        flex-shrink: 0;
+        text-align: center;
+        // color: rgba(42, 130, 228, 1);
+        // font-size: 14px;
         white-space: nowrap;
         flex-shrink: 0;
+        margin: 0px 3px;
+        span{
+            font-size: 0.1rem;
+            color: #808080;
+        }
+        i{
+            color: #1894dc;
+            font-size: 0.24rem;
+        }
     }
 }
 #Agent .box_2 {
@@ -605,8 +643,15 @@ export default {
     > li:nth-child(1) {
         border: none;
     }
-    li.active {
-        background: #efeff4;
+    li.active::after {
+        // background: #efeff4;
+        position: absolute;
+        width: 60%;
+        height: 2px;
+        left: 20%;
+        bottom: 0px;
+        content: "";
+        background: $header_background;
     }
     li {
         width: 25%;
@@ -614,19 +659,16 @@ export default {
         background: #ffffff;
         text-align: center;
         border-left: 1px solid #efeff4;
+        position: relative;
         .img_box {
             width: 0.37rem;
             height: 0.37rem;
             margin: 0px auto 3px;
-            background: #949494;
+            background: $header_background;
             border-radius: 100%;
-            padding: 3px;
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 100%;
-            }
+            color: #ffffff;
+            line-height: 0.35rem;
+            font-size: 20px;
         }
     }
     .title {
@@ -657,9 +699,10 @@ export default {
         display: flex;
         flex-shrink: 0;
         height: 30px;
-        background: #ffffff;
+        background: $header_background;
         align-items: center;
         font-weight: bold;
+        color: #ffffff;
         li {
             min-height: 100%;
             flex-grow: 1;
@@ -754,7 +797,8 @@ export default {
             width: 25%;
             height: 30px;
             line-height: 30px;
-            background: #e8e8e8;
+            background: $header_background;
+            color: #ffffff;
             border-left: 1px solid rgba(198, 198, 198, 1);
         }
     }
@@ -775,9 +819,16 @@ export default {
             }
             > div {
                 width: 25%;
-                height: 30px;
-                line-height: 30px;
+                min-height: 30px;
+                // line-height: 30px;
                 border-left: 1px solid rgba(198, 198, 198, 1);
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                padding: 3px 0px;
+                >div{
+                    width: 100%;
+                }
             }
         }
     }
@@ -800,22 +851,23 @@ export default {
     display: flex;
     flex-direction: column;
     text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    // white-space: nowrap;
+    // overflow: hidden;
+    // text-overflow: ellipsis;
     font-size: 12px;
     margin: 5px 0px 0px 0px;
     .title {
         flex-shrink: 0;
         display: flex;
+        background: $header_background;
+        color: #ffffff;
         > li:nth-child(1) {
             border: none;
         }
         li {
-            width: 25%;
+            width: 20%;
             height: 30px;
             line-height: 30px;
-            background: #ffffff;
             border-left: 1px solid rgba(198, 198, 198, 1);
         }
     }
@@ -834,14 +886,23 @@ export default {
             > div:nth-child(1) {
                 border: none;
             }
+            > div:nth-child(2) {
+                color: #1894dc;
+            }
             > div:nth-child(3) {
-                color: #00edef;
+                color: #1894dc;
             }
             > div {
-                width: 25%;
-                height: 30px;
-                line-height: 30px;
+                width: 20%;
+                min-height: 30px;
                 border-left: 1px solid rgba(198, 198, 198, 1);
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                padding: 3px 0px;
+                >div{
+                    width: 100%;
+                }
             }
         }
     }
@@ -899,18 +960,21 @@ export default {
         }
     }
     .money {
-        padding: 0px 10px 0px 20px;
+        padding: 5px 10px 5px 20px;
         background: #ffffff;
         color: rgba(80, 80, 80, 1);
+        display: flex;
+        align-items: center;
         > li:nth-child(1) {
             font-size: 12px;
-            padding: 6px 0px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
         > li:nth-child(2) {
+            flex-grow: 1;
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-            padding: 5px 0px 15px 0px;
+            align-items: center;
             > span:nth-child(1) {
                 font-size: 27px;
                 line-height: initial;
@@ -920,16 +984,17 @@ export default {
                     margin: 0px;
                     border: none;
                     font-size: 27px;
-                    border-bottom: 1px solid #cccccc;
+                    // border-bottom: 1px solid #cccccc;
                 }
             }
             > span:nth-child(2) {
                 font-size: 12px;
                 padding: 0px 0px 0px 10px;
-                border-left: 1px solid rgba(80, 80, 80, 1);
+                border-left: 1px solid #505050;
                 height: 14px;
                 line-height: 14px;
                 white-space: nowrap;
+                color: #505050;
                 margin: 0px 0px 0px 20px;
             }
         }

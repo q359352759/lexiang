@@ -1,6 +1,6 @@
 <template>
     <div id="my">
-        <header class="mui-bar mui-bar-nav" v-if="!this.$store.state.isweixin">
+        <header class="mui-bar mui-bar-nav" >
             <h1 class="mui-title">我的</h1>
         </header>
         <div class="mui-content">
@@ -8,10 +8,13 @@
             <ul class="box_1">
                 <li class="img_box">
                     <img v-if="userInfo.headImgUrl!='' && userInfo.headImgUrl!=null" :src="userInfo.headImgUrl" alt="">
-                    <img v-if="userInfo.headImgUrl=='' || userInfo.headImgUrl==null" src="@/assets/image/lxlogo_180.png" alt="">
+                    <img v-if="userInfo.headImgUrl=='' || userInfo.headImgUrl==null" src="@/assets/image/lxlogo_180.png">
                 </li>
                 <li class="type_box">
-                    <div>{{(userInfo.nickname!='' && userInfo.nickname!=null) ? userInfo.nickname : userInfo.phone}}</div>
+                    <div>
+                        <span v-if="userInfo.nickname">{{userInfo.nickname}}</span>
+                        <span v-if="!userInfo.nickname">{{userInfo.phone | fliter_phone}}</span>
+                    </div>
                     <span><i class="icon iconfont icon-31erweima"></i></span>
                 </li>
                 <li class="explain_box">
@@ -21,12 +24,41 @@
             </ul>
 
             <div class="box_2">
-                <ul>
+                <!-- <ul>
                     <li>LB：0个</li>
                     <li>红包：0元</li>
                     <li>余额：0元</li>
                 </ul>
-                <div @click="AssetDetails()">>></div>
+                <div @click="AssetDetails()">>></div> -->
+            </div>
+
+            <div class="box_6">
+                <ul>
+                    <li>
+                        <div @tap="go('/Collection')">
+                            <i class="icon iconfont icon-shoucangdianjihou"></i>
+                        </div>
+                        <span @tap="go('/Collection')">收藏</span>
+                    </li>
+                    <li>
+                        <div @click="go('')">
+                            <i class="icon iconfont icon-jiangpinpeizhi"></i>
+                        </div>
+                        <span @click="go('')">分享有奖</span>
+                    </li>
+                    <li>
+                        <div @click="go('')"><i class="icon iconfont icon-qiaquan1"></i></div>
+                        <span @click="go('')">红包卡券</span>
+                    </li>
+                    <li>
+                        <div @click="go('/AssetCenter')"><i class="icon iconfont icon-icon-wallet"></i></div>
+                        <span @click="go('/AssetCenter')">资产中心</span>
+                    </li>
+                    <li>
+                        <div @click="go('')"><i class="icon iconfont icon-xiaoxi"></i></div>
+                        <span @click="go('')">消息</span>
+                    </li>
+                </ul>
             </div>
 
             <div class="box_3">
@@ -108,17 +140,22 @@
 
         </div>
 
-        <circularNav />
     </div>
 </template>
 <script>
-import circularNav from "@/components/circularNav.vue";
 export default {
     name: "my",
-    components: { circularNav },
+    components: { 
+    },
     data() {
         return {
         };
+    },
+    filters:{
+        fliter_phone(phone){
+            if(!phone) return '';
+            return phone.substring(0,3)+'***'+phone.substring(phone.length-3)
+        }
     },
     computed: {
         userInfo() {
@@ -126,6 +163,12 @@ export default {
         }
     },
     methods: {
+        //
+        go(x){
+            // alert('开发中。')
+            // return;
+            this.$router.push(x)
+        },
         //申请店铺
         ApplicationShop(){
             this.$router.push('/ApplicationShop');
@@ -172,9 +215,6 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        if (this.$store.state.isweixin) {
-            document.getElementsByTagName("title")[0].innerText = "我的";
-        }
         this.$store.commit("setCurrent");
         // console.group('------mounted 挂载结束状态------');
     },
@@ -347,6 +387,35 @@ export default {
         font-size: 12px;
     }
 }
+#my .box_6{
+    position: relative;
+    margin: 0px 15px;
+    height: 0.3rem;
+    >ul{
+        display: flex;
+        background: #ffffff;
+        padding: 8px 0px 8px;
+        border-radius: 10px;
+        min-height: 0.56rem;
+        position: absolute;
+        width: 100%;
+        top: -0.28rem;
+        left: 0px;
+    }
+    li{
+        width: 20%;
+        text-align: center;
+        i{
+            color: #f4942c;
+        }
+        span{
+            color: #505050;
+            font-size: 0.1rem;
+        }
+    }
+}
+
+
 
 .go_out {
     width: 158px;

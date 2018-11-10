@@ -2,7 +2,7 @@
     <div id="ApplicationAgent">
         <header class="mui-bar mui-bar-nav">
             <a @click="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{this.$store.state.isweixin ? '' : '申请代理人'}}</h1>
+            <h1 class="mui-title">申请代理人</h1>
         </header>
 
         <div class="mui-content">
@@ -104,20 +104,20 @@
             <button @click="fenxiang1()">分享测试1</button> -->
             <!-- <button @click="ceshi()">检测</button> -->
         </div>
-
-        <circularNav />
+        <div class="msg" v-show="loading">
+            <span>数据获取中</span>
+        </div>
     </div>
 </template>
 
 <script>
-import circularNav from "@/components/circularNav.vue";
 export default {
     name: "ApplicationAgent",
     components: {
-        circularNav
     },
     data() {
         return {
+            loading:true,
             radio_type_1: 1,
             radio_type_2: true,
             cityPicker3: "", //地区3级联动
@@ -296,9 +296,7 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        if (this.$store.state.isweixin) {
-            document.getElementsByTagName("title")[0].innerText = "申请代理人";
-        }
+        
         if (localStorage.userInfo) {
             this.userInfo = JSON.parse(localStorage.userInfo);
         }
@@ -310,10 +308,14 @@ export default {
             }).then(x => {
                 console.log("获取用户代理人信息", x);
                 if (x.data.code == 200) {
+
                     this.$router.push('/Agent')
+                }else{
+                    this.loading=false
                 }
             }).catch(error => {
                 console.log('获取代理人信息失败');
+                this.loading=false;
             });
 
 
@@ -559,6 +561,19 @@ export default {
     border: none;
     background: $header_background;
     color: #ffffff;
+}
+
+#ApplicationAgent .msg{
+    display: flex;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 11;
+    background: #ffffff;
+    align-items: center;
+    justify-content: center;
 }
 
 // 单选

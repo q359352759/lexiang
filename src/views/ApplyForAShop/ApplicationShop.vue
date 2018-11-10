@@ -2,11 +2,11 @@
     <div id="ApplicationShop">
         <header class="mui-bar mui-bar-nav">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">{{this.$store.state.isweixin ? '' : '申请店铺'}}</h1>
+			<h1 class="mui-title">申请开店</h1>
 		</header>
 
         <div class="mui-content mui-fullscreen">
-
+            
             <ul class="mui-table-view box_1">
 				<li class="mui-table-view-cell" @click="select_shop_type()">
 					<a class="mui-navigate-right">
@@ -26,19 +26,27 @@
                         <span>联系电话：</span>
                         <input type="text">
 				</li>
-                <li class="mui-table-view-cell">
+                <li class="mui-table-view-cell" @click="select_region()">
+					<a class="mui-navigate-right">
+                        <span>店铺区域：</span>
+                        {{city[0] ? city[0].name : ''}}
+                        {{city[1] ? '/'+city[1].name : ''}}
+                        {{city[1] ? '/'+city[2].name : ''}}
+					</a>
+				</li>
+                <li class="mui-table-view-cell" @click="baiduMap('/baiduMap')">
 					<a class="mui-navigate-right">
                         <span>店铺地址：</span>
-                        四川省成都市武侯区武青一路10号
+                        {{address}}
 					</a>
 				</li>
                 <li class="mui-table-view-cell" @click="select_time()">
 					<a class="mui-navigate-right">
                         <span>营业时间：</span>
-                        {{this.$store.state.apply_for_a_shop.creationTime}}{{this.$store.state.apply_for_a_shop.creationTime ? '-'+this.$store.state.apply_for_a_shop.creationTime : ''}}
+                        {{this.$store.state.apply_for_a_shop.creationTime}}{{this.$store.state.apply_for_a_shop.endTime ? '-'+this.$store.state.apply_for_a_shop.endTime : ''}}
 					</a>
 				</li>
-                <li class="mui-table-view-cell">
+                <li class="mui-table-view-cell" @click="LegalPersonCertification()">
 					<a class="mui-navigate-right">
                         <span>法人认证：</span>
                         张三
@@ -47,7 +55,7 @@
                 <li class="mui-table-view-cell" @click="BusinessLicense()">
 					<a class="mui-navigate-right">
                         <span>营业执照：</span>
-                        {{this.$store.state.apply_for_a_shop.shopType==1 ? '个体经营' : ''}}
+                        {{this.$store.state.apply_for_a_shop.shopType==1 ? '个体经营' : '公司经营'}}
 					</a>
 				</li>
 			</ul>
@@ -58,20 +66,20 @@
                     <div>(400*225)</div>
                 </li>
                 <li>
-                    <div v-if="!logo_url" class="tishi">点击选择图片</div>
+                    <div @click="Choice_img(1)" v-if="!logo_url" class="tishi">点击选择图片</div>
                     <span v-if="logo_url"><i class="icon iconfont icon-del"></i></span>
-                    <img v-if="logo_url" :src="logo_url" alt="">
+                    <img @click="Choice_img(1)" v-if="logo_url" :src="logo_url" alt="">
                 </li>
             </ul>
 
             <ul class="box_3">
                 <li class="title_1">
                     <span>环境图片：(400*225)</span>
-                    <span class="mui-pull-right">最多12张，已有9张</span>
+                    <span class="mui-pull-right">最多12张，已有{{img_list.length}}张</span>
                 </li>
                 <li class="lunbo">
                     <div class="left_1" @click="slideNext()">
-                        <i class="mui-icon mui-icon-back"></i>
+                        <i  v-show="left" class="mui-icon mui-icon-back"></i>
                     </div>
                     <div class="img_list">
                         <div class="swiper-container">
@@ -85,7 +93,7 @@
                             <!-- <div class="swiper-pagination"></div> -->
                         </div>
                     </div>
-                    <div class="right_1">
+                    <div class="right_1" @click="Choice_img(2)">
                         <span>
                             <i class="mui-icon mui-icon-plusempty"></i>
                         </span>
@@ -225,22 +233,74 @@
                 <span @click="RegistrationAgreement()">《用户注册协议》</span>
             </div>
 
-             <button class="btn_1">保存</button>
+            <button class="btn_1">保存</button>
+            <button @click="weixinmaptest()">跳转微信地图测试</button>
+
         </div>
+        
+
+        <div class="Cropper_box" v-show="Cropper_show">
+            <div class="cont_1">
+                <VueCropper ref="cropper" :img="option.img" :outputSize="option.size" :outputType="option.outputType" :info="true" :full="option.full" :canMove="option.canMove" :fixedBox="option.fixedBox" :canMoveBox="option.canMoveBox" :autoCrop="true" :autoCropWidth="option.autoCropWidth" :autoCropHeight="option.autoCropHeight"></VueCropper>
+            </div>
+            <ul class="footer_1">
+                <li @click="close_1()">
+                    <i class="icon iconfont icon-quxiao"></i>
+                </li>
+                <li @click="rotateLeft()">
+                    <i class="icon iconfont icon-xuanzhuan1"></i>
+                </li>
+                <li @click="rotateRight()">
+                    <i class="icon iconfont icon-xuanzhuan"></i>
+                </li>
+                <li @click="confirm()">
+                    <i class="icon iconfont icon-xuanze"></i>
+                </li>
+            </ul>
+        </div>
+
+        <div id="zhengmianInput" class="mui-hidden">
+            <input type="file" @change="input_change($event)" accept="image/*" name="" id="">
+        </div>
+
+       
 
     </div>
 </template>
 
 <script>
+import {openloading , bd_decrypt} from '@/assets/js/currency';
+import { VueCropper } from "vue-cropper";
+import $ from "jquery"
 export default {
     name:'',
     components:{
+        VueCropper
     },
     data(){
         return{
-            logo_url:'image/acb82200c21cf541e9cb20d916d835ba.jpg',
-            img_list:[],     //轮播图片
-            swiper:'',      //轮播组件
+            //裁剪框配置
+            Cropper_show:false,  //显示裁剪框
+            option: {
+                img: "",
+                size: 1,
+                full: false,
+                outputType: "png",
+                canMove: true,
+                fixedBox: true, //裁剪框固定大小不动 true 固定
+                original: false,
+                canMoveBox: false,
+                autoCrop: true, //一开始就裁剪
+                outputType: "png", //png,jpeg,webp
+                autoCropWidth:300,
+                autoCropHeight:168
+            },
+            // ========================
+            cropper_type:1,     //裁剪类型 1，表示LOGO 2,环境图片
+            logo_url:'',        //logo
+            img_list:[],        //轮播图片
+            swiper:'',          //轮播组件
+            left:false,        //向左箭头
             radio_obj:{
                 WIFI:true,
                 parking:false
@@ -254,15 +314,46 @@ export default {
             shopname:'',
             apply_for_a_shop:{
                 creationTime:this.$store.state.apply_for_a_shop.creationTime
-            }
+            },
+
+            addtestvalue:'',
+
+            cityList:[],        //城市列表
+            city:[],            //所选择的的城市
+            
+            latitude:'',
+            longitude:''
         }
     },
     computed:{
         // apply_for_a_shop(){
         //     return "";
-        // }
+        // },
+        address(){
+            return this.$store.state.geographical_position.address;
+        }
     },
     methods:{
+        weixinmaptest(){
+            var ditu=bd_decrypt(this.$store.state.geographical_position.longitude,this.$store.state.geographical_position.latitude);
+            console.log(ditu);
+            wx.openLocation({
+                latitude: ditu.lat, // 纬度，浮点数，范围为90 ~ -90
+                longitude: ditu.lng, // 经度，浮点数，范围为180 ~ -180。
+                name: '测试',   // 位置名
+                address: '地址测试说明', // 地址详情说明
+                scale: 28,       // 地图缩放级别,整形值,范围从1~28。默认为最大
+                infoUrl: ''     // 在查看位置界面底部显示的超链接,可点击跳转
+            });
+        },
+        //跳转到百度地图页面
+        baiduMap(){
+            this.$router.push('/baiduMap?latitude='+this.latitude+'&longitude='+this.longitude)
+        },
+        //跳转法人认证
+        LegalPersonCertification(){
+            this.$router.push('/LegalPersonCertification');
+        },
         //跳转营业执照添加界面
         BusinessLicense(){
             this.$router.push('/BusinessLicense')
@@ -271,8 +362,17 @@ export default {
         select_time(){
             this.$router.push('/TimeSlot');
         },
+        //选择地区
+        select_region(){
+            this.Picker3.setData(this.cityList)
+            this.Picker3.show(x=>{
+                console.log(x)
+                this.city=x
+            })
+        },
         //选择店铺类型
         select_shop_type(){
+            this.Picker3.setData(this.type_list)
             this.Picker3.show(x=>{
                 console.log(x)
             })
@@ -280,7 +380,56 @@ export default {
         //图片轮播商一些
         slideNext(){
             this.swiper.slideNext();
-        }
+        },
+        //选择LOGO
+        Choice_img(x){
+            if(x==2 && this.img_list.length==12) return;
+            this.cropper_type=x;
+            document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
+        },
+        input_change(e) {
+            openloading(true)
+            console.log(e);
+            var that = this;
+            var file = e.target.files[0];
+            var reader = new FileReader();
+            reader.readAsDataURL(file); // 读出 base64
+            reader.onloadend = function() {
+                that.Cropper_show = true;
+                that.option.img = reader.result;
+                openloading(false)
+            };
+        },
+        //关闭裁剪弹出框
+        close_1() {
+            this.Cropper_show = false;
+        },
+        //左转
+        rotateLeft() {
+            this.$refs.cropper.rotateLeft();
+        },
+        //右转
+        rotateRight() {
+            this.$refs.cropper.rotateRight();
+        },
+        //确定裁剪
+        confirm() {
+            this.Cropper_show = false;
+            this.$refs.cropper.getCropData(data => {
+                if(this.cropper_type==1){
+                    this.logo_url=data;
+                }else{
+                    this.img_list.push(data)
+                    this.swiper.virtual.cache = []; 
+                    this.swiper.virtual.slides = this.img_list;
+                    this.swiper.virtual.update();
+                    if(this.img_list.length>2){
+                        this.left=true;
+                    }
+                }
+            });
+        },
+
     },
     beforeCreate: function() {
         // console.group('------beforeCreate创建前状态------');
@@ -293,8 +442,8 @@ export default {
     },
     mounted: function() {
         var this_1=this;
-        document.getElementsByTagName("title")[0].innerText = "商家展示厅";
         
+        //  mySwiper.removeSlide(1); //移除第二个slide
         //类型3级联动
         this.type_list=[{
                     value: '1',
@@ -320,8 +469,40 @@ export default {
             layer:3
         });
         this.Picker3.setData(this.type_list)
-        
-        console.log(1231)
+
+        //地区
+        var area=[];
+        try {
+            area=JSON.parse(localStorage.area);
+        } catch (error) {}
+        //递归
+        function convert(arr, id) {
+            var res = [];
+            for (var i = 0; i < arr.length; i++) {
+                arr[i].value = arr[i].id;
+                arr[i].text = arr[i].name;
+                if (arr[i].parentid == id) {
+                    res.push(arr[i]);
+                    arr[i].children = convert(arr, arr[i].id);
+                }
+            }
+            return res;
+        }
+        this.cityList = convert(area,null);
+        // this.cityPicker3 = new mui.PopPicker({
+        //     layer: 3
+        // });
+        // this.cityPicker3.setData(cityData3);
+        // wx.getLocation({
+        //     type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+        //     success: function (res) {
+        //         var latitude = res.latitude;    // 纬度，浮点数，范围为90 ~ -90
+        //         var longitude = res.longitude;  // 经度，浮点数，范围为180 ~ -180。
+        //         var speed = res.speed;          // 速度，以米/每秒计
+        //         var accuracy = res.accuracy;    // 位置精度
+        //         console.log('获取地理位置',res)
+        //     }
+        // });
 
 
         //图片轮播
@@ -330,30 +511,47 @@ export default {
                 // autoplay: true,
                 slidesPerView : 2,
                 spaceBetween : 10,
-                pagination: {
-                    el: ".swiper-pagination"
-                },
+                // pagination: {
+                //     el: ".swiper-pagination"
+                // },
                 virtual: {
-                    slides: ["5.jpg"],
+                    // slides: [],
                     cache: false, //关闭缓存
                     renderSlide:function(slide, index){
                         // return '<div class="swiper-slide">索引是'+index+'+内容是'+slide+'</div>';
-                        return '<div class="swiper-slide"><img src="image/'+slide+'" alt=""></div>';
+                        return '<div class="swiper-slide"><img src="'+slide+'" alt=""><span class="delete_1" inde="'+index+'"><i class="icon iconfont icon-del"></i></span></div>';
                     }
                 },
                 on: {
                     transitionEnd(){
-                        console.log('过渡结束transitionEnd',this.activeIndex);
+                        // console.log('过渡结束transitionEnd',this.activeIndex);
+                        if(this_1.img_list.length-this.activeIndex>2){
+                            this_1.left=true;
+                        }else{
+                             this_1.left=false;
+                        }
                     },
                 },
             });
-            var this_1=this;
-            setTimeout(function(){
-                this_1.swiper.virtual.appendSlide('6.jpg');
-            },2000)
-            setTimeout(function(){
-                this_1.swiper.virtual.appendSlide('7.jpg');
-            },5000)
+        //删除图片
+        $('#ApplicationShop .box_3 .img_list').on('click','.delete_1',function(){
+            var index=$(this).attr('inde')
+            this_1.img_list.splice(index,1);
+
+            this_1.swiper.virtual.cache = []; 
+            this_1.swiper.virtual.slides = [];
+            for(var i=0;i<this_1.img_list.length;i++){
+                this_1.swiper.virtual.appendSlide(this_1.img_list[i]);
+            }
+            this_1.swiper.virtual.update();
+            if(this_1.img_list.length==index && this_1.img_list.length>2){
+                this_1.swiper.slideTo(index-1);
+            }else if(this_1.img_list.length==2){
+                this_1.swiper.slideTo(0);
+                this_1.left=false;
+            }
+        })
+        
 
         // console.group('------mounted 挂载结束状态------');
     },
@@ -383,6 +581,7 @@ export default {
     }
 }
 </script>
+
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
@@ -489,6 +688,7 @@ export default {
             }
         }
         .img_list{
+            border: 1px solid #e4e4e4;
             flex-grow: 1;
             width: 0;
             .swiper-container{
@@ -496,6 +696,18 @@ export default {
             }
             .swiper-slide{
                 height: 0.9rem;
+                span{
+                    position: absolute;
+                    right: 0px;
+                    top: 0px;
+                    width: 0.32rem;
+                    height: 0.32rem;
+                    background-color: rgba(153, 153, 153, 0.5);
+                    color: #ffffff;
+                    text-align: center;
+                    line-height: 0.32rem;
+                    font-size: 0.22rem;
+                }
             }
             img{
                 height: 100%;
@@ -592,7 +804,44 @@ export default {
     color: #ffffff;
 }
 
+#ApplicationShop .Cropper_box {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: #e5e5e5;
+    z-index: 10;
+    .cont_1 {
+        height: 100%;
+    }
+    .footer_1 {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        bottom: 0px;
+        display: flex;
+        font-size: 20px;
+        color: #ffffff;
+        padding: 25px 0px;
+        justify-content: space-around;
+    }
 
+    .vue-cropper {
+        background: #e5e5e5;
+    }
+    .cropper-modal {
+        background: rgba(181, 181, 181, 0.5);
+    }
+    .cropper-face {
+        background-size: cover;
+        background-color: rgba(0, 0, 0, 0);
+        opacity: 1;
+    }
+    .cropper-view-box {
+        outline: none;
+    }
+}
 
 // 单选
 #ApplicationShop .radio_1 {

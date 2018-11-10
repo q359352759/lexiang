@@ -2,7 +2,8 @@
     <div id="Advertising">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{this.$store.state.isweixin ? "":"广告机"}}</h1>
+            <!-- <h1 class="mui-title">{{this.$store.state.isweixin ? "":"广告机"}}</h1> -->
+            <h1 class="mui-title">广告机</h1>
         </header>
         <div class="mui-content">
             <div class="box_1">
@@ -98,9 +99,7 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        if (this.$store.state.isweixin) {
-            document.getElementsByTagName("title")[0].innerText = "广告机";
-        }
+        
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {

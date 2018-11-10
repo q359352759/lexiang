@@ -3,7 +3,7 @@
         <div class="mask" v-show="mask_show" @click="change_mask_show(false)"></div>
         <!-- <ul class="move" @mousedown="mousedown($event)" @mousemove="mousemove($event)" @mouseup="mouseup($event)"> -->
         <ul :class="class_name" :style="{'top':this.$store.state.clientY+'px','left':this.$store.state.clientX+'px'}">
-            <li @click="change_mask_show(true)" @touchmove="touchmove($event)" @touchend="touchend($event)">
+            <li @click="change_mask()" @touchmove="touchmove($event)" @touchend="touchend($event)">
                 <img src="@/assets/image/lxlogo_180.png" alt="">
             </li>
             <li class="min_1 min_11" v-show="mask_show">
@@ -16,11 +16,11 @@
                 <div @click="go_Agent()"><i class="icon iconfont icon-woshou"></i></div>
                 <span>代理</span>
             </li>
-            <!-- <li class="min_1 min_13" v-show="mask_show">
-                <div><i class="icon iconfont icon-gouwucheman"></i></div>
-                <span>套餐</span>
-            </li> -->
             <li class="min_1 min_13" v-show="mask_show">
+                <div @click="go('/ApplicationShop')"><i class="icon iconfont icon-dianpu1"></i></div>
+                <span>店铺</span>
+            </li>
+            <li class="min_1 min_14" v-show="mask_show">
                 <div @click="go('/my')"><i class="icon iconfont icon-geren"></i></div>
                 <span>我的</span>
             </li>
@@ -29,6 +29,11 @@
 </template>
 
 <script>
+
+function touchmove_1(e){
+    e.preventDefault();
+}
+
 // import draggable from 'vuedraggable'
 // @ is an alias to /src
 // import HelloWorld from "@/components/HelloWorld.vue";
@@ -66,6 +71,9 @@ export default {
             } else {
                 this.$router.push("/Agent"); //跳转代理人
             }
+        },
+        change_mask(){
+            this.mask_show=!this.mask_show
         },
         change_mask_show(x) {
             this.mask_show = x;
@@ -126,14 +134,10 @@ export default {
     },
     mounted: function() {
         //阻止这个页面下拉
-        document.getElementById("circularNav").addEventListener(
-            "touchmove",
-            function(e) {
-                // console.log(11);
-                e.preventDefault();
-            },
-            { passive: false }
-        );
+        setTimeout(function(){
+            document.getElementById("circularNav").addEventListener("touchmove",touchmove_1,{passive: false});
+        },500)
+        //{ passive: false }
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -143,9 +147,8 @@ export default {
         // console.group('updated 更新完成状态===============》');
     },
     beforeDestroy: function() {
-        document
-            .getElementById("circularNav")
-            .removeEventListener("touchmove", function() {});
+        console.log(touchmove_1)
+        document.getElementById("circularNav").removeEventListener("touchmove",touchmove_1,{ passive: false });
         // console.group('beforeDestroy 销毁前状态===============》');
     },
     destroyed: function() {
@@ -164,7 +167,7 @@ export default {
     z-index: 10;
 }
 #circularNav ul {
-    position: absolute;
+    position: fixed;
     z-index: 11;
 }
 #circularNav ul > li:nth-child(1) {
