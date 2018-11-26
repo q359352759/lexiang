@@ -75,9 +75,12 @@
                                         <div>每周限领一次</div>
                                     </h5>
                                 </div>
-                            </li>
-                            <li>
-                                <div>
+                </li> -->
+            </ul>
+
+            <ul class="box_5"  v-if="type_1==1">
+                <li v-for="(item, index) in 7" :key="index">
+                    <div>
                                     <div class="bg"></div>
                                     <h1>店铺通用红包</h1>
                                     <h2>领取</h2>

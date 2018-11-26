@@ -157,6 +157,22 @@ var vuex = new Vuex.Store({
                 location.href="index.html#/login";
                 // router.push("/login");
             });
+        },
+        setfindByUserid(){
+            var userInfo = JSON.parse(localStorage.userInfo);
+            axios({
+                method:'get',
+                url:'/api-u/certification/findByUserid?userid='+userInfo.username,
+            }).then(x=>{
+                console.log('获取用户实名信息',x);
+                this.state.findByUserid=x.data;
+            }).catch(error=>{
+                console.log('获取用户实名信息',error)
+            })
+        },
+        //获取店铺类型
+        setShopTree(){
+            
         }
     },
     actions: {

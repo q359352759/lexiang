@@ -32,15 +32,15 @@
                 <div @click="AssetDetails()">>></div> -->
             </div>
 
-            <div class="box_6">
-                <ul>
-                    <li>
-                        <div @tap="go('/Collection')">
-                            <i class="icon iconfont icon-shoucangdianjihou"></i>
-                        </div>
-                        <span @tap="go('/Collection')">收藏</span>
-                    </li>
-                    <li>
+			<div class="box_6">
+				<ul>
+					<li>
+						<div @tap="go('/Collection')">
+							<i class="icon iconfont icon-shoucangdianjihou"></i>
+						</div>
+						<span @tap="go('/Collection')">收藏</span>
+					</li>
+					<li>
                         <div @click="go('')">
                             <i class="icon iconfont icon-jiangpinpeizhi"></i>
                         </div>
