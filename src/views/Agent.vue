@@ -1,9 +1,10 @@
 <template>
     <div id="Agent">
         <header class="mui-bar mui-bar-nav">
-            <a @click="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <a @tap="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">代理人</h1>
-            <span v-if="isareaManager" @click="RegionalAgent()" class="quyu">区域管理</span>
+            <span v-if="isareaManager" @tap="RegionalAgent()" class="quyu">区域管理</span>
+            <span v-if="!isareaManager" @tap="RegionalAgencyAgreement()" class="quyu">区域代理</span>
         </header>
 
         <div class="mui-content">
@@ -206,7 +207,7 @@
                                 <span>￥</span>
 
                                 <!-- {{agentUser.sutotal}} -->
-                                <input readonly type="text" v-model="amount" @input="amount_change()"/>
+                                <input readonly type="text" v-model="amount" @input="amount_change()" />
                             </span>
                             <span>费率：4%</span>
                         </li>
@@ -251,7 +252,6 @@
                 </div>
             </div>
 
-
             <form class="input_name" @submit.prevent="Submission()" :class="{'active':input_name_box}">
                 <div class="mask" @click="clese_1()"></div>
                 <ul class="">
@@ -270,7 +270,7 @@
 
 <script>
 import loading from "@/components/loading.vue";
-import { dateFtt,openloading } from "@/assets/js/currency";
+import { dateFtt, openloading } from "@/assets/js/currency";
 export default {
     name: "Agent",
     components: {
@@ -297,10 +297,10 @@ export default {
             Account_obj: {}, //支付账号
             accout_password: "",
             amount: 0, //提现金额
-            isareaManager:false,
-            CanBePresented:true,     //可以提现
-            input_name_box:false,
-            name:'',    
+            isareaManager: false,
+            CanBePresented: true, //可以提现
+            input_name_box: false,
+            name: ""
         };
     },
     filters: {
@@ -310,16 +310,20 @@ export default {
     },
     computed: {},
     methods: {
+        //申请区域代理
+        RegionalAgencyAgreement(){
+            this.$router.push('/RegionalAgencyAgreement');
+        },
         //返回我的页面
-        back(){
-            this.$router.push('/my')
+        back() {
+            this.$router.push("/my");
         },
         //输入金额
-        amount_change(){
-            if(!this.agentUser.sutotal){
-                this.amount=0
-            }else if(this.amount>this.agentUser.sutotal){
-                this.amount=this.agentUser.sutotal
+        amount_change() {
+            if (!this.agentUser.sutotal) {
+                this.amount = 0;
+            } else if (this.amount > this.agentUser.sutotal) {
+                this.amount = this.agentUser.sutotal;
             }
         },
         //忘记密码
@@ -327,11 +331,11 @@ export default {
             this.$router.push("/PaymentPassword");
         },
         //关闭输入名字
-        clese_1(){
-            this.input_name_box=false;
+        clese_1() {
+            this.input_name_box = false;
         },
         //再次提交
-        Submission(){
+        Submission() {
             this.Put_forward();
         },
         //提现
@@ -348,42 +352,62 @@ export default {
                 account: this.Account_obj.account, //到账账号
                 amount: this.amount, //金额
                 userid: this.userInfo.username,
-                payPassword:this.accout_password,
-                id:this.userInfo.id,
-                name:this.name,
+                payPassword: this.accout_password,
+                id: this.userInfo.id,
+                name: this.name
             };
-            this.payment=false;
-            this.CanBePresented=false;
-            this.input_name_box=false;
-            openloading(true)
+            this.payment = false;
+            this.CanBePresented = false;
+            this.input_name_box = false;
+            openloading(true);
             this.$axios({
                 method: "get",
                 url: "/api-u/users/alipay",
                 // data: this.$qs.stringify(obj),
                 // data:obj,
-                params:obj
-            }).then(x => {
-                console.log(x);
-                if(x.data.code==200){
-                    this.getagentUser();
-                    mui.alert(x.data.msg,'提示','好的',function(){},'div')
-                }else if(x.data.code=="PAYEE_USER_INFO_ERROR" || x.data.code=="PAYEE_ACC_OCUPIED"){
-                    mui.toast(x.data.msg,{duration: 2000,type: "div"});
-                    this.input_name_box=true;
-                }else if(x.data.code){
-                    mui.toast(x.data.message,{duration: 2000,type: "div"});
-                }else{
-                    mui.toast('系统错误，请稍后再试。' , { duration: 2000,type: "div"});
-                }
-                openloading(false)
-                this.CanBePresented=true;
-            }).catch(error => {
-                console.log(error);
-                mui.toast("系统错误，请稍后再试。", { duration: 2000,type: "div"});
-                openloading(false)
-                this.CanBePresented=true;
-                this.input_name_box=false;
-            });
+                params: obj
+            })
+                .then(x => {
+                    console.log(x);
+                    if (x.data.code == 200) {
+                        this.getagentUser();
+                        mui.alert(
+                            x.data.msg,
+                            "提示",
+                            "好的",
+                            function() {},
+                            "div"
+                        );
+                    } else if (
+                        x.data.code == "PAYEE_USER_INFO_ERROR" ||
+                        x.data.code == "PAYEE_ACC_OCUPIED"
+                    ) {
+                        mui.toast(x.data.msg, { duration: 2000, type: "div" });
+                        this.input_name_box = true;
+                    } else if (x.data.code) {
+                        mui.toast(x.data.message, {
+                            duration: 2000,
+                            type: "div"
+                        });
+                    } else {
+                        mui.toast("系统错误，请稍后再试。", {
+                            duration: 2000,
+                            type: "div"
+                        });
+                    }
+                    openloading(false);
+                    this.CanBePresented = true;
+                })
+                .catch(error => {
+                    console.log(error);
+                    mui.toast("系统错误，请稍后再试。", {
+                        duration: 2000,
+                        type: "div"
+                    });
+                    openloading(false);
+                    this.CanBePresented = true;
+                    this.input_name_box = false;
+                });
         },
         //支付密码
         passwad_change() {
@@ -393,7 +417,9 @@ export default {
         },
         //跳转业务代理合作协议
         BusinessAgreement() {
-            this.$router.push("/BusinessAgreement?name=" + this.agentUser.realName);
+            this.$router.push(
+                "/BusinessAgreement?name=" + this.agentUser.realName
+            );
         },
         // 补贴下拉
         butie_scroll(e) {
@@ -401,7 +427,11 @@ export default {
             var sh = e.target.scrollHeight; //滚动条总高
             var t = e.target.scrollTop; //滚动条到顶部距离
             // console.log(e)
-            if (h + t >= sh - 10 && !this.butie.loading &&  this.butie.list.length < this.butie.total) {
+            if (
+                h + t >= sh - 10 &&
+                !this.butie.loading &&
+                this.butie.list.length < this.butie.total
+            ) {
                 console.log("到底底部");
                 this.butie.page_index++;
                 //查看下级带来的收益
@@ -419,27 +449,33 @@ export default {
             this.radio_type_2 = !this.radio_type_2;
         },
         change_payment(x) {
-            if(x){
-                if(!this.Account_obj.account){
-                    mui.toast("请设置收款账号", {duration: 2000,type: "div"});
+            if (x) {
+                if (!this.Account_obj.account) {
+                    mui.toast("请设置收款账号", {
+                        duration: 2000,
+                        type: "div"
+                    });
                     return;
-                }else if(this.amount==0 && x){
-                    mui.toast("无提现金额", {duration: 2000,type: "div"});
+                } else if (this.amount == 0 && x) {
+                    mui.toast("无提现金额", { duration: 2000, type: "div" });
                     return;
-                }else if(this.amount%1!=0 && x){
-                    mui.toast("请输入整数！", {duration: 2000,type: "div"});
+                } else if (this.amount % 1 != 0 && x) {
+                    mui.toast("请输入整数！", { duration: 2000, type: "div" });
                     return;
-                }else if(!this.CanBePresented){
-                    mui.toast("提现处理中，请稍等。", {duration: 2000,type: "div"});
+                } else if (!this.CanBePresented) {
+                    mui.toast("提现处理中，请稍等。", {
+                        duration: 2000,
+                        type: "div"
+                    });
                     return;
                 }
                 this.payment = x;
-                this.accout_password='';
-                this.name='';
-                setTimeout(function(){
-                    document.getElementById('accout_password').focus();
-                },500)
-            }else{
+                this.accout_password = "";
+                this.name = "";
+                setTimeout(function() {
+                    document.getElementById("accout_password").focus();
+                }, 500);
+            } else {
                 this.payment = x;
             }
         },
@@ -454,14 +490,17 @@ export default {
             this.$axios({
                 method: "get",
                 url: "/api-u/agentUser/me?userid=" + this.userInfo.username
-            }).then(x => {
+            })
+                .then(x => {
                     console.log("获取用户代理人信息", x);
                     if (x.data.code != 200) {
                         // this.agentUser = false;
                         this.$router.push("/ApplicationAgent");
                     } else {
                         this.agentUser = x.data.data;
-                        this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
+                        this.amount = x.data.data.sutotal
+                            ? x.data.data.sutotal
+                            : 0;
                         this.areaList = this.$store.getters.filter_area(
                             x.data.data.areaCode
                         );
@@ -478,59 +517,67 @@ export default {
             this.butie.loading = true;
             this.$axios({
                 method: "get",
-                url:"/api-u/agentUser/subsidies/forme?referrerPhone=" +
-                    this.userInfo.phone +
-                    "&start=" +
-                    this.butie.page_index * this.butie.page_size +
-                    "&length=" +
-                    this.butie.page_size
+                url:"/api-u/agentUser/subsidies/forme?referrerPhone=" + this.userInfo.phone + "&start=" + this.butie.page_index * this.butie.page_size + "&length=" + this.butie.page_size
             })
-            .then(x => {
-                if (x.data.code == 200) {
-                    this.butie.list = this.butie.list.concat(
-                        x.data.data.data
-                    );
-                    this.butie.total = x.data.data.sutotal;
-                    this.butie.loading = false;
-                }
-                console.log("查看下级带来的收益", x);
-            })
-            .catch(error => {
-                console.log(error);
-            });
+                .then(x => {
+                    if (x.data.code == 200) {
+                        this.butie.list = this.butie.list.concat(x.data.data.data);
+                        this.butie.total = x.data.data.total;
+                        this.butie.loading = false;
+                    }
+                    console.log("查看下级带来的收益", x);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         },
         //获取支付宝账号
         findAccount() {
             this.$axios({
                 method: "get",
                 url: "/api-u/users/findAccount?userid=" + this.userInfo.username
-            }).then(x => {
-                console.log("获取支付宝账号", x);
-                if (x.data.data != null) {
-                    this.Account_obj = x.data.data;
-                }
-            }).catch(error=>{
-                console.log(error)
             })
+                .then(x => {
+                    console.log("获取支付宝账号", x);
+                    if (x.data.data != null) {
+                        this.Account_obj = x.data.data;
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                });
         },
-        areaManager(){
+        areaManager() {
             this.$axios({
-                method:'get',
-                url:'/api-u/areaManager/findme?userid='+this.userInfo.username
-            }).then(x=>{
-                console.log('获取代理商信息',x)
-                if(x.data.data!='' && x.data.data!=null && x.data.data!='null'){
-                    this.isareaManager=true;
-                }else{
-                    this.isareaManager=false;
-                }
-            }).catch(error=>{
-                console.log('获取代理商信息错误',error);
+                method: "get",
+                url:
+                    "/api-u/areaManager/findme?userid=" + this.userInfo.username
             })
+                .then(x => {
+                    console.log("获取代理商信息", x);
+                    if (
+                        x.data.data != "" &&
+                        x.data.data != null &&
+                        x.data.data != "null"
+                    ) {
+                        this.isareaManager = true;
+                    } else {
+                        this.isareaManager = false;
+                    }
+                })
+                .catch(error => {
+                    console.log("获取代理商信息错误", error);
+                });
         }
     },
     mounted: function() {
-        if (localStorage.userInfo && localStorage.userInfo!="" && localStorage.userInfo!= null && localStorage.userInfo != undefined && localStorage.userInfo != "undefined"){
+        if (
+            localStorage.userInfo &&
+            localStorage.userInfo != "" &&
+            localStorage.userInfo != null &&
+            localStorage.userInfo != undefined &&
+            localStorage.userInfo != "undefined"
+        ) {
             this.userInfo = JSON.parse(localStorage.userInfo);
         }
 
@@ -571,6 +618,8 @@ export default {
     line-height: 44px;
     font-size: 0.14rem;
     margin: 0px 5px 0px 0px;
+    position: relative;
+    z-index: 1;
 }
 #Agent .mui-bar {
     // background: rgba(39, 172, 110, 1);
@@ -626,11 +675,11 @@ export default {
         white-space: nowrap;
         flex-shrink: 0;
         margin: 0px 3px;
-        span{
+        span {
             font-size: 0.1rem;
             color: #808080;
         }
-        i{
+        i {
             color: #1894dc;
             font-size: 0.24rem;
         }
@@ -826,7 +875,7 @@ export default {
                 align-items: center;
                 flex-wrap: wrap;
                 padding: 3px 0px;
-                >div{
+                > div {
                     width: 100%;
                 }
             }
@@ -900,7 +949,7 @@ export default {
                 flex-wrap: wrap;
                 align-items: center;
                 padding: 3px 0px;
-                >div{
+                > div {
                     width: 100%;
                 }
             }
@@ -1137,37 +1186,37 @@ export default {
     }
 }
 
-#Agent .input_name.active{
+#Agent .input_name.active {
     display: flex;
-}   
-#Agent .input_name{
+}
+#Agent .input_name {
     display: none;
     position: fixed;
     width: 100%;
     height: 100%;
     justify-content: center;
     align-items: center;
-    .mask{
+    .mask {
         position: absolute;
         width: 100%;
         height: 100%;
         background: rgba(0, 0, 0, 0.5);
     }
-    ul{
+    ul {
         background: #ffffff;
         position: relative;
         z-index: 1;
         width: 2.98rem;
-        >li:nth-child(1){
+        > li:nth-child(1) {
             padding: 0.13rem;
             color: rgba(80, 80, 80, 1);
-        	font-size: 0.12rem;
+            font-size: 0.12rem;
             text-align: center;
         }
-        >li:nth-child(2){
+        > li:nth-child(2) {
             padding: 0px 0.3rem;
             height: 0.36rem;
-            input{
+            input {
                 text-align: center;
                 background: rgba(166, 166, 166, 1);
                 margin: 0px;
@@ -1176,14 +1225,14 @@ export default {
                 font-size: 0.14rem;
             }
         }
-        >li:nth-child(3){
+        > li:nth-child(3) {
             padding: 0.15rem;
             text-align: center;
-            button{
+            button {
                 width: 1.23rem;
-            	height: 0.26rem;
+                height: 0.26rem;
                 color: rgba(255, 255, 255, 1);
-            	background-color: rgba(54, 140, 89, 1);
+                background-color: rgba(54, 140, 89, 1);
                 border-radius: 0.26rem;
                 padding: 0px;
                 border: none;
@@ -1212,12 +1261,12 @@ export default {
     width: 18px;
     height: 18px;
     text-align: center;
-    line-height: 15px;
+    line-height: 16px;
     border-radius: 100%;
     border: 2px solid #cccccc;
-    font-size: 12px;
+    overflow: hidden;
     i {
-        font-size: 10px;
+        font-size: 8px;
         display: none;
     }
 }

@@ -6,7 +6,9 @@
         </header>
 
         <div class="mui-content">
-
+            <div class="box_3">
+                温馨提示：请使用手机竖着拍照或手机相册中选择。
+            </div>
             <ul class="box_1" v-show="!Uncertified">
                 <li class="zhengmian" @click="zhengmian(true)">
                     <span v-show="zhengmian_img==''">请选择身份证正面</span>
@@ -108,7 +110,7 @@
 </template>
 
 <script>
-import {openloading} from "@/assets/js/currency"
+import { openloading } from "@/assets/js/currency";
 import { VueCropper } from "vue-cropper";
 export default {
     name: "RealName",
@@ -117,7 +119,7 @@ export default {
     },
     data() {
         return {
-            userinfo:'',        //用户信息
+            userinfo: "", //用户信息
             add_loading: false, //正在添加
             zhengmian_ok: false, //正面已上传百度认证
             fanmian_ok: false, //反正已上传百度认证
@@ -139,7 +141,7 @@ export default {
                 original: false,
                 canMoveBox: false,
                 autoCrop: true, //一开始就裁剪
-                outputType: "jpeg" //png,jpeg,webp
+                // outputType: "jpeg" //png,jpeg,webp
             },
             Positive_obj: {
                 //正面信息
@@ -218,15 +220,19 @@ export default {
         //点击正面
         zhengmian(x) {
             this.Positive = x;
-            document
-                .getElementById("zhengmianInput")
-                .getElementsByTagName("input")[0]
-                .click();
+            document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
         },
         input_change(e) {
             console.log(e);
             var that = this;
             var file = e.target.files[0];
+            var size=file.size/1024;
+            if(size>100){
+                this.option.size=0.5
+            }else{
+                this.option.size=1
+            }
+            // console.log(file,size);
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {
@@ -243,20 +249,13 @@ export default {
             }
             var obj = {
                 id_card_side: this.Positive ? "front" : "back",
-                image: this.Positive
-                    ? this.zhengmian_img.substring(
-                          this.zhengmian_img.indexOf("4") + 2
-                      )
-                    : this.fanmian_img.substring(
-                          this.fanmian_img.indexOf("4") + 2
-                      ),
-                detect_direction: true
+                image: this.Positive ? this.zhengmian_img.substring(this.zhengmian_img.indexOf("4") + 2 ) : this.fanmian_img.substring( this.fanmian_img.indexOf("4") + 2),
+                detect_direction: true,
+                // detect_risk:true 风险控制
             };
             this.$axios({
                 method: "post",
-                url:
-                    "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=" +
-                    this.access_token,
+                url:"https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=" +this.access_token,
                 data: this.$qs.stringify(obj)
             })
                 .then(x => {
@@ -304,16 +303,13 @@ export default {
         add() {
             var this_1 = this;
             if (!this.zhengmian_ok || !this.fanmian_ok) {
-                mui.toast("请先上传完整的证件照！", {
-                    duration: 2000,
-                    type: "div"
-                });
+                mui.toast("请先上传完整的证件照！", {duration: 2000, type: "div"});
                 return;
             }
             this.add_loading = true;
             var obj = {
                 userid: this.userinfo.username, //登录用的username  可以不传
-                phone:this.userinfo.phone,
+                phone: this.userinfo.phone,
                 name: this.Positive_obj.name, //真实姓名
                 nation: this.Positive_obj.nation, //民族
                 birthday: this.Positive_obj.birthday, //出生日期
@@ -322,41 +318,30 @@ export default {
                 issueArea: this.The_other_side.issueArea, //签证地
                 frontImg: this.zhengmian_img, //正面照
                 reverseImg: this.fanmian_img, //背面照
-                sex:this.Positive_obj.sex=='男' ? 0 : 1,    //性别
-                validity:this.The_other_side.Invalid         //有效期
+                sex: this.Positive_obj.sex == "男" ? 0 : 1, //性别
+                validity: this.The_other_side.Invalid //有效期
             };
             this.$axios({
                 method: "post",
                 data: obj,
                 url: "/api-u/certification/add"
-            })
-                .then(x => {
-                    console.log("实名认证", x);
-                    if (x.data.error) {
-                        mui.alert(x.data.error, "提示", function() {}, "div");
-                    } else {
-                        this.$store.commit("setCurrent"); //获取个人信息
-                        mui.alert(
-                            "认证成功",
-                            "提示",
-                            function() {
-                                history.back();
-                            },
-                            "div"
-                        );
-                    }
-                    this.add_loading = false;
-                })
-                .catch(error => {
-                    this.add_loading = false;
-                    console.log("实名认证错误", error);
-                    mui.alert(
-                        "认证失败，稍后再试！",
-                        "提示",
-                        function() {},
-                        "div"
-                    );
-                });
+            }).then(x => {
+                console.log("实名认证", x);
+                if (x.data.code!=200) {
+                    // mui.alert(x.data.message, "提示", function() {}, "div");
+                    mui.toast(x.data.message, {duration: "long",type: "div" });
+                } else {
+                    this.$store.commit("setCurrent"); //获取个人信息
+                    mui.alert( "认证成功","提示",function() {
+                        history.back();
+                    }, "div");
+                }
+                this.add_loading = false;
+            }).catch(error => {
+                this.add_loading = false;
+                console.log("实名认证错误", error);
+                mui.toast('系统错误，请稍后再试。', {duration: "long",type: "div" });
+            });
         }
     },
     beforeCreate: function() {
@@ -369,11 +354,16 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-
-        if(localStorage.userInfo && localStorage.userInfo!='' && localStorage.userInfo!=null && localStorage.userInfo!=undefined && localStorage.userInfo!='undefined'){
-            this.userinfo=JSON.parse(localStorage.userInfo);
-        }else{
-            alert('个人信息获取失败，请重新登录！')
+        if (
+            localStorage.userInfo &&
+            localStorage.userInfo != "" &&
+            localStorage.userInfo != null &&
+            localStorage.userInfo != undefined &&
+            localStorage.userInfo != "undefined"
+        ) {
+            this.userinfo = JSON.parse(localStorage.userInfo);
+        } else {
+            alert("个人信息获取失败，请重新登录！");
         }
         this.$store.commit("setagentUser");
         //获取百度  token
@@ -393,9 +383,7 @@ export default {
     destroyed: function() {
         // console.group('destroyed 销毁完成状态===============》');
     },
-    watch: {
-        
-    }
+    watch: {}
 };
 </script>
 
@@ -484,6 +472,7 @@ export default {
     }
 }
 
+
 #RealName .loading {
     position: absolute;
     width: 100%;
@@ -509,6 +498,12 @@ export default {
     position: fixed;
 }
 
+#RealName .box_3{
+    font-size: 0.12rem;
+    text-align: center;
+    padding: 0.2rem 0px 0px;
+    color: red;
+}
 #RealName .box_2 {
     padding: 10px;
     li {
@@ -577,6 +572,7 @@ export default {
         outline: none;
     }
 }
+
 
 #RealName .Cropper_box.zhengmian .cropper-face {
     background-image: url(../assets/image/zhengmian.png);

@@ -13,15 +13,22 @@
                 <span>主页</span>
             </li>
             <li class="min_1 min_12" v-show="mask_show">
-                <div @click="go_Agent()"><i class="icon iconfont icon-woshou"></i></div>
+                <div @click="go_Agent()">
+                    <i class="icon iconfont icon-woshou"></i>
+                </div>
                 <span>代理</span>
             </li>
             <li class="min_1 min_13" v-show="mask_show">
-                <div @click="go('/ApplicationShop')"><i class="icon iconfont icon-dianpu1"></i></div>
+                <div @click="ShopInstructions()">
+                    <i class="icon iconfont icon-dianpu1"></i>
+                </div>
                 <span>店铺</span>
             </li>
+            
             <li class="min_1 min_14" v-show="mask_show">
-                <div @click="go('/my')"><i class="icon iconfont icon-geren"></i></div>
+                <div @click="go('/my')">
+                    <i class="icon iconfont icon-geren"></i>
+                </div>
                 <span>我的</span>
             </li>
         </ul>
@@ -29,8 +36,7 @@
 </template>
 
 <script>
-
-function touchmove_1(e){
+function touchmove_1(e) {
     e.preventDefault();
 }
 
@@ -58,9 +64,20 @@ export default {
         // }
     },
     methods: {
+        //跳转我的店铺
+        ShopInstructions(){
+            this.mask_show = false;
+            if(!this.$store.state.myshop){
+                this.$router.push("/ShopInstructions");
+            }else if(this.$store.state.myshop.state==0 || this.$store.state.myshop.state==2){
+                this.$router.push("/ApplicationShop");
+            }else{
+                this.$router.push('/myshop')
+            }
+        },
         //跳转代理
         go_Agent() {
-            this.mask_show=false;
+            this.mask_show = false;
             console.log(this.$store.state.agentUser);
             if (
                 !this.$store.state.agentUser ||
@@ -72,14 +89,14 @@ export default {
                 this.$router.push("/Agent"); //跳转代理人
             }
         },
-        change_mask(){
-            this.mask_show=!this.mask_show
+        change_mask() {
+            this.mask_show = !this.mask_show;
         },
         change_mask_show(x) {
             this.mask_show = x;
         },
         go(x) {
-            this.mask_show=false;
+            this.mask_show = false;
             this.$router.push(x);
         },
         //开始拖动
@@ -127,6 +144,7 @@ export default {
         // console.group('------beforeCreate创建前状态------');
     },
     created: function() {
+        this.$store.commit('setMyshop');
         // console.group('------created创建完毕状态------');
     },
     beforeMount: function() {
@@ -134,9 +152,11 @@ export default {
     },
     mounted: function() {
         //阻止这个页面下拉
-        setTimeout(function(){
-            document.getElementById("circularNav").addEventListener("touchmove",touchmove_1,{passive: false});
-        },500)
+        setTimeout(function() {
+            document
+                .getElementById("circularNav")
+                .addEventListener("touchmove", touchmove_1, { passive: false });
+        }, 500);
         //{ passive: false }
         // console.group('------mounted 挂载结束状态------');
     },
@@ -147,8 +167,9 @@ export default {
         // console.group('updated 更新完成状态===============》');
     },
     beforeDestroy: function() {
-        console.log(touchmove_1)
-        document.getElementById("circularNav").removeEventListener("touchmove",touchmove_1,{ passive: false });
+        document
+            .getElementById("circularNav")
+            .removeEventListener("touchmove", touchmove_1, { passive: false });
         // console.group('beforeDestroy 销毁前状态===============》');
     },
     destroyed: function() {

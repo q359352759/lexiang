@@ -47,13 +47,13 @@
                 <li>
                     <div>身份证正面：</div>
                     <div class="img_box">
-                        <img :src="Authentication.reverseImg" alt="" srcset="">
+                        <img :src="Authentication.frontImg" alt="" srcset="">
                     </div>
                 </li>
                 <li>
                     <div>身份证反面：</div>
                     <div class="img_box">
-                        <img :src="Authentication.frontImg" alt="" srcset="">
+                        <img :src="Authentication.reverseImg" alt="" srcset="">
                     </div>
                 </li>
             </ul>
@@ -79,13 +79,12 @@ export default {
                 issueArea: "", //大竹县公安局
                 name: "", //孟春成
                 nation: "", //汉
-                reverseImg: "", //7a1201141e8de5337692459ee0e718c1
+                reverseImg: "", //7a1201141e8de5337692459ee0e718c1  反面
                 userid: "" //18583034205
             }
         };
     },
     mounted() {
-
         this.$axios({
             method: "get",
             url:
@@ -136,6 +135,8 @@ export default {
         align-items: center;
         margin: 0px 0px 0.1rem 0px;
         font-size: 0.14rem;
+        min-height: 0.3rem;
+        line-height: 0.3rem;
         color: #484848;
         > div:nth-child(1) {
             width: 0.75rem;
@@ -144,8 +145,7 @@ export default {
         > div:nth-child(2) {
             flex-grow: 1;
             background: #ffffff;
-            padding: 5px;
-            min-height: 0.3rem;
+            padding: 0px 0px 0px 5px;
         }
     }
 }

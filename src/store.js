@@ -19,14 +19,6 @@ axios.interceptors.response.use(
         }
         return Promise.reject(error.response); // 返回接口返回的错误信息
     }
-    // (response) => {
-    //     return response;
-    // },
-    // (error) => {
-    //     if (error.response) {
-    //     }
-    //     return Promise.reject(error); // 返回接口返回的错误信息
-    // }
 );
 import qs from "qs";
 import router from "./router";
@@ -48,24 +40,52 @@ var vuex = new Vuex.Store({
             { id: 2, text: "测试2", done: false }
         ],
         //申请店铺
-        apply_for_a_shop:{
-            creationTime:'',    //开始时间
-            endTime:'',         //结束时间
-            shopType:'1'        //1个人经营 2公司经营
+        apply_for_a_shop: {
+            creationTime: "", //开始时间
+            endTime: "", //结束时间
+            shopType: "", //1个人经营 2公司经营
+            address: "",
+            businessLicense:'',     //营业执照 base64
+            blnumber:'',        //营业执照号
+            //--------------开店认证
+            sex:'',     //性别
+            iaiName:'',  //名字
+            nation:'',   //民族
+            birthday:'',    //出生日期
+            iaiAddress:'',  //住址
+            idNumber:'',    //证件号码
+            issueArea:'',      //签证机关
+            frontImg:'',        //正面
+            reverseImg:'',      //背面
+            validity:'',        //有效期
         },
-        geographical_position:{
-            latitude:'',    // 纬度，浮点数，范围为90 ~ -90
-            longitude:'',    // 经度，浮点数，范围为180 ~ -180。
-            address:''
+        geographical_position: {
+            latitude: "", // 纬度，浮点数，范围为90 ~ -90
+            longitude: "", // 经度，浮点数，范围为180 ~ -180。
+            address:'',
+        },  
+        general_time: {
+            //通用时间
+            year: "",
+            month: "",
+            day: "",
+            end_year: "",
+            end_month: "",
+            end_day: "",
+            type: 0 //0按月 1表示按日
         },
-        general_time:{  //通用时间
-            year:'',
-            month:'',
-            day:'',
-            end_year:'',
-            end_month:'',
-            end_day:'',
-            type:0,     //0按月 1表示按日
+        findByUserid:'',            //用户实名信息
+        shops_tree_list:[],         //店铺分类
+        myshop:{},                  //我的店铺信息
+        
+        Select_picture:{            //从相册中选择的图片
+            type:'',                //ue 编译器选择 commodity 商品  根据环境不同内容不同
+            list:[]
+        },
+        in_index:0,         //是否是第一次进入缓存页面
+        my_position:{       //我的位置
+            x:'',
+            y:''
         }
     },
     getters: {
@@ -110,7 +130,7 @@ var vuex = new Vuex.Store({
         //获取代理人信息
         setagentUser(state) {
             // console.log(this.state.userInfo)
-            var userInfo=JSON.parse(localStorage.userInfo);
+            var userInfo = JSON.parse(localStorage.userInfo);
 
             axios({
                 method: "get",
@@ -121,7 +141,7 @@ var vuex = new Vuex.Store({
                     if (x.data.code == 200) {
                         state.agentUser = x.data.data;
                     } else {
-                        state.agentUser = false;                        
+                        state.agentUser = false;
                     }
                 })
                 .catch(error => {
@@ -132,39 +152,48 @@ var vuex = new Vuex.Store({
         //获取个人信息
         setCurrent(state) {
             // console.log(this.state.loginDate)
-            if (!localStorage.id || localStorage.id=='' || localStorage.id==null || localStorage.id==undefined || localStorage.id=='undefined') {
-                alert('获取用户信息失败，请重新登录');
-                location.href="index.html#/login";
+            if (
+                !localStorage.id ||
+                localStorage.id == "" ||
+                localStorage.id == null ||
+                localStorage.id == undefined ||
+                localStorage.id == "undefined"
+            ) {
+                alert("获取用户信息失败，请重新登录");
+                location.href = "index.html#/login";
                 return;
             }
-            var id=localStorage.id
+            var id = localStorage.id;
             axios({
                 method: "get",
-                url:'api-u/users/'+id
-            }).then(x => {
+                url: "api-u/users/" + id
+            })
+                .then(x => {
                     if (x.data.error) return;
-                if(x.data.code!=200){
-                    alert('获取用户信息失败，请重新登录');
-                    location.href="index.html#/login";
-                    return;
-                }else{
-                    console.log("获取个人信息", x);
-                    state.userInfo = x.data.data;
-                    localStorage.userInfo = JSON.stringify(x.data.data);
-                }                  
-            }).catch(error => {
-                alert('获取用户信息失败，请重新登录');
-                location.href="index.html#/login";
-                // router.push("/login");
-            });
+                    if (x.data.code != 200) {
+                        alert("获取用户信息失败，请重新登录");
+                        location.href = "index.html#/login";
+                        return;
+                    } else {
+                        console.log("获取个人信息", x);
+                        state.userInfo = x.data.data;
+                        localStorage.userInfo = JSON.stringify(x.data.data);
+                    }
+                })
+                .catch(error => {
+                    alert("获取用户信息失败，请重新登录");
+                    location.href = "index.html#/login";
+                    // router.push("/login");
+                });
         },
+        //获取用户实名信息
         setfindByUserid(){
             var userInfo = JSON.parse(localStorage.userInfo);
             axios({
                 method:'get',
                 url:'/api-u/certification/findByUserid?userid='+userInfo.username,
             }).then(x=>{
-                console.log('获取用户实名信息',x);
+                console.log('获取用户实名信息',x);                
                 this.state.findByUserid=x.data;
             }).catch(error=>{
                 console.log('获取用户实名信息',error)
@@ -172,16 +201,58 @@ var vuex = new Vuex.Store({
         },
         //获取店铺类型
         setShopTree(){
-            
-        }
+            axios({
+                method:'get',
+                url:'/api-s/shops/tree/findAll',
+            }).then(x=>{
+                console.log('获取店铺类型',x);
+                //增加一个key
+                function addKey(list){  
+                    for(var i=0;i<list.length;i++){
+                        list[i].value=list[i].id;
+                        list[i].text=list[i].name;
+                        if(list[i].children){
+                            list[i].children=addKey(list[i].children)
+                        }
+                    }
+                    return list;
+                }
+                var list=addKey(x.data.data);
+                this.state.shops_tree_list=list;
+            }).catch(error=>{
+                console.log('获取店铺类型失败',error)
+            })
+        },
+        //查询自己申请的店铺
+        setMyshop(){
+            try {
+                var userInfo = JSON.parse(localStorage.userInfo);
+            } catch (error) {
+                return;       
+            }
+            axios({
+                method:'get',
+                url:'/api-s/shops/finByUserid/'+userInfo.username
+            }).then(x=>{
+                console.log('获取自己的店铺',x);
+                this.state.myshop=x.data.data
+            }).catch(err=>{
+                console.log('获取自己的店铺错误',err)
+            })
+        },
+        //查询店铺分类
+
     },
     actions: {
-        actions_agentUser ({ dispatch,commit }) {        //获取代理人信息
-            commit('setagentUser');   // 等待 actionA 完成
-        }
+        actions_agentUser({ dispatch, commit }) {
+            //获取代理人信息
+            commit("setagentUser"); // 等待 actionA 完成
+        },
         // 调用 store.dispatch('actions_agentUser')
     },
-    modules: {}
+    modules: {
+        
+    }
 });
 // store.commit( 'setIsWeixin', 1);
 export default vuex;
@@ -202,6 +273,10 @@ var weixinobj = localStorage.weixin;
 vuex.commit("setweixinobj", weixinobj);
 //获取个人信息
 // vuex.commit("setCurrent");
+
+//查询店铺类型
+vuex.commit('setShopTree')
+
 
 //获取地区
 if (

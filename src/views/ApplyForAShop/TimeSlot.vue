@@ -28,146 +28,143 @@
 
 <script>
 export default {
-    name:'',
-    data(){
-        return{
-            active:0,
-            startTime:'',
-            entTime:''
+  name: "",
+  data() {
+    return {
+      active: 0,
+      startTime: "",
+      entTime: ""
+    };
+  },
+  methods: {
+    SelectionTime(x) {
+      this.active = x;
+      // if(x==1){
+      //     this.active=(this.active==0 || this.active==2) ? 1 : 0
+      // }else{
+      //     this.active=(this.active==0 || this.active==1) ? 2 : 0
+      // }
+      if (x == 0) return;
+      this.timePicker.show(res => {
+        console.log(res.value);
+        if (x == 1) {
+          this.startTime = res.value;
+        } else {
+          this.entTime = res.value;
         }
+      });
     },
-    methods:{
-        SelectionTime(x){
-            this.active=x
-            // if(x==1){
-            //     this.active=(this.active==0 || this.active==2) ? 1 : 0
-            // }else{
-            //     this.active=(this.active==0 || this.active==1) ? 2 : 0                
-            // }
-            if(x==0) return;
-            this.timePicker.show(res=>{
-                console.log(res.value);
-                if(x==1){
-                    this.startTime=res.value
-                }else{
-                    this.entTime=res.value;
-                }
-            })
-        },
-        queding(){
-            this.$store.state.apply_for_a_shop.creationTime=this.startTime
-            this.$store.state.apply_for_a_shop.endTime=this.entTime;
-            // this.$store.push()
-            history.back();
-        }
-    },
-    beforeCreate: function() {
-        // console.group('------beforeCreate创建前状态------');
-    },
-    created: function() {
-        // console.group('------created创建完毕状态------');
-    },
-    beforeMount: function() {
-        // console.group('------beforeMount挂载前状态------');
-    },
-    mounted: function() {
-        var this_1=this;
-        this.timePicker = new mui.DtPicker({"type":"time"});
-
-        // console.group('------mounted 挂载结束状态------');
-    },
-    activated(){
-        console.log(11111111)
-    },
-    beforeUpdate: function() {
-        // console.group('beforeUpdate 更新前状态===============》');
-    },
-    updated: function() {
-        // console.group('updated 更新完成状态===============》');
-    },
-    beforeDestroy: function() {
-        // console.group('beforeDestroy 销毁前状态===============》');
-    },
-    destroyed: function() {
-        // document.querySelector(".mui-slider_1").removeEventListener("slide", function() {});
-        // console.group('destroyed 销毁完成状态===============》');
-    },
-    watch: {
-        // img_list() {
-        //     this.$nextTick(function() {
-        //         console.log("数据渲染完成");
-        //         this.getswiper();
-        //     });
-        // }
+    queding() {
+      this.$store.state.apply_for_a_shop.creationTime = this.startTime;
+      this.$store.state.apply_for_a_shop.endTime = this.entTime;
+      // this.$store.push()
+      history.back();
     }
-}
+  },
+  beforeCreate: function() {
+    // console.group('------beforeCreate创建前状态------');
+  },
+  created: function() {
+    // console.group('------created创建完毕状态------');
+  },
+  beforeMount: function() {
+    // console.group('------beforeMount挂载前状态------');
+  },
+  mounted: function() {
+    var this_1 = this;
+    this.timePicker = new mui.DtPicker({ type: "time" });
+
+    // console.group('------mounted 挂载结束状态------');
+  },
+  activated() {
+    console.log(11111111);
+  },
+  beforeUpdate: function() {
+    // console.group('beforeUpdate 更新前状态===============》');
+  },
+  updated: function() {
+    // console.group('updated 更新完成状态===============》');
+  },
+  beforeDestroy: function() {
+    // console.group('beforeDestroy 销毁前状态===============》');
+  },
+  destroyed: function() {
+    // document.querySelector(".mui-slider_1").removeEventListener("slide", function() {});
+    // console.group('destroyed 销毁完成状态===============》');
+  },
+  watch: {
+    // img_list() {
+    //     this.$nextTick(function() {
+    //         console.log("数据渲染完成");
+    //         this.getswiper();
+    //     });
+    // }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 
 .mui-bar {
-    background: $header_background;
-    a {
-        color: #ffffff;
-    }
+  background: $header_background;
+  a {
+    color: #ffffff;
+  }
 }
 .mui-title {
-    color: #ffffff;
+  color: #ffffff;
 }
-#TimeSlot .box_1{
-    display: flex;
-    justify-content: center;
-    margin: 99px 0px 0px;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-    .title{
-        font-size: 0.14rem;
-    }
-    .time{
-        width: 100%;
-        border: none;
-    	height: 38px;
-        color: rgba(255, 255, 255, 1);
-    	background-color: rgba(166, 166, 166, 1);
-        font-size: 0.14rem;
-        padding: 0px;
-    }
-    .time.active{
-        background: $header_background;
-    }
-    >li{
-        width: 98px;
-    }
-    >li:nth-chiild(1){
-
-    }
-}
-.box_2{
-    position: fixed;
-    z-index: 1;
-    width: 100%;
-    height: 44px;
-    bottom: 0px;
-    left: 0px;
-    line-height: 44px;
-    color: rgba(255, 255, 255, 1);
-	background-color: rgba(24, 169, 104, 1);
-    text-align: center;
+#TimeSlot .box_1 {
+  display: flex;
+  justify-content: center;
+  margin: 99px 0px 0px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  .title {
     font-size: 0.14rem;
-}
-.box_3{
-    position: absolute;
-    top: 0px;
-    left: 0px;
+  }
+  .time {
     width: 100%;
-    height: 100%;
-    z-index: 0;
+    border: none;
+    height: 38px;
+    color: rgba(255, 255, 255, 1);
+    background-color: rgba(166, 166, 166, 1);
+    font-size: 0.14rem;
+    padding: 0px;
+  }
+  .time.active {
+    background: $header_background;
+  }
+  > li {
+    width: 98px;
+  }
+  > li:nth-chiild(1) {
+  }
+}
+.box_2 {
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+  height: 44px;
+  bottom: 0px;
+  left: 0px;
+  line-height: 44px;
+  color: rgba(255, 255, 255, 1);
+  background-color: rgba(24, 169, 104, 1);
+  text-align: center;
+  font-size: 0.14rem;
+}
+.box_3 {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 </style>
 
 <style lang="scss">
-
 </style>
-

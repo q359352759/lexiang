@@ -36,8 +36,7 @@
 import { openloading } from "@/assets/js/currency";
 export default {
     name: "PaymentPassword",
-    components: {
-    },
+    components: {},
     data() {
         return {
             time: 0,
@@ -61,7 +60,7 @@ export default {
                 mui.toast("两次密码不一致！", { duration: 2000, type: "div" });
                 return;
             } else {
-                openloading(true)
+                openloading(true);
                 var obj = {
                     id: this.userInfo.id,
                     payPassword: this.payPassword,
@@ -93,12 +92,15 @@ export default {
                                 type: "div"
                             });
                         }
-                        openloading(false)
+                        openloading(false);
                     })
                     .catch(err => {
                         console.log(err);
                         openloading(false);
-                        mui.toast("系统错误。", {duration: 2000,type: "div"});
+                        mui.toast("系统错误。", {
+                            duration: 2000,
+                            type: "div"
+                        });
                     });
             }
         },

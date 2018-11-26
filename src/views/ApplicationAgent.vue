@@ -48,19 +48,16 @@
                             <td>费&nbsp;&nbsp;用：</td>
                             <td class="money">
                                 <span>￥88</span>
-                                <span>(vip年费：买一赠三，所有商品优惠5%-50%)</span>
+                                <span>(业务代理费)</span>
+                                <span @click="AgencyCost()" class="mui-pull-right"><i class="icon iconfont icon-help"></i></span>
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div class="box_2">
-                    <!-- <span @click="AgentAdvantage()">
-                        成为代理人的好处>>
-                    </span> -->
-                    <span>
-                        支付方式：
-                    </span>
+                    <img src="image/libao.png" alt="">
+                    <span>活动：前1000名代理人免费赠送价值198元的广告机套餐！</span>
                 </div>
                 <ul class="box_3">
                     <li @click="change_radio_1(1)">
@@ -77,11 +74,11 @@
                         <i class="icon iconfont icon-zhifubao zhifubao"></i>
                         <span>支付宝</span>
                     </li> -->
-                    <li class="haochu">
+                    <!-- <li class="haochu">
                         <span @click="AgentAdvantage()">
                             成为代理人的好处？
                         </span>
-                    </li>
+                    </li> -->
                 </ul>
 
                 <div class="box_4">
@@ -93,9 +90,10 @@
                 </div>
 
                 <button class="btn_1" type="submit">确定</button>
+            
 
             </form>
-
+            <!-- <button @click="addguanggaoji()">添加广告测试</button> -->
             <!-- <input type="text" v-model="mo"> -->
             <!-- <button @click="zhifu()">支付测试1</button>
             <button @click="zhifu1()">支付测试2</button>
@@ -111,13 +109,13 @@
 </template>
 
 <script>
+import {openloading } from "@/assets/js/currency";
 export default {
     name: "ApplicationAgent",
-    components: {
-    },
+    components: {},
     data() {
         return {
-            loading:true,
+            loading: true,
             radio_type_1: 1,
             radio_type_2: true,
             cityPicker3: "", //地区3级联动
@@ -140,9 +138,60 @@ export default {
         // }
     },
     methods: {
+        //跳转代理费用
+        AgencyCost(){
+            this.$router.push('/AgencyCost')
+        },
+        //添加广告机
+        addguanggaoji(){
+            var this_1=this;
+            var tishi="恭喜您已成为代理人，成功获得价值198元的广告机套餐，点击公众号内的“广告管理”使用，初始账号为您的手机号，密码为手机号后6位，请在广告机内点击“会员服务”修改密码（请勿在乐享生活中修改）。";
+            var tishi1="恭喜您已成为代理人，成功获得价值198元的广告机套餐，已经叠加到您的广告机账户。";
+            var obj={
+                    'username':this.userInfo.nickname ? this.userInfo.nickname : '乐享生活',
+                    'pwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
+                    'repwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
+                    'qq':'',
+                    'anums':'365',                  //文章条数 增加的
+                    'userid':this.userInfo.phone,        //手机号码
+                    'beizhu1':'365',           //备注 到期天数  增加
+                    'beizhu2':'乐享生活代理人注册',
+                    'shuyu':'admin',     //您的上级ID
+                    'adnums':20           //广告条数
+                }
+            this.$axios({
+                method:'post',
+                // http://www.lxad.vip/index.php
+                url:'http://www.lxad.vip/api_register.php',
+                data:this.$qs.stringify(obj)
+            }).then(x=>{
+                openloading(false)
+                console.log(x);
+                //x.data==1 表示 新增加 x.data==0表示已经有了修改了数据
+                if(x.data==0 || x.data==1){
+                    mui.alert(x.data==1 ? tishi : tishi1, "提示", function() {
+                        this_1.$store.commit("setagentUser"); //更新代理人信息
+                        this_1.$router.push("/Agent");
+                    },"div");
+                }else{
+                    mui.alert('注册成功代理人,赠送广告机失败，请联系客服。', "提示", function() {
+                        this_1.$store.commit("setagentUser"); //更新代理人信息
+                        this_1.$router.push("/Agent");
+                    },"div");
+                }
+                openloading(true)
+            }).catch(error=>{
+                openloading(false)
+                mui.alert('注册成功代理人,赠送广告机失败，请联系客服。', "提示", function() {
+                    this_1.$store.commit("setagentUser"); //更新代理人信息
+                    this_1.$router.push("/Agent");
+                },"div");
+                console.log(error);
+            })
+        },
         //返回首页
-        back(){
-            this.$router.push('/my')
+        back() {
+            this.$router.push("/my");
         },
         //跳转至认证
         renzheng() {
@@ -178,39 +227,37 @@ export default {
             });
         },
         //查询有没有这个代理人
-        selectOne(){
+        selectOne() {
             if (this.city.length == 0) {
                 mui.toast("请选择区域", { duration: 2000, type: "div" });
                 return;
             }
             if (!this.radio_type_2) {
-                mui.toast("请同意业务代理合作协议!", {
-                    duration: 2000,
-                    type: "div"
-                });
+                mui.toast("请同意业务代理合作协议!", {duration: 2000, type:"div"});
                 return;
             }
             this.$axios({
-                method:'get',
-                url:'/api-u/agentUser/selectOne?phone='+ this.referrerPhone
-            }).then(x=>{
-                if(x.data.code==200 && x.data.data!=null && x.data.data!='null'){
+                method: "get",
+                url: "/api-u/agentUser/selectOne?phone=" + this.referrerPhone
+            }).then(x => {
+                if(x.data.code==200 && x.data.data!= null && x.data.data!= "null"){
                     this.add();
                 }else{
                     mui.toast("没有此推荐人。", { duration: 2000, type: "div" });
                 }
-            }).catch(error=>{
+            }).catch(error => {
                 mui.toast("系统错误，请稍后再试。", { duration: 2000, type: "div" });
-            })
+            });
         },
         //注册
         add() {
-            var this_1=this;
+            // alert(this.weixinobj.openid)
+            var this_1 = this;
             //先支付
             this.$axios({
                 method: "post",
                 // url: '/api-v/pay/getSandboxSignKey',
-                url:'/api-u/users/weixinpay/order',
+                url: "/api-u/users/weixinpay/order",
                 data: this.$qs.stringify({
                     openid: this.weixinobj.openid
                 })
@@ -257,33 +304,34 @@ export default {
                 areaCode: areaCode, //区域code
                 realName: this.realName, //真实姓名
                 userid: this.userInfo.username,
-                phone:this.userInfo.phone
+                phone: this.userInfo.phone
             };
+            openloading(true)
             this.$axios({
                 method: "post",
                 url: "/api-u/agentUser/registered",
                 // params:obj,
                 // data:this.$qs.stringify(obj)
                 data: obj
-            })
-                .then(x => {
-                    console.log(x);
-                    if (x.data.error) {
-                        mui.toast(x.data.message, {duration: 2000,type: "div"});
-                    } else {
-                        mui.alert("申请成功", "提示",function() {
-                            this_1.$store.commit("setagentUser"); //更新代理人信息
-                            this_1.$router.push("/Agent");
-                        },"div");
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                    mui.toast("系统错误请稍后再试！", {
-                        duration: 2000,
-                        type: "div"
-                    });
+            }).then(x => {
+                console.log(x);
+                if (x.data.error) {
+                    mui.toast(x.data.message, { duration: 2000, type: "div" });
+                } else {
+                    this_1.addguanggaoji()
+                    // mui.alert( "申请成功", "提示", function() {
+                    //     this_1.$store.commit("setagentUser"); //更新代理人信息
+                    //     this_1.$router.push("/Agent");
+                    // },"div");
+                }
+            }).catch(err => {
+                console.log(err);
+                mui.toast("系统错误请稍后再试！", {
+                    duration: 2000,
+                    type: "div"
                 });
+                 openloading(false)
+            });
         }
     },
     beforeCreate: function() {
@@ -296,29 +344,27 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        
         if (localStorage.userInfo) {
             this.userInfo = JSON.parse(localStorage.userInfo);
         }
 
         //获取代理人信息
         this.$axios({
-                method: "get",
-                url: "/api-u/agentUser/me?userid=" + this.userInfo.username
-            }).then(x => {
+            method: "get",
+            url: "/api-u/agentUser/me?userid=" + this.userInfo.username
+        })
+            .then(x => {
                 console.log("获取用户代理人信息", x);
                 if (x.data.code == 200) {
-
-                    this.$router.push('/Agent')
-                }else{
-                    this.loading=false
+                    this.$router.push("/Agent");
+                } else {
+                    this.loading = false;
                 }
-            }).catch(error => {
-                console.log('获取代理人信息失败');
-                this.loading=false;
+            })
+            .catch(error => {
+                console.log("获取代理人信息失败");
+                this.loading = false;
             });
-
-
 
         //获取认证信息
         this.$axios({
@@ -326,15 +372,17 @@ export default {
             url:
                 "/api-u/certification/findByUserid?userid=" +
                 this.userInfo.username
-        }).then(x => {
-            console.log("获取认证信息", x);
-            if (x.data != "") {
-                this.Authentication = x.data;
-                this.realName = x.data.name;
-            }
-        }).catch(error => {
-            console.log("获取认证信息错误", error);
-        });
+        })
+            .then(x => {
+                console.log("获取认证信息", x);
+                if (x.data != "") {
+                    this.Authentication = x.data;
+                    this.realName = x.data.name;
+                }
+            })
+            .catch(error => {
+                console.log("获取认证信息错误", error);
+            });
 
         //获取区域
         this.$axios({
@@ -346,33 +394,35 @@ export default {
                 // 'arealevel':1,
                 // 'id':110000
             }
-        }).then(x => {
-            function convert(arr, id) {
-                // return 'sdfsad';
-                var res = [];
-                for (var i = 0; i < arr.length; i++) {
-                    arr[i].value = arr[i].id;
-                    arr[i].text = arr[i].name;
+        })
+            .then(x => {
+                function convert(arr, id) {
+                    // return 'sdfsad';
+                    var res = [];
+                    for (var i = 0; i < arr.length; i++) {
+                        arr[i].value = arr[i].id;
+                        arr[i].text = arr[i].name;
 
-                    if (arr[i].parentid == id) {
-                        res.push(arr[i]);
-                        // var func = eval(arguments.callee.name);
-                        arr[i].children = convert(arr, arr[i].id);
+                        if (arr[i].parentid == id) {
+                            res.push(arr[i]);
+                            // var func = eval(arguments.callee.name);
+                            arr[i].children = convert(arr, arr[i].id);
+                        }
                     }
+                    return res;
                 }
-                return res;
-            }
-            var cityData3 = convert(x.data.data, null);
-            this.cityPicker3 = new mui.PopPicker({
-                layer: 3
-            });
-            this.cityPicker3.setData(cityData3);
+                var cityData3 = convert(x.data.data, null);
+                this.cityPicker3 = new mui.PopPicker({
+                    layer: 3
+                });
+                this.cityPicker3.setData(cityData3);
 
-            console.log("递归后的数据", cityData3);
-        }).catch(err => {
-            // console.log(err)
-            // mui.toast('登录失败',{duration:2000, type:'div'})
-        });
+                console.log("递归后的数据", cityData3);
+            })
+            .catch(err => {
+                // console.log(err)
+                // mui.toast('登录失败',{duration:2000, type:'div'})
+            });
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -480,27 +530,40 @@ export default {
     }
 
     .money {
+        line-height: 38px;
         > span:nth-child(1) {
             color: red;
             font-weight: bold;
             font-size: 16px;
         }
-
         > span:nth-child(2) {
-            font-size: 8px;
+            font-size: 14px;
             color: rgba(166, 166, 166, 1);
             margin: 0px 0px 0px 10px;
         }
+        > span:nth-child(3) {
+            i{
+                font-size: 18px;
+                color: rgba(24, 148, 220, 1)
+            }
+        }
+        
     }
 }
 
 #ApplicationAgent .box_2 {
-    padding: 0px 20px;
-    height: 40px;
-    line-height: 40px;
-    font-size: 14px;
-    // color: #5ac7f3;
-    // text-align: center;
+    height: 44px;
+    background: #ffffff;
+    color: rgba(80, 80, 80, 1);
+	font-size: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0px 0px 0px 0.18rem;
+    border-bottom: 1px solid #ececec;
+    img{
+        width: 22px;
+        margin: 0px 5px 0px 0px;
+    }
 }
 
 #ApplicationAgent .box_3 {
@@ -517,7 +580,7 @@ export default {
         display: flex;
         align-items: center;
     }
-    .haochu{
+    .haochu {
         text-align: right;
         color: #3ab6ed;
         font-size: 14px;
@@ -563,7 +626,7 @@ export default {
     color: #ffffff;
 }
 
-#ApplicationAgent .msg{
+#ApplicationAgent .msg {
     display: flex;
     position: fixed;
     top: 0px;
@@ -581,13 +644,12 @@ export default {
     width: 18px;
     height: 18px;
     text-align: center;
-    line-height: 15px;
+    line-height: 16px;
     border-radius: 100%;
     border: 2px solid #cccccc;
-    font-size: 12px;
-
+    overflow: hidden;
     i {
-        font-size: 10px;
+        font-size: 8px;
         display: none;
     }
 }

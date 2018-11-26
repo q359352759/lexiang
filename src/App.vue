@@ -4,7 +4,7 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
     </div> -->
-    
+
         <transition :name="transitionName">
             <keep-alive>
                 <router-view v-if="$route.meta.keepAlive"></router-view>
@@ -13,7 +13,7 @@
         <transition :name="transitionName">
             <router-view v-if="!$route.meta.keepAlive"></router-view>
         </transition>
-        
+
         <router-view name="circularNav"></router-view>
     </div>
 </template>
@@ -37,7 +37,7 @@ export default {
             var path = this.$route.path;
             var weixin = localStorage.weixin;
             if (!weixin || weixin == null || weixin == undefined) {
-                console.log('没有微信信息')
+                console.log("没有微信信息");
                 // location.href = "getopenid.html?url=" + path;
             } else {
                 console.log("已有微信信息");
@@ -59,7 +59,7 @@ export default {
         // var path = this.$route.path;
         var path = window.location.hash;
         var loginDate = localStorage.loginDate;
-        var baimingdan = ["#/login", "#/register", "#/RegistrationAgreement"]; //未登录可以访问的白名单
+        var baimingdan = ["#/login", "#/register", "#/RegistrationAgreement","#/ForgetPassword"]; //未登录可以访问的白名单
         if (!loginDate || loginDate == null || loginDate == undefined) {
             if (baimingdan.indexOf(path) == -1) {
                 console.log("没有登录准备跳转至登录");
@@ -67,7 +67,6 @@ export default {
             }
             return;
         }
-
 
         //支付宝授权后跳转地址
         var url = Get_URL_parameters("url");
@@ -98,15 +97,15 @@ export default {
             "pauseVoice", //暂停播放接口
             "chooseWXPay", //微信支付
             // "getLocation",  //获取地理位置接口
-            "openLocation", //使用微信内置地图查看位置接口
+            "openLocation" //使用微信内置地图查看位置接口
         ];
 
         // 获取js签名
         this.$axios({
             method: "post",
             // url: '/api-v/pay/getSandboxSignKey',
-            // url: "http://m.lxad.vip/test/jssdk/jssdk.php"
-            url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
+            url: "http://m.lxad.vip/test/jssdk/jssdk.php"
+            //   url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
         })
             .then(x => {
                 console.log("jssdk签名", x);
@@ -169,9 +168,18 @@ export default {
 <style lang="scss">
 @import "@/assets/css/config.scss";
 
-.mui-bar{
+
+.mui-table-view:after{
+    display: none
+}
+.mui-table-view:before{
+    display: none;
+}
+
+
+.mui-bar {
     background-color: $header_background;
-    a{
+    a {
         color: #ffffff;
     }
 }
@@ -179,12 +187,10 @@ export default {
     color: #ffffff;
 }
 
-
-
 html,
 body {
     height: 100%;
-    line-height: initial;
+    line-height: inherit;
 }
 
 #app {

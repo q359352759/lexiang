@@ -60,33 +60,121 @@
             </ul>
 
             <ul class="box_3">
-                <li>视频介绍</li>
-                <li>效果展示</li>
+                <li @click="video_Exhibition()">视频介绍</li>
+                <li @tap="EffectDisplay()">效果展示</li>
             </ul>
             <div class="Agreement">
                 <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_type_2}">
                     <i class="icon iconfont icon-xuanze"></i>
                 </div>
-                <span @click="change_radio_2()"> 我也阅读并同意</span>
-                <span @click="RegistrationAgreement()">《用户注册协议》</span>
+                <span><i class="icon iconfont icon-weixin weixin"></i></span>
+                <span @click="change_radio_2()">
+                    微信支付
+                </span>
+                <!-- <span @click="RegistrationAgreement()">《用户注册协议》</span> -->
             </div>
-
             <button @click="goumai()" class="btn_1">购买</button>
         </div>
     </div>
 </template>
 
 <script>
+import {openloading } from "@/assets/js/currency";
 export default {
     name: "",
     data() {
         return {
-            radio_type_2: true
+            radio_type_2: true,
+            userInfo:''
         };
     },
+    computed: {
+        weixinobj() {
+            return this.$store.state.weixinobj;
+        }
+    },
     methods: {
-        goumai(){
-            mui.toast("功能开发中！", { duration: 2000, type: "div" });
+        //购买
+        goumai() {
+            var this_1=this;
+            // mui.toast("功能开发中！", { duration: 2000, type: "div" });
+            openloading(true);
+
+            this.$axios({
+                method:'post',
+                url:'/api-u/users/weixinpay/guanggaoji',
+                data:this.$qs.stringify({'openid':this.weixinobj.openid})
+            }).then(x=>{
+                console.log(x);
+                openloading(false);
+                var data = x.data;
+                setTimeout(function(){
+                    wx.chooseWXPay({
+                        timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                        nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
+                        package: data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                        signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                        paySign: data.paysign, // 支付签名
+                        success: function(res) {
+                            // 支付成功后的回调函数
+                            console.log(res);
+                            this_1.addguanggaoji()
+                        }
+                    });
+                },1000)
+            }).catch(error=>{
+                console.log(error);
+                openloading(false);
+                mui.toast("系统错误，请稍后再试。", { duration: 2000, type: "div" });
+            })
+        },
+        addguanggaoji(){
+             var this_1=this;
+            var tishi="恭喜您购买广告机成功，点击公众号内的“广告管理”使用，初始账号为您的手机号，密码为手机号后6位，请在广告机内点击“会员服务”修改密码（请勿在乐享生活中修改）。";
+            var tishi1="恭喜您成功获得广告机套餐，已经叠加到您的广告机账户。";
+            var obj={
+                    'username':this.userInfo.nickname ? this.userInfo.nickname : '乐享生活',
+                    'pwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
+                    'repwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
+                    'qq':'',
+                    'anums':'3600',                  //文章条数 增加的
+                    'userid':this.userInfo.phone,        //手机号码
+                    'beizhu1':'365',           //备注 到期天数  增加
+                    'beizhu2':'乐享生活单独购买',
+                    'shuyu':'admin',     //您的上级ID
+                    'adnums':30           //广告条数
+                }
+            this.$axios({
+                method:'post',
+                // http://www.lxad.vip/index.php
+                url:'http://www.lxad.vip/api_register.php',
+                data:this.$qs.stringify(obj)
+            }).then(x=>{
+                openloading(false)
+                console.log(x);
+                //x.data==1 表示 新增加 x.data==0表示已经有了修改了数据
+                if(x.data==0 || x.data==1){
+                    mui.alert(x.data==1 ? tishi : tishi1, "提示", function() {
+                    },"div");
+                }else{
+                    mui.alert('支付成功，购买广告机失败请联系客服。', "提示", function() {
+                    },"div");
+                }
+                openloading(true)
+            }).catch(error=>{
+                openloading(false)
+                mui.alert('支付成功，购买广告机失败请联系客服。', "提示", function() {
+                },"div");
+                console.log(error);
+            })
+        },
+        //视频展示
+        video_Exhibition(){
+            window.location.href="http://www.lxad.vip/about_1.php"
+        },
+        //效果展示
+        EffectDisplay(){
+            window.location.href="http://www.lxad.vip/view_1.php?fid=1542077512213"
         }
     },
     beforeCreate: function() {
@@ -99,7 +187,11 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {
+            
+        }
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -181,7 +273,7 @@ export default {
 
 #Advertising .Agreement {
     display: flex;
-    padding: 0px 20px;
+    padding: 0px 0.3rem;
     font-size: 12px;
     align-items: center;
     margin: 0px 0px;
@@ -190,15 +282,19 @@ export default {
     > span:nth-child(2) {
         margin: 0px 0px 0px 5px;
     }
-    > span:nth-child(3) {
-        /* color: rgba(58, 182, 237, 1) */
-        color: rgba(42, 130, 228, 1);
+    .weixin{
+        font-size: 0.24rem;
+        color: rgba(68, 172, 61, 1);
+        margin: 0px 5px 0px 15px;
     }
-    > span:nth-child(4) {
-        flex-grow: 1;
-        text-align: right;
-        color: rgba(42, 130, 228, 1);
-    }
+    // > span:nth-child(3) {
+    //     color: rgba(42, 130, 228, 1);
+    // }
+    // > span:nth-child(4) {
+    //     flex-grow: 1;
+    //     text-align: right;
+    //     color: rgba(42, 130, 228, 1);
+    // }
 }
 
 #Advertising .btn_1 {
@@ -218,12 +314,12 @@ export default {
     width: 18px;
     height: 18px;
     text-align: center;
-    line-height: 15px;
+    line-height: 16px;
     border-radius: 100%;
     border: 2px solid #cccccc;
-    font-size: 12px;
+    overflow: hidden;
     i {
-        font-size: 10px;
+        font-size: 18px;
         display: none;
     }
 }

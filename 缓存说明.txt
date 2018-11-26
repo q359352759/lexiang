@@ -16,6 +16,8 @@ localStorage.userInfo 用户个人信息
 
 localStorage.area       地区
 
+localStorage.search_history      搜索记录
+
 
 
 appid   wxe81f5f8fa2e34ac6
@@ -26,5 +28,3 @@ https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wxe81
 46dd526b
 
 
-
-    

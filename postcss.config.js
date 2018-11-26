@@ -2,7 +2,6 @@ module.exports = {
   plugins: {
     autoprefixer: {}
   },
-  
 
   // dev: {
   //   env: 'localhost',
@@ -13,7 +12,6 @@ module.exports = {
   //   proxyTable: {},
   //   cssSourceMap: false
   // },
-
 
   // 部署生产环境和开发环境下的URL。
   // 默认情况下，Vue CLI 会假设你的应用是被部署在一个域名的根路径上
@@ -47,8 +45,8 @@ module.exports = {
 
   // 它支持webPack-dev-server的所有选项
   devServer: {
-    		// host: "localhost",
-    		// port: 1111, // 端口号
+    // host: "localhost",
+    // port: 1111, // 端口号
     // 		https: false, // https:{type:Boolean}
     // 		open: true, //配置自动启动浏览器
     // 		// proxy: 'http://localhost:4000' // 配置跨域处理,只有一个代理

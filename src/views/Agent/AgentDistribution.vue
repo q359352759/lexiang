@@ -1,9 +1,9 @@
 <template>
     <div>
         <header class="mui-bar mui-bar-nav">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">分销管理</h1>
-		</header>
+            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <h1 class="mui-title">分销管理</h1>
+        </header>
         <div class="mui-content mui-fullscreen">
             <ul class="box_1">
                 <li :class="{'active':type==0}" @click="select_type(0)">
@@ -15,10 +15,13 @@
                     <div>315</div>
                 </li>
             </ul>
-            <ul class="box_2">
+
+            <ul class="box_2" v-if="type==0">
                 <li v-for="(item, index) in 3" :key="index">
                     <div class="img_box">
-                        <img src="image/5.jpg" alt="" srcset="">
+                        <img v-if="index%3==0" src="image/5.jpg" alt="" srcset="">
+                        <img v-if="index%3==1" src="image/6.jpg" alt="" srcset="">
+                        <img v-if="index%3==2" src="image/7.jpg" alt="" srcset="">
                     </div>
                     <div>
                         <div class="mui-pull-right tuiguang">
@@ -26,7 +29,9 @@
                             <div>推广</div>
                         </div>
                         <h1>创美居装饰丨定制梦想家</h1>
-                        <h2>益州大道555号星宸国际B栋8楼益州大道555号星宸国际B栋8楼</h2>
+                        <h2>
+                            益州大道555号星宸国际B栋8楼益州大道555号星宸国际B栋8楼
+                        </h2>
                         <h3>业务：设计、全包、半包</h3>
                         <div class="footer">
                             <span class="xingxing">
@@ -49,41 +54,107 @@
                     </div>
                 </li>
             </ul>
+
+            <ul class="box_3" v-if="type==1">
+                <li>
+                    <div>
+                        <span>时间</span>
+                        <img src="image/paixun.png" alt="">
+                        <!-- <img src="image/paixushang.png" alt="">
+                        <img src="image/paixuxia.png" alt=""> -->
+                    </div>
+                    <div>
+                        <span>分佣</span>
+                        <img src="image/paixushang.png" alt="">
+                        <!-- <img src="image/paixushang.png" alt="">
+                        <img src="image/paixushang.png" alt=""> -->
+                    </div>
+                </li>
+                <li>
+                    <input type="text" placeholder="会员名">
+                    <i class="icon iconfont icon-chazhao"></i>
+                </li>
+            </ul>
+
+            <ul class="box_4 title" v-if="type==1">
+                <li>
+                    <div>
+                        <div>日期</div>
+                    </div>
+                    <div>
+                        <div>会员名</div>
+                    </div>
+                    <div>
+                        <div>商家</div>
+                    </div>
+                    <div>
+                        <div>累计消费</div>
+                    </div>
+                    <div>
+                        <div>累计分佣</div>
+                    </div>
+                </li>
+            </ul>
+            <ul class="box_4 list" v-if="type==1">
+                <li v-for="(item, index) in 51" :key="index">
+                    <div>
+                        <div>2018.11.11</div>
+                    </div>
+                    <div>
+                        <div>张三张三张三张三</div>
+                    </div>
+                    <div>
+                        <div>2个</div>
+                    </div>
+                    <div>
+                        <div>2000</div>
+                    </div>
+                    <div>
+                        <div>182</div>
+                    </div>
+                </li>
+            </ul>
+
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    nameL:'',
-    data(){
-        return{
-            type:0
-        }
+    nameL: "",
+    data() {
+        return {
+            type: 0
+        };
     },
-    methods:{
-        select_type(x){
-            this.type=x;
+    methods: {
+        select_type(x) {
+            this.type = x;
         }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
+.mui-content {
+    display: flex;
+    flex-direction: column;
+}
 
-.box_1{
+.box_1 {
+    flex-shrink: 0;
     display: flex;
     color: #505050;
     font-size: 0.14rem;
     text-align: center;
     background: #ffffff;
-    >li{
+    > li {
         width: 50%;
         position: relative;
         padding: 8px 0px;
     }
-    >li:nth-child(1)::after{
+    > li:nth-child(1)::after {
         position: absolute;
         top: 20%;
         right: 0px;
@@ -92,7 +163,7 @@ export default {
         height: 60%;
         background: #efeff4;
     }
-    .active::before{
+    .active::before {
         position: absolute;
         width: 50%;
         height: 3px;
@@ -103,88 +174,168 @@ export default {
     }
 }
 
-.box_2{
-    margin:5px 0px 0px;
+.box_2 {
+    overflow: auto;
+    margin: 5px 0px 0px;
     background: #ffffff;
-    li{
+    li {
         padding: 0.08rem;
         border-bottom: 1px solid #e5e5e5;
         display: flex;
-        >div:nth-child(1){
+        > div:nth-child(1) {
             width: 0.75rem;
             height: 0.75rem;
             flex-shrink: 0;
             margin: 0px 0.09rem 0px 0px;
-            img{
+            img {
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
             }
         }
-        >div:nth-child(2){
+        > div:nth-child(2) {
             flex-grow: 1;
             width: 0;
-            *{
+            * {
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
         }
-        .tuiguang{
+        .tuiguang {
             text-align: center;
             font-size: 0.1rem;
             color: #a6a6a6;
-            i{
+            i {
                 font-size: 0.22rem;
                 color: #1894dc;
             }
         }
-        h1{
-            font-weight: 100;
+        h1 {
+            font-weight: 400;
             color: rgba(80, 80, 80, 1);
             font-size: 0.14rem;
+            padding: 1px 0px 0px;
         }
-        h2{
-            font-weight: 100;
+        h2 {
+            font-weight: 400;
             color: rgba(166, 166, 166, 1);
-        	font-size: 0.1rem;
-        }
-        h3{
-            font-weight: 100;
-            color: rgba(80, 80, 80, 1);
-        	font-size: 0.1rem;
-        }
-        .footer{
             font-size: 0.1rem;
+            padding: 3px 0px 0px;
         }
-        .xingxing{
+        h3 {
+            font-weight: 400;
+            color: rgba(80, 80, 80, 1);
+            font-size: 0.1rem;
+            padding: 3px 0px 0px;
+        }
+        .footer {
+            font-size: 0.1rem;
+            padding: 2px 0px 0px;
+        }
+        .xingxing {
             display: inline-block;
             width: 0.5rem;
             color: #d43030;
-            i{
+            i {
                 color: #f4d40c;
             }
         }
-        .yongjin{
+        .yongjin {
             display: inline-block;
             width: 0.5rem;
             color: #d43030;
         }
-        .juli{
+        .juli {
             display: inline-block;
             color: #a6a6a6;
         }
-        .shuliang{
+        .shuliang {
             display: inline-block;
             color: #a6a6a6;
-            i{
+            i {
                 color: #1894dc;
             }
         }
     }
-
 }
 
+.box_3 {
+    flex-shrink: 0;
+    display: flex;
+    padding: 6px 10px;
+    background: #ffffff;
+    margin: 5px 0px;
+    > li:nth-child(1) {
+        display: flex;
+        font-size: 0.12rem;
+        flex-grow: 1;
+        > div {
+            // display: flex;
+            background: #f1f2f3;
+            margin: 0px 0.1rem 0px 0px;
+            color: #505050;
+            height: 0.26rem;
+            line-height: 0.26rem;
+            padding: 0px 15px 0px 15px;
+        }
+        img {
+            vertical-align: middle;
+            height: 16px;
+            margin: 0px 0px 0px 3px;
+        }
+    }
+    li:nth-child(2) {
+        width: 1.25rem;
+        display: flex;
+        align-items: center;
+        border: 1px solid #a6a6a6;
+        border-radius: 3px;
+        input {
+            border: none;
+            height: 0.24rem;
+            margin: 0px;
+            padding: 0px 3px;
+            font-size: 0.12rem;
+        }
+    }
+}
 
+.box_4 {
+    overflow: auto;
+
+    li {
+        display: flex;
+        border-bottom: 1px solid #d8d8d8;
+        font-size: 0.12rem;
+        > div {
+            min-height: 30px;
+            width: 20%;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            border-left: 1px solid #d8d8d8;
+            padding: 0px 3px;
+            > div {
+                width: 100%;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+        > div:nth-child(1) {
+            border: none;
+        }
+    }
+}
+.box_4.title {
+    flex-shrink: 0;
+    background: $header_background;
+    color: #ffffff;
+}
+.box_4.list {
+    > li:nth-child(2n-1) {
+        background: #ffffff;
+    }
+}
 </style>
-

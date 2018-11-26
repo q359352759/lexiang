@@ -6,16 +6,16 @@
         </header>
 
         <div class="mui-content">
-            <div>
+            <div v-if="userinfo.iaiState" class="box_3">
                 <ul class="mui-table-view">
-                    <li class="mui-table-view-cell" @click="select_shop_type()">
+                    <li class="mui-table-view-cell" @click="select_shengfen()">
                         <a class="mui-navigate-right">
-                            使用 <span>马云</span>的实名认证
+                            使用
+                            <span>{{findByUserid ? findByUserid.name : ''}}</span>的实名认证
                         </a>
                     </li>
                 </ul>
             </div>
-            
 
             <ul class="box_1" v-show="!Uncertified">
                 <li class="zhengmian" @click="zhengmian(true)">
@@ -114,20 +114,23 @@
         <div id="zhengmianInput">
             <input type="file" @change="input_change($event)" accept="image/*" name="" id="">
         </div>
+        <circularNav/>
     </div>
 </template>
 
 <script>
-import {openloading} from "@/assets/js/currency"
+import circularNav from '@/components/circularNav'
+import { openloading } from "@/assets/js/currency";
 import { VueCropper } from "vue-cropper";
 export default {
     name: "LegalPersonCertification",
     components: {
-        VueCropper
+        VueCropper,
+        circularNav
     },
     data() {
         return {
-            userinfo:'',        //用户信息
+            userinfo: "", //用户信息
             add_loading: false, //正在添加
             zhengmian_ok: false, //正面已上传百度认证
             fanmian_ok: false, //反正已上传百度认证
@@ -180,9 +183,27 @@ export default {
         // userinfo() {
         //     return this.$store.state.userInfo;
         // }
+        findByUserid(){
+            return this.$store.state.findByUserid
+        }
     },
 
     methods: {
+        //选择以实名的省份证
+        select_shengfen(){
+            console.log(this.findByUserid);
+            this.$store.state.apply_for_a_shop.sex=this.findByUserid.sex, //性别
+            this.$store.state.apply_for_a_shop.iaiName=this.findByUserid.name, //真实姓名
+            this.$store.state.apply_for_a_shop.nation=this.findByUserid.nation, //民族
+            this.$store.state.apply_for_a_shop.birthday=this.findByUserid.birthday, //出生日期
+            this.$store.state.apply_for_a_shop.iaiAddress=this.findByUserid.address, //地址
+            this.$store.state.apply_for_a_shop.idNumber=this.findByUserid.idNumber, //身份证号
+            this.$store.state.apply_for_a_shop.issueArea=this.findByUserid.issueArea, //签证地
+            this.$store.state.apply_for_a_shop.frontImg=this.findByUserid.frontImg, //正面照
+            this.$store.state.apply_for_a_shop.reverseImg=this.findByUserid.reverseImg //背面照
+            this.$store.state.apply_for_a_shop.validity=this.findByUserid.validity //有效期
+            history.back();
+        },
         //左转
         rotateLeft() {
             this.$refs.cropper.rotateLeft();
@@ -213,17 +234,18 @@ export default {
         },
         //获取百度 token
         get_token() {
+            this.add_loading=true
             this.$axios({
                 method: "get",
                 url: "/api-u/baidu/identify"
-            })
-                .then(x => {
-                    console.log(x);
-                    this.access_token = x.data;
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            }).then(x => {
+                console.log(x);
+                this.access_token = x.data;
+                this.add_loading=false
+            }).catch(err => {
+                console.log(err);
+                this.add_loading=false
+            });
         },
         //点击正面
         zhengmian(x) {
@@ -242,6 +264,7 @@ export default {
             reader.onloadend = function() {
                 that.Cropper_show = true;
                 that.option.img = reader.result;
+                // console.log(reader.result)
             };
         },
         //获取身份信息
@@ -253,20 +276,12 @@ export default {
             }
             var obj = {
                 id_card_side: this.Positive ? "front" : "back",
-                image: this.Positive
-                    ? this.zhengmian_img.substring(
-                          this.zhengmian_img.indexOf("4") + 2
-                      )
-                    : this.fanmian_img.substring(
-                          this.fanmian_img.indexOf("4") + 2
-                      ),
+                image: this.Positive ? this.zhengmian_img.substring( this.zhengmian_img.indexOf("4") + 2 ) : this.fanmian_img.substring( this.fanmian_img.indexOf("4") + 2),
                 detect_direction: true
             };
             this.$axios({
                 method: "post",
-                url:
-                    "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=" +
-                    this.access_token,
+                url: "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=" + this.access_token,
                 data: this.$qs.stringify(obj)
             })
                 .then(x => {
@@ -320,52 +335,20 @@ export default {
                 });
                 return;
             }
-            this.add_loading = true;
-            var obj = {
-                userid: this.userinfo.username, //登录用的username  可以不传
-                phone:this.userinfo.phone,
-                name: this.Positive_obj.name, //真实姓名
-                nation: this.Positive_obj.nation, //民族
-                birthday: this.Positive_obj.birthday, //出生日期
-                address: this.Positive_obj.address, //地址
-                idNumber: this.Positive_obj.idNumber, //身份证号
-                issueArea: this.The_other_side.issueArea, //签证地
-                frontImg: this.zhengmian_img, //正面照
-                reverseImg: this.fanmian_img //背面照
-            };
-            this.$axios({
-                method: "post",
-                data: obj,
-                url: "/api-u/certification/add"
-            })
-                .then(x => {
-                    console.log("实名认证", x);
-                    if (x.data.error) {
-                        mui.alert(x.data.error, "提示", function() {}, "div");
-                    } else {
-                        this.$store.commit("setCurrent"); //获取个人信息
-                        mui.alert(
-                            "认证成功",
-                            "提示",
-                            function() {
-                                history.back();
-                            },
-                            "div"
-                        );
-                    }
-                    this.add_loading = false;
-                })
-                .catch(error => {
-                    this.add_loading = false;
-                    console.log("实名认证错误", error);
-                    mui.alert(
-                        "认证失败，稍后再试！",
-                        "提示",
-                        function() {},
-                        "div"
-                    );
-                });
-        }
+            // this.add_loading = true;
+
+            this.$store.state.apply_for_a_shop.sex=this.Positive_obj.sex == "男" ? 0 : 1, //性别
+            this.$store.state.apply_for_a_shop.iaiName=this.Positive_obj.name, //真实姓名
+            this.$store.state.apply_for_a_shop.nation=this.Positive_obj.nation, //民族
+            this.$store.state.apply_for_a_shop.birthday=this.Positive_obj.birthday, //出生日期
+            this.$store.state.apply_for_a_shop.iaiAddress=this.Positive_obj.address, //地址
+            this.$store.state.apply_for_a_shop.idNumber=this.Positive_obj.idNumber, //身份证号
+            this.$store.state.apply_for_a_shop.issueArea=this.The_other_side.issueArea, //签证地
+            this.$store.state.apply_for_a_shop.frontImg=this.zhengmian_img, //正面照
+            this.$store.state.apply_for_a_shop.reverseImg=this.fanmian_img //背面照
+            this.$store.state.apply_for_a_shop.validity=this.The_other_side.Invalid //有效期
+            history.back();
+        },
     },
     beforeCreate: function() {
         // console.group('------beforeCreate创建前状态------');
@@ -377,13 +360,14 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-
-        if(localStorage.userInfo && localStorage.userInfo!='' && localStorage.userInfo!=null && localStorage.userInfo!=undefined && localStorage.userInfo!='undefined'){
-            this.userinfo=JSON.parse(localStorage.userInfo);
-        }else{
-            alert('个人信息获取失败，请重新登录！')
+        try {
+            this.userinfo = JSON.parse(localStorage.userInfo);
+        } catch (error) {
         }
-        this.$store.commit("setagentUser");
+        
+        //获取用户实名信息
+        // this.findByUserid();
+        this.$store.commit('setfindByUserid');
         //获取百度  token
         this.get_token();
         console.log(this.userinfo);
@@ -401,14 +385,19 @@ export default {
     destroyed: function() {
         // console.group('destroyed 销毁完成状态===============》');
     },
-    watch: {
-        
-    }
+    watch: {}
 };
 </script>
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
+#LegalPersonCertification .box_3{
+    color: #505050;
+    font-size:0.14rem;
+    span{
+        color: #2a82e4;
+    }
+} 
 #LegalPersonCertification #zhengmianInput {
     display: none;
 }

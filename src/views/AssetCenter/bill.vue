@@ -73,159 +73,155 @@
 
 <script>
 export default {
-    name:'',
-    data(){
-        return{}
-    },
-    comments:{},
-    computed:{
-        time(){
-            return this.$store.state.general_time
-        }
-    },
-    methods:{
-        GeneralTime(){
-            this.$router.push('/GeneralTime');
-        }
-    },
-    beforeCreate: function() {
-        // console.group('------beforeCreate创建前状态------');
-    },
-    created: function() {
-        // console.group('------created创建完毕状态------');
-    },
-    beforeMount: function() {
-        // console.group('------beforeMount挂载前状态------');
-    },
-    mounted: function() {
-        
-    },
-    activated(){
-        console.log('再次进入页面')
-    },
-    beforeUpdate: function() {
-        // console.group('beforeUpdate 更新前状态===============》');
-    },
-    updated: function() {
-        // console.group('updated 更新完成状态===============》');
-    },
-    beforeDestroy: function() {
-        // console.group('beforeDestroy 销毁前状态===============》');
-    },
-    destroyed: function() {
-        // document.querySelector(".mui-slider_1").removeEventListener("slide", function() {});
-        // console.group('destroyed 销毁完成状态===============》');
-    },
-    watch: {
-        // img_list() {
-        //     this.$nextTick(function() {
-        //         console.log("数据渲染完成");
-        //         this.getswiper();
-        //     });
-        // }
+  name: "",
+  data() {
+    return {};
+  },
+  comments: {},
+  computed: {
+    time() {
+      return this.$store.state.general_time;
     }
-}
+  },
+  methods: {
+    GeneralTime() {
+      this.$router.push("/GeneralTime");
+    }
+  },
+  beforeCreate: function() {
+    // console.group('------beforeCreate创建前状态------');
+  },
+  created: function() {
+    // console.group('------created创建完毕状态------');
+  },
+  beforeMount: function() {
+    // console.group('------beforeMount挂载前状态------');
+  },
+  mounted: function() {},
+  activated() {
+    console.log("再次进入页面");
+  },
+  beforeUpdate: function() {
+    // console.group('beforeUpdate 更新前状态===============》');
+  },
+  updated: function() {
+    // console.group('updated 更新完成状态===============》');
+  },
+  beforeDestroy: function() {
+    // console.group('beforeDestroy 销毁前状态===============》');
+  },
+  destroyed: function() {
+    // document.querySelector(".mui-slider_1").removeEventListener("slide", function() {});
+    // console.group('destroyed 销毁完成状态===============》');
+  },
+  watch: {
+    // img_list() {
+    //     this.$nextTick(function() {
+    //         console.log("数据渲染完成");
+    //         this.getswiper();
+    //     });
+    // }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
+.box_1 {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.09rem 0.15rem;
+  background: #ffffff;
+  color: #505050;
+  font-size: 12px;
+  i {
+    font-size: 0.16rem;
+  }
+  > li:nth-child(1) {
     display: flex;
-    justify-content: space-between;
-    padding: 0.09rem 0.15rem;
+    > div {
+      margin: 0px 20px 0px 0px;
+    }
+  }
+  .shangxia {
+    display: flex;
+    align-items: center;
+  }
+  .jiantou {
+    height: 15px;
+    display: inline-block;
+    margin: 1px 0px 0px;
+    > div {
+      display: inline-block;
+      position: relative;
+      height: 100%;
+      width: 8px;
+      overflow: hidden;
+      i {
+        position: absolute;
+        top: 0px;
+        font-weight: bold;
+        font-size: 16px;
+      }
+    }
+    > div:nth-child(1) {
+      margin: 0px 1px 0px 0px;
+    }
+    .active {
+      color: #1c94e4;
+    }
+    .right {
+      right: 0px;
+    }
+  }
+}
+.box_2 {
+  > li {
+    display: flex;
     background: #ffffff;
-    color: #505050;
-    font-size: 12px;
-    i{
-        font-size: 0.16rem;
+    padding: 0.09rem 0.2rem 0.08rem 0.12rem;
+    .img_box {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 100%;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 100%;
+      }
     }
-    >li:nth-child(1){
-        display: flex;
-        >div{
-            margin: 0px 20px 0px 0px;
-        }
+    > div:nth-child(2) {
+      width: 0;
+      flex-grow: 1;
+      margin: 0px 8px;
     }
-    .shangxia{
-        display: flex;
-        align-items: center;
+    > div:nth-child(3) {
+      flex-shrink: 0;
+      white-space: nowrap;
     }
-    .jiantou{
-        height: 15px;
-        display: inline-block;
-        margin: 1px 0px 0px;
-        >div{
-            display: inline-block;
-            position: relative;
-            height: 100%;
-            width: 8px;
-            overflow: hidden;
-            i{
-                position: absolute;
-                top: 0px;
-                font-weight: bold;
-                font-size: 16px;
-            }
-        }
-        >div:nth-child(1){
-            margin: 0px 1px 0px 0px;
-        }
-        .active{
-            color: #1c94e4;
-        }
-        .right{
-            right: 0px;
-        }
+    .title {
+      font-size: 0.12rem;
+      color: #505050;
     }
+    .type {
+      font-size: 0.1rem;
+      color: #505050;
+      margin: 3px 0px 2px;
+    }
+    .time {
+      color: #a6a6a6;
+      font-size: 0.1rem;
+    }
+    .jia {
+      color: #ff8d1a;
+      font-size: 0.14rem;
+      font-weight: bold;
+    }
+    .jian {
+      font-size: 0.14rem;
+      color: #808080;
+      font-weight: bold;
+    }
+  }
 }
-.box_2{
-    >li{
-        display: flex;
-        background: #ffffff;
-        padding: 0.09rem 0.2rem 0.08rem 0.12rem;
-        .img_box{
-            flex-shrink: 0;
-            width: 36px;
-        	height: 36px;
-            border-radius: 100%;
-            img{
-                width: 100%;
-                height: 100%;
-                border-radius: 100%
-            }
-        }
-        >div:nth-child(2){
-            width: 0;
-            flex-grow: 1;
-            margin: 0px 8px;
-        }
-        >div:nth-child(3){
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-        .title{
-            font-size: 0.12rem;
-            color: #505050;
-        }
-        .type{
-            font-size: 0.1rem ;
-            color: #505050;
-            margin: 3px 0px 2px;
-        }
-        .time{
-            color: #a6a6a6;
-            font-size: 0.1rem;
-        }
-        .jia{
-            color: #ff8d1a;
-            font-size: 0.14rem;
-            font-weight: bold;
-        }
-        .jian{
-            font-size: 0.14rem;
-            color: #808080;
-            font-weight: bold;
-        }
-    }
-}
-
 </style>
-

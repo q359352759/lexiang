@@ -73,446 +73,442 @@
 
 <script>
 export default {
-    name: "",
-    data() {
-        return {
-            Popup: false, //添加支付宝弹出框
-            radio_type_1: 1,
-            tishi: false,
-            app_auth_code: "",
-            zhifubaozhangfu: "",
+  name: "",
+  data() {
+    return {
+      Popup: false, //添加支付宝弹出框
+      radio_type_1: 1,
+      tishi: false,
+      app_auth_code: "",
+      zhifubaozhangfu: "",
 
-            // ===================
-            userInfo: "",
-            Account_obj: {}, //支付账号相关信息
-            code: "", //短信验证
-            key: "", //短信key
-            time: 0,
-            account: "", //绑定的账号
-            submit_add: true //提交类型 添加或修改
-        };
-    },
-    methods: {
-        //添加
-        form() {
-            this.Popup = false;
-            var obj = {
-                userid: this.userInfo.username,
-                type: 0, //0支付宝 1微信 2...
-                account: this.account,
-                normal: 1 //0和 1 1选中
-            };
-            if (this.submit_add) {
-                this.$axios({
-                    method: "post",
-                    url:
-                        "/api-u/users/account?phone=" +
-                        this.userInfo.phone +
-                        "&key=" +
-                        this.key +
-                        "&code=" +
-                        this.code,
-                    data: obj
-                    // params:obj,
-                }).then(
-                    x => {
-                        console.log(x);
-                        if (x.data.code == 200) {
-                            this.findAccount();
-                            this.Popup = false;
-                            mui.toast("设置成功！", {
-                                duration: 2000,
-                                type: "div"
-                            });
-                        } else if (x.data.code == 400) {
-                            mui.toast("验证码错误！", {
-                                duration: 2000,
-                                type: "div"
-                            });
-                        } else {
-                            mui.toast(x.data.message, {
-                                duration: 2000,
-                                type: "div"
-                            });
-                        }
-                    },
-                    error => {
-                        mui.toast("系统错误，请稍后再试！", {
-                            duration: 2000,
-                            type: "div"
-                        });
-                        console.log(error);
-                    }
-                );
+      // ===================
+      userInfo: "",
+      Account_obj: {}, //支付账号相关信息
+      code: "", //短信验证
+      key: "", //短信key
+      time: 0,
+      account: "", //绑定的账号
+      submit_add: true //提交类型 添加或修改
+    };
+  },
+  methods: {
+    //添加
+    form() {
+      this.Popup = false;
+      var obj = {
+        userid: this.userInfo.username,
+        type: 0, //0支付宝 1微信 2...
+        account: this.account,
+        normal: 1 //0和 1 1选中
+      };
+      if (this.submit_add) {
+        this.$axios({
+          method: "post",
+          url:
+            "/api-u/users/account?phone=" +
+            this.userInfo.phone +
+            "&key=" +
+            this.key +
+            "&code=" +
+            this.code,
+          data: obj
+          // params:obj,
+        }).then(
+          x => {
+            console.log(x);
+            if (x.data.code == 200) {
+              this.findAccount();
+              this.Popup = false;
+              mui.toast("设置成功！", {
+                duration: 2000,
+                type: "div"
+              });
+            } else if (x.data.code == 400) {
+              mui.toast("验证码错误！", {
+                duration: 2000,
+                type: "div"
+              });
             } else {
-                var obj = {
-                    id: this.Account_obj.id,
-                    account: this.account,
-                    phone: this.userInfo.phone,
-                    key: this.key,
-                    code: this.code
-                };
-                this.$axios({
-                    method: "put",
-                    url: "/api-u/users/" + this.Account_obj.id + "/account",
-                    data: obj,
-                    params: obj
-                })
-                    .then(x => {
-                        console.log(x);
-                        if (x.data.code == 200) {
-                            this.findAccount();
-                            
-                            mui.toast("设置成功！", {
-                                duration: 2000,
-                                type: "div"
-                            });
-                        } else if (x.data.code == 400) {
-                            mui.toast("验证码错误！", {
-                                duration: 2000,
-                                type: "div"
-                            });
-                        } else {
-                            mui.toast(x.data.message, {
-                                duration: 2000,
-                                type: "div"
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        mui.toast("系统错误，请稍后再试！", {
-                            duration: 2000,
-                            type: "div"
-                        });
-                    });
-                console.log("修改");
+              mui.toast(x.data.message, {
+                duration: 2000,
+                type: "div"
+              });
             }
-        },
-        //获取验证码
-        Verification() {
-            if (this.time != 0) {
-                return;
-            }
-            var this_1 = this;
-            this.time = 60;
-            var time = setInterval(function() {
-                this_1.time--;
-                if (this_1.time == 0) {
-                    clearInterval(time);
-                }
-            }, 1000);
-            this.$axios({
-                method: "post",
-                url:
-                    "/api-n/notification-anon/codes?phone=" +
-                    this.userInfo.phone
-            })
-                .then(x => {
-                    console.log(x);
-                    this.key = x.data.key;
-                    mui.toast(
-                        "短信已发送至" +
-                            this.userInfo.phone +
-                            "号码，请注意查收。",
-                        { duration: 2000, type: "div" }
-                    );
-                })
-                .catch(err => {
-                    console.log(err);
-                    mui.toast("系统错误，请稍后再试！", {
-                        duration: 2000,
-                        type: "div"
-                    });
-                });
-        },
-        //弹出框
-        // hide() {
-        //     this.tishi = false;
-        // },
-        addweixin() {
-            if (!this.$store.state.isweixin) {
-                mui.toast("请在微信公众号中打开", {
-                    duration: 2000,
-                    type: "div"
-                });
-            }
-        },
-        //修改支付账号
-        xiugai() {
-            (this.code = ""), //短信验证
-                (this.key = ""), //短信key
-                (this.account = this.Account_obj.account); //绑定的账号
-            this.Popup = true;
-            this.submit_add = false;
-        },
-        //添加支付宝账号弹出框
-        close() {
-            this.Popup = false;
-        },
-        addzhifubao() {
-            (this.code = ""), //短信验证
-                (this.key = ""), //短信key
-                (this.account = ""); //绑定的账号
-            this.Popup = true;
-            this.submit_add = true;
-            // //下面是支付宝跳转
-            // return
-            // if(this.$store.state.isweixin){
-            //     this.tishi = true;
-            //     return;
-            // }
-            // // var url="https://openauth.alipay.com/oauth2/appToAppAuth.htm?app_id=2018101561640941&redirect_uri="+encodeURIComponent("http://m.lxad.vip/test/dist/test.html")
-            // var url = "https://openauth.alipay.com/oauth2/appToAppAuth.htm?app_id=2018101561640941&redirect_uri=http://m.lxad.vip/test/dist/index.html?id=123456&url=Account#/Account";
-            // var locationHref = "alipays://platformapi/startapp?appId=20000067&url=" + encodeURIComponent(url);
-            // // console.log('测试')
-            // alert(locationHref);
-            // location.href = locationHref;
-            // //返回结果大致为 http://m.lxad.vip/test/index.html?id=123&app_id=200123&source=alipay_app_auth&url=Account&app_auth_code=321321311
-        },
+          },
+          error => {
+            mui.toast("系统错误，请稍后再试！", {
+              duration: 2000,
+              type: "div"
+            });
+            console.log(error);
+          }
+        );
+      } else {
+        var obj = {
+          id: this.Account_obj.id,
+          account: this.account,
+          phone: this.userInfo.phone,
+          key: this.key,
+          code: this.code
+        };
+        this.$axios({
+          method: "put",
+          url: "/api-u/users/" + this.Account_obj.id + "/account",
+          data: obj,
+          params: obj
+        })
+          .then(x => {
+            console.log(x);
+            if (x.data.code == 200) {
+              this.findAccount();
 
-        //==============
-        tixian() {
-            this.$axios({
-                method: "get",
-                url:
-                    "http://122.114.169.178:8080/ailipay/withdrawal/user/pay?phone=" +
-                    this.zhifubaozhangfu
-                // data:''
-            })
-                .then(x => {
-                    alert(JSON.stringify(x));
-                })
-                .catch(error => {
-                    alert(JSON.stringify(error));
-                });
-        },
-        alertCode() {
-            this.app_auth_code = this.$route.query.app_auth_code;
-            alert(this.app_auth_code);
-        },
-        getCode() {
-            this.$axios({
-                method: "get",
-                url:
-                    "http://122.114.169.178:8080/ailipay/withdrawal/user/getCode?code=" +
-                    this.app_auth_code
-                // data:''
-            })
-                .then(x => {
-                    alert(JSON.stringify(x));
-                })
-                .catch(error => {
-                    alert(JSON.stringify(error));
-                });
-        },
-        //获取支付宝账号
-        findAccount() {
-            this.$axios({
-                method: "get",
-                url: "/api-u/users/findAccount?userid=" + this.userInfo.username
-            }).then(
-                x => {
-                    console.log("获取支付宝账号", x);
-                    if (x.data.data != null) {
-                        this.Account_obj = x.data.data;
-                    }
-                },
-                error => {
-                    console.log(error);
-                }
-            );
-        }
+              mui.toast("设置成功！", {
+                duration: 2000,
+                type: "div"
+              });
+            } else if (x.data.code == 400) {
+              mui.toast("验证码错误！", {
+                duration: 2000,
+                type: "div"
+              });
+            } else {
+              mui.toast(x.data.message, {
+                duration: 2000,
+                type: "div"
+              });
+            }
+          })
+          .catch(error => {
+            console.log(error);
+            mui.toast("系统错误，请稍后再试！", {
+              duration: 2000,
+              type: "div"
+            });
+          });
+        console.log("修改");
+      }
     },
-    mounted() {
-        if (
-            localStorage.userInfo &&
-            localStorage.userInfo != "" &&
-            localStorage.userInfo != null &&
-            localStorage.userInfo != undefined &&
-            localStorage.userInfo != "undefined"
-        ) {
-            this.userInfo = JSON.parse(localStorage.userInfo);
+    //获取验证码
+    Verification() {
+      if (this.time != 0) {
+        return;
+      }
+      var this_1 = this;
+      this.time = 60;
+      var time = setInterval(function() {
+        this_1.time--;
+        if (this_1.time == 0) {
+          clearInterval(time);
         }
-
-        this.findAccount();
-
-        // console.log(this.$route)
-        // var app_auth_code=this.$route.query.app_auth_code;
-        // if(app_auth_code){
-        //     alert('app_auth_code:'+app_auth_code)
-        // }
-        // var url="http://m.lxad.vip/test/index.html?id=123&app_id=200123&source=alipay_app_auth&url=Account&app_auth_code=321321311#/";
+      }, 1000);
+      this.$axios({
+        method: "post",
+        url: "/api-n/notification-anon/codes?phone=" + this.userInfo.phone
+      })
+        .then(x => {
+          console.log(x);
+          this.key = x.data.key;
+          mui.toast(
+            "短信已发送至" + this.userInfo.phone + "号码，请注意查收。",
+            { duration: 2000, type: "div" }
+          );
+        })
+        .catch(err => {
+          console.log(err);
+          mui.toast("系统错误，请稍后再试！", {
+            duration: 2000,
+            type: "div"
+          });
+        });
     },
-    updated() {
-        // console.log('updated 更新完成状态===============》');
+    //弹出框
+    // hide() {
+    //     this.tishi = false;
+    // },
+    addweixin() {
+      if (!this.$store.state.isweixin) {
+        mui.toast("请在微信公众号中打开", {
+          duration: 2000,
+          type: "div"
+        });
+      }
+    },
+    //修改支付账号
+    xiugai() {
+      (this.code = ""), //短信验证
+        (this.key = ""), //短信key
+        (this.account = this.Account_obj.account); //绑定的账号
+      this.Popup = true;
+      this.submit_add = false;
+    },
+    //添加支付宝账号弹出框
+    close() {
+      this.Popup = false;
+    },
+    addzhifubao() {
+      (this.code = ""), //短信验证
+        (this.key = ""), //短信key
+        (this.account = ""); //绑定的账号
+      this.Popup = true;
+      this.submit_add = true;
+      // //下面是支付宝跳转
+      // return
+      // if(this.$store.state.isweixin){
+      //     this.tishi = true;
+      //     return;
+      // }
+      // // var url="https://openauth.alipay.com/oauth2/appToAppAuth.htm?app_id=2018101561640941&redirect_uri="+encodeURIComponent("http://m.lxad.vip/test/dist/test.html")
+      // var url = "https://openauth.alipay.com/oauth2/appToAppAuth.htm?app_id=2018101561640941&redirect_uri=http://m.lxad.vip/test/dist/index.html?id=123456&url=Account#/Account";
+      // var locationHref = "alipays://platformapi/startapp?appId=20000067&url=" + encodeURIComponent(url);
+      // // console.log('测试')
+      // alert(locationHref);
+      // location.href = locationHref;
+      // //返回结果大致为 http://m.lxad.vip/test/index.html?id=123&app_id=200123&source=alipay_app_auth&url=Account&app_auth_code=321321311
+    },
+
+    //==============
+    tixian() {
+      this.$axios({
+        method: "get",
+        url:
+          "http://122.114.169.178:8080/ailipay/withdrawal/user/pay?phone=" +
+          this.zhifubaozhangfu
+        // data:''
+      })
+        .then(x => {
+          alert(JSON.stringify(x));
+        })
+        .catch(error => {
+          alert(JSON.stringify(error));
+        });
+    },
+    alertCode() {
+      this.app_auth_code = this.$route.query.app_auth_code;
+      alert(this.app_auth_code);
+    },
+    getCode() {
+      this.$axios({
+        method: "get",
+        url:
+          "http://122.114.169.178:8080/ailipay/withdrawal/user/getCode?code=" +
+          this.app_auth_code
+        // data:''
+      })
+        .then(x => {
+          alert(JSON.stringify(x));
+        })
+        .catch(error => {
+          alert(JSON.stringify(error));
+        });
+    },
+    //获取支付宝账号
+    findAccount() {
+      this.$axios({
+        method: "get",
+        url: "/api-u/users/findAccount?userid=" + this.userInfo.username
+      }).then(
+        x => {
+          console.log("获取支付宝账号", x);
+          if (x.data.data != null) {
+            this.Account_obj = x.data.data;
+          }
+        },
+        error => {
+          console.log(error);
+        }
+      );
     }
+  },
+  mounted() {
+    if (
+      localStorage.userInfo &&
+      localStorage.userInfo != "" &&
+      localStorage.userInfo != null &&
+      localStorage.userInfo != undefined &&
+      localStorage.userInfo != "undefined"
+    ) {
+      this.userInfo = JSON.parse(localStorage.userInfo);
+    }
+
+    this.findAccount();
+
+    // console.log(this.$route)
+    // var app_auth_code=this.$route.query.app_auth_code;
+    // if(app_auth_code){
+    //     alert('app_auth_code:'+app_auth_code)
+    // }
+    // var url="http://m.lxad.vip/test/index.html?id=123&app_id=200123&source=alipay_app_auth&url=Account&app_auth_code=321321311#/";
+  },
+  updated() {
+    // console.log('updated 更新完成状态===============》');
+  }
 };
 </script>
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
 #Account {
+  height: 100%;
+  .mui-content {
     height: 100%;
-    .mui-content {
-        height: 100%;
-        // background:#ffffff;
-        // display: flex;
-        // flex-direction:column;
-    }
+    // background:#ffffff;
+    // display: flex;
+    // flex-direction:column;
+  }
 }
 #Account .mui-bar {
-    background: $header_background;
-    a {
-        color: #ffffff;
-    }
+  background: $header_background;
+  a {
+    color: #ffffff;
+  }
 }
 #Account .mui-title {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 #Account .box_1 {
-    padding: 6px;
-    li {
-        background-color: rgba(229, 229, 229, 1);
-        display: flex;
-        height: 45px;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0px 20px;
-        margin: 0px 0px 5px 0px;
-        > div:nth-child(1) {
-            display: flex;
-            align-items: center;
-            span {
-                color: rgba(80, 80, 80, 1);
-                font-size: 14px;
-                margin: 0px 0px 0px 10px;
-            }
-            .modify {
-                color: #2a82e4;
-            }
-        }
+  padding: 6px;
+  li {
+    background-color: rgba(229, 229, 229, 1);
+    display: flex;
+    height: 45px;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0px 20px;
+    margin: 0px 0px 5px 0px;
+    > div:nth-child(1) {
+      display: flex;
+      align-items: center;
+      span {
+        color: rgba(80, 80, 80, 1);
+        font-size: 14px;
+        margin: 0px 0px 0px 10px;
+      }
+      .modify {
+        color: #2a82e4;
+      }
     }
-    .zhifubao {
-        color: rgba(28, 170, 234, 1);
-        font-size: 25px;
-    }
-    .weixin {
-        color: rgba(60, 172, 60, 1);
-        font-size: 25px;
-    }
+  }
+  .zhifubao {
+    color: rgba(28, 170, 234, 1);
+    font-size: 25px;
+  }
+  .weixin {
+    color: rgba(60, 172, 60, 1);
+    font-size: 25px;
+  }
 }
 
 #Account .addzhifbao {
-    position: fixed;
+  position: fixed;
+  width: 100%;
+  height: 1000%;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
+  background: #000000;
+  img {
     width: 100%;
-    height: 1000%;
-    top: 0px;
-    left: 0px;
-    z-index: 10;
-    background: #000000;
-    img {
-        width: 100%;
-    }
+  }
 }
 
 #Account .Popup {
-    position: fixed;
-    top: 0px;
-    left: 0px;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .Mask {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.3);
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    .Mask {
-        position: absolute;
-        background: rgba(0, 0, 0, 0.3);
-        width: 100%;
+  }
+  form {
+    display: block;
+    position: relative;
+    width: 2.9rem;
+    background: #ffffff;
+    padding: 0.15rem;
+    > .close_1 {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      color: #999999;
+    }
+    .header_1 {
+      color: rgba(80, 80, 80, 1);
+      font-size: 0.14rem;
+      text-align: center;
+      margin: 0px 0px 0.15rem 0px;
+    }
+    li {
+      display: flex;
+      height: 0.35rem;
+      margin: 0px 0px 0.18rem 0px;
+      input {
         height: 100%;
+        margin: 0px;
+        padding: 0px 5px 0px;
+        flex-grow: 1;
+        border: none;
+        background-color: rgba(229, 229, 229, 1);
+        font-size: 0.14rem;
+      }
+      .Verification {
+        color: rgba(255, 255, 255, 1);
+        background-color: rgba(56, 56, 56, 1);
+        font-size: 0.14rem;
+        white-space: nowrap;
+        line-height: 0.35rem;
+        padding: 0px 10px;
+        font-size: 0.11rem;
+      }
     }
-    form {
-        display: block;
-        position: relative;
-        width: 2.9rem;
-        background: #ffffff;
-        padding: 0.15rem;
-        > .close_1 {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            color: #999999;
-        }
-        .header_1 {
-            color: rgba(80, 80, 80, 1);
-            font-size: 0.14rem;
-            text-align: center;
-            margin: 0px 0px 0.15rem 0px;
-        }
-        li {
-            display: flex;
-            height: 0.35rem;
-            margin: 0px 0px 0.18rem 0px;
-            input {
-                height: 100%;
-                margin: 0px;
-                padding: 0px 5px 0px;
-                flex-grow: 1;
-                border: none;
-                background-color: rgba(229, 229, 229, 1);
-                font-size: 0.14rem;
-            }
-            .Verification {
-                color: rgba(255, 255, 255, 1);
-                background-color: rgba(56, 56, 56, 1);
-                font-size: 0.14rem;
-                white-space: nowrap;
-                line-height: 0.35rem;
-                padding: 0px 10px;
-                font-size: 0.11rem;
-            }
-        }
-        button {
-            width: 1.35rem;
-            height: 0.32rem;
-            border-radius: 0.32rem;
-            font-size: 0.14rem;
-            background: $header_background;
-            color: #ffffff;
-            border: none;
-            display: block;
-            margin: 0px auto;
-        }
+    button {
+      width: 1.35rem;
+      height: 0.32rem;
+      border-radius: 0.32rem;
+      font-size: 0.14rem;
+      background: $header_background;
+      color: #ffffff;
+      border: none;
+      display: block;
+      margin: 0px auto;
     }
+  }
 }
 
 #Account .box_2 {
-    padding: 6px;
-    color: #d43030;
-    font-size: 0.14rem;
+  padding: 6px;
+  color: #d43030;
+  font-size: 0.14rem;
 }
 
 // 单选
 #Account .radio_1 {
-    width: 18px;
-    height: 18px;
-    text-align: center;
-    line-height: 15px;
-    border-radius: 100%;
-    border: 2px solid #cccccc;
-    font-size: 12px;
-    i {
-        font-size: 10px;
-        display: none;
-    }
+  width: 18px;
+  height: 18px;
+  text-align: center;
+  line-height: 16px;
+  border-radius: 100%;
+  border: 2px solid #cccccc;
+  overflow: hidden;
+  i {
+    font-size: 8px;
+    display: none;
+  }
 }
 #Account .radio_1.active {
-    background: rgba(58, 182, 237, 1);
-    border: 2px solid rgba(58, 182, 237, 1);
-    color: #ffffff;
-    i {
-        display: inline-block;
-    }
+  background: rgba(58, 182, 237, 1);
+  border: 2px solid rgba(58, 182, 237, 1);
+  color: #ffffff;
+  i {
+    display: inline-block;
+  }
 }
 </style>

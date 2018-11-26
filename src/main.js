@@ -1,6 +1,7 @@
 import Vue from "vue";
 import App from "./App.vue";
 
+
 import axios from "axios";
 axios.defaults.baseURL = baseURL;
 // axios.defaults.baseURL = "http://192.168.1.11:8080";
@@ -18,11 +19,11 @@ axios.interceptors.response.use(
         return response;
     },
     function (error) {
-        console.log(error)
-        if (error.response) {
-            return error.response;
+        if(error){
+            if (error.response) {
+                return error.response;
+            }
         }
-        
         return Promise.reject(error.response); // 返回接口返回的错误信息
     }
 );
@@ -31,8 +32,9 @@ Vue.prototype.$qs = qs;
 
 import router from "./router";
 import store from "./store";
-
 Vue.config.productionTip = false;
+
+
 
 new Vue({
     router,
@@ -43,12 +45,12 @@ new Vue({
 router.beforeEach((to, from, next) => {
     var toPath = to.path;
     var loginDate = localStorage.loginDate;
-    var baimingdan = ["/login", "/register", "/RegistrationAgreement"]; //未登录可以访问的白名单
+    var baimingdan = ["/login", "/register", "/RegistrationAgreement",'/ForgetPassword']; //未登录可以访问的白名单
     if (!loginDate || loginDate == null || loginDate == undefined) {
         if (baimingdan.indexOf(toPath) == -1) {
             console.log("没有登录准备跳转至登录");
             // next({ path: "/login" });
-            next();
+              next();
         } else {
             console.log("白名单");
             next();

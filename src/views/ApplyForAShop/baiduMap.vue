@@ -1,13 +1,13 @@
 <template>
     <div id="baiduMap">
         <header class="mui-bar mui-bar-nav">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">百度地图</h1>
+            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <h1 class="mui-title">百度地图</h1>
             <span class="quding" @click="quding()">确定</span>
-		</header>
+        </header>
         <div class="mui-content mui-fullscreen">
             <div id="container">
-                
+
             </div>
             <ul class="xiangqing">
                 <li>
@@ -17,12 +17,12 @@
                 </li>
                 <li>
                     <span>
-                    纬度：{{latitude}}
+                        纬度：{{latitude}}
                     </span>
                 </li>
                 <li>
                     <span>
-                    地址：{{address}}
+                        地址：{{address}}
                     </span>
                 </li>
             </ul>
@@ -33,29 +33,29 @@
 </template>
 
 <script>
-import {openloading} from '@/assets/js/currency.js';
+import { openloading } from "@/assets/js/currency.js";
 export default {
-    name:'',
-    data(){
-        return{
-            longitude:'',       //经度
-            latitude:'',
-            address:''
-        }
+    name: "",
+    data() {
+        return {
+            longitude: "", //经度
+            latitude: "",
+            address: ""
+        };
     },
-     computed:{
+    computed: {
         // apply_for_a_shop(){
         //     return "";
         // }
     },
-    methods:{
-        quding(){
-            this.$store.state.geographical_position.latitude=this.latitude;
-            this.$store.state.geographical_position.longitude=this.longitude;
-            this.$store.state.geographical_position.address=this.address;
-            
+    methods: {
+        quding() {
+            this.$store.state.geographical_position.latitude = this.latitude;
+            this.$store.state.geographical_position.longitude = this.longitude;
+            this.$store.state.geographical_position.address = this.address;
+
             history.back();
-        },
+        }
     },
     beforeCreate: function() {
         // console.group('------beforeCreate创建前状态------');
@@ -67,82 +67,103 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        var this_1=this;
+        var this_1 = this;
         openloading(true);
 
         var geolocation = new BMap.Geolocation();
-            geolocation.getCurrentPosition(function(r){
-                if(this.getStatus() == BMAP_STATUS_SUCCESS){
-                    this_1.longitude=r.point.lng;
-                    this_1.latitude=r.point.lat;
-                     var map = new BMap.Map("container");
-                    map.centerAndZoom(new BMap.Point(this_1.longitude,this_1.latitude), 20);
-                    map.enableScrollWheelZoom(true);     //开启鼠标滚轮缩放
+        geolocation.getCurrentPosition(
+            function(r) {
+                if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                    this_1.longitude = r.point.lng;
+                    this_1.latitude = r.point.lat;
+                    var map = new BMap.Map("container");
+                    map.centerAndZoom(
+                        new BMap.Point(this_1.longitude, this_1.latitude),
+                        20
+                    );
+                    map.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
 
                     openloading(false);
                     //逆地址解析
-                    var geoc = new BMap.Geocoder();  
-                        geoc.getLocation(r.point, function(rs){
-                            var addComp = rs.addressComponents;
-                            this_1.address=addComp.province + addComp.city  + addComp.district + addComp.street+addComp.streetNumber
-                            console.log(addComp)
-                            console.log(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
-                        });
-                    console.log('您的位置：',r);
+                    var geoc = new BMap.Geocoder();
+                    geoc.getLocation(r.point, function(rs) {
+                        var addComp = rs.addressComponents;
+                        this_1.address =
+                            addComp.province +
+                            addComp.city +
+                            addComp.district +
+                            addComp.street +
+                            addComp.streetNumber;
+                        console.log(addComp);
+                        console.log( addComp.province +", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber );
+                    });
+                    console.log("您的位置：", r);
 
-                    var m_height=(map.getSize().height-24)/2;
-                    var m_width=(map.getSize().width-19)/2;
-                    function ZoomControl(){
+                    var m_height = (map.getSize().height - 24) / 2;
+                    var m_width = (map.getSize().width - 19) / 2;
+                    function ZoomControl() {
                         // 默认停靠位置和偏移量
                         this.defaultAnchor = BMAP_ANCHOR_TOP_LEFT;
-                        this.defaultOffset = new BMap.Size(m_width,m_height);
+                        this.defaultOffset = new BMap.Size(m_width, m_height);
                     }
                     ZoomControl.prototype = new BMap.Control();
-                    ZoomControl.prototype.initialize = function(map){
+                    ZoomControl.prototype.initialize = function(map) {
                         // 创建一个DOM元素
                         var div = document.createElement("div");
-                            //div.innerHTML='aaaa';
-                            // 添加文字说明	
-                            // 设置样式	
-                            div.style.width = "20px";
-                            div.style.height = "30px";
-                            div.style.cursor = "pointer";
-                            div.style.backgroundImage="url('image/dingwei.png')";
-                            div.style.backgroundPosition="center";
-                            div.style.backgroundSize="cover";
-                            // div.style.backgroundColor="red"
-                            // 添加DOM元素到地图中
-                            map.getContainer().appendChild(div);
+                        //div.innerHTML='aaaa';
+                        // 添加文字说明
+                        // 设置样式
+                        div.style.width = "20px";
+                        div.style.height = "30px";
+                        div.style.cursor = "pointer";
+                        div.style.backgroundImage = "url('image/dingwei.png')";
+                        div.style.backgroundPosition = "center";
+                        div.style.backgroundSize = "cover";
+                        // div.style.backgroundColor="red"
+                        // 添加DOM元素到地图中
+                        map.getContainer().appendChild(div);
                         return div;
-                    }
+                    };
                     // 创建控件
                     var myZoomCtrl = new ZoomControl();
                     // 添加到地图当中
                     map.addControl(myZoomCtrl);
-                    
 
-
-                    map.addEventListener('touchend', function(){
+                    map.addEventListener("touchend", function() {
                         var p = map.getCenter();
-                        console.log(p)
-                        this_1.longitude=p.lng
-                        this_1.latitude=p.lat
-                        geoc.getLocation(p, function(rs){
+                        console.log(p);
+                        this_1.longitude = p.lng;
+                        this_1.latitude = p.lat;
+                        geoc.getLocation(p, function(rs) {
                             var addComp = rs.addressComponents;
-                            this_1.address= addComp.district + addComp.street+addComp.streetNumber
-                            console.log(addComp)
-                            console.log(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber);
+                            this_1.address =
+                                addComp.district +
+                                addComp.street +
+                                addComp.streetNumber;
+                            console.log(addComp);
+                            console.log(
+                                addComp.province +
+                                    ", " +
+                                    addComp.city +
+                                    ", " +
+                                    addComp.district +
+                                    ", " +
+                                    addComp.street +
+                                    ", " +
+                                    addComp.streetNumber
+                            );
                         });
                     });
                     // alert(JSON.stringify(r))
-                }else {
-                    alert('failed'+this.getStatus());
+                } else {
+                    alert("failed" + this.getStatus());
                 }
-            },{enableHighAccuracy: true})
-
+            },
+            { enableHighAccuracy: true }
+        );
     },
-    activated(){
-        console.log(11111111)
+    activated() {
+        console.log(11111111);
     },
     beforeUpdate: function() {
         // console.group('beforeUpdate 更新前状态===============》');
@@ -165,11 +186,11 @@ export default {
         //     });
         // }
     }
-}
+};
 </script>
 
 <style lang="scss" scoped>
-.quding{
+.quding {
     position: absolute;
     top: 0px;
     right: 10px;
@@ -177,22 +198,21 @@ export default {
     color: #ffffff;
     font-size: 16px;
 }
-#container{
+#container {
     height: 100%;
 }
-.xiangqing{
+.xiangqing {
     position: absolute;
     top: 55px;
     left: 10px;
     font-size: 0.12rem;
-    li{
+    li {
         margin: 3px 0px;
-        span{
+        span {
             display: inline-block;
-            background:rgba(0, 0,0, 0.3);
+            background: rgba(0, 0, 0, 0.3);
             padding: 2px;
         }
     }
 }
 </style>
-
