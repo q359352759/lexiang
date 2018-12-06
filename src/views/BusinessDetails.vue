@@ -482,11 +482,18 @@ export default {
         // width: 100px;
         margin: 25px 0.15rem 0px;
 
-        h1 {
-            font-weight: 400;
-            font-size: 0.12rem;
-            color: red;
-            margin: 0px;
+#BusinessDetails .box_6{
+     background: #ffffff;
+    display: flex;
+    padding: 0px 25px 0px 10px;
+    .left_1{
+        width: 0px;
+        flex-grow: 1;
+        display:flex;
+        align-items: center;
+        >div:nth-child(1){
+            width: 0px;
+            flex-grow: 1;
         }
         h2 {
             margin: 3px 0px 0px;

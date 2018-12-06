@@ -70,6 +70,12 @@
 
 
 
+                <!-- 商品红包 -->
+                <ul class="Red_envelopes" v-if="type==3">
+                    <li v-for="(item, index) in CardPackge_1.list" :key="index">
+                        <div class="header_1">
+                            <span class="time_1 mui-pull-right">{{item.createTime | filter_time("yyyy.MM.dd hh:mm")}}</span>
+                            <span class="title_1" @tap="go_shop(item)">{{item.shopName}}</span>
         </div>
     </div>
 </template>

@@ -912,4 +912,165 @@ export default {
         
     }
 }
+
+
+
+#home .QRCode_box{
+    position: absolute;
+    left: -100%;
+    .content_1{
+        position: relative;
+        z-index: 1;
+        background: #ffffff;
+        width: 270px;
+        padding: 17px 25px 15px 25px;
+        .title_1{
+            display:flex;
+            .img_box{
+                width: 40px;
+                height: 40px;
+                margin: 0px 14px 0px 0px;
+                img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+            .userName{
+                color: rgba(80, 80, 80, 1);
+            	font-size: 14px;
+            }
+            .text{
+                color: rgba(80, 80, 80, 1);
+            	font-size: 10px;
+            }
+        }
+        .erweima_box{
+            width: 200px;
+            height: 200px;
+            margin: 28px auto 0px;
+            position: relative;
+            div{
+                width: 100%;
+                height: 100%;
+            }
+            img{
+                width: 100%;
+                height: 100%;
+                position: relative;
+                z-index: 0;
+            }
+            .head_img{
+                position: absolute;
+                width: 50px;
+                height: 50px;
+                border-radius: 5px;
+                top: 0px;
+                left: 0px;
+                right: 0px;
+                bottom: 0px;
+                margin: auto;
+                z-index: 1;
+            }
+        }
+        .tishi{
+            color: rgba(166, 166, 166, 1);
+            font-size: 12px;
+            text-align: center;
+            margin: 14px 0px 0px;
+        }
+    }
+}
+
+#home .QRCode{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 11;
+    .mask{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+    }
+    .content_1{
+        >img{
+            width: 100%;
+        }
+        position: relative;
+        z-index: 1;
+        background: #ffffff;
+        width: 270px;
+        // padding: 17px 25px 15px 25px;
+        .close_1{
+            width: 36px;
+            height: 50px;
+            position: absolute;
+            top: -50px;
+            right: 0px;
+            >div:nth-child(1){
+                height: 36px;
+                text-align: center;
+                line-height: 36px;
+                background: #ffffff;
+                border-radius: 100%;
+                position: relative;
+                z-index: 1;
+            }
+            >div:nth-child(2){
+                position: absolute;
+                width: 1px;
+                height: 100%;
+                background: #ffffff;
+                top: 0px;
+                right: 0px;
+                left: 0px;
+                margin: 0px auto;
+            }
+        }
+        .title_1{
+            display:flex;
+            .img_box{
+                width: 40px;
+                height: 40px;
+                margin: 0px 14px 0px 0px;
+                img{
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+            }
+            .userName{
+                color: rgba(80, 80, 80, 1);
+            	font-size: 14px;
+            }
+            .text{
+                color: rgba(80, 80, 80, 1);
+            	font-size: 10px;
+            }
+        }
+        .erweima_box{
+            width: 200px;
+            height: 200px;
+            margin: 28px auto 0px;
+            img{
+                width: 100%;
+                height: 100%;
+            }
+        }
+        .tishi{
+            color: rgba(166, 166, 166, 1);
+            font-size: 12px;
+            text-align: center;
+            margin: 14px 0px 0px;
+        }
+    }
+}
 </style>
