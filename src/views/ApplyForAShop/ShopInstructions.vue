@@ -80,6 +80,7 @@ export default {
     },
     methods:{
         ApplicationShop(){
+            sessionStorage.removeItem('Red_envelopes_0');
             this.$router.push('/ApplicationShop');
         }
     }

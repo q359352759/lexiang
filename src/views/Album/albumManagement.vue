@@ -348,6 +348,12 @@ export default {
         //选择文件
         $('.zhengmianInput').on('change','input',function(){
             var file = $(this)[0].files[0];
+            var size=file.size/1024;
+            if(size>1024){
+                this_1.option.size=size/1024
+            }else{
+                this_1.option.size=1
+            }
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {

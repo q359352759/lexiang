@@ -185,6 +185,7 @@ export default {
         },
         //确认裁剪
         confirm() {
+            console.log(this.option.size)
             this.Cropper_show = false;
             this.$refs.cropper.getCropData(data => {
                 if (this.Positive) {
@@ -208,14 +209,12 @@ export default {
             this.$axios({
                 method: "get",
                 url: "/api-u/baidu/identify"
-            })
-                .then(x => {
+            }).then(x => {
                     console.log(x);
                     this.access_token = x.data;
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            }).catch(err => {
+                console.log(err);
+            });
         },
         //点击正面
         zhengmian(x) {
@@ -223,12 +222,12 @@ export default {
             document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
         },
         input_change(e) {
-            console.log(e);
             var that = this;
             var file = e.target.files[0];
+            console.log(file);
             var size=file.size/1024;
-            if(size>100){
-                this.option.size=0.5
+            if(size>1024){
+                this.option.size=size/1024
             }else{
                 this.option.size=1
             }
@@ -257,47 +256,45 @@ export default {
                 method: "post",
                 url:"https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=" +this.access_token,
                 data: this.$qs.stringify(obj)
-            })
-                .then(x => {
-                    console.log(x);
-                    if (x.data.image_status == "normal") {
-                        var words_result = x.data.words_result;
-                        if (type) {
-                            //表示正面的
-                            this.zhengmian_ok = true;
-                            this.zhengmian_loading = false;
-                            this.Positive_obj = {
-                                address: words_result["住址"].words, //地址
-                                idNumber: words_result["公民身份号码"].words, //身份证号码
-                                birthday: words_result["出生"].words, //出生
-                                name: words_result["姓名"].words, //姓名
-                                sex: words_result["性别"].words, //性别
-                                nation: words_result["民族"].words //民族
-                            };
-                        } else {
-                            this.fanmian_ok = true;
-                            this.fanmian_loading = false;
-                            this.The_other_side = {
-                                Invalid: words_result["失效日期"].words, //失效日期
-                                Date_of_issue: words_result["签发日期"].words, //签发日期
-                                issueArea: words_result["签发机关"].words //签发机关
-                            };
-                        }
+            }).then(x => {
+                console.log(x);
+                if (x.data.image_status == "normal") {
+                    var words_result = x.data.words_result;
+                    if (type) {
+                        //表示正面的
+                        this.zhengmian_ok = true;
+                        this.zhengmian_loading = false;
+                        this.Positive_obj = {
+                            address: words_result["住址"].words, //地址
+                            idNumber: words_result["公民身份号码"].words, //身份证号码
+                            birthday: words_result["出生"].words, //出生
+                            name: words_result["姓名"].words, //姓名
+                            sex: words_result["性别"].words, //性别
+                            nation: words_result["民族"].words //民族
+                        };
                     } else {
-                        if (type) {
-                            this.zhengmian_loading = false;
-                        } else {
-                            this.fanmian_loading = false;
-                        }
-                        mui.toast(this.image_status[x.data.image_status], {
-                            duration: 2000,
-                            type: "div"
-                        });
+                        this.fanmian_ok = true;
+                        this.fanmian_loading = false;
+                        this.The_other_side = {
+                            Invalid: words_result["失效日期"].words, //失效日期
+                            Date_of_issue: words_result["签发日期"].words, //签发日期
+                            issueArea: words_result["签发机关"].words //签发机关
+                        };
                     }
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                } else {
+                    if (type) {
+                        this.zhengmian_loading = false;
+                    } else {
+                        this.fanmian_loading = false;
+                    }
+                    mui.toast(this.image_status[x.data.image_status], {
+                        duration: 2000,
+                        type: "div"
+                    });
+                }
+            }).catch(err => {
+                console.log(err);
+            });
         },
         // 开始提交
         add() {
@@ -329,7 +326,7 @@ export default {
                 console.log("实名认证", x);
                 if (x.data.code!=200) {
                     // mui.alert(x.data.message, "提示", function() {}, "div");
-                    mui.toast(x.data.message, {duration: "long",type: "div" });
+                    mui.toast(x.data.message ? x.data.message : x.data.msg, {duration: "long",type: "div" });
                 } else {
                     this.$store.commit("setCurrent"); //获取个人信息
                     mui.alert( "认证成功","提示",function() {

@@ -88,12 +88,8 @@ export default {
                     var geoc = new BMap.Geocoder();
                     geoc.getLocation(r.point, function(rs) {
                         var addComp = rs.addressComponents;
-                        this_1.address =
-                            addComp.province +
-                            addComp.city +
-                            addComp.district +
-                            addComp.street +
-                            addComp.streetNumber;
+                        // this_1.address = addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber;
+                        this_1.address = addComp.district + addComp.street + addComp.streetNumber;
                         console.log(addComp);
                         console.log( addComp.province +", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber );
                     });
@@ -136,22 +132,8 @@ export default {
                         this_1.latitude = p.lat;
                         geoc.getLocation(p, function(rs) {
                             var addComp = rs.addressComponents;
-                            this_1.address =
-                                addComp.district +
-                                addComp.street +
-                                addComp.streetNumber;
-                            console.log(addComp);
-                            console.log(
-                                addComp.province +
-                                    ", " +
-                                    addComp.city +
-                                    ", " +
-                                    addComp.district +
-                                    ", " +
-                                    addComp.street +
-                                    ", " +
-                                    addComp.streetNumber
-                            );
+                            this_1.address = addComp.district + addComp.street + addComp.streetNumber;
+                            console.log(addComp.province +", " + addComp.city + ", " + addComp.district + ", " + addComp.street + ", " + addComp.streetNumber );
                         });
                     });
                     // alert(JSON.stringify(r))

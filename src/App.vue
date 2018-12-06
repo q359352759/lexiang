@@ -15,6 +15,18 @@
         </transition>
 
         <router-view name="circularNav"></router-view>
+
+        <!-- <div class="hongbaotishi">
+            <div>
+                <div>
+                    <div>恭喜你</div>
+                    <div>领取成功</div> 
+                </div>            
+            </div>
+        </div> -->
+        <!-- <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_type_2}">
+            <i class="icon iconfont icon-xuanze"></i>
+        </div> -->
     </div>
 </template>
 
@@ -29,24 +41,31 @@ export default {
     },
     methods: {},
     beforeCreate: function() {
+        
+        //邀请注册页面 http://192.168.1.13:8080/#/Recommend?pid=9379FECD5A5C1CAB47983D6870DF6D27&invitationtype=1
+
         // console.log(this.$route);
         var agent = navigator.userAgent.toLowerCase();
+        var hash=window.location.hash;
+        if(hash.indexOf('invitationtype')!=-1){
+            localStorage.yaoqing=window.location.hash;
+        }
+            localStorage.return_url=window.location.hash;
         if (agent.match(/MicroMessenger/i) == "micromessenger") {
-            // return true;
             console.log("微信浏览器内访问");
-            var path = this.$route.path;
+            //判断是否是邀请页面
+            
             var weixin = localStorage.weixin;
             if (!weixin || weixin == null || weixin == undefined) {
                 console.log("没有微信信息");
-                // location.href = "getopenid.html?url=" + path;
+                location.href = "getopenid.html";
             } else {
                 console.log("已有微信信息");
-                //检测是否登录
             }
         } else {
-            // return false;
             console.log("不是微信");
         }
+
         // console.group('------beforeCreate创建前状态------');
     },
     created: function() {
@@ -58,30 +77,38 @@ export default {
     mounted: function() {
         // var path = this.$route.path;
         var path = window.location.hash;
+        
         var loginDate = localStorage.loginDate;
-        var baimingdan = ["#/login", "#/register", "#/RegistrationAgreement","#/ForgetPassword"]; //未登录可以访问的白名单
+        var baimingdan = [  "#/login", "#/register","#/home",
+                            "#/CommodityDetails",    //首页商品详情
+                            "#/BusinessDetails",     //首页商家详情
+                            "#/RedEnvelopesList",     //首页商家领取红包页面
+                            "#/RegistrationAgreement",
+                            "#/ForgetPassword",
+                            "#/Recommend",      //分享页面
+                            "#/BeInvited",      //分享注册页面
+                            "#/CommodityDetails", //商品详情
+                        ]; //未登录可以访问的白名单
+            var index=path.indexOf('?');
+            if(index!=-1){
+                path=path.substring(0,index);
+            }
         if (!loginDate || loginDate == null || loginDate == undefined) {
             if (baimingdan.indexOf(path) == -1) {
                 console.log("没有登录准备跳转至登录");
-                // this.$router.push("/login");
+                this.$router.push("/login");
             }
             return;
         }
 
         //支付宝授权后跳转地址
-        var url = Get_URL_parameters("url");
-        if (url) {
-            var url_1 =
-                location.protocol +
-                "//" +
-                location.host +
-                location.pathname +
-                "#/" +
-                url +
-                location.search;
-            console.log(url_1);
-            location.href = url_1;
-        }
+        // var url = Get_URL_parameters("url");
+        // console.log('支付宝授权页面',url)
+        // if (url) {
+        //     var url_1 =location.protocol+"//"+location.host+location.pathname+"#/"+url+location.search;
+        //     console.log(url_1);
+        //     location.href = url_1;
+        // }
 
         var jsApiList = [
             // 'onMenuShareTimeline',  //分享  即将废弃
@@ -96,8 +123,9 @@ export default {
             "playVoice", //播放语音接口
             "pauseVoice", //暂停播放接口
             "chooseWXPay", //微信支付
-            // "getLocation",  //获取地理位置接口
-            "openLocation" //使用微信内置地图查看位置接口
+            // "getLocation",   //获取地理位置接口
+            "openLocation",     //使用微信内置地图查看位置接口
+            'scanQRCode'        //扫一扫
         ];
 
         // 获取js签名
@@ -105,23 +133,21 @@ export default {
             method: "post",
             // url: '/api-v/pay/getSandboxSignKey',
             url: "http://m.lxad.vip/test/jssdk/jssdk.php"
-            //   url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
-        })
-            .then(x => {
-                console.log("jssdk签名", x);
-                var data = x.data;
-                wx.config({
-                    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                    appId: data.appId, // 必填，公众号的唯一标识
-                    timestamp: data.timestamp, // 必填，生成签名的时间戳
-                    nonceStr: data.nonceStr, // 必填，生成签名的随机串
-                    signature: data.signature, // 必填，签名
-                    jsApiList: jsApiList // 必填，需要使用的JS接口列表
-                });
-            })
-            .catch(err => {
-                console.log(err);
+            // url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
+        }).then(x => {
+            console.log("jssdk签名", x);
+            var data = x.data;
+            wx.config({
+                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: data.appId, // 必填，公众号的唯一标识
+                timestamp: data.timestamp, // 必填，生成签名的时间戳
+                nonceStr: data.nonceStr, // 必填，生成签名的随机串
+                signature: data.signature, // 必填，签名
+                jsApiList: jsApiList // 必填，需要使用的JS接口列表
             });
+        }).catch(err => {
+            console.log(err);
+        });
 
         wx.ready(function() {
             // console.log('config信息验证后会执行ready方法');
@@ -167,7 +193,6 @@ export default {
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
-
 
 .mui-table-view:after{
     display: none
@@ -237,5 +262,28 @@ li {
 .slide-left-leave-active {
     opacity: 0;
     // transform: translate3d(100%, 0, 0);
+}
+
+.radio_1 {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    text-align: center;
+    line-height: 12px;
+    border-radius: 100%;
+    border: 2px solid #cccccc;
+    overflow: hidden;
+    i {
+        font-size: 8px;
+        display: none;
+    }
+}
+.radio_1.active {
+    background: rgba(58, 182, 237, 1);
+    border: 2px solid rgba(58, 182, 237, 1);
+    color: #ffffff;
+    i {
+        display: inline-block;
+    }
 }
 </style>

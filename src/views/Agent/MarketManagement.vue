@@ -8,11 +8,11 @@
             <ul class="box_1">
                 <li :class="{'active':type==0}" @click="select_type(0)">
                     <div>商家</div>
-                    <div>3</div>
+                    <div>0</div>
                 </li>
                 <li :class="{'active':type==1}" @click="select_type(1)">
                     <div>会员</div>
-                    <div>315</div>
+                    <div>0</div>
                 </li>
             </ul>
 
@@ -20,117 +20,212 @@
                 <li>
                     <div>
                         <span>时间</span>
+                        <!-- <img src="image/paixun.png" alt="">
+                        <img src="image/paixushang.png" alt=""> -->
+                        <img src="image/paixuxia.png" alt="">
+                    </div>
+                    <div>
+                        <span>分佣</span>
                         <img src="image/paixun.png" alt="">
                         <!-- <img src="image/paixushang.png" alt="">
                         <img src="image/paixuxia.png" alt=""> -->
                     </div>
-                    <div>
-                        <span>分佣</span>
-                        <img src="image/paixushang.png" alt="">
-                        <!-- <img src="image/paixushang.png" alt="">
-                        <img src="image/paixushang.png" alt=""> -->
-                    </div>
                 </li>
-                <li>
+                <li v-if="type==0">
+                    <input type="text" v-model="shop.query.name" placeholder="店铺名">
+                    <i @click="chaxun()" class="icon iconfont icon-chazhao"></i>
+                </li>
+                <li v-if="type==1">
                     <input type="text" placeholder="会员名">
                     <i class="icon iconfont icon-chazhao"></i>
                 </li>
             </ul>
 
-            
-            <ul class="box_2" v-if="type==0">
-                <li v-for="(item, index) in 10" :key="index">
-                    <div class="img_box">
-                        <img src="image/5.jpg" alt="" srcset="">
-                    </div>
-                    <div>
-                        <div class="mui-pull-right tuiguang">
-                            <i class="icon iconfont icon-fenxiang2"></i>
-                            <div>推广</div>
+            <div class="content_1" @scroll="scroll()">
+
+                <ul class="box_2" v-if="type==0">
+                    <li v-for="(item, index) in shop.list" :key="index">
+                        <div class="img_box">
+                            <img :src="item.signboard" alt="" srcset="">
                         </div>
-                        <h1>创美居装饰丨定制梦想家</h1>
-                        <h2>益州大道555号星宸国际B栋8楼益州大道555号星宸国际B栋8楼</h2>
-                        <h3>业务：设计、全包、半包</h3>
-                        <div class="footer">
-                            <span class="xingxing">
-                                <i class="icon iconfont icon-shoucangdianjihou"></i>
-                                4.9
-                            </span>
-                            <span class="yongjin">
-                                <i class="icon iconfont icon-yongjin1"></i>
-                                10%
-                            </span>
-                            <span class="juli">
-                                <i class="icon iconfont icon-location"></i>
-                                1.2km
-                            </span>
-                            <span class="shuliang mui-pull-right">
-                                <i class="icon iconfont icon-geren"></i>
-                                152人
-                            </span>
+                        <div>
+                            <!-- <div class="mui-pull-right tuiguang">
+                                <i class="icon iconfont icon-fenxiang2"></i>
+                                <div>推广</div>
+                            </div> -->
+                            <h1>{{item.name}}</h1>
+                            <h2>
+                                <div v-if="item.state==1" class="mui-pull-right state_1">正常</div>
+                                <div>
+                                    {{item.address}}
+                                </div>
+                            </h2>
+                            <h3>业务：</h3>
+                            <div class="footer">
+                                <span class="xingxing">
+                                    <i class="icon iconfont icon-shoucangdianjihou"></i>
+                                    5.0
+                                </span>
+                                <span class="yongjin">
+                                    <i class="icon iconfont icon-yongjin1"></i>
+                                    0%
+                                </span>
+                                <span class="juli">
+                                    <i class="icon iconfont icon-location"></i>
+                                    0km
+                                </span>
+                                <span class="shuliang mui-pull-right">
+                                    <i class="icon iconfont icon-geren"></i>
+                                    0人
+                                </span>
+                            </div>
                         </div>
-                    </div>
-                </li>
-            </ul>
+                    </li>
+                </ul>
+                <loading v-if="type==0" :loadingtype="shop.loading" :nodata="!shop.loading && shop.total==0" :end="!shop.loading && shop.total!=0 && shop.list.length==shop.total" />
 
+                <ul class="box_4 title" v-if="type==1">
+                    <li>
+                        <div>
+                            <div>日期</div>
+                        </div>
+                        <div>
+                            <div>会员名</div>
+                        </div>
+                        <div>
+                            <div>商家</div>
+                        </div>
+                        <div>
+                            <div>累计消费</div>
+                        </div>
+                        <div>
+                            <div>累计分佣</div>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="box_4 list" v-if="type==1">
+                    <li v-for="(item, index) in 0" :key="index">
+                        <div>
+                            <div>2018.11.11</div>
+                        </div>
+                        <div>
+                            <div>张三张三张三张三</div>
+                        </div>
+                        <div>
+                            <div>2个</div>
+                        </div>
+                        <div>
+                            <div>2000</div>
+                        </div>
+                        <div>
+                            <div>182</div>
+                        </div>
+                    </li>
+                </ul>
+                <loading v-if="type==1" :nodata="true" />
 
-            <ul class="box_4 title" v-if="type==1">
-                <li>
-                    <div>
-                        <div>日期</div>
-                    </div>
-                    <div>
-                        <div>会员名</div>
-                    </div>
-                    <div>
-                        <div>商家</div>
-                    </div>
-                    <div>
-                        <div>累计消费</div>
-                    </div>
-                    <div>
-                        <div>累计分佣</div>
-                    </div>
-                </li>
-            </ul>
-            <ul class="box_4 list" v-if="type==1">
-                <li v-for="(item, index) in 51" :key="index">
-                    <div>
-                        <div>2018.11.11</div>
-                    </div>
-                    <div>
-                        <div>张三张三张三张三</div>
-                    </div>
-                    <div>
-                        <div>2个</div>
-                    </div>
-                    <div>
-                        <div>2000</div>
-                    </div>
-                    <div>
-                        <div>182</div>
-                    </div>
-                </li>
-            </ul>
-
-
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+import loading from '@/components/loading.vue'
 export default {
-  nameL: "",
-  data() {
-    return {
-      type: 0
-    };
-  },
-  methods: {
-    select_type(x) {
-      this.type = x;
-    }
-  }
+    nameL: "",
+    components:{
+        loading
+    },
+    data() {
+        return {
+            type: 0,
+            areaManager:'',
+            userInfo:'',
+            name:'',
+            shop:{
+                loading:true,
+                list:[],
+                page_index:0,
+                total:0,
+                query:{
+                    start:0,
+                    length:10,
+                    state:1,
+                    areaCode:'',
+                    name:'',
+                }
+            }
+        };
+    },
+    methods: {
+        //查询
+        chaxun(){
+            this.shop.list=[];
+            this.shop.page_index=0;
+            this.get_shop();
+        },
+        select_type(x) {
+            this.type = x;
+        },
+        //滚动条
+        scroll(){
+            var h = e.target.offsetHeight; //容器高度
+            var sh = e.target.scrollHeight; //滚动条总高
+            var t = e.target.scrollTop; //滚动条到顶部距离
+            if (h + t >= sh - 10) { 
+                if(this.type==0){
+                    if(!this.shop.loading && this.shop.list.length<this.shop.total){
+                        this.shop.page_index++;
+                        this.get_shop()
+                    }
+                }else if(this.type==1){
+                }else if(this.type==2){
+                }
+                console.log("到底底部");
+            }
+        },
+        //获取代理商信息
+        get_areaManager() {
+            this.$axios({
+                method: "get",
+                url:"/api-u/areaManager/findme?userid=" + this.userInfo.username
+            }).then(x => {
+                console.log("获取代理商信息", x);
+                this.areaManager=x.data.data;
+                this.get_shop();
+            }).catch(error => {
+                console.log("获取代理商信息错误", error);
+            });
+        },
+        //根据区域查询店铺
+        get_shop(){
+            this.shop.loading=true;
+            this.shop.query.start=this.shop.page_index*this.shop.query.length;
+            this.shop.query.areaCode=this.areaManager.areaCode;
+            this.$axios({
+                method:'get',
+                url:'/api-s/shops/findAll',
+                params:this.shop.query
+            }).then(x=>{
+                console.log('查询店铺',x)
+                var list=x.data.data.data;
+                this.shop.list=this.shop.list.concat(list);
+                this.shop.total=x.data.data.total;
+                this.shop.loading=false;
+            }).catch(err=>{
+                console.log('查询店铺失败',err);
+            })
+        }
+    },
+    mounted() {
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {}
+        
+        //查询代理商信息
+        this.get_areaManager()
+        
+    },
 };
 </script>
 
@@ -140,7 +235,10 @@ export default {
   display: flex;
   flex-direction: column;
 }
-
+.content_1{
+    flex-grow: 1;
+    overflow: auto;
+}
 .box_1 {
   flex-shrink: 0;
   display: flex;
@@ -198,6 +296,9 @@ export default {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+      .state_1{
+          color: rgba(0, 122, 255, 1);
       }
     }
     .tuiguang {

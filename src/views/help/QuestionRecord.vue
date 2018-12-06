@@ -8,7 +8,7 @@
         </header>
         <div class="mui-content mui-fullscreen">
             <ul class="box_1">
-                <li class="right_1">
+                <!-- <li class="right_1">
                     <div class="time_1">2018.11.12 20:52:22</div>
                     <div class="cont_1">
                         <div class="text_1">
@@ -20,7 +20,6 @@
                         </div>
                     </div>
                 </li>
-
                 <li class="left_1">
                     <div class="time_1">2018.11.12 20:52:22</div>
                     <div class="cont_1">
@@ -31,16 +30,20 @@
                             <div>您好，该功能目前正在开发中，预计12月25日左右上线，给您改带来不便敬请谅解。</div>
                         </div>
                     </div>
-                </li>
+                </li> -->
             </ul>
+            <loading :nodata="true"/>
         </div>
     </div>
 </template>
 
 <script>
-
+import loading from '@/components/loading.vue'
 export default {
     name:'',
+    components:{
+        loading
+    },
     data(){
         return{}
     },

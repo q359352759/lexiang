@@ -42,12 +42,12 @@
             </ul>
 
             <ul class="box_2">
-                <li>
+                <!-- <li>
                     <div class="img_box">
                         <img src="image/7.jpg" alt="" srcset="">
                     </div>
                     <div>
-                        <div class="title">在易起科技</div>
+                        <div class="title">测试科技</div>
                         <div class="type">[团队补贴]</div>
                         <div class="time">2018.11.08 13:29:23</div>
                     </div>
@@ -58,22 +58,26 @@
                         <img src="image/7.jpg" alt="" srcset="">
                     </div>
                     <div>
-                        <div class="title">在易起科技</div>
+                        <div class="title">测试科技</div>
                         <div class="type">[团队补贴]</div>
                         <div class="time">2018.11.08 13:29:23</div>
                     </div>
                     <div class="jian">-26.00</div>
-                </li>
+                </li> -->
             </ul>
-
+            <loading :nodata="true"/>
 
         </div>
     </div>
 </template>
 
 <script>
+import loading from '@/components/loading.vue';
 export default {
   name: "",
+  components:{
+      loading
+  },
   data() {
     return {};
   },

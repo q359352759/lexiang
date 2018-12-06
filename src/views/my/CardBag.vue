@@ -3,8 +3,8 @@
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">卡券包</h1>
-            <span class="lingdang">
-                <span>2</span>
+            <span class="lingdang" @tap="news()">
+                <!-- <span>2</span> -->
                 <i class="icon iconfont icon-lingdang"></i>
             </span>
         </header>
@@ -20,55 +20,134 @@
                 </li>
                 <li  :class="{'active':type==2}" @tap="select_type(2)">
                     <div>店铺红包</div>
-                    <div>￥0</div>
+                    <div>￥{{findStotal_2}}</div>
                 </li>
                 <li  :class="{'active':type==3}" @tap="select_type(3)">
                     <div>商品红包</div>
-                    <div>￥0</div>
+                    <div>￥{{findStotal_3}}</div>
                 </li>
             </ul>
+            
+            <div class="conent_1" @scroll="scroll($event)">
 
-            <ul class="box_2">
-                <li :class="{'active':type_1==0}" @tap="select_type_1(0)">签到红包</li>
-                <li :class="{'active':type_1==1}" @tap="select_type_1(1)">签到记录</li>
-            </ul>
-
-            <ul class="Red_envelopes">
-                <li v-for="(item, index) in 2" :key="index">
-                    <div class="header_1">
-                        <span class="time_1 mui-pull-right">2018.11.8 09:23:30</span>
-                        <span class="title_1">韩国欧巴料理</span>
-                    </div>
-                    <ul class="item">
-                        <li class="img_box">
-                            <img src="image/hongbao_1.png" alt="" srcset="">
-                        </li>
-                        <li>
-                            <div class="title_1">
-                                <span class="money">￥10</span>
-                                <span class="type">签到红包</span>
-                            </div>
-                            <div class="title_2">
-                                可连续签到7天
-                            </div>
-                            <div class="time_2">
-                                2019.1.1失效
-                            </div>
-                        </li>
-                        <li>
-                            <div></div>
-                            <div></div>
-                        </li>
-                        <li>
-                            <div v-show="index%2!=0" class="type_1">红色</div>
-                            <div v-show="index%2==0" class="type_2">灰色</div>
-                            <span  v-show="index%2!=0" class="time_1">2018.12.01</span>
-                        </li>
+                <!-- 签到红包 -->
+                <!-- <div v-if="type==0">
+                    <qiandao :obj="{'name':'红包乐购官方'}"/>
+                </div>
+                <div class="box_2" v-if="type==0">
+                    <ul>
+                        <li>推荐</li>
+                        <li v-for="(item, index) in shops_tree_list" :key="index">{{item.name}}</li>
                     </ul>
-                </li>
-            </ul>
+                    <div>去使用</div>
+                </div>
+                <div v-if="type==0" v-for="(item, index) in 0" :key="index">
+                    <qiandao :obj="{'name':'邹氏菜川馆'}"/>
+                </div> -->
+                
+                <loading v-if="type==0" :nodata="true"/>
 
 
+                <!-- 平台红包 -->
+                <loading v-if="type==1" :nodata="true"/>
+                <ul class="Red_envelopes" v-if="type==1">
+                    <li v-for="(item, index) in 0" :key="index">
+                        <div class="header_1">
+                            <span class="time_1 mui-pull-right">2018.11.8 09:23:30</span>
+                            <span class="title_1">红包乐购官方</span>
+                        </div>
+                        <ul class="item">
+                            <li class="img_box">
+                                <img src="image/hongbao_1.png" alt="" srcset="">
+                            </li>
+                            <li>
+                                <div class="title_1">
+                                    <span class="money">10元</span>
+                                    <span class="type">签到红包</span>
+                                </div>
+                                <div class="title_2">
+                                    好友推荐奖励
+                                </div>
+                                <div class="time_2">
+                                    长期有效
+                                </div>
+                            </li>
+                            <li>
+                                <div></div>
+                                <div></div>
+                            </li>
+                            <li>
+                                <div class="type_2">已到账</div>
+                                <!-- <div v-show="index%2!=0" class="type_1">红色</div>
+                                <div v-show="index%2==0" class="type_2">灰色</div>
+                                <span  v-show="index%2!=0" class="time_1">2018.12.01</span> -->
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+               
+
+                <!-- 店铺红包 -->
+                <ul class="Red_envelopes" v-if="type==2">
+                    <li v-for="(item, index) in CardPackge_0.list" :key="index">
+                        <div class="header_1">
+                            <span class="time_1 mui-pull-right">{{item.pgCreateTime | filter_time}}</span>
+                            <span class="title_1" @tap="go_shop_1(item)">{{item.sName}}</span>
+                        </div>
+                        <ul class="item">
+                            <li class="img_box">
+                                <img :src="item.sSignboard" alt="" srcset="">
+                            </li>
+                            <li>
+                                <div class="title_1">
+                                    <span class="money">{{item.redAmount}}元</span>
+                                    <span class="type">{{item.redHeadline}}</span>
+                                </div>
+                                <div class="title_2">
+                                    <span v-if="item.redDeductionType==1">每满{{item.redExpire}}元，可抵扣{{item.redDeduction}}元</span>
+                                    <span v-if="item.redDeductionType==0">抵扣{{item.redPercentage}}%</span>                                    
+                                </div>
+                                <div class="time_2">
+                                    <span v-if="item.redType==0 || item.redType==4">长期有效</span>
+                                    <span v-if="item.redType==2 || item.redType==3">
+                                        {{item.redStratTime | filter_time("yyyy.MM.dd")}}-{{item.redEndTime | filter_time("yyyy.MM.dd")}}
+                                    </span>
+                                    <!-- 生日红包 -->
+                                    <span v-if="item.redType==5">{{item.pgStartTime | filter_time("yyyy.MM.dd")}}-{{item.pgEndTime | filter_time('yyyy.MM.dd')}}</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div></div>
+                                <div></div>
+                            </li>
+                            <li>
+                                <!-- 生日红包 -->
+                                <div v-if="item.redType==5">
+                                    <div v-if="item.pgState==1" class="type_2">已使用</div>
+                                    <span v-if="item.pgState==1" class="time_1">{{item.pgUpdateTime | filter_time}}</span>
+                                    <div v-if="item.pgState==0 && item.pgEndTime>date" class="type_1">有效</div>
+                                    <div v-if="item.pgState==0 && item.pgEndTime<date" class="type_2">失效</div>
+                                </div>
+
+                                <!-- 长期有效类型的 -->
+                                <div v-if="item.redType==0 || item.redType==4">
+                                    <div v-if="item.pgState==0" class="type_1">有效</div>
+                                    <div v-if="item.pgState==1" class="type_2">已使用</div>
+                                    <span v-if="item.pgState==1" class="time_1">{{item.updateTime | filter_time}}</span>
+                                </div>
+                                <!-- 有时间限制类型的 -->
+                                <div v-if="item.redType==2 || item.redType==3">
+                                    <div v-if="item.pgState==1" class="type_2">已使用</div>
+                                    <span v-if="item.pgState==1" class="time_1">{{item.pgUpdateTime | filter_time}}</span>
+                                    <div v-if="item.pgState==0 && item.redEndTime>date" class="type_1">有效</div>
+                                    <div v-if="item.pgState==0 && item.redEndTime<date" class="type_2">失效</div>
+                                </div>
+                                
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <loading v-if="type==2" :loadingtype="CardPackge_0.loading" :nodata="!CardPackge_0.loading && CardPackge_0.total==0" :end="!CardPackge_0.loading && CardPackge_0.total!=0 && CardPackge_0.list.length==CardPackge_0.total"/>
 
                 <!-- 商品红包 -->
                 <ul class="Red_envelopes" v-if="type==3">
@@ -76,30 +155,215 @@
                         <div class="header_1">
                             <span class="time_1 mui-pull-right">{{item.createTime | filter_time("yyyy.MM.dd hh:mm")}}</span>
                             <span class="title_1" @tap="go_shop(item)">{{item.shopName}}</span>
+                        </div>
+                        <ul class="item">
+                            <li class="img_box">
+                                <img v-if="item.img && item.img.split(',').length>0" :src="item.img.split(',')[0]" alt="" srcset="">
+                            </li>
+                            <li>
+                                <div class="title_1">
+                                    <span class="money">{{item.redAmount}}元</span>
+                                    <span class="type">制定商品</span>
+                                </div>
+                                <div class="title_2" @tap="CommodityDetails(item)">
+                                    {{item.commodityName}}
+                                    <!-- 每满{{item.expire}}元，可抵扣{{item.deduction}}元 -->
+                                </div>
+                                <div class="time_2">
+                                    {{item.redStratTime | filter_time("yyyy.MM.dd")}}-{{item.redEndTime | filter_time("yyyy.MM.dd")}}
+                                </div>
+                            </li>
+                            <li>
+                                <div></div>
+                                <div></div>
+                            </li>
+                            <li>
+                                <!-- <div class="type_2">已到账</div> -->
+                                <div v-if="item.state==1" class="type_2">已使用</div>
+                                <span v-if="item.state==1" class="time_1">{{item.updateTime | filter_time}}</span>
+
+                                <div v-if="item.state==0 && item.redEndTime>date" class="type_1">有效</div>
+                                <div v-if="item.state==0 && item.redEndTime<date" class="type_2">失效</div>
+                                
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <loading v-if="type==3" :loadingtype="CardPackge_1.loading" :nodata="!CardPackge_1.loading && CardPackge_1.total==0" :end="!CardPackge_1.loading && CardPackge_1.total!=0 && CardPackge_1.list.length==CardPackge_1.total"/>
+
+            </div>
+
         </div>
     </div>
 </template>
 
 <script>
+//签到红包样式
+import qiandao from '@/components/qiandao.vue';
+
+import {openloading,dateFtt} from "@/assets/js/currency.js";
+import loading from "@/components/loading.vue";
 export default {
     name: "",
+    components:{
+        qiandao,
+        loading
+    },
     data() {
         return {
             type:0,
             type_1:0,       //0签到红包 1 签到记录
+            userInfo:'',
+            date:dateFtt(new Date(),'yyyy-MM-dd'),
+            // 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
+            findStotal_2:0,
+            findStotal_3:0,
+            CardPackge_0:{      //店铺红包      // 0新人店铺红包 2节日红包 4庆典红包 5生日红包
+                loading:true,
+                total:0,
+                list:[],
+                page_index:0,
+                query:{
+                    start:0,
+                    length:10,
+                    type:0,
+                    userid:''
+                }
+            },
+            CardPackge_1:{      //商品红包
+                loading:true,
+                total:0,
+                list:[],
+                page_index:0,
+                query:{
+                    start:0,
+                    length:10,
+                    type:1,
+                    userid:''
+                }
+            }
         };
     },
+    filters:{
+        filter_time(time,type){
+            if(!time) return "";
+            return dateFtt(time,type)
+        }
+    },
     computed: {
-
+        shops_tree_list(){
+            return this.$store.state.shops_tree_list;
+        }
     },
     methods: {
+        //跳转消息
+        news(){
+            this.$router.push('/news');
+        },
+        //店铺红包  跳转店铺
+        go_shop_1(item){
+            this.$router.push('/BusinessDetails?shopid='+item.sShopid)
+        },
+        //商品红包  跳转商店
+        go_shop(item){
+            this.$router.push('/BusinessDetails?shopid='+item.redShopid)
+        },
+        //商品红包 跳转到商品
+        CommodityDetails(item){
+            this.$router.push('/CommodityDetails?id='+item.redCommodityId+'&isshop=1')
+        },
         //选择 签到红包 平台红包  店铺红包 商品红包
         select_type(x){ 
             this.type=x
         },
+        //滚动条
+        scroll(e){
+            var h = e.target.offsetHeight; //容器高度
+            var sh = e.target.scrollHeight; //滚动条总高
+            var t = e.target.scrollTop; //滚动条到顶部距离
+            if (h + t >= sh - 10) { 
+                if(this.type==0){
+                    
+                }else if(this.type==1){
+                    
+                }else if(this.type==2){ //店铺红包
+                    if(!this.CardPackge_0.loading && this.CardPackge_0.list.length<this.CardPackge_0.total){
+                        this.CardPackge_0.page_index++;
+                        this.get_findDataAUserCardPackge()
+                    }
+                }else if(this.type==3){ //商品红包
+                    if(!this.CardPackge_1.loading && this.CardPackge_1.list.length<this.CardPackge_1.total){
+                        this.CardPackge_1.page_index++;
+                        this.get_CardPackge()
+                    }
+                }
+                console.log("到底底部");
+            }
+        },
         //签到红包 签到记录
         select_type_1(x){
             this.type_1=x
+        },
+        // 查询以领取的商品红包
+        get_CardPackge(obj){
+            obj.loading=true;
+            obj.query.start=obj.query.length*obj.page_index;
+            obj.query.userid=this.userInfo.username
+            this.$axios({
+                method:'get',
+                url:'/api-s/shops/findDataUserCardPackge',
+                params:obj.query
+            }).then(x=>{
+                console.log('商品红包',x);
+                if(x.data.code==200){
+                    obj.list=x.data.data.data;
+                    obj.total=x.data.data.total;
+                }
+                obj.loading=false;
+            }).catch(err=>{
+                console.log(err);
+                obj.loading=false;
+            })
+        },
+        //查询店铺红包 卡券包专用
+        get_findDataAUserCardPackge(){
+            this.CardPackge_0.loading=true;
+            this.CardPackge_0.query.start=this.CardPackge_0.query.length*this.CardPackge_0.page_index;
+            this.CardPackge_0.query.userid=this.userInfo.username
+            this.$axios({
+                method:'get',
+                url:'/api-s/shops/findDataAUserCardPackge',
+                params:this.CardPackge_0.query
+            }).then(x=>{
+                console.log('店铺红包',x)
+                if(x.data.code==200){
+                    this.CardPackge_0.list=this.CardPackge_0.list.concat(x.data.data.data);
+                    this.CardPackge_0.total=x.data.data.total;
+                }
+                this.CardPackge_0.loading=false;
+            }).catch(err=>{
+                console.log(err);
+                this.CardPackge_0.loading=false;
+            })
+        },
+        // 获取金额
+        get_findStotal(type){
+            this.$axios({
+                method:'get',
+                url:'/api-s/shops/findStotal?type='+type+'&userid='+this.userInfo.username
+            }).then(x=>{
+                console.log('获取金额',x);
+                if(x.data.code==200){
+                    if(type==0){
+                        this.findStotal_2=x.data.data
+                    }else{
+                        this.findStotal_3=x.data.data
+                    }
+                }
+            }).catch(err=>{
+                console.log(err)
+            })
         }
     },
     beforeCreate: function() {
@@ -112,8 +376,22 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        
-       
+        //获取服务列表
+        this.$store.commit('setShopTree');
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {}
+        //店铺红包
+        // this.get_CardPackge(this.CardPackge_0);
+        this.get_findDataAUserCardPackge();
+        //商品红包
+        this.get_CardPackge(this.CardPackge_1);
+
+        //获取金额
+        this.get_findStotal(0)  //店铺红包统计
+        this.get_findStotal(1)  //商品红包统计
+
+
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -157,7 +435,18 @@ export default {
         }
     }
 }
+
+.mui-content{
+    display: flex;
+    flex-direction: column;
+}
+
+.conent_1{
+    overflow: auto;
+}
+
 .box_1{
+    flex-shrink: 0;
     display: flex;
     background: $header_background;
     color: #ffffff;
@@ -179,16 +468,31 @@ export default {
 
 .box_2{
     display: flex;
-    justify-content: space-evenly;
+    height: 40px;
     background: #ffffff;
-    color: rgba(56, 56, 56, 1);
-    font-size: 14px;
-    line-height: 34px;
-    li{
-        padding: 0px 5px;
+    align-items: center;
+    margin: 3px 0px 0px;
+    ul{
+        margin: 0px 5px 0px 17px;
+        flex-grow: 1;
+        white-space: nowrap;
+        >li{
+            display: inline-block;
+            margin: 0px 14px 0px 0px ;
+            color: rgba(80, 80, 80, 1);
+        	font-size: 12px;
+        }
+        overflow: auto;
     }
-    .active{
-        border-bottom: 2px solid $header_background;
+    >div{
+        flex-shrink: 0;
+        height: 26px;
+        line-height: 26px;
+        width: 50px;
+        text-align: center;
+        color: rgba(0, 122, 255, 1);
+        font-size: 10px;
+        border-left: 1px solid rgba(229, 229, 229, 1);
     }
 }
 
@@ -232,6 +536,9 @@ export default {
             }
         }
         >li:nth-child(2){
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
             flex-grow: 1;
             .title_1{
                 .money{
@@ -276,9 +583,11 @@ export default {
         >li:nth-child(4){
             width: 74px;
             text-align: center;
-            align-items: center;
+            // align-items: center;
             display: flex;
-            flex-wrap: wrap;
+            // flex-wrap: wrap;
+            flex-direction: column;
+            justify-content: center;
             .type_1{
                 width: 100%;
                 color: rgba(212, 48, 48, 1);

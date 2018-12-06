@@ -28,25 +28,38 @@
                     </li>
                     <li class="mui-table-view-cell item_box">
                         <span>售价：</span>
-                        <input type="text" class="mui-text-center" v-model="add_obj.sellingPrice">
+                        <input type="text" class="mui-text-center" v-model.number="add_obj.sellingPrice" @input="input_change('sellingPrice')">
                         <div>元</div>
                     </li>
-                    <li class="mui-table-view-cell">
+                    <!-- <li class="mui-table-view-cell">
                         <a class="mui-navigate-right item_box">
                             <span>可抵扣：</span>
                             <input type="text" class="mui-text-center" v-model="deduction">
                             <span class="money" v-if="add_obj.twtreid==1">{{deduction_money}}元</span>
                             <div class="twtreid" @click="set_twtreid()">{{add_obj.twtreid==1 ? '%' : '元'}}</div>
                         </a>
-                    </li>
-                    <!-- <li class="mui-table-view-cell" v-if="myshop.distribution!=0"> -->
-                    <li class="mui-table-view-cell" >
+                    </li> -->
+                    <!-- <li class="mui-table-view-cell" v-if="myshop.distribution!=0">
                         <a class="mui-navigate-right item_box">
                             <span>佣金：</span>
                             <input type="text" class="mui-text-center" v-model="commission">
                             <span class="money" v-if="add_obj.commissionType==1">{{commission_money}}元</span>
                             <div @click="set_commissionType()" class="commissionType">{{add_obj.commissionType==1 ? '%' : '元'}}</div>
                         </a>
+                    </li> -->
+                    <li class="mui-table-view-cell item_box">
+                        <span class="title_2">可抵扣：</span>
+                        <input type="text" class="mui-text-center input_1" @input="input_change('deduction')" v-model.number="add_obj.deduction">
+                        <span>元，即</span>
+                        <input type="text" class="mui-text-center input_1" @input="input_change('percentage')" v-model.number="add_obj.percentage">
+                        <span>%</span>
+                    </li>
+                    <li class="mui-table-view-cell item_box" v-if="myshop.distribution!=0">
+                        <span class="title_2">佣金：</span>
+                        <input type="text" class="mui-text-center input_1" @input="input_change('commission')" v-model.number="add_obj.commission">
+                        <span>元，即</span>
+                        <input type="text" class="mui-text-center input_1" @input="input_change('commissionPercentage')" v-model.number="add_obj.commissionPercentage">
+                        <span>%</span>
                     </li>
                 </ul>
             </div>
@@ -93,7 +106,7 @@
             <div id="editor" class="editor"></div>
 
         </div>
-         <div @click="add()" class="box_4">保存1</div>
+         <div @click="add()" class="box_4">保存</div>
     </div>
 </template>
 
@@ -150,12 +163,11 @@ export default {
             },
             config:{					//编译器配置
 		          	initialFrameWidth: null,
-                    initialFrameHeight: 200,
+                    initialFrameHeight: 300,
                     elementPathEnabled:false,       //是否显示路径
                     wordCount:false,                 //是否开启字数统计  
                     imageScaleEnabled:false,        //启用图片拉伸缩放
                     imagePopup:false,                 //图片操作的浮层开关，默认打开
-                    
 		          	toolbars:[
 					    	[
 					        'undo', //撤销
@@ -244,6 +256,64 @@ export default {
         }
     },
     methods:{
+        //
+        input_change(x){
+            var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
+            if(!this.add_obj.sellingPrice || !this.add_obj[x] || !number_test.test(this.add_obj[x])){
+                return;
+            }
+            if(x=='sellingPrice'){      //售价
+                if(this.add_obj.percentage && number_test.test(this.add_obj.percentage)){ //比例
+                    // this.add_obj.percentage=parseFloat(this.add_obj.percentage).toFixed(1);
+                    this.add_obj.percentage=Math.floor(parseFloat(this.add_obj.percentage)*10) /10;
+                    this.add_obj.deduction=(this.add_obj.percentage*this.add_obj.sellingPrice/100).toFixed(2)
+                }else if(this.add_obj.deduction && number_test.test(this.add_obj.deduction)){
+                    // this.add_obj.deduction=parseFloat(this.add_obj.deduction).toFixed(2);
+                    this.add_obj.deduction=Math.floor(parseFloat(this.add_obj.deduction)*100)/100;
+                    this.add_obj.percentage=(this.add_obj.deduction/this.add_obj.sellingPrice*100).toFixed(1);
+                }
+
+                if(this.add_obj.commissionPercentage && number_test.test(this.add_obj.commissionPercentage)){
+                    // this.add_obj.commissionPercentage=parseFloat(this.add_obj.commissionPercentage).toFixed(1);
+                    this.add_obj.commissionPercentage=Math.floor(parseFloat(this.add_obj.commissionPercentage)*10)/10;
+                    this.add_obj.commission=(this.add_obj.commissionPercentage*this.add_obj.sellingPrice/100).toFixed(1);
+                }else if(this.add_obj.commission && number_test.test(this.add_obj.commission)){
+                    // this.add_obj.commission=parseFloat(this.add_obj.commission).toFixed(2);
+                    this.add_obj.commission=Math.floor(parseFloat(this.add_obj.commission)*100)/100;
+                    this.add_obj.commissionPercentage=(this.add_obj.commission/this.add_obj.sellingPrice*100).toFixed(1)
+                }
+            }
+
+            if(x=='percentage'){    //百分比
+                // this.add_obj.percentage=this.add_obj.percentage.toFixed(1);
+                this.add_obj.percentage= Math.floor(this.add_obj.percentage * 10)/10 // this.add_obj.percentage.toFixed(1);
+                var deduction=this.add_obj.percentage/100*this.add_obj.sellingPrice
+                // this.add_obj.deduction=deduction.toFixed(2);
+                this.add_obj.deduction=Math.floor(deduction*100)/100;
+            }
+            if(x=='deduction'){     //金额
+                // this.add_obj.deduction=this.add_obj.deduction.toFixed(2);
+                this.add_obj.deduction=Math.floor(this.add_obj.deduction * 100) /100;
+                var percentage=this.add_obj.deduction/this.add_obj.sellingPrice*100
+                // this.add_obj.percentage=percentage.toFixed(1)
+                this.add_obj.percentage=Math.floor(percentage*10)/10;
+            }
+
+            if(x=='commissionPercentage'){  //百分比
+                // this.add_obj.commissionPercentage=this.add_obj.commissionPercentage.toFixed(1);
+                this.add_obj.commissionPercentage=Math.floor(this.add_obj.commissionPercentage*10)/10;
+                var commission=this.add_obj.commissionPercentage/100*this.add_obj.sellingPrice
+                // this.add_obj.commission=commission.toFixed(2)
+                this.add_obj.commission=Math.floor(commission*100)/100;
+            }
+            if(x=='commission'){    //金额
+                // this.add_obj.commission=this.add_obj.commission.toFixed(2);
+                this.add_obj.commission=Math.floor(this.add_obj.commission*100)/100;
+                var commissionPercentage=this.add_obj.commission/this.add_obj.sellingPrice*100;
+                // this.add_obj.commissionPercentage=commissionPercentage.toFixed(1)
+                this.add_obj.commissionPercentage=Math.floor(commissionPercentage*10)/10;
+            }
+        },
         //返回上一页
         back(){
             this.$router.push('/commodity')
@@ -251,26 +321,29 @@ export default {
         //点击确定
         add(){
             var this_1=this;
-            if(this.add_obj.twtreid==1){
-                this.add_obj.deduction=this.deduction_money
-                this.add_obj.percentage=this.deduction
-                //  deduction:"",       //抵扣金额
-                // percentage:'',      //抵扣比例
-            }else{
-                this.add_obj.deduction=this.deduction;
-                this.add_obj.percentage='';
-            }
+            // if(this.add_obj.twtreid==1){
+            //     this.add_obj.deduction=this.deduction_money
+            //     this.add_obj.percentage=this.deduction
+            // }else{
+            //     this.add_obj.deduction=this.deduction;
+            //     this.add_obj.percentage='';
+            // }
 
-            if(this.add_obj.commissionType==1){
-                this.add_obj.commission=this.commission_money;
-                this.add_obj.commissionPercentage=this.commission;
-            }else{
-                this.add_obj.commission=this.commission;
-                this.add_obj.commissionPercentage=''
-            }
+            // if(this.add_obj.commissionType==1){
+            //     this.add_obj.commission=this.commission_money;
+            //     this.add_obj.commissionPercentage=this.commission;
+            // }else{
+            //     this.add_obj.commission=this.commission;
+            //     this.add_obj.commissionPercentage=''
+            // }
             // alert(this.um.getContent())
             // var remark = this.editor.getContent();
-            var text = this.editor.getContentTxt();
+            try {
+                var text = this.editor.getContentTxt();
+            } catch (error) {
+                 var text ='';
+            }
+            
             // alert(text)
             var test_number=/^[0-9]*$/;
             if(!this.add_obj.name){
@@ -284,6 +357,9 @@ export default {
                 return
             }else if(!this.add_obj.sellingPrice || isNaN(this.add_obj.sellingPrice)){
                 mui.toast('请输入售价。', { duration: 2000, type: "div" });
+                return
+            }else if(this.add_obj.sellingPrice>this.add_obj.marketPrice){
+                mui.toast('售价不能高于市场价', { duration: 2000, type: "div" });
                 return
             }else if(!this.add_obj.deduction || isNaN(this.add_obj.deduction)){
                 mui.toast('请输入抵扣金额。', { duration: 2000, type: "div" });
@@ -299,12 +375,15 @@ export default {
             }
             this.add_obj.shopid=this.myshop.shopid
             this.add_obj.arrImg=img_list;
-            this.add_obj.remark=this.editor.getContent();
+            try {
+                this.add_obj.remark=this.editor.getContent();
+            } catch (error) {
+                this.add_obj.remark=''        
+            }
 
             console.log(this.add_obj);
 
             // return
-
 
             if(this.Submission_type==''){
                 openloading(true)
@@ -455,6 +534,7 @@ export default {
             //     //更多其他参数，请参考umeditor.config.js中的配置项
             // });
         // },2000)
+
         
         this.editor = UE.getEditor('editor', this.config); // 初始化UM
         // // // this.editor.addListener("ready", function () {
@@ -504,7 +584,6 @@ export default {
             //因为你是添加button,所以需要返回这个button
             return btn;
         })
-        
         /*index 指定添加到工具栏上的那个位置，默认时追加到最后,editorId 指定这个UI是那个编辑器实例上的，默认是页面上所有的编辑器都会添加这个按钮*/
         // console.group('------mounted 挂载结束状态------');
         // ==============================
@@ -531,19 +610,18 @@ export default {
             //  deduction:"",       //抵扣金额
             // percentage:'',      //抵扣比例       
             //1表示比例 2表示填写实际金额
-            if(this.add_obj.twtreid==1){
-                this.deduction=this.add_obj.percentage;
-            }else{
-                this.destroyed=this.add_obj.deduction
-                console.log(this.destroyed)
-            }
-
-            if(this.add_obj.commissionType==1){
-                this.commission=this.add_obj.commissionPercentage
-            }else{
-                this.commission=this.add_obj.commission
-                console.log(this.commission);
-            }
+            // if(this.add_obj.twtreid==1){
+            //     this.deduction=this.add_obj.percentage;
+            // }else{
+            //     this.destroyed=this.add_obj.deduction
+            //     console.log(this.destroyed)
+            // }
+            // if(this.add_obj.commissionType==1){
+            //     this.commission=this.add_obj.commissionPercentage
+            // }else{
+            //     this.commission=this.add_obj.commission
+            //     console.log(this.commission);
+            // }
 
             if(this.editor){
                 setTimeout(()=>{
@@ -551,7 +629,7 @@ export default {
                 },1000)
             }else{
                 setTimeout(()=>{
-                    // this.editor.setContent(this.add_obj.remark);
+                    this.editor.setContent(this.add_obj.remark);
                 },3000)
             }
             console.log('缓存数据',this.add_obj)
@@ -650,6 +728,10 @@ export default {
         position: relative;
         display: flex;
         align-items: center;
+        padding-top: 0px;
+        padding-bottom:0px;
+        min-height: 44px; 
+        white-space: nowrap;
         .money{
             position: absolute;
             right: 50px;
@@ -667,6 +749,9 @@ export default {
             flex-shrink: 0;
             width: 90px;
         }
+        >span.title_2:nth-child(1){
+            width: 60px;
+        }
         input{
             margin: 0px;
             padding: 0px;
@@ -675,6 +760,13 @@ export default {
             color: rgba(80, 80, 80, 1);
             font-size: 14px;
             background: none;
+        }
+        .input_1{
+            background-color: rgba(229, 229, 229, 1);
+            max-width: 96px;
+        	height: 30px;
+            margin: 0px 4px;
+            flex-shrink: 1;
         }
         >div{
             width: 90px;

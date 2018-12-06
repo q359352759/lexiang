@@ -1,9 +1,38 @@
 import Vue from "vue";
 import Router from "vue-router";
 
+function load(x){
+    if (x) {
+        document.getElementById("loading").style.opacity = "1";
+        document.getElementById("loading").style.display = "block";
+    } else {
+        document.getElementById("loading").style.opacity = "0";
+        document.getElementById("loading").style.display = "none";
+    }
+}
+
+
+
+const editortest = resolve => { require.ensure([], () => { resolve(require("./views/editortest.vue")); }); }; //测试
+
+
 const Home = resolve => { require.ensure([], () => { resolve(require("./views/home/Home.vue")); }); }; //首页
-const ShopClassification = resolve => { require.ensure([], () => { resolve(require("./views/home/ShopClassification.vue")); }); }; //店铺分类
+const RedEnvelopesList = resolve => { require.ensure([], () => {
+        load(true);
+        resolve(require("./views/home/RedEnvelopesList.vue")); 
+        load(false);
+    }); 
+}; //店铺内红包
+const ShopClassification = resolve => { require.ensure([], () => {
+        load(true)
+        resolve(require("./views/home/ShopClassification.vue")); 
+        load(false);
+    }); 
+}; //店铺分类
+
 const SearchShop = resolve => { require.ensure([], () => { resolve(require("./views/home/SearchShop.vue")); }); }; //搜索
+const Check = resolve => { require.ensure([], () => { resolve(require("./views/home/Check.vue")); }); }; //搜索
+
 
 
 const my = resolve => { require.ensure([], () => { resolve(require("@/views/my/my.vue")); }); }; //我的
@@ -17,9 +46,9 @@ const news = resolve => { require.ensure([], () => { resolve(require("./views/my
 
 const SetUp = resolve => { require.ensure([], () => { resolve(require("./views/SetUp.vue")); }); }; //设置
 const help = resolve => { require.ensure([], () => { resolve(require("./views/help/help.vue")); }); }; //帮助中心
+const HelpDetails = resolve => { require.ensure([], () => { resolve(require("./views/help/HelpDetails.vue")); }); }; //问题详情
 const RaiseQuestions = resolve => { require.ensure([], () => { resolve(require("./views/help/RaiseQuestions.vue")); }); }; //提问
 const QuestionRecord = resolve => { require.ensure([], () => { resolve(require("./views/help/QuestionRecord.vue")); }); }; //提问记录
-
 
 
 const login = resolve => { require.ensure([], () => { resolve(require("./views/login.vue")); }); }; //登录
@@ -43,7 +72,11 @@ const MarketDetails = resolve => { require.ensure([], () => { resolve(require(".
 const Advertising = resolve => { require.ensure([], () => { resolve(require("./views/Advertising.vue")); }); }; //广告机
 const croppertest = resolve => { require.ensure([], () => { resolve(require("./views/croppertest.vue")); }); }; //裁剪测试
 const classification = resolve => { require.ensure([], () => { resolve(require("./views/classification.vue")); }); }; //更多分类
-const BusinessDetails = resolve => { require.ensure([], () => { resolve(require("./views/BusinessDetails.vue")); }); }; //商家详情
+const BusinessDetails = resolve => { require.ensure([], () => { 
+    load(true)
+    resolve(require("./views/BusinessDetails.vue")); 
+    load(false);
+}); }; //商家详情
 //申请店铺
 const ShopInstructions = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/ShopInstructions.vue")); }); }; //开店说明
 const ApplicationShop = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/ApplicationShop.vue")); }); }; //申请店铺详情
@@ -52,8 +85,22 @@ const ShopDetails = resolve => { require.ensure([], () => { resolve(require("./v
 const shopAuthentication = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/shopAuthentication.vue")); }); }; //我的店铺法人认证
 const shopBusinessDetails = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/shopBusinessDetails.vue")); }); }; //我的店铺营业执照
 
-//营销
-const Marketing = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/Marketing.vue")); }); }; //我的店铺营业执照
+//我的店铺中的页面 营销
+
+const Notice = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Notice.vue")); }); };        //我的店铺公告
+const noticeList = resolve => { require.ensure([], () => { resolve(require("./views/myshop/noticeList.vue")); }); };        //我的店铺公告记录
+const introduction = resolve => { require.ensure([], () => { resolve(require("./views/myshop/introduction.vue")); }); };        //我的店铺简介
+
+const Marketing = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/Marketing.vue")); }); }; //我的店铺营销
+const RedEnvelopes = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/RedEnvelopes.vue")); }); }; //营销中心的红包
+const RedPacketReleaseRecord = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/RedPacketReleaseRecord.vue")); }); }; //营销中心的红包发放记录
+const RedEnvelopeIssue = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/RedEnvelopeIssue.vue")); }); }; //营销中心发布红包
+const RedPacketsDetails = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/RedPacketsDetails.vue")); }); }; //营销中心发布红包
+
+const ShopRedEnvelopes = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/ShopRedEnvelopes.vue")); }); }; //营销中心发布 申请店铺用
+const MarketingVip = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/MarketingVip.vue")); }); }; //营销 专享营销
+const addMarketingVip = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/addMarketingVip.vue")); }); }; //营销 添加专享营销
+
 
 
 
@@ -78,6 +125,7 @@ const commodity = resolve => { require.ensure([], () => { resolve(require("./vie
 const AddGoods = resolve => { require.ensure([], () => { resolve(require("./views/myshop/AddGoods.vue")); }); }; //添加商品
 
 
+
 //区域代理
 const RegionalAgencyAgreement = resolve => { require.ensure([], () => { resolve(require("./views/RegionalAgent/RegionalAgencyAgreement.vue")); }); }; //区域代理申请说明
 const ApplicationRegionalAgents = resolve => { require.ensure([], () => { resolve(require("./views/RegionalAgent/ApplicationRegionalAgents.vue")); }); }; //申请代理商
@@ -88,10 +136,15 @@ const ExampleOfRevenue = resolve => { require.ensure([], () => { resolve(require
 const CommodityDetails = resolve => { require.ensure([], () => { resolve(require("./views/Commodity/CommodityDetails.vue")); }); }; //商品详情
 
 
+// 协议
 const AgencyCost = resolve => { require.ensure([], () => { resolve(require("./views/xieyi/AgencyCost.vue")); }); }; //代理人费用说明
 const RegistrationAgreement = () => import ("@/views/xieyi/RegistrationAgreement.vue"); //用户注册协议
 const BusinessAgreement = () => import ("@/views/xieyi/BusinessAgreement.vue"); //业务代理合作协议
 const AgentAdvantage = () => import ("@/views/xieyi/AgentAdvantage.vue"); //代理人的好处
+const shopAgreement = () => import ("@/views/xieyi/shopAgreement.vue"); //商家服务协议
+const xuyuan = () => import ("@/views/xieyi/xuyuan.vue"); //预选区域代理说明
+const dailijiaofei = () => import ("@/views/xieyi/dailijiaofei.vue"); //预选区域代理说明
+const WithdrawalAgreement = () => import ("@/views/xieyi/WithdrawalAgreement.vue"); //提现协议
 
 
 // require.ensure(dependencies: String[], callback: function(require), chunkName: String)
@@ -110,11 +163,18 @@ const AgentAdvantage = () => import ("@/views/xieyi/AgentAdvantage.vue"); //代�
 // mui-content mui-fullscreen
 import circularNav from "@/components/circularNav.vue";
 import err404 from "@/views/404.vue"
+
+import myshops from "@/router/myshop.js"
+// console.log(myshops)
+// require('@/router/myshop.js'),
+
 Vue.use(Router);
 
 export default new Router({
     routes: [
+        ...myshops,
         { path: "/", name: "", component: login },
+        { path: "/editortest", name: "", component: editortest },
         {
             path: "/home",
             name: "",
@@ -123,6 +183,16 @@ export default new Router({
                 circularNav: circularNav
             }
         },{
+            path:'/Check',
+            name:'',
+            component:Check
+        },
+        {
+            path:'/RedEnvelopesList',
+            name:'',
+            component:RedEnvelopesList
+        },
+        {
             path:'/SearchShop',
             name:'',
             component:SearchShop
@@ -166,6 +236,11 @@ export default new Router({
                 circularNav: circularNav
             }
         },{
+            path:'/HelpDetails',
+            name:'',
+            component:HelpDetails
+        },
+        {
             path:'/RaiseQuestions',
             name:'',
             component:RaiseQuestions
@@ -179,7 +254,7 @@ export default new Router({
             name: "",
             components: {
                 default: login,
-                // circularNav: circularNav
+                circularNav: circularNav
             }
         },
         {
@@ -313,6 +388,22 @@ export default new Router({
             path: "/AgentAdvantage",
             name: "",
             component: AgentAdvantage
+        },{
+            path:'/shopAgreement',
+            name:'',
+            component:shopAgreement
+        },{
+            path:'/xuyuan',
+            name:'',
+            component:xuyuan
+        },{
+            path:'/dailijiaofei',
+            name:'',
+            component:dailijiaofei
+        },{
+            path:'/WithdrawalAgreement',
+            name:'',
+            component:WithdrawalAgreement
         },
         {
             path: "/classification",
@@ -358,9 +449,53 @@ export default new Router({
             name:'',
             component:shopBusinessDetails
         },{
+            path:'/Notice',
+            name:'',
+            component:Notice
+        },{
+            path:'/introduction',
+            name:'',
+            component:introduction
+        },
+        {
+            path:'/noticeList',
+            name:'',
+            component:noticeList
+        },
+        {
             path:'/Marketing',
             name:'',
             component:Marketing
+        },{
+            path:'/RedEnvelopes',
+            name:'',
+            component:RedEnvelopes
+        },{
+            path:'/RedPacketReleaseRecord',
+            name:'',
+            component:RedPacketReleaseRecord
+        },
+        {
+            path:'/RedEnvelopeIssue',
+            name:'',
+            component:RedEnvelopeIssue
+        },{
+            path:'/RedPacketsDetails',
+            name:'',
+            component:RedPacketsDetails
+        },
+        {
+            path:'/ShopRedEnvelopes',
+            name:'',
+            component:ShopRedEnvelopes
+        },{
+            path:'/MarketingVip',
+            name:'',
+            component:MarketingVip
+        },{
+            path:'/addMarketingVip',
+            name:'',
+            component:addMarketingVip
         },
         {
             path: "/TimeSlot",

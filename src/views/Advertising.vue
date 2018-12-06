@@ -130,17 +130,17 @@ export default {
         },
         addguanggaoji(){
              var this_1=this;
-            var tishi="恭喜您购买广告机成功，点击公众号内的“广告管理”使用，初始账号为您的手机号，密码为手机号后6位，请在广告机内点击“会员服务”修改密码（请勿在乐享生活中修改）。";
+            var tishi="恭喜您购买广告机成功，点击公众号内的“广告管理”使用，初始账号为您的手机号，密码为手机号后6位，请在广告机内点击“会员服务”修改密码（请勿在红包乐购中修改）。";
             var tishi1="恭喜您成功获得广告机套餐，已经叠加到您的广告机账户。";
             var obj={
-                    'username':this.userInfo.nickname ? this.userInfo.nickname : '乐享生活',
+                    'username':this.userInfo.nickname ? this.userInfo.nickname : '红包乐购',
                     'pwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
                     'repwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
                     'qq':'',
                     'anums':'3600',                  //文章条数 增加的
                     'userid':this.userInfo.phone,        //手机号码
                     'beizhu1':'365',           //备注 到期天数  增加
-                    'beizhu2':'乐享生活单独购买',
+                    'beizhu2':'红包乐购单独购买',
                     'shuyu':'admin',     //您的上级ID
                     'adnums':30           //广告条数
                 }

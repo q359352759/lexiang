@@ -11,28 +11,28 @@
                     <li>
                         <div>
                             <img src="image/news_1.png" alt="">
-                            <span>2</span>
+                            <!-- <span>2</span> -->
                         </div>
                         <div>系统通知</div>
                     </li>
                     <li>
                         <div>
                             <img src="image/news_2.png" alt="">
-                            <span>2</span>
+                            <!-- <span>2</span> -->
                         </div>
                         <div>店铺优惠</div>
                     </li>
                     <li>
                         <div>
                             <img src="image/news_3.png" alt="">
-                            <span>2</span>
+                            <!-- <span>2</span> -->
                         </div>
                         <div>降价通知</div>
                     </li>
                     <li>
                         <div>
                             <img src="image/news_4.png" alt="">                            
-                            <span>3</span>
+                            <!-- <span>3</span> -->
                         </div>
                         <div>好友消息</div>
                     </li>
@@ -40,15 +40,16 @@
             </div>
 
             <ul class="box_3">
-                <li class="mui-clearfix" v-for="(item, index) in 3" :key="index">
+                <li class="mui-clearfix" v-for="(item, index) in 0" :key="index">
                     <div class="img_box mui-pull-left">
                         <img src="image/news_1.png" alt="" srcset="">
-                        <span>2</span>
+                        <!-- <span>2</span> -->
                     </div>
                     <div class="time_1 mui-pull-right">2018.11.8 14:53:45</div>
-                    <div class="title_1">系统通知</div>
-                    <div class="text_1">密码修改成功</div>
+                    <div class="title_1">系统测试</div>
+                    <div class="text_1">这是一条系统测试数据</div>
                 </li>
+                <loading :nodata="true"/>
             </ul>
 
 
@@ -57,8 +58,12 @@
 </template>
 
 <script>
+import loading from '@/components/loading.vue'
 export default {
     name:'',
+    components:{
+        loading
+    },
     data(){
         return{}
     }

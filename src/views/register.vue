@@ -9,7 +9,7 @@
             <div class="bg">
                 <div class="bg_1">
                     <img src="image/bg_1.png" alt="" srcset="">
-                    <img src="image/bg_2.png" alt="" >
+                    <img src="image/WechatIMG311.png" alt="" >
                 </div>
                 <!-- <div class="bg_2">
                     <img src="image/bg_3.png" alt="" srcset="">
@@ -70,7 +70,10 @@ export default {
             password: "",
             password1: "",
             radio_type_2: true, //协议
-            height:'100%'
+            height:'100%',
+            //============邀请人信息
+            pid:'',              //  邀请的父元素Id
+            invitationtype:'',       //  邀请类型 1普通用户邀请注册
         };
     },
     methods: {
@@ -133,54 +136,59 @@ export default {
             //注册
             this.$axios({
                 method: "post",
-                url:
-                    "/api-u/users-anon/register?phone=" +
-                    this.phone +
-                    "&key=" +
-                    localStorage.keys +
-                    "&code=" +
-                    this.code,
+                url:"/api-u/users-anon/register?phone=" + this.phone + "&key=" + localStorage.keys + "&code=" + this.code,
                 // url:"/api-u/users-anon/register?phone=" +this.phone +"&code=" +this.code,
                 // url:"/api-u/users-anon/register",
                 data: {
                     username: this.phone,
                     password: this.password,
-                    phone: this.phone
+                    phone: this.phone,
+                    referrerid:this.pid
                 }
-            })
-                .then(x => {
-                    console.log(x);
-                    if (x.data.code == 200) {
-                        mui.toast("注册成功", { duration: 2000, type: "div" });
-                        this.$router.push("/login");
-                    } else if (x.data.code == 400) {
-                        mui.toast(x.data.message, {
-                            duration: 2000,
-                            type: "div"
-                        });
-                    } else {
-                        mui.toast(x.data.message, {
-                            duration: 2000,
-                            type: "div"
-                        });
-                    }
-                    openloading(false);
-                })
-                .catch(err => {
-                    console.log(err);
-                    mui.toast("系统错误，请稍后再试。", {
+            }).then(x => {
+                console.log(x);
+                if (x.data.code == 200) {
+                    mui.toast("注册成功", { duration: 2000, type: "div" });
+                    this.$router.push("/login");
+                } else if (x.data.code == 400) {
+                    mui.toast(x.data.message, {
                         duration: 2000,
                         type: "div"
                     });
-                    openloading(false);
+                } else {
+                    mui.toast(x.data.message, {
+                        duration: 2000,
+                        type: "div"
+                    });
+                }
+                openloading(false);
+            }).catch(err => {
+                    console.log(err);
+                mui.toast("系统错误，请稍后再试。", {
+                    duration: 2000,
+                    type: "div"
                 });
+                openloading(false);
+            });
         }
     },
     beforeCreate: function() {
         // console.group('------beforeCreate创建前状态------');
     },
     created: function() {
-        
+        //获取邀请信息
+        if(localStorage.yaoqing){
+            var yaoqing = localStorage.yaoqing;
+            var pid=yaoqing.substring(yaoqing.indexOf('pid')+4,yaoqing.indexOf('&'));
+            var invitationtype=yaoqing.substring(yaoqing.lastIndexOf('invitationtype')+15);
+            this.pid=pid;
+            this.invitationtype=invitationtype;
+            // console.log(pid,invitationtype)
+        }else{
+            var query=this.$route.query;
+            this.pid=query.pid;
+            this.invitationtype=query.invitationtype;
+        }
         
        
         // console.group('------created创建完毕状态------');

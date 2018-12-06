@@ -197,25 +197,28 @@
                     <ul class="fenlei">
                         <li>
                             <div>市场补贴</div>
-                            <span>1000</span>
+                            <span>0</span>
                         </li>
                         <li>
                             <div>平台分润</div>
-                            <span>2000</span>
+                            <span>0</span>
                         </li>
                         <li>
                             <div>店铺分润</div>
-                            <span>2500</span>
+                            <span>0</span>
                         </li>
                     </ul>
                     <ul class="list_1">
                         <li>
                             <div>区域代理费：100000元</div>
-                            <div class="mui-text-center">《区域代理合同》</div>
+                            <div class="mui-text-center">
+                                <!-- <span >《区域代理合同》</span> -->
+                                <span @tap="xuyuan()">《预选区域代理说明》</span>
+                            </div>
                         </li>
                         <li>
                             <div>已缴纳：3000元</div>
-                            <div class="mui-text-center">《代理费缴纳说明》</div>
+                            <div @tap="dailijiaofei()" class="mui-text-center">《代理费缴纳说明》</div>
                         </li>
                     </ul>
                     <ul class="Collect_Money" @click="Account()">
@@ -259,7 +262,7 @@
                             <i class="icon iconfont icon-xuanze"></i>
                         </div>
                         <span @click="change_radio_2()">我也阅读并同意</span>
-                        <span @click="BusinessAgreement()">《业务代理合作协议》</span>
+                        <span @click="WithdrawalAgreement()">《提现服务协议》</span>
                         <span>
                             <span @click="go('/EmbodyRecord?type=1')">
                                 提现记录
@@ -359,10 +362,17 @@ export default {
                 this.amount = this.areaManager_obj.sutotal;
             }
         },
-        BusinessAgreement() {
-            this.$router.push(
-                "/BusinessAgreement?name=" + this.areaManager_obj.name
-            );
+        //区域合同
+        dailijiaofei(){
+            this.$router.push('/dailijiaofei');
+        },
+        //预选代理说明
+        xuyuan(){
+            this.$router.push("/xuyuan?name=" + this.areaManager_obj.name);
+        },
+        //提现协议
+        WithdrawalAgreement(){
+            this.$router.push('/WithdrawalAgreement');
         },
         //滚动条
         scroll(e, obj) {
@@ -490,7 +500,7 @@ export default {
         change_payment(x) {
             if (x) {
                 if (!this.radio_type_2) {
-                    mui.toast("请同意业务代理合作协议", {
+                    mui.toast("请先同意协议。", {
                         duration: 2000,
                         type: "div"
                     });
@@ -527,28 +537,19 @@ export default {
         areaManager() {
             this.$axios({
                 method: "get",
-                url:
-                    "/api-u/areaManager/findme?userid=" + this.userInfo.username
-            })
-                .then(x => {
-                    console.log("获取代理商信息", x);
-                    if (
-                        x.data.data != "" &&
-                        x.data.data != null &&
-                        x.data.data != "null"
-                    ) {
-                        this.areaManager_obj = x.data.data;
-                        this.amount = this.areaManager_obj.sutotal;
-                        this.areaList = this.$store.getters.filter_area(
-                            x.data.data.areaCode
-                        );
-                    } else {
-                        // this.isareaManager=true;
-                    }
-                })
-                .catch(error => {
-                    console.log("获取代理商信息错误", error);
-                });
+                url:"/api-u/areaManager/findme?userid=" + this.userInfo.username
+            }).then(x => {
+                console.log("获取代理商信息", x);
+                if (x.data.data != "" && x.data.data != null && x.data.data != "null") {
+                    this.areaManager_obj = x.data.data;
+                    this.amount = this.areaManager_obj.sutotal;
+                    this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
+                } else {
+                    // this.isareaManager=true;
+                }
+            }).catch(error => {
+                console.log("获取代理商信息错误", error);
+            });
         },
         // 获取自推
         // /users/subformanager
@@ -668,6 +669,7 @@ export default {
         width: 0.5rem;
         height: 0.5rem;
         margin: 0px 0.1rem 0px 0px;
+        flex-shrink: 0;
         img {
             width: 100%;
             height: 100%;
@@ -676,6 +678,7 @@ export default {
         }
     }
     .text {
+        width: 0;
         flex-grow: 1;
         line-height: initial;
         h1 {
@@ -686,6 +689,9 @@ export default {
             font-size: 0.12rem;
             color: #808080;
             font-weight: 400;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     }
     .shangjia {
@@ -1195,7 +1201,7 @@ export default {
 #RegionalAgent .kaifazhong {
     margin: 0.8rem auto 0px;
     .imb_box {
-        width: 1.28rem;
+        width: 0.8rem;
         margin: 0px 0px 17px 0px;
         img {
             width: 100%;

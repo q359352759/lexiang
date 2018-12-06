@@ -8,7 +8,7 @@
                 <div>
                     <div>
                         <img src="image/bg_1.png" alt="" srcset="">
-                        <img src="image/bg_2.png" alt="" >
+                        <img src="image/WechatIMG311.png" alt="" >
                     </div>
                 </div>
             </div>

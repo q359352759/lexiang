@@ -10,10 +10,14 @@
         <div class="mui-content">
             <div class="box_1">
                 <div class="img_box">
-                    <img src="@/assets/image/lxlogo_180.png" alt="" srcset="">
+                    <img v-if="!userInfo.headImgUrl" src="@/assets/image/lxlogo_180.png" alt="" srcset="">
+                    <img v-if="userInfo.headImgUrl" :src="userInfo.headImgUrl" alt="" srcset="">
                 </div>
                 <div class="text">
-                    <div>{{agentUser.realName}}-业务代理人</div>
+                    <div>
+                        <span>{{agentUser.realName}}</span>
+                        <span @tap="erweima()"><i class="icon iconfont icon-31erweima"></i></span>                        
+                    </div>
                     <div>
                         {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? '/'+areaList[1].name : ''}}{{areaList[2] ? '/'+areaList[2].name : ''}}
                     </div>
@@ -87,10 +91,10 @@
                             <div>{{x.itSubsidies}}</div>
                             <div>{{x.itSubsidiesPlus}}</div>
                         </li>
-                        <div v-if="butie.loading" class="config_loading mui-text-center">拼命加载中···</div>
+                        <!-- <div v-if="butie.loading" class="config_loading mui-text-center">拼命加载中···</div>
                         <div v-if="!butie.loading && butie.list.length==butie.total" class="config_load mui-text-center">———没有更多了———</div>
-                        <div v-if="!butie.loading && butie.list.length==0" class="config_No_data mui-text-center">暂无数据</div>
-                        <!-- <loading :loadingtype="butie.loading" :nodata="!butie.loading && butie.list.length==0" :end="!butie.loading && butie.list.length==butie.total"/> -->
+                        <div v-if="!butie.loading && butie.list.length==0" class="config_No_data mui-text-center">暂无数据</div> -->
+                        <loading :loadingtype="butie.loading" :nodata="!butie.loading && butie.total==0" :end="!butie.loading && butie.list.length==butie.total && butie.total!=0"/>
                     </ul>
 
                     <ul class="footer">
@@ -154,7 +158,7 @@
                                 </div>
                             </div>
                             <div>
-                                <div>在易起科技在易起科技</div>
+                                <div>....</div>
                             </div>
                             <div>
                                 <div>乐享广告机</div>
@@ -217,7 +221,8 @@
                             <i class="icon iconfont icon-xuanze"></i>
                         </div>
                         <span @click="change_radio_2()">我也阅读并同意</span>
-                        <span @click="BusinessAgreement()">《业务代理合作协议》</span>
+                        <span @click="WithdrawalAgreement()">《提现服务协议》</span>
+                        
                         <span>
                             <span @click="go('/EmbodyRecord?type=0')">
                                 提现记录
@@ -264,11 +269,52 @@
                     </li>
                 </ul>
             </form>
+
+            <div class="QRCode" v-show="qrcode_show" @tap="qrcode_show=false">
+                <div class="mask"></div>
+                <div class="content_1">
+                    
+                    <div class="close_1">
+                        <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
+                        <div></div>
+                    </div>
+                    <img :src="qrcode" alt="" srcset="">
+                </div>
+            </div>
+
         </div>
+
+        <!-- 生成带图片的容器 -->
+        <div ref="printMe" class="qrcode_box">
+            <div class="header_1">
+                <div class="img_box">
+                    <img v-if="erweima_base64" :src="erweima_base64" alt="" srcset="">
+                </div>
+                <div class="text_1">
+                    <div>{{agentUser.name}}</div>
+                    <div> <i class="icon iconfont icon-shouji"></i>{{agentUser.phone}}</div>
+                </div>
+            </div>
+            <div class="erweima">
+                <!-- <img :src="myshop.signboard" alt="" srcset=""> -->
+                <img v-if="erweima_base64" :src="erweima_base64" alt="">
+                <div ref="qrcode">
+                    <!-- <img src="" alt="" srcset=""> -->
+                </div>
+            </div>
+            <ul class="footer_1">
+                <li>恭喜你过得乐享生活新人红包20元，！</li>
+                <li>识别二维码领取</li>
+            </ul>
+        </div>
+
     </div>
 </template>
 
 <script>
+
+import html2canvas from 'html2canvas'
+import QRCode from 'qrcodejs2'
 import loading from "@/components/loading.vue";
 import { dateFtt, openloading } from "@/assets/js/currency";
 export default {
@@ -300,7 +346,11 @@ export default {
             isareaManager: false,
             CanBePresented: true, //可以提现
             input_name_box: false,
-            name: ""
+            name: "",
+            //====================
+            qrcode:null,
+            qrcode_show:false,
+            erweima_base64:'',
         };
     },
     filters: {
@@ -310,6 +360,70 @@ export default {
     },
     computed: {},
     methods: {
+        //提现服务协议
+        WithdrawalAgreement(){
+            this.$router.push('/WithdrawalAgreement');
+        },
+        //生产二维码
+        erweima(){
+            console.log('生成二维码');
+            if(this.qrcode){
+                this.qrcode_show=true;
+            }else{
+                openloading(true);
+                //图片地址转图片
+                // 
+                this.$axios({
+                    method:'post',
+                    url:'/api-u/users/imgtobase64',
+                    data: this.$qs.stringify({
+                        url:this.userInfo.headImgUrl
+                    })
+                }).then(x=>{
+                    console.log(x);
+                    if(x.data.code==200){
+                        this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
+                        var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
+                        var el=this.$refs.qrcode
+                            el.innerHTML='';
+                        let qrcode = new QRCode(el, {  
+                            width: 200,  
+                            height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                            // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容  
+                            text: url, // 二维码内容  
+                            // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                            background: '#fff',
+                            foreground: '#fff',
+                        })
+                        setTimeout(()=>{
+                            this.print();
+                        },500)
+                    }else{
+                        openloading(false);
+                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                    }
+                }).catch(err=>{
+                    openloading(false);
+                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
+                    console.log(err);
+                })
+            }
+        },
+        print(){
+            const el = this.$refs.printMe;
+            const options = {
+                useCORS: true,
+                logging: false
+            }
+            html2canvas(el,options).then(canvas => {
+                this.qrcode=canvas.toDataURL();
+                this.qrcode_show=true;
+                openloading(false);
+            });
+        },
+        close_1(){
+            this.qrcode_show=false;
+        },
         //申请区域代理
         RegionalAgencyAgreement(){
             this.$router.push('/RegionalAgencyAgreement');
@@ -450,7 +564,10 @@ export default {
         },
         change_payment(x) {
             if (x) {
-                if (!this.Account_obj.account) {
+                if(!this.radio_type_2){
+                    mui.toast("请先同意协议。", { duration: 2000, type: "div" });
+                    return;
+                }else if (!this.Account_obj.account) {
                     mui.toast("请设置收款账号", {
                         duration: 2000,
                         type: "div"
@@ -658,6 +775,9 @@ export default {
             font-size: 0.14rem;
             font-weight: bold;
             margin: 3px 0px;
+            span{
+                margin: 0px 5px 0px 0px;
+            }
         }
         > div:nth-child(2) {
             color: rgba(128, 128, 128, 1);
@@ -1244,7 +1364,7 @@ export default {
 #Agent .kaifazhong {
     margin: 0.8rem auto 0px;
     .imb_box {
-        width: 1.28rem;
+        width: 0.8rem;
         margin: 0px 0px 17px 0px;
         img {
             width: 100%;
@@ -1255,6 +1375,63 @@ export default {
         font-size: 0.14rem;
     }
 }
+
+.QRCode{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 11;
+    .mask{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+    }
+    .content_1{
+        >img{
+            width: 100%;
+        }
+        position: relative;
+        z-index: 1;
+        background: #ffffff;
+        width: 270px;
+        // padding: 17px 25px 15px 25px;
+        .close_1{
+            width: 36px;
+            height: 50px;
+            position: absolute;
+            top: -50px;
+            right: 0px;
+            >div:nth-child(1){
+                height: 36px;
+                text-align: center;
+                line-height: 36px;
+                background: #ffffff;
+                border-radius: 100%;
+                position: relative;
+                z-index: 1;
+            }
+            >div:nth-child(2){
+                position: absolute;
+                width: 1px;
+                height: 100%;
+                background: #ffffff;
+                top: 0px;
+                right: 0px;
+                left: 0px;
+                margin: 0px auto;
+            }
+        }
+    }
+}
+
 
 // 单选
 #Agent .radio_1 {
@@ -1276,6 +1453,76 @@ export default {
     color: #ffffff;
     i {
         display: inline-block;
+        
     }
 }
 </style>
+
+<style lang="scss">
+#Agent .qrcode_box{
+    width: 273px;
+    background:#ffffff;
+    position: fixed;
+    padding: 20px 25px;
+    left: -100%;
+    // top:50px;
+    .header_1{
+        display: flex;
+        .img_box{
+            width: 42px;
+            height: 42px;
+            margin:0px 10px 0px 0px;
+            flex-shrink: 0;
+            img{
+                width: 100%;
+                height: 100%;
+                border-radius: 100%;
+            }
+        }
+        .text_1{
+            width: 0;
+            flex-grow: 1;
+            color: rgba(80, 80, 80, 1);
+            line-height: 20px;
+            >div:nth-child(1){
+                font-size: 14px;
+            }
+            >div:nth-child(2){
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        }
+    }
+    .erweima{
+        margin: 20px auto 8px;
+        width: 200px;
+        height: 200px;
+        position: relative;
+        >img{
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            margin: auto;
+            border-radius: 10px;
+        }
+        >div{
+            img{
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+    .footer_1{
+        color: rgba(80, 80, 80, 1);
+    	font-size: 12px;
+        text-align: center;
+    }
+}
+</style>
+

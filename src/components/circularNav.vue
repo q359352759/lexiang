@@ -10,26 +10,26 @@
                 <div @click="go('/home')">
                     <i class="icon iconfont icon-shouye"></i>
                 </div>
-                <span>主页</span>
+                <span @click="go('/home')">主页</span>
             </li>
             <li class="min_1 min_12" v-show="mask_show">
                 <div @click="go_Agent()">
                     <i class="icon iconfont icon-woshou"></i>
                 </div>
-                <span>代理</span>
+                <span @click="go_Agent()">代理</span>
             </li>
             <li class="min_1 min_13" v-show="mask_show">
                 <div @click="ShopInstructions()">
                     <i class="icon iconfont icon-dianpu1"></i>
                 </div>
-                <span>店铺</span>
+                <span @click="ShopInstructions()">店铺</span>
             </li>
             
             <li class="min_1 min_14" v-show="mask_show">
                 <div @click="go('/my')">
                     <i class="icon iconfont icon-geren"></i>
                 </div>
-                <span>我的</span>
+                <span @click="go('/my')">我的</span>
             </li>
         </ul>
     </div>
@@ -67,12 +67,17 @@ export default {
         //跳转我的店铺
         ShopInstructions(){
             this.mask_show = false;
+            if(!localStorage.loginDate || localStorage.loginDate=='' || localStorage.loginDate==null || localStorage.loginDate==undefined || localStorage.loginDate=='undefined'){
+                console.log('没有登录');
+            }
             if(!this.$store.state.myshop){
                 this.$router.push("/ShopInstructions");
             }else if(this.$store.state.myshop.state==0 || this.$store.state.myshop.state==2){
                 this.$router.push("/ApplicationShop");
-            }else{
+            }else if(this.$store.state.myshop.state==1){
                 this.$router.push('/myshop')
+            }else{
+                this.$router.push("/ShopInstructions");
             }
         },
         //跳转代理
@@ -145,6 +150,8 @@ export default {
     },
     created: function() {
         this.$store.commit('setMyshop');
+        var ww= window.innerWidth;
+        this.$store.state.clientX = ww - 50;
         // console.group('------created创建完毕状态------');
     },
     beforeMount: function() {
@@ -153,9 +160,7 @@ export default {
     mounted: function() {
         //阻止这个页面下拉
         setTimeout(function() {
-            document
-                .getElementById("circularNav")
-                .addEventListener("touchmove", touchmove_1, { passive: false });
+            document.getElementById("circularNav").addEventListener("touchmove", touchmove_1, { passive: false });
         }, 500);
         //{ passive: false }
         // console.group('------mounted 挂载结束状态------');
@@ -167,9 +172,11 @@ export default {
         // console.group('updated 更新完成状态===============》');
     },
     beforeDestroy: function() {
-        document
-            .getElementById("circularNav")
-            .removeEventListener("touchmove", touchmove_1, { passive: false });
+        try {
+            document.getElementById("circularNav").removeEventListener("touchmove", touchmove_1, { passive: false });        
+        } catch (error) {
+            
+        }
         // console.group('beforeDestroy 销毁前状态===============》');
     },
     destroyed: function() {

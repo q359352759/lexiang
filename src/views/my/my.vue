@@ -47,10 +47,10 @@
 						<span @tap="go('/Collection')">收藏</span>
 					</li>
 					<li>
-						<div @click="go('Recommend')">
+						<div @click="Recommend()">
 							<i class="icon iconfont icon-jiangpinpeizhi"></i>
 						</div>
-						<span @click="go('Recommend')">分享有奖</span>
+						<span @click="Recommend()">分享有奖</span>
 					</li>
 					<li>
 						<div @click="go('CardBag')">
@@ -170,6 +170,8 @@
 
 			<div @click="go_out()" class="go_out">退出登录</div>
 
+            <!-- <button @click="test()">测试</button>
+            {{weixin}} -->
 		</div>
 
         <div class="QRCode" v-show="qrcode_show">
@@ -202,18 +204,18 @@
             <div class="content_1" ref="printMe">
                 <div class="title_1">
                     <div class="img_box">
-                        <img src="image/lxlogo_180.png" alt="" srcset="">
+                        <img v-show="erweima_base64" class="head_img" :src="erweima_base64" alt="">
+                        <img v-show="!erweima_base64" class="head_img" src="image/lxlogo_180.png" alt="">
                     </div>
-                    <div>
+                    <div class="text_box">
                         <div v-show="userInfo.nickname" class="userName">{{userInfo.nickname}}</div>
                         <div v-show="!userInfo.nickname" class="userName">{{userInfo.phone | fliter_phone}}</div>
-                        <div class="text">对酒当歌，人生几何。</div>
+                        <!-- <div class="text">对酒当歌，人生几何。</div> -->
                     </div>
                 </div>
                 <div class="erweima_box">
-                    <img v-show="userInfo.headImgUrl" class="head_img" :src="userInfo.headImgUrl" alt="">
-                    <img v-show="!userInfo.headImgUrl" class="head_img" src="image/lxlogo_180.png" alt="">
-                    <!-- <img class="head_img" ref="head_img" src="" alt=""> -->
+                    <img v-show="erweima_base64" class="head_img" :src="erweima_base64" alt="">
+                    <img v-show="!erweima_base64" class="head_img" src="image/lxlogo_180.png" alt="">
                     <div ref="qrcode">
                         <!-- <img src="image/7a1f5483e159cad31c9f3712accc6c9b.jpg" alt=""> -->
                     </div>
@@ -228,7 +230,7 @@
 
 import html2canvas from 'html2canvas'
 import QRCode from 'qrcodejs2'
-
+import {openloading} from '@/assets/js/currency.js';
 export default {
     name: "my",
     components: {},
@@ -236,6 +238,8 @@ export default {
         return {
             qrcode_show:false,
             qrcode:null,
+            erweima_base64:'',
+            weixin:{}
         };
     },
     filters: {
@@ -257,39 +261,76 @@ export default {
         }
     },
     methods: {
+        //获取头像测试
+        test(){
+            this.$axios({
+                method:'get',
+                // {"access_token":"16_JDIRSUDCBynjKHmXmreKfKEmBYItDkPs-14E1aajV_sRz0YN9D88LF7ZQz98LCBYCBWwvvY2jVaJBU0rqpFwMg","expires_in":7200,"refresh_token":"16_aW-_bgo0pjIskZHzOSI9TGfpzRvg5x0UTanpVhOO3h1gRU9IFRHqLOZNSMS0s1vYoXJXSeHNeyELBrhBtzHZbQ","openid":"oBfSm1MUjRgdHwvS9pKzikrMXlYg","scope":"snsapi_userinfo","unionid":"oszKI086pyjM1fSEA6VIp3nh8DZs"}
+                url:'/api-u/users/getWeiXin?token=16_JDIRSUDCBynjKHmXmreKfKEmBYItDkPs-14E1aajV_sRz0YN9D88LF7ZQz98LCBYCBWwvvY2jVaJBU0rqpFwMg&openid=oBfSm1MUjRgdHwvS9pKzikrMXlYg',
+            }).then(x=>{
+                console.log(x);
+                this.weixin=x.data;
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
+        //跳转分享
+        Recommend(){
+            this.$router.push('/Recommend?pid='+this.userInfo.username+'&invitationtype=1')
+        },
         //生产二维码
         erweima(){
+            // console.log()
             console.log('生产二维码。');
+            var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
             if(this.qrcode){
                 this.qrcode_show=true;
             }else{
-                // var head_img=this.$refs.head_img
-                //     head_img.src=this.userInfo.headImgUrl ? this.userInfo.headImgUrl : "image/lxlogo_180.png";
-                var el=this.$refs.qrcode
-                    el.innerHTML='';
-                let qrcode = new QRCode(el, {  
-                    width: 200,  
-                    height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                    text: '这里是地址', // 二维码内容  
-                    // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                    background: '#fff',
-                    foreground: '#fff',
+                openloading(true);
+                this.$axios({
+                    method:'post',
+                    url:'/api-u/users/imgtobase64',
+                    data: this.$qs.stringify({
+                        url:this.userInfo.headImgUrl
+                    })
+                }).then(x=>{
+                    if(x.data.code==200){
+                        this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
+                        var el=this.$refs.qrcode
+                            el.innerHTML='';
+                        let qrcode = new QRCode(el, {  
+                                width: 200,  
+                                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                                text: url, // 二维码内容  
+                                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                                background: '#fff',
+                                foreground: '#fff',
+                            })
+                        setTimeout(()=>{
+                            this.print();
+                        },500)
+                    }else{
+                        openloading(false);
+                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                    }
+                }).catch(err=>{
+                    openloading(false);
+                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
+                    console.log(err);
                 })
-                setTimeout(()=>{
-                    this.print();
-                },500)
             }
         },
         print(){
             const el = this.$refs.printMe;
             const options = {
-                type: 'dataURL',
-                allowTaint:true
+                useCORS: true,
+                logging: false
             }
-            html2canvas(el).then(canvas => {
+            html2canvas(el,options).then(canvas => {
                 // document.getElementById('canvas').appendChild(canvas)
                 this.qrcode=canvas.toDataURL();
                 this.qrcode_show=true;
+                openloading(false);
                 // console.log('生成的图片',canvas)
                 // console.log(canvas.toDataURL())
             });
@@ -332,6 +373,7 @@ export default {
             this.$store.commit("setloginDate", "");
             localStorage.removeItem("loginDate");
             localStorage.removeItem("userInfo");
+            localStorage.removeItem('id');
             this.$router.push("/login");
         },
         //修改登录密码
@@ -515,7 +557,7 @@ export default {
         div {
             font-size: 0.3rem;
             color: rgba(90, 199, 244, 1);
-            margin: 0px 0px 0.05rem 0px;
+            margin: 0px 0px 0px 0px;
         }
         span {
             color: #808080;
@@ -605,6 +647,7 @@ export default {
         padding: 17px 25px 15px 25px;
         .title_1{
             display:flex;
+            align-items: center;
             .img_box{
                 width: 40px;
                 height: 40px;
@@ -613,6 +656,7 @@ export default {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
+                    border-radius: 100%;
                 }
             }
             .userName{
@@ -643,7 +687,7 @@ export default {
                 position: absolute;
                 width: 50px;
                 height: 50px;
-                border-radius: 5px;
+                border-radius: 10px;
                 top: 0px;
                 left: 0px;
                 right: 0px;
@@ -714,42 +758,7 @@ export default {
                 margin: 0px auto;
             }
         }
-        .title_1{
-            display:flex;
-            .img_box{
-                width: 40px;
-                height: 40px;
-                margin: 0px 14px 0px 0px;
-                img{
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                }
-            }
-            .userName{
-                color: rgba(80, 80, 80, 1);
-            	font-size: 14px;
-            }
-            .text{
-                color: rgba(80, 80, 80, 1);
-            	font-size: 10px;
-            }
-        }
-        .erweima_box{
-            width: 200px;
-            height: 200px;
-            margin: 28px auto 0px;
-            img{
-                width: 100%;
-                height: 100%;
-            }
-        }
-        .tishi{
-            color: rgba(166, 166, 166, 1);
-            font-size: 12px;
-            text-align: center;
-            margin: 14px 0px 0px;
-        }
+       
     }
 }
 </style>

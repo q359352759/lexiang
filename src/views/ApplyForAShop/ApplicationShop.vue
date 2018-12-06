@@ -117,25 +117,12 @@
                         <tbody>
                             <tr v-if="serviceType_list.length!=0" v-for="(item, index) in Math.ceil(serviceType_list.length/3)" :key="index">
                                 <td v-if="index_1<3*index+3 && index_1>=3*index" v-for="(item_1, index_1) in serviceType_list" :key="index_1">
-                                    {{item_1.name}}
+                                    <span>{{item_1.name}}</span>
                                     <div @click="radio(item_1)" class="radio_1" :class="{'active':item_1.active}">
                                         <i class="icon iconfont icon-xuanze"></i>
                                     </div>
                                 </td>
-                                <!-- <td>
-                                    停车：
-                                    <div @click="radio(radio_obj.parking=!radio_obj.parking)" class="radio_1" :class="{'active':radio_obj.parking}">
-                                        <i class="icon iconfont icon-xuanze"></i>
-                                    </div>
-                                </td>
-                                <td>
-                                    休息室：
-                                    <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_obj.WIFI}">
-                                        <i class="icon iconfont icon-xuanze"></i>
-                                    </div>
-                                </td> -->
                             </tr>
-                            
                         </tbody>
                     </table>
                 </li>
@@ -150,20 +137,20 @@
                         <tbody>
                             <tr>
                                 <td>
-                                    WIFI：
+                                    20：
                                     <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_obj.WIFI}">
                                         <i class="icon iconfont icon-xuanze"></i>
                                     </div>
                                 </td>
                                 <td>
-                                    停车：
-                                    <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_obj.WIFI}">
+                                    30：
+                                    <div @click="change_radio_2()" class="radio_1">
                                         <i class="icon iconfont icon-xuanze"></i>
                                     </div>
                                 </td>
                                 <td>
-                                    休息室：
-                                    <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_obj.WIFI}">
+                                    自定义：
+                                    <div @click="change_radio_2()" class="radio_1">
                                         <i class="icon iconfont icon-xuanze"></i>
                                     </div>
                                 </td>
@@ -172,6 +159,15 @@
                     </table>
                 </li>
             </ul> -->
+            <ul class="mui-table-view box_6">
+                <li class="mui-table-view-cell item" >
+					<a class="mui-navigate-right" @tap="ShopRedEnvelopes()">
+                        <span>店铺新人红包:</span>
+                        <span style="margin:0px 0px 0px 5px">{{Red_envelopes.headline}}</span>
+					</a>
+				</li>
+            </ul>
+            
             <div class="box_5">
                 <span>推荐人：</span>
                 <input type="text" v-model="shop_obj.referrerPhone" placeholder="请输入推荐人电话">
@@ -180,11 +176,11 @@
                 <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_Agreement}">
                     <i class="icon iconfont icon-xuanze"></i>
                 </div>
-                <span @click="change_radio_2()"> 我也阅读并同意</span>
-                <span @click="RegistrationAgreement()">《商家合作协议》</span>
+                <span @click="change_radio_2()"> 我已阅读并同意</span>
+                <span @click="RegistrationAgreement()">《商家服务协议》</span>
             </div>
 
-            <button @click="add()" class="btn_1">保存</button>
+            <button @click="add()" class="btn_1">提 交</button>
             <!-- <button @click="weixinmaptest()">跳转微信地图测试</button>
             <button @click="add()">申请通过后的店铺</button> -->
         </div>
@@ -316,31 +312,32 @@ export default {
                 iaiName:'',         //认证名
             },
             getType:0,      //0表示什么都没做 1表示点击了重新提交
+            Red_envelopes:'',       //红包
         };
     },
     computed: {
-        address() {     //开店地址
+        address() {       //开店地址
             return this.$store.state.geographical_position.address;
         },
         longitude(){      //经度
             return this.$store.state.geographical_position.longitude;
         },
-        latitude(){     //纬度
+        latitude(){       //纬度
             return this.$store.state.geographical_position.latitude
         },
         shops_tree_list(){  //店铺类型数组
             return this.$store.state.shops_tree_list
         },
-        creationTime(){  //开门时间
+        creationTime(){     //开门时间
             return this.$store.state.apply_for_a_shop.creationTime;
         },
-        endTime(){      //关门时间
+        endTime(){          //关门时间
            return this.$store.state.apply_for_a_shop.endTime;
         },
-        shopType(){     //申请店铺类型 个体实体
+        shopType(){         //申请店铺类型 个体实体
             return this.$store.state.apply_for_a_shop.shopType;
         },
-        businessLicense(){      //营业执照图片
+        businessLicense(){  //营业执照图片
             return this.$store.state.apply_for_a_shop.businessLicense;
         },
         myshop(){
@@ -348,6 +345,10 @@ export default {
         }
     },
     methods: {
+        //跳转发布界面新人红包
+        ShopRedEnvelopes(){
+            this.$router.push('/ShopRedEnvelopes')
+        },
         //点击重新提交
         chongxingtijiao(){
             var this_1=this;
@@ -397,12 +398,27 @@ export default {
                     }
                 }
             }
-
             // this.address=this.myshop.address
             // this.shop_fenlei=this.myshop.shopType;
             console.log('我的店铺',this.myshop);
-            
             this.getType=1;
+
+            sessionStorage.removeItem('Red_envelopes_0')
+            //根据店铺查询店铺新人红包
+            this.$axios({
+                method:'get',
+                url:'/api-s/shops/redenvelope/'+this.myshop.shopid,
+                // data:this.Red_envelopes,
+            }).then(x=>{
+                console.log('查询店铺新人红包',x);
+                if(x.data.code==200){
+                    this.Red_envelopes=x.data.data;
+                    sessionStorage.Red_envelopes_0=JSON.stringify(x.data.data);
+                }
+            }).catch(err=>{
+                console.log(err)
+            })
+
         },  
         //删除店招图片
         delete_signboard(){
@@ -462,6 +478,8 @@ export default {
                 this.shop_obj.iaiName=this.$store.state.apply_for_a_shop.iaiName;
 
                 var test_phone=/^1\d{10}$/;
+                //执照号码
+                var test_zhizhao = /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/;
             if(!this.shop_obj.shopType){
                 mui.toast("请选择店铺分类。", { duration: 2000, type: "div" });
                 return
@@ -486,6 +504,9 @@ export default {
             }else if(!this.shop_obj.businessNature){
                 mui.toast("请设置营业执照。", {duration: 2000, type: "div" });
                 return
+            }else if(!test_zhizhao.test(this.shop_obj.blnumber)){
+                mui.toast("营业执照号格式不正确。", {duration: 2000, type: "div" });
+                return
             }else if(!this.shop_obj.signboard){
                 mui.toast("请设置店招。", { duration: 2000, type: "div" });
                 return;
@@ -495,13 +516,16 @@ export default {
             }else if(!this.radio_Agreement){
                 mui.toast("请同意商家合作协议。", { duration: 2000, type: "div" });
                 return
-            }else if(this.shop_obj.referrerPhone){
+            }else if(!this.Red_envelopes){
+                mui.toast("请设置店铺新人红包。", { duration: 2000, type: "div" });
+                return
+            }
+            if(this.shop_obj.referrerPhone){
                 var phone_test = /^1\d{10}$/;
                 if(!phone_test.test(this.shop_obj.referrerPhone)){
                     mui.toast("推荐人手机号码填写有误。", { duration: 2000, type: "div" });
                     return
                 }else{
-                    // 
                     openloading(true)
                     this.$axios({
                         method:'get',
@@ -524,10 +548,11 @@ export default {
                     })
                 }
                 return
-            }            
+            } 
             this.sub()
         },
         sub(){
+            var this_1=this;
             openloading(true)
             if(this.getType==0){
                 this.$axios({
@@ -537,11 +562,8 @@ export default {
                 }).then(x=>{
                     console.log(x)
                     if(x.data.code==200){
-                        mui.alert('提交成功，等待审核。', "提示", function() {
-                            this_1.getType=0;
-                            this_1.$store.commit('setMyshop');    //查询我的店铺
-                            this_1.$router.push("/my");
-                        },"div");
+                        this.Red_envelopes.shopid=x.data.data;
+                        this.add_hongbao();
                     }else if(x.data.code){
                          mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
                     }else{
@@ -570,13 +592,16 @@ export default {
                 }).then(x=>{
                     console.log(x)
                     if(x.data.code==200){
-                        
-                        mui.alert('提交成功，等待审核。', "提示", function() {
-                             this_1.getType=0;
-                            this_1.$store.commit('setMyshop');    //查询我的店铺
-                            this_1.$router.push("/my");
-                           
-                        },"div");
+                        if(!this.Red_envelopes.id){
+                            this.add_hongbao()
+                        }else{
+                            this.updata_hongbao();
+                        }
+                        // mui.alert('提交成功，等待审核。', "提示", function() {
+                        //      this_1.getType=0;
+                        //     this_1.$store.commit('setMyshop');    //查询我的店铺
+                        //     this_1.$router.push("/my");
+                        // },"div");
                     }else if(x.data.code){
                          mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
                     }else{
@@ -588,13 +613,74 @@ export default {
                     mui.toast("系统错误，请稍后再试。", { duration: 2000, type: "div" });
                     openloading(false)
                 })
-            }  
+            }
         },
+        add_hongbao(){
+            var this_1=this;
+            this.$axios({
+                method:'post',
+                url:'/api-s/shops/redenvelope/add',
+                data:this.Red_envelopes,
+            }).then(x=>{
+                console.log(x);
+                if(x.data.code==200){
+                    mui.alert('提交成功，等待审核。', "提示", function() {
+                        this_1.getType=0;
+                        this_1.$store.commit('setMyshop');    //查询我的店铺
+                        this_1.$router.push("/my");
+                    },"div");
+                }else if(x.data.code){
+                    mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
+                }else{
+                    mui.toast(x.data.message, { duration: 2000, type: "div" }); 
+                }
+            }).catch(err=>{
+                console.log(err);
+                mui.alert('店铺设置成功，自动设置红包失败，请通过后手动设置。', "提示", function() {
+                    this_1.getType=0;
+                    this_1.$store.commit('setMyshop');    //查询我的店铺
+                    this_1.$router.push("/my");
+                },"div");
+                // mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" }); 
+            })
+        },
+        updata_hongbao(){
+            //
+            var this_1=this;
+            this.$axios({
+                method:'post',
+                url:'/api-s/shops/redenvelope/update',
+                data:this.Red_envelopes,
+            }).then(x=>{
+                console.log(x);
+                if(x.data.code==200){
+                    mui.alert('提交成功，等待审核。', "提示", function() {
+                        this_1.getType=0;
+                        this_1.$store.commit('setMyshop');    //查询我的店铺
+                        this_1.$router.push("/my");
+                    },"div");
+                }else if(x.data.code){
+                    mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
+                }else{
+                    mui.toast(x.data.message, { duration: 2000, type: "div" }); 
+                }
+            }).catch(err=>{
+                console.log(err)
+                mui.alert('店铺设置成功，自动设置红包失败，请通过后手动设置。', "提示", function() {
+                    this_1.getType=0;
+                    this_1.$store.commit('setMyshop');    //查询我的店铺
+                    this_1.$router.push("/my");
+                },"div");
+                // mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" }); 
+            })
+        },
+        //协议
         RegistrationAgreement(){
-            this.$router.push('/RegistrationAgreement');
+            var str=this.$store.state.apply_for_a_shop.iaiName+(this.shop_obj.phone ? ' ('+this.shop_obj.phone+')' : '');
+             this.$router.push('/shopAgreement?name='+str);
         },
         //跳转微信地图测试
-        weixinmaptest() {
+        weixinmaptest(){
             var ditu = bd_decrypt(
                 this.$store.state.geographical_position.longitude,  
                 this.$store.state.geographical_position.latitude
@@ -657,6 +743,12 @@ export default {
             console.log(e);
             var that = this;
             var file = e.target.files[0];
+            var size=file.size/1024;
+            if(size>1024){
+                this.option.size=size/1024
+            }else{
+                this.option.size=1
+            }
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {
@@ -707,8 +799,12 @@ export default {
             if(!this.myshop){
                 console.log('没有店铺');
                 this.get_myshop=false
-            }else if(this.myshop.shopid){
+            }else if(this.myshop.shopid && this.myshop.state!=1){
+                console.log('有店铺没通过');
+                this.get_myshop=false
+            }else if(this.myshop.shopid && this.myshop.state==1){
                 console.log('有店铺');
+                // this.get_myshop=false
                 this.$router.push('/myshop')
             }else{
                 console.log('正在获取店铺');
@@ -796,7 +892,16 @@ export default {
     },
     activated() {
         console.log(this.getType);
-       
+        var this_1 = this;
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {}
+        this.shop_obj.userid=this.userInfo.username;
+
+        try {
+            this.Red_envelopes=JSON.parse(sessionStorage.Red_envelopes_0);     
+        } catch (error) {
+        }
     },
     beforeUpdate: function() {
         // console.group('beforeUpdate 更新前状态===============》');
@@ -1060,6 +1165,12 @@ export default {
     }
 }
 
+#ApplicationShop .box_6{
+    font-size: 0.14rem;
+    margin: 0px 0px 5px;
+}
+
+
 #ApplicationShop .Agreement {
     display: flex;
     padding: 0px 20px;
@@ -1190,7 +1301,7 @@ export default {
 
 // 单选
 #ApplicationShop .radio_1 {
-    display: inline;
+    display: inline-block;
     width: 18px;
     height: 18px;
     text-align: center;
@@ -1198,6 +1309,7 @@ export default {
     border-radius: 100%;
     border: 2px solid #cccccc;
     overflow: hidden;
+    margin: 0px 0px -4px 3px;
     i {
         font-size: 8px;
         // display: none;

@@ -8,16 +8,16 @@
             <ul class="box_1">
                 <li :class="{'active':type==0}" @click="select_type(0)">
                     <div>商家</div>
-                    <div>3</div>
+                    <div>0</div>
                 </li>
                 <li :class="{'active':type==1}" @click="select_type(1)">
                     <div>会员</div>
-                    <div>315</div>
+                    <div>0</div>
                 </li>
             </ul>
 
             <ul class="box_2" v-if="type==0">
-                <li v-for="(item, index) in 3" :key="index">
+                <!-- <li v-for="(item, index) in 3" :key="index">
                     <div class="img_box">
                         <img v-if="index%3==0" src="image/5.jpg" alt="" srcset="">
                         <img v-if="index%3==1" src="image/6.jpg" alt="" srcset="">
@@ -52,8 +52,10 @@
                             </span>
                         </div>
                     </div>
-                </li>
+                </li> -->
+                
             </ul>
+            <loading v-if="type==0" :nodata="true"/>
 
             <ul class="box_3" v-if="type==1">
                 <li>
@@ -96,7 +98,7 @@
                 </li>
             </ul>
             <ul class="box_4 list" v-if="type==1">
-                <li v-for="(item, index) in 51" :key="index">
+                <li v-for="(item, index) in 0" :key="index">
                     <div>
                         <div>2018.11.11</div>
                     </div>
@@ -113,6 +115,7 @@
                         <div>182</div>
                     </div>
                 </li>
+                <loading :nodata="true"/>
             </ul>
 
         </div>
@@ -120,8 +123,13 @@
 </template>
 
 <script>
+import loading from '@/components/loading.vue';
+
 export default {
     nameL: "",
+    components:{
+        loading
+    },
     data() {
         return {
             type: 0

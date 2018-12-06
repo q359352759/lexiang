@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 import axios from "axios";
 axios.defaults.baseURL = baseURL;
+axios.defaults.timeout =  60000;
 // axios.defaults.baseURL = "http://192.168.1.11:8080";
 // import $ from "jquery"
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -22,11 +23,13 @@ axios.interceptors.response.use(
 );
 import qs from "qs";
 import router from "./router";
+import shangPing from "./vuex/shangPing";
 Vue.use(Vuex);
+
 
 var vuex = new Vuex.Store({
     state: {
-        clientX: 300, //远点导航X
+        clientX: 100, //远点导航X
         clientY: 450, //远点导航Y
         isweixin: true,
         loginDate: {}, //login信息
@@ -86,7 +89,9 @@ var vuex = new Vuex.Store({
         my_position:{       //我的位置
             x:'',
             y:''
-        }
+        },
+        //红包
+        redid:'',       //红包id
     },
     getters: {
         doneTodos(state, getters) {
@@ -152,13 +157,7 @@ var vuex = new Vuex.Store({
         //获取个人信息
         setCurrent(state) {
             // console.log(this.state.loginDate)
-            if (
-                !localStorage.id ||
-                localStorage.id == "" ||
-                localStorage.id == null ||
-                localStorage.id == undefined ||
-                localStorage.id == "undefined"
-            ) {
+            if (!localStorage.id || localStorage.id == "" || localStorage.id == null || localStorage.id == undefined || localStorage.id == "undefined") {
                 alert("获取用户信息失败，请重新登录");
                 location.href = "index.html#/login";
                 return;
@@ -167,24 +166,22 @@ var vuex = new Vuex.Store({
             axios({
                 method: "get",
                 url: "api-u/users/" + id
-            })
-                .then(x => {
-                    if (x.data.error) return;
-                    if (x.data.code != 200) {
-                        alert("获取用户信息失败，请重新登录");
-                        location.href = "index.html#/login";
-                        return;
-                    } else {
-                        console.log("获取个人信息", x);
-                        state.userInfo = x.data.data;
-                        localStorage.userInfo = JSON.stringify(x.data.data);
-                    }
-                })
-                .catch(error => {
+            }).then(x => {
+                if (x.data.error) return;
+                if (x.data.code != 200) {
                     alert("获取用户信息失败，请重新登录");
                     location.href = "index.html#/login";
+                    return;
+                } else {
+                    console.log("获取个人信息", x);
+                    state.userInfo = x.data.data;
+                    localStorage.userInfo = JSON.stringify(x.data.data);
+                }
+            }).catch(error => {
+                alert("获取用户信息失败，请重新登录");
+                location.href = "index.html#/login";
                     // router.push("/login");
-                });
+            });
         },
         //获取用户实名信息
         setfindByUserid(){
@@ -203,7 +200,7 @@ var vuex = new Vuex.Store({
         setShopTree(){
             axios({
                 method:'get',
-                url:'/api-s/shops/tree/findAll',
+                url:'http://122.114.169.178:8080/api-s/shops/tree/findAll',
             }).then(x=>{
                 console.log('获取店铺类型',x);
                 //增加一个key
@@ -240,8 +237,8 @@ var vuex = new Vuex.Store({
                 console.log('获取自己的店铺错误',err)
             })
         },
-        //查询店铺分类
-
+        
+        
     },
     actions: {
         actions_agentUser({ dispatch, commit }) {
@@ -251,8 +248,8 @@ var vuex = new Vuex.Store({
         // 调用 store.dispatch('actions_agentUser')
     },
     modules: {
-        
-    }
+        shangPing:shangPing
+    },
 });
 // store.commit( 'setIsWeixin', 1);
 export default vuex;

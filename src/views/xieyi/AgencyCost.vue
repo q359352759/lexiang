@@ -52,7 +52,7 @@
     （4）可获得店铺分销佣金。
                 </li>
                 <li>
-    （5）可获得优购商城分销佣金。
+    （5）可获得红包乐购平台分销佣金。
                 </li>
             </ul>
         </div>
@@ -74,7 +74,8 @@ export default {
     li{
         text-indent: 1em;
         color: rgba(80, 80, 80, 1);
-    	font-size: 0.14rem;
+        font-size: 0.14rem;
+        margin: 3px 0px ;
     }
 }
 

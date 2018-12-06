@@ -50,6 +50,8 @@
     </div>
 </template>
 
+
+
 <script>
 import {openloading,convert} from "@/assets/js/currency";
 export default {
@@ -102,7 +104,7 @@ export default {
                 })
             }).then(x => {
                 openloading(false);
-                // this_1.Apply();      //正式环境放在支付成功后面
+                this_1.Apply();      //正式环境放在支付成功后面
                 console.log(x);
                 var data = x.data;
                 wx.chooseWXPay({
@@ -156,17 +158,17 @@ export default {
         //添加广告机
         addguanggaoji(){
             var this_1=this;
-            var tishi="恭喜您已成为区域代理，成功获得价值498元的广告机套餐，点击公众号内的“广告管理”使用，初始账号为您的手机号，密码为手机号后6位，请在广告机内点击“会员服务”修改密码（请勿在乐享生活中修改）。";
+            var tishi="恭喜您已成为区域代理，成功获得价值498元的广告机套餐，点击公众号内的“广告管理”使用，初始账号为您的手机号，密码为手机号后6位，请在广告机内点击“会员服务”修改密码（请勿在红包乐购中修改）。";
             var tishi1="恭喜您已成为区域代理，成功获得价值498元的广告机套餐，已经叠加到您的广告机账户。";
             var obj={
-                    'username':this.userInfo.nickname ? this.userInfo.nickname : '乐享生活区域代理',
+                    'username':this.userInfo.nickname ? this.userInfo.nickname : '红包乐购区域代理',
                     'pwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
                     'repwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
                     'qq':'',
                     'anums':'3600',                  //文章条数 增加的
                     'userid':this.userInfo.phone,        //手机号码
                     'beizhu1':'365',           //备注 到期天数  增加
-                    'beizhu2':'乐享生活区域代理注册',
+                    'beizhu2':'红包乐购区域代理注册',
                     'shuyu':'admin',     //您的上级ID
                     'adnums':30           //广告条数
                 }

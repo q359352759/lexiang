@@ -177,34 +177,24 @@ export default {
         huoqu(e,x){
             console.log(x)
              //手指头刚刚按下
-            //这里不能用 target 
             this.$set(x,'active',false);
             var targetTouches = e.targetTouches[0];
             this.touchstart_x=targetTouches.clientX-e.currentTarget.parentElement.offsetLeft;
-            // e.currentTarget.parentElement.className=""
         },
         //开始拖动
         touchmove(e){
-            // console.log(e)
             var targetTouches = e.targetTouches[0];
-            // e.currentTarget.style.left=targetTouches.clientX-this.touchstart_x+'px';
             e.currentTarget.parentElement.style.left=targetTouches.clientX-this.touchstart_x+'px';
         },
         //拖动结束
         touchend(e,x){
-            //  e.currentTarget.parentElement.className="active"
-            // if(e.currentTarget.offsetLeft>60){
-            //     e.currentTarget.style.left='60px'
-            // }else 
             x.active=true;
             var event=e;
             var parentElement=e.currentTarget.parentElement;
             setTimeout(()=>{
                 if(parentElement.offsetLeft<-60){
-                    // e.currentTarget.parentElement.style.left='-60px';
                     this.$set(x,'pos_left',true)
                 }else{
-                    // e.currentTarget.parentElement.style.left='0px';
                     this.$set(x,'pos_left',false)
                 }
                 parentElement.removeAttribute('style');

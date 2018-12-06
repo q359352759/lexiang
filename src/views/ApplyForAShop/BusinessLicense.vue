@@ -137,6 +137,12 @@ export default {
             console.log(e);
             var that = this;
             var file = e.target.files[0];
+            var size=file.size/1024;
+            if(size>1024){
+                this.option.size=size/1024
+            }else{
+                this.option.size=1
+            }
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {

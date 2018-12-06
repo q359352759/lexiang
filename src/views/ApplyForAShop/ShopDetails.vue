@@ -117,7 +117,7 @@
                         <tbody>
                             <tr v-if="serviceType_list.length!=0" v-for="(item, index) in Math.ceil(serviceType_list.length/3)" :key="index">
                                 <td v-if="index_1<3*index+3 && index_1>=3*index" v-for="(item_1, index_1) in serviceType_list" :key="index_1">
-                                    {{item_1.name}}
+                                    <span>{{item_1.name}}</span>
                                     <div @click="radio(item_1)" class="radio_1" :class="{'active':item_1.active}">
                                         <i class="icon iconfont icon-xuanze"></i>
                                     </div>
@@ -164,8 +164,8 @@
                 <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_Agreement}">
                     <i class="icon iconfont icon-xuanze"></i>
                 </div>
-                <span @click="change_radio_2()"> 我也阅读并同意</span>
-                <span @click="RegistrationAgreement()">《商家合作协议》</span>
+                <span @click="change_radio_2()"> 我已阅读并同意</span>
+                <span @click="RegistrationAgreement()">《商家服务协议》</span>
             </div>
 
             <button @click="add()" class="btn_1">保存</button>
@@ -536,7 +536,8 @@ export default {
             
         },
         RegistrationAgreement(){
-            this.$router.push('/RegistrationAgreement');
+            console.log(this.shop_obj)
+            this.$router.push('/shopAgreement?name='+this.myshop.iaiName +' ('+this.myshop.phone+')');
         },
         //跳转微信地图测试
         weixinmaptest() {
@@ -615,6 +616,12 @@ export default {
             console.log(e);
             var that = this;
             var file = e.target.files[0];
+            var size=file.size/1024;
+            if(size>1024){
+                this.option.size=size/1024
+            }else{
+                this.option.size=1
+            }
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {
@@ -993,6 +1000,7 @@ export default {
     }
     .radio_1 {
         display: inline-block;
+        margin: 0px 0px -3px 3px;
     }
     .table_box {
         // padding: 0px 15px;
@@ -1143,28 +1151,4 @@ export default {
 }
 
 
-// 单选
-#ApplicationShop .radio_1 {
-    width: 18px;
-    height: 18px;
-    text-align: center;
-    line-height: 16px;
-    border-radius: 100%;
-    border: 2px solid #cccccc;
-    overflow: hidden;
-    i {
-        font-size: 8px;
-        // display: none;
-        opacity: 0;
-    }
-}
-#ApplicationShop .radio_1.active {
-    background: rgba(58, 182, 237, 1);
-    border: 2px solid rgba(58, 182, 237, 1);
-    color: #ffffff;
-    i {
-        display: inline-block;
-        opacity: 1;
-    }
-}
 </style>

@@ -17,6 +17,10 @@
                 </ul>
             </div>
 
+            <div class="box_4">
+                 温馨提示：请使用手机竖着拍照或手机相册中选择。
+            </div>
+
             <ul class="box_1" v-show="!Uncertified">
                 <li class="zhengmian" @click="zhengmian(true)">
                     <span v-show="zhengmian_img==''">请选择身份证正面</span>
@@ -259,6 +263,12 @@ export default {
             console.log(e);
             var that = this;
             var file = e.target.files[0];
+            var size=file.size/1024;
+            if(size>1024){
+                this.option.size=size/1024
+            }else{
+                this.option.size=1
+            }
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {
@@ -421,6 +431,12 @@ export default {
     background: $header_background;
 }
 
+#LegalPersonCertification .box_4{
+    font-size: 0.12rem;
+    text-align: center;
+    padding: 0.2rem 0px 0px;
+    color: red;
+}
 #LegalPersonCertification .box_1 {
     padding: 1px 10px;
     li {

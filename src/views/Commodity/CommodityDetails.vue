@@ -42,7 +42,8 @@
                         <i class="icon_1 icon iconfont icon-hongbao1"></i>
                         <span class="qian">可抵扣：{{commodity.deduction}}元</span>
                     </div>
-                    <span class="btn_1">领红包</span>
+                    <span class="btn_1" @tap="linghongbao()">领红包</span>
+                    <!--  -->
                 </li>
             </ul>
             
@@ -55,8 +56,19 @@
 				</li>
 			</ul>
 
+            <ul class="box_7" v-if="!isshop">
+                <li>
+                    <img :src="shop.signboard">
+                    <span class="shopname">{{shop.name}}</span>
+                    <span class="pingfen">5.0分</span>
+                </li>
+                <li @tap="toshop()">
+                    进店
+                </li>
+            </ul>
+
             <ul class="box_4">
-                <li v-for="(item, index) in 2" :key="index">
+                <li v-for="(item, index) in 0" :key="index">
                     <div class="img_box">
                         <img src="image/43.png" alt="" srcset="">
                     </div>
@@ -89,10 +101,13 @@
             </div>
 
             <ul class="box_6">
-                <li>
-                    <i class="icon iconfont icon-collect"></i>
-                    收藏
+                <li @tap="shoucang()">
+                    <i :class="{'icon-shoucang shoucang':UserFavorite,'icon-collect':!UserFavorite}" class="icon iconfont"></i>
+                    <div>{{UserFavorite ? '取消收藏' : '收藏'}}</div>
                 </li>
+                <li>
+                    <i class="icon iconfont icon-kefu1"></i>
+                    <div>客服</div></li>
                 <li>
                     立即购买
                 </li>
@@ -140,13 +155,97 @@ export default {
     name:'',
     data(){
         return{
+            isshop:true,
             QRCode_box:false,
             id:'',
             commodity:{},
-            img_list:[]
+            img_list:[],
+            shop:{},        //店铺信息
+            UserFavorite:'',    //收藏信息
+            userInfo:''     //用户信息
         }
     },
     methods: {
+        //
+        linghongbao(){
+            // http://192.168.1.13:8080/#/RedEnvelopesList?shopid=D7004090906D139CD1492008D376E457
+            this.$router.push('/RedEnvelopesList?shopid='+this.shop.shopid)
+        },
+        //点击收藏
+        shoucang(){
+            if(!this.userInfo){
+                mui.toast('请先登录才能收藏。',{ duration: "long",type: "div" });
+                return
+            }
+            if(!this.UserFavorite){
+                this.addUserFavorite()
+            }else{
+                this.deleteUserFavorite()
+            }
+        },
+        //添加收藏
+        addUserFavorite(){
+            var obj={
+                    userid:this.userInfo.username,
+                    type:'1',        //收藏类型(0:店铺,1:商品)
+                    name:'商品',        //收藏类型(店铺,商品)
+                    shopid:'',      //商店id
+                    commodityid:this.id,   //商品id
+                }
+            this.$axios({
+                method:'post',
+                url:'/api-s/shops/addUserFavorite',
+                data:obj,
+            }).then(x=>{
+                console.log(x);
+                if(x.data.code==200){
+                    mui.toast('收藏成功。',{ duration: 1000,type: "div" });
+                    this.get_findDataUserFavorite()
+               }else{
+                    mui.toast('收藏失败。',{ duration: 1000,type: "div" });
+                }
+            }).catch(err=>{
+                console.log(err)
+            })
+        },
+        //删除收藏
+        deleteUserFavorite(){
+            this.$axios({
+                method:'post',
+                url:'/api-s/shops/deleteUserFavorite',
+                data:[this.UserFavorite.id]
+            }).then(x=>{
+                if(x.data.code==200){
+                    console.log('取消收藏成功。',x);
+                    mui.toast('取消收藏成功。',{ duration: 1000,type: "div" });
+                    this.get_findDataUserFavorite()
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
+        //查询收藏
+        get_findDataUserFavorite(){
+            var obj={
+                    start:0,
+                    length:10,
+                    userid:this.userInfo.username,
+                    // shopid:this.shopid
+                    commodityid:this.id,   //商品id
+                }
+            this.$axios({
+                method:'get',
+                url:'/api-s/shops/findDataUserFavorite',
+                params:obj
+            }).then(x=>{
+                console.log('查询收藏信息',x);
+                if(x.data.code==200){
+                    this.UserFavorite=x.data.data.data.length>0 ? x.data.data.data[0] : '';
+                }
+            }).catch(err=>{
+                console.log('查询收藏信息错误',err)
+            })
+        },
         //轮播图片
         getswiper() {
             var swiper = new Swiper("#CommodityDetails .swiper-container", {
@@ -170,6 +269,7 @@ export default {
                 console.log(x);
                 this.commodity=x.data.data;
                 this.img_list = x.data.data.img ? x.data.data.img.split(',') : [];
+                this.get_shop()
             }).catch(err=>{
                 console.log(err);
             })
@@ -177,6 +277,7 @@ export default {
         //显示二维码
         erweima_show(){
             console.log('生成二维码');
+            console.log( location.href+"&isshop=1")
             if(this.qrcode){
                 // this.qrcode_show=true;
                 this.QRCode_box=true;
@@ -186,7 +287,7 @@ export default {
                 let qrcode = new QRCode(el, {  
                     width: 50,  
                     height: 50, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                    text: location.href, // 二维码内容  
+                    text: location.href+"&isshop=1", // 二维码内容  
                     // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
                     background: '#fff',
                     foreground: '#fff',
@@ -202,7 +303,23 @@ export default {
         //关闭二维码
         close_1(){
             this.QRCode_box=false
-        }
+        },
+        //进入店铺
+        toshop(){
+            this.$router.push('/BusinessDetails?shopid='+this.commodity.shopid);
+        },
+        //根据Id查询店铺
+        get_shop(){
+            this.$axios({
+                method:'get',
+                url:'/api-s/shops/findByShopid/'+this.commodity.shopid
+            }).then(x=>{
+                console.log('根据Id查询店铺信息',x);
+                this.shop=x.data.data;
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
     },
     beforeCreate() {
         // console.group('------beforeCreate创建前状态------');
@@ -213,21 +330,22 @@ export default {
     beforeCreate() {
         // console.group('------beforeMount挂载前状态------');
     },
-    mounted() {
-        // var swiper = new Swiper("#CommodityDetails .swiper-container", {
-        //         loop: true,
-        //         autoplay: true,
-        //         observer:true,
-        //         pagination: {
-        //             el: ".swiper-pagination"
-        //         }
-        //     });
-
-        
+    mounted() {        
         this.id=this.$route.query.id;
         //查询单个商品
         this.get_commodity();
+
+        this.isshop=this.$route.query.isshop ? false : true;
         
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo)
+        } catch (error) {}
+
+        //查询收藏
+        if(this.userInfo){
+            this.get_findDataUserFavorite()
+        }
+
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -255,7 +373,8 @@ export default {
 
 <style lang="scss" scoped>
 .mui-bar{
-    background-color: rgba(255,255,255,0.3);
+    // background-color: rgba(255,255,255,0.3);
+    background-color: rgba(195, 195, 195, 0.3);
     .fenxiang,
     .erweima{
         color: #ffffff;
@@ -362,6 +481,44 @@ export default {
     }
 }
 
+.box_7{
+    background-color: rgba(255, 255, 255, 1);
+    height: 44px;
+    display: flex;
+    padding: 0px 12px;
+    align-items: center;
+    margin: 3px 0px 0px;
+    img{
+        width: 32px;
+    	height: 24px;
+        margin: 0px 5px 0px 0px;
+    }
+    >li:nth-child(1){
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+    }
+    >li:nth-child(2){
+        width: 60px;
+    	height: 24px;
+        text-align: center;
+        border-radius: 24px;
+        border: 1px solid #589ce9;
+        font-size: 10px;
+        line-height: 22px;
+        color: #589ce9;
+    }
+    .shopname{
+        color: rgba(80, 80, 80, 1);
+    	font-size: 14px;
+    }
+    .pingfen{
+        color: rgba(212, 48, 48, 1);
+    	font-size: 10px;
+        margin: 0px 0px 0px 3px;
+    }
+}
+
 .box_4{
     background: #ffffff;
     >li{
@@ -429,17 +586,41 @@ export default {
     left: 0px;
     bottom: 0px;
     display: flex;
-    >li:nth-child(1){
-        min-width: 94px;
+    >li:nth-child(1),
+    >li:nth-child(2){
+        position: relative;
+        width: 0.64rem;
         text-align: center;
         background-color: rgba(24, 169, 104, 1);
         color: #ffffff;
-        line-height: 44px;
         font-size: 14px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        i{
+            font-size: 18px;
+        }
+        .shoucang{
+            color: #f56827;
+        }
+        >div{
+        	font-size: 10px;
+        }
     }
-    >li:nth-child(2){
+    >li:nth-child(1)::after{
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        bottom: 0px;
+        margin: auto;
+        width: 1px;
+    	height: 16px;
+        background: #ffffff;
+        content: "";
+    }
+    >li:nth-child(3){
         color: rgba(255, 255, 255, 1);
-	    background-color: rgba(252, 102, 33, 1);
+	    background-color: #f56827;
     	font-size: 14px;
         line-height: 44px;
         text-align: center;

@@ -5,9 +5,9 @@
             <h1 class="mui-title">
                 <form @submit.prevent="submit()">
                     <div class="suosuo">
-                        <i class="icon iconfont icon-chazhao"></i>
                         <input @click="search()" type="text" v-model="search_text">
-                        <button type="submit"></button>
+                        <i @tap="chazhao()" class="icon iconfont icon-chazhao"></i>
+                        <button type="submit" class="miu-hidden">查找</button>
                     </div>
                 </form>
             </h1>
@@ -187,7 +187,7 @@ export default {
     methods: {
         //跳转商家详情
         BusinessDetails(x) {
-            this.$router.push("/BusinessDetails?id="+x.id);
+            this.$router.push("/BusinessDetails?shopid="+x.shopid);
         },
         //跳转商品详情
         CommodityDetails(x){
@@ -244,6 +244,10 @@ export default {
                 }
                 console.log("到底底部");
             }
+        },
+        //点击查找
+        chazhao(){
+            this.submit()
         },
         //
         submit(){
@@ -481,6 +485,9 @@ export default {
         background: none;
         border: none;
         font-size: 14px;
+    }
+    i{
+        padding: 0px 0px 0px 10px;
     }
     button{
         display: none;

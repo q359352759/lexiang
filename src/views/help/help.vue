@@ -6,13 +6,16 @@
                 帮助中心
             </h1>
         </header>
-        <div class="mui-content mui-fullscreen">
-            <ul class="box_1">
+        <div class="mui-content mui-fullscreen" @scroll="scroll_1($event)">
+            <ul class="box_1" v-if="userInfo.referrerid">
                 <li class="title_1">我的客服专员：</li>
-                <li class="name">张三</li>
+                <li class="name">
+                    <span v-if="referrer.nickname">{{referrer.nickname}}</span>
+                    <span v-if="!referrer.nickname">{{referrer.phone | fliter_phone}}</span>
+                </li>
                 <li class="icon_box xiaoxi">
                     <i class="icon iconfont icon-31xiaoxi"></i>
-                    <span>2</span>
+                    <!-- <span>2</span> -->
                 </li>
                 <li class="icon_box weixin">
                     <i class="icon iconfont icon-weixin"></i>
@@ -32,42 +35,22 @@
                 </li>
                 <li @tap="RaiseQuestions()">提问</li>
                 <li>
-                    <span>1</span>
+                    <!-- <span>1</span> -->
                     <i class="icon iconfont icon-iconcopy"></i>
                 </li>
             </ul>
 
             <ul class="box_3">
-                <li :class="{'active':type==0}" @tap="selset_type(0)">常见问题</li>
-                <li :class="{'active':type==1}" @tap="selset_type(1)">会员</li>
+                <li v-if="(item.name!='分销员' && item.name!='商家') || (item.name=='商家' && myshop)" :class="{'active':type==item.id}" v-for="(item, index) in type_list" :key="index" @tap="selset_type(item)">{{item.name}}</li>
+                <!-- <li :class="{'active':type==1}" @tap="selset_type(1)">会员</li>
                 <li :class="{'active':type==2}" @tap="selset_type(2)">商家</li>
-                <li :class="{'active':type==3}" @tap="selset_type(3)">分销员</li>
+                <li :class="{'active':type==3}" @tap="selset_type(3)">分销员</li> -->
             </ul>
 
             <ul class="mui-table-view box_4">
-				<li class="mui-table-view-cell" >
-					<a class="mui-navigate-right">
-						<span >修改登录密码</span>
-					</a>
-				</li>
-                <li class="mui-table-view-cell ">
-					<a class="mui-navigate-right">
-						<span >修改支付密码</span>
-					</a>
-				</li>
-				<li class="mui-table-view-cell ">
-					<a class="mui-navigate-right">
-						<span >实名认证</span>
-					</a>
-				</li>
-				<li class="mui-table-view-cell ">
-					<a class="mui-navigate-right">
-						<span >提现账户</span>
-					</a>
-				</li>
-				<li class="mui-table-view-cell ">
-					<a class="mui-navigate-right">
-						<span >申请开店</span>
+				<li class="mui-table-view-cell" v-for="(item, index) in qusetion.list" :key="index">
+					<a class="mui-navigate-right" @tap="HelpDetails(item)">
+						<span >{{item.headline}}</span>
 					</a>
 				</li>
 			</ul>
@@ -80,18 +63,165 @@ export default {
     name:'',
     data(){
         return{
-            type:0
+            type:'',
+            type_list:[
+                {'name':'常见问题','id':''}
+            ],
+            qusetion:{
+                list:[],
+                loading:true,
+                total:0,
+                page_index:0,
+                query:{
+                    start:0,
+                    length:10,
+                    type:null,        //类型
+                    state:'1',      //显示隐藏
+                    common:"1",       //常见或不常见
+                }
+            },
+            userInfo:'',
+            referrer:{},    //推荐人
+        }
+    },
+    computed:{
+        myshop(){
+            return this.$store.state.myshop;
+        }
+    },
+    filters:{
+        fliter_phone(phone) {
+            if (!phone) return "";
+            return (
+                phone.substring(0, 3) +
+                "***" +
+                phone.substring(phone.length - 3)
+            );
         }
     },
     methods:{
+        //跳转问题详情
+        HelpDetails(x){
+            this.$router.push('/HelpDetails?id='+x.id)
+        },
+        //滚动条
+        scroll_1(e){
+            var h = e.target.offsetHeight; //容器高度
+            var sh = e.target.scrollHeight; //滚动条总高
+            var t = e.target.scrollTop; //滚动条到顶部距离
+            // console.log(e)
+            if (h + t >= sh - 10 && this.qusetion.list.length<this.qusetion.total && !this.qusetion.loading){
+                this.qusetion.page_index++
+                this.get_qusetion();
+            }
+        },
         //选择类型
         selset_type(x){
-            this.type=x;
+            this.type=x.id;
+            if(x.id){
+                this.qusetion.query.common=null;
+            }else{
+                this.qusetion.query.common=1;
+            }
+            this.qusetion.list=[];
+            this.qusetion.page_index=0;
+            this.qusetion.total=0;
+            this.qusetion.query.type=x.id ? x.id : null;
+            this.get_qusetion();
         },
         //提问
         RaiseQuestions(){
             this.$router.push('/RaiseQuestions')
+        },
+        //获取问题分来
+        get_questiontype(){
+            this.$axios({
+                method:'get',
+                url:'/api-u/users/questiontype/findAll?start=0&length=4'
+            }).then(x=>{
+                console.log('获取问题分类',x);
+                this.type_list=this.type_list.concat(x.data.data.data)
+            }).catch(err=>{
+                console.log(err)
+            })
+        },
+        //查询问题
+        get_qusetion(){
+            this.qusetion.loading=true;
+            this.qusetion.query.start=this.qusetion.page_index*this.qusetion.query.length;
+            this.$axios({
+                method:'get',
+                url:'/api-u/users/qusetion/findAll',
+                params:this.qusetion.query
+            }).then(x=>{
+                console.log('获取问题列表',x);
+                if(x.data.code==200){
+                    this.qusetion.list=this.qusetion.list.concat(x.data.data.data);
+                    this.qusetion.total=x.data.data.total
+                }
+                this.loading=false;
+            }).catch(err=>{
+                this.qusetion.loading=false;
+                console.log(err);
+            })
+        },
+        //获取推荐人信息
+        get_Recommender(){
+            this.$axios({
+                method:'get',
+                url:'/api-u/users/findByUserid/'+this.userInfo.referrerid,
+                // url:'/api-u/users-anon/internal?username='+this.userInfo.referrerid,
+                // params:{}
+            }).then(x=>{
+                console.log('查询推荐人',x);
+                this.referrer=x.data.data
+            }).catch(err=>{
+                console.log(err);
+            })
         }
+    },
+    beforeCreate: function() {
+        
+        // console.group('------beforeCreate创建前状态------');
+    },
+    created: function() {
+        //获取问题分类
+        this.get_questiontype();
+        //获取问题列表
+        this.get_qusetion();
+        // /api-u/users/questiontype/findAll?start=0&length=1000
+        // console.group('------created创建完毕状态------');
+    },
+    beforeMount: function() {
+        // console.group('------beforeMount挂载前状态------');
+    },
+    mounted: function() {
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {}
+        //查询推荐人信息
+        if(this.userInfo.referrerid){
+            this.get_Recommender();
+        }
+
+    
+        //查询和你自己申请的店铺
+        this.$store.commit('setMyshop');
+
+        
+        // console.group('------mounted 挂载结束状态------');
+    },
+    beforeUpdate: function() {
+        // console.group('beforeUpdate 更新前状态===============》');
+    },
+    updated: function() {
+        // console.group('updated 更新完成状态===============》');
+    },
+    beforeDestroy: function() {
+        // console.group('beforeDestroy 销毁前状态===============》');
+    },
+    destroyed: function() {
+        // console.group('destroyed 销毁完成状态===============》');
     }
 }
 </script>

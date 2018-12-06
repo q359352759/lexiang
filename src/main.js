@@ -1,9 +1,12 @@
 import Vue from "vue";
 import App from "./App.vue";
 
+// import VueHtml5Editor from 'vue-html5-editor'
+// Vue.use(VueHtml5Editor,{});
 
 import axios from "axios";
 axios.defaults.baseURL = baseURL;
+axios.defaults.timeout =  60000;
 // axios.defaults.baseURL = "http://192.168.1.11:8080";
 // axios.defaults.baseURL = 'http://172.20.10.2:8080';
 
@@ -45,12 +48,23 @@ new Vue({
 router.beforeEach((to, from, next) => {
     var toPath = to.path;
     var loginDate = localStorage.loginDate;
-    var baimingdan = ["/login", "/register", "/RegistrationAgreement",'/ForgetPassword']; //未登录可以访问的白名单
+    var baimingdan = [
+            "/login", "/register","/home", 
+            "/CommodityDetails",    //首页商品详情
+            "/BusinessDetails",     //首页商家
+            '/RedEnvelopesList',    //商家领取红包页面
+            "/RegistrationAgreement",
+            '/ForgetPassword',
+            '/Recommend',       //分享页面
+            '/BeInvited',        //分享注册页面
+            '/CommodityDetails'     //商品详情
+        ]; //未登录可以访问的白名单
     if (!loginDate || loginDate == null || loginDate == undefined) {
+        
         if (baimingdan.indexOf(toPath) == -1) {
             console.log("没有登录准备跳转至登录");
-            // next({ path: "/login" });
-              next();
+            next({ path: "/login" });
+            //next();
         } else {
             console.log("白名单");
             next();
@@ -58,4 +72,6 @@ router.beforeEach((to, from, next) => {
     } else {
         next();
     }
+    document.getElementById("loading").style.opacity = "0";
+    document.getElementById("loading").style.display = "none";
 });

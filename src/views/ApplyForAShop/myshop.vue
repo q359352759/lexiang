@@ -10,7 +10,7 @@
             <ul class="box_1">
                 <li @tap="ShopDetails()">
                     <img :src="myshop.signboard" alt="" srcset="">
-                    <div>店铺详情</div>
+                    <div>编辑店铺</div>
                 </li>
                 <li>
                     <h1>{{myshop.address}}</h1>
@@ -24,7 +24,7 @@
 
             <ul class="box_2">
                 <li>
-                    <div><i class="icon iconfont icon-huiyuan"></i></div>
+                    <div><i class="icon iconfont icon-huiyuan1"></i></div>
                     <div>会员</div>
                 </li>
                 <li>
@@ -32,8 +32,8 @@
                     <div @click="commodity()">商品</div>
                 </li>
                 <li>
-                    <div><i class="icon iconfont icon-distribute"></i></div>
-                    <div>分销</div>
+                    <div @click="fenxiao()"><i class="icon iconfont icon-distribute"></i></div>
+                    <div @click="fenxiao()">分销</div>
                 </li>
                 <li>
                     <div><i class="icon iconfont icon-leijixiaoshoue"></i></div>
@@ -103,6 +103,24 @@
                         </a>
                     </li>
                     <li class="mui-table-view-cell">
+                        <a class="mui-navigate-right" @tap="Notice()">
+                            <div class="cont_1">
+                                <div>
+                                    店铺公告
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="mui-table-view-cell">
+                        <a class="mui-navigate-right" @tap="introduction()">
+                            <div class="cont_1">
+                                <div>
+                                    店铺简介
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="mui-table-view-cell">
                         <a class="mui-navigate-right" @tap="albumManagement()">
                             <div class="cont_1">
                                 <div>
@@ -119,31 +137,36 @@
             <div ref="printMe" class="qrcode_box">
                 <div class="header_1">
                     <div class="img_box">
-                        <img src="image/kaifazhong.png" alt="" srcset="">
+                        <img v-if="erweima_base64" :src="erweima_base64" alt="" srcset="">
                     </div>
-                    <div class="text_1">
-                        <div>
-                            七福徕.牛排海鲜自助
-                        </div>
-                        <div>
-                            四川省成都市武侯区武青一路10号
-                        </div>
+                    <div class="text_1" ref="zoom_box">
+                        <div ref="fontsize_1">{{myshop.name}}</div>
+                        <div ref="fontsize_2">{{myshop.address}}</div>
                     </div>
                 </div>
                 <div class="erweima">
-                    <img src="image/bg_2.png" alt="" srcset="">
+                    <!-- <img :src="myshop.signboard" alt="" srcset=""> -->
+                    <img v-if="erweima_base64" :src="erweima_base64" alt="">
                     <div ref="qrcode">
                         <!-- <img src="" alt="" srcset=""> -->
                     </div>
                 </div>
                 <ul class="footer_1">
                     <li>恭候尊驾，这厢有礼！</li>
-                    <li>识别二维码领取<span>20</span>红包</li>
-                </ul>               
+                    <li>识别二维码领取红包</li>
+                </ul>
             </div>
             
-            <div class="canvas" v-show="qrcode_show" @tap="qrcode_show=false">
-                <img :src="qrcode">
+            <div class="QRCode" v-show="qrcode_show" @tap="qrcode_show=false">
+                <div class="mask"></div>
+                <div class="content_1">
+                    
+                    <div class="close_1">
+                        <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
+                        <div></div>
+                    </div>
+                    <img :src="qrcode" alt="" srcset="">
+                </div>
             </div>
         </div>
     </div>
@@ -152,14 +175,16 @@
 <script>
 // html2canvas
 import html2canvas from 'html2canvas'
-import QRCode from 'qrcodejs2'
+import QRCode from 'qrcodejs2';
+import {openloading} from '@/assets/js/currency.js';
+import $ from "jquery"
 export default {
     name:'',
     data(){
         return{
             qrcode:null,
             qrcode_show:false,
-
+            erweima_base64:'',
         }
     },
     computed:{
@@ -168,6 +193,18 @@ export default {
         }
     },
     methods: {
+        //跳转分销
+        fenxiao(){
+            this.$router.push('/myshop/distribution/ApplicationDistribution')
+        },
+        //跳转店铺简介
+        introduction(){
+            this.$router.push('/introduction');
+        },
+        //跳转
+        Notice(){
+            this.$router.push('/Notice')
+        },
         //跳转营销
         Marketing(){
             this.$router.push('/Marketing')
@@ -176,42 +213,96 @@ export default {
         back_1(){
             this.$router.push('/my')
         },
+        close_1(){
+            this.qrcode_show=false;
+        },
+        //动态设置字体大小
+        set_font_size(e,size){
+            console.log(e.clientWidth);
+            console.log(e.offsetWidth)
+            console.log(e.scrollWidth)
+            if(e.clientWidth<e.scrollWidth){
+                e.style['font-size']=parseInt(e.clientWidth/e.scrollWidth*size)+'px';
+            }
+        },
+        set_zoom(e){
+            console.log(e.children);
+            var w=e.offsetWidth;
+            var max_w=0;
+            var list=e.children;
+            for(var i=0;i<list.length;i++){
+                if(list[i].offsetWidth>max_w){
+                    max_w=list[i].offsetWidth
+                }
+            }
+            console.log(w,max_w);
+            if(w<max_w){
+                for(var i=0;i<list.length;i++){
+                    list[i].style.zoom=w/max_w;
+                }
+            }
+        },
         //生成二维码
         qrcode_1(){
             console.log('生成二维码');
             if(this.qrcode){
                 this.qrcode_show=true;
             }else{
-                var el=this.$refs.qrcode
-                    el.innerHTML='';
-                let qrcode = new QRCode(el, {  
-                    width: 200,  
-                    height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                    text: '这里是地址', // 二维码内容  
-                    // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                    background: '#fff',
-                    foreground: '#fff',
+                // this.set_zoom(this.$refs.zoom_box)
+                // return
+                this.set_font_size(this.$refs.fontsize_1,14)
+                this.set_font_size(this.$refs.fontsize_2,12)
+                // return;
+                openloading(true);
+                //图片地址转图片
+                this.$axios({
+                    method:'post',
+                    url:'/api-u/users/imgtobase64',
+                    data: this.$qs.stringify({
+                        url:this.myshop.signboard
+                    })
+                }).then(x=>{
+                    console.log(x);
+                    if(x.data.code==200){
+                        this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
+                        var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.myshop.shopid;
+                        var el=this.$refs.qrcode
+                            el.innerHTML='';
+                        let qrcode = new QRCode(el, {  
+                            width: 200,  
+                            height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                            // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容  
+                            text: url, // 二维码内容  
+                            // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                            background: '#fff',
+                            foreground: '#fff',
+                        })
+                        setTimeout(()=>{
+                            this.print();
+                        },500)
+                    }else{
+                        openloading(false);
+                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                    }
+                }).catch(err=>{
+                    openloading(false);
+                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
+                    console.log(err);
                 })
-                setTimeout(()=>{
-                    this.print();
-                },500)
             }
-            
-            // console.log(qrcode)
         },
         //生成带图片的二维码
         print(){
             const el = this.$refs.printMe;
             const options = {
-                type: 'dataURL'
+                useCORS: true,
+                logging: false
             }
-            html2canvas(el).then(canvas => {
-                // document.getElementById('canvas').appendChild(canvas)
+            html2canvas(el,options).then(canvas => {
                 this.qrcode=canvas.toDataURL()
                 this.qrcode_show=true;
-                // console.log('生成的图片',canvas)
-                // console.log(canvas.toDataURL())
-            });
+                openloading(false);
+            },{useCORS: true});
         },
         //跳转相册管理
         albumManagement(){
@@ -243,7 +334,7 @@ export default {
             console.log(typeof a[0])
 
     },
-    activated() {
+    activated(){
         console.log(11111111);
         this.getType=0;
     },
@@ -278,30 +369,42 @@ export default {
     position: fixed;
     padding: 20px 25px;
     left: -100%;
+    // top: 40px;
     .header_1{
         display: flex;
         .img_box{
             width: 42px;
         	height: 42px;
             flex-shrink: 0;
+            margin: 0px 5px 0px 0px;
             img{
                 width: 100%;
                 height: 100%;
+                border-radius: 100%;
             }
         }
         .text_1{
+            height: 42px;
             width: 0;
             flex-grow: 1;
             text-align: center;
             color: rgba(80, 80, 80, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
             >div:nth-child(1){
                 font-size: 14px;
+                overflow: auto;
+                white-space: nowrap;
+                width: 100%;
             }
             >div:nth-child(2){
                 font-size: 12px;
                 white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
+                overflow: auto;
+                color: #afafaf;
+                width: 100%;
             }
         }
     }
@@ -319,6 +422,7 @@ export default {
             left: 0px;
             right: 0px;
             margin: auto;
+            border-radius: 10px;
         }
         >div{
             img{
@@ -337,23 +441,64 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
-///
-.canvas{
+
+
+.QRCode{
     position: fixed;
-    width:100%;
+    width: 100%;
     height: 100%;
-    background:rgba(0,0,0,0.5);
-    top:0px;
+    top: 0px;
     left: 0px;
-    z-index:10;
     display: flex;
     justify-content: center;
     align-items: center;
-    >img{
-        max-width: 80%;
-        width: 273px;
+    z-index: 11;
+    .mask{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+    }
+    .content_1{
+        >img{
+            width: 100%;
+        }
+        position: relative;
+        z-index: 1;
+        background: #ffffff;
+        width: 270px;
+        // padding: 17px 25px 15px 25px;
+        .close_1{
+            width: 36px;
+            height: 50px;
+            position: absolute;
+            top: -50px;
+            right: 0px;
+            >div:nth-child(1){
+                height: 36px;
+                text-align: center;
+                line-height: 36px;
+                background: #ffffff;
+                border-radius: 100%;
+                position: relative;
+                z-index: 1;
+            }
+            >div:nth-child(2){
+                position: absolute;
+                width: 1px;
+                height: 100%;
+                background: #ffffff;
+                top: 0px;
+                right: 0px;
+                left: 0px;
+                margin: 0px auto;
+            }
+        }
     }
 }
+
 .erweima{
     color:#ffffff;
     line-height: 44px;
@@ -447,9 +592,4 @@ export default {
         color: #1c94d8;
     }
 }
-
 </style>
-
-
-
-

@@ -145,17 +145,17 @@ export default {
         //添加广告机
         addguanggaoji(){
             var this_1=this;
-            var tishi="恭喜您已成为代理人，成功获得价值198元的广告机套餐，点击公众号内的“广告管理”使用，初始账号为您的手机号，密码为手机号后6位，请在广告机内点击“会员服务”修改密码（请勿在乐享生活中修改）。";
+            var tishi="恭喜您已成为代理人，成功获得价值198元的广告机套餐，点击公众号内的“广告管理”使用，初始账号为您的手机号，密码为手机号后6位，请在广告机内点击“会员服务”修改密码（请勿在红包乐购中修改）。";
             var tishi1="恭喜您已成为代理人，成功获得价值198元的广告机套餐，已经叠加到您的广告机账户。";
             var obj={
-                    'username':this.userInfo.nickname ? this.userInfo.nickname : '乐享生活',
+                    'username':this.userInfo.nickname ? this.userInfo.nickname : '红包乐购',
                     'pwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
                     'repwd':this.userInfo.phone.substring(this.userInfo.phone.length-6),
                     'qq':'',
                     'anums':'365',                  //文章条数 增加的
                     'userid':this.userInfo.phone,        //手机号码
                     'beizhu1':'365',           //备注 到期天数  增加
-                    'beizhu2':'乐享生活代理人注册',
+                    'beizhu2':'红包乐购代理人注册',
                     'shuyu':'admin',     //您的上级ID
                     'adnums':20           //广告条数
                 }
@@ -352,19 +352,17 @@ export default {
         this.$axios({
             method: "get",
             url: "/api-u/agentUser/me?userid=" + this.userInfo.username
-        })
-            .then(x => {
+        }).then(x => {
                 console.log("获取用户代理人信息", x);
                 if (x.data.code == 200) {
                     this.$router.push("/Agent");
                 } else {
                     this.loading = false;
                 }
-            })
-            .catch(error => {
+        }).catch(error => {
                 console.log("获取代理人信息失败");
                 this.loading = false;
-            });
+        });
 
         //获取认证信息
         this.$axios({
@@ -372,17 +370,15 @@ export default {
             url:
                 "/api-u/certification/findByUserid?userid=" +
                 this.userInfo.username
-        })
-            .then(x => {
+        }).then(x => {
                 console.log("获取认证信息", x);
                 if (x.data != "") {
                     this.Authentication = x.data;
                     this.realName = x.data.name;
                 }
-            })
-            .catch(error => {
+        }).catch(error => {
                 console.log("获取认证信息错误", error);
-            });
+        });
 
         //获取区域
         this.$axios({

@@ -37,8 +37,10 @@
         //这个时候的会跳结果为 http://m.lxad.vip/test/dist/index.html?code=011jCjFb2kQKKO0Nu6Eb2eLHFb2jCjFT&state=STATE#/
         
         var CODE= getUrlParam('code');
-        var geturl= getUrlParam('url')
-        
+        // var geturl= getUrlParam('url');
+        var geturl = localStorage.return_url;
+        console.log(geturl)
+
         //通过接口获取微信的相关信息
         function access_token(){
             $.ajax({
@@ -56,16 +58,17 @@
                         setoken(data)
                         if(!geturl || geturl==null){
                             console.log('没有Url地址')
-                            location.href="http://m.lxad.vip/test/dist/index.html#/"
+                            location.href="http://m.lxad.vip/test/dist/index.html#/login"
                         }else{
                             console.log('有地址')
-                            location.href="http://m.lxad.vip/test/dist/index.html#/"+geturl
+                            location.href="http://m.lxad.vip/test/dist/index.html"+geturl
                         }
                     }
                     console.log(data)
                 }
             });
         }
+        
         //发送 参数给后端
         function setoken(x){
             $.ajax({

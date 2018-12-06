@@ -70,6 +70,7 @@
 import { openloading } from "@/assets/js/currency.js";
 import { VueCropper } from "vue-cropper";
 import $ from 'jquery'
+import AlbumVue from '../../components/Album.vue';
 export default {
     name:'',
     components: {
@@ -337,6 +338,12 @@ export default {
         //选择文件
         $('.zhengmianInput').on('change','input',function(){
             var file = $(this)[0].files[0];
+            var size=file.size/1024;
+            if(size>1024){
+                this_1.option.size=size/1024
+            }else{
+                this_1.option.size=1
+            }            
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {
@@ -532,6 +539,7 @@ export default {
         background-size: cover;
         background-color: rgba(0, 0, 0, 0);
         opacity: 1;
+        border:1px solid #ffffff;
     }
     .cropper-view-box {
         outline: none;

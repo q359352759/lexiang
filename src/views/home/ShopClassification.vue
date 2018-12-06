@@ -80,7 +80,7 @@
 </template>
 
 <script>
-import { get_url } from "@/assets/js/currency";
+import { get_url , openloading} from "@/assets/js/currency";
 import loading from "@/components/loading.vue";
 export default {
     name:'',
@@ -89,8 +89,9 @@ export default {
     },
     data(){
         return{
+            get_index:0,
             Picker_2:'',
-            screen_type:0,
+            screen_type:2,
             box_2_show:false,   //选择类型框
             shop_type:{         //选择的类型
                 name:'全部',
@@ -126,7 +127,10 @@ export default {
         }
     },
     filters: {
-        
+        filter_juli(data){
+            if(!data) return '';
+            return data.replace('米','m').replace('公里','km')
+        }
     },
     computed: {
         shops_tree_list(){
@@ -134,6 +138,10 @@ export default {
         }
     },
     methods: {
+        //商家处跳转商家详情
+        BusinessDetails(x) {
+            this.$router.push("/BusinessDetails?shopid="+x.shopid);
+        },
         //选择排序
         select_screen(x){
             if(x=='juli'){
@@ -161,7 +169,7 @@ export default {
         },
         //点击选择类型
         select_type(parent,item,index){
-            console.log(item,index)
+            console.log(parent,item,index)
             parent.active=item.id;
             this.type_list.splice(index+1);
             if(!item.children || item.children.length==0){
@@ -170,11 +178,14 @@ export default {
                 this.title_name=item.id ? item.name : item.pname;
                 this.id=item.id ? item.id : item.pid;
                 // console.log(this.shop_type);
+                this.shop.list=[];
+                this.shop.page_index=0
+                this.get_shops();
             }else{
                 var list=[];
-                if(index>0){
+                // if(index>0){
                     list.push({id:'','name':'全部',pid:item.id,pname:item.name});
-                }
+                // }
                     list=list.concat(item.children)
                 var obj={
                         active:'',
@@ -182,23 +193,7 @@ export default {
                     }
                 this.type_list.push(obj)
             }
-        },
-        //根据类型查询店铺
-        get_shops(){
-            var obj={
-                    start:this.shops.length*this.shops.page_index,
-                    shopType:this.id,
-                    state:1
-                }
-            this.$axios({
-                method:'get',
-                url:'/api-s/api-s/shops/findAll',
-                params:obj
-            }).then(x=>{
-
-            }).catch(err=>{
-
-            })
+            
         },
         //初始化三级分类
         tree_list_init(){
@@ -214,22 +209,32 @@ export default {
                     }
                     this_1.type_list.push(obj);
                     if(list.length==1){
+                        var new_list2=[];
+                            new_list2.push({'name':'全部','id':'','pid':list[i].id,'pname':list[i].name})
+                        new_list2=new_list2.concat(list[i].children)
                         var obj={
                                 active:'',
-                                list:list[i].children
+                                list:new_list2
                             }
                         this_1.type_list.push(obj);
                     }
+                    console.log(123)
                 }else{
+                    var new_list1=[];
+                        if(i>0){
+                            new_list1.push({'name':'全部','id':'','pid':list[i].id,'pname':list[i].name})
+                        }
+                        new_list1=new_list1.concat(list[i-1].children)
                     var obj={
                         active:list[i].id,
-                        list:list[i-1].children
+                        // list:list[i-1].children
+                        list:new_list1
                     }
                     this_1.type_list.push(obj);
                     if(list.length-1==i){
                         var new_list=[];
                         if(i>0){
-                            new_list[0]={'name':'全部','id':'','pid':list[i].id,'pname':list[i].name}
+                            new_list.push({'name':'全部','id':'','pid':list[i].id,'pname':list[i].name})
                         }
                         if(list[i].children.length>0){
                             new_list=new_list.concat(list[i].children);
@@ -245,6 +250,7 @@ export default {
         },
         //查询商家
         get_shops(){
+            console.log(123)
             var this_1=this;
             this.shop.jquery.shopType=this.id;
             // this.shop.jquery.name=this.search_text;
@@ -265,7 +271,8 @@ export default {
             // this.shop.jquery.
             this.$axios({
                 method:'get',
-                url:'/api-s/shops/findAll',
+                // url:'/api-s/shops/findAll',
+                url:'/api-s/shops/findPtype',
                 params:this.shop.jquery
             }).then(x=>{
                 console.log('查询店铺',x);
@@ -282,11 +289,38 @@ export default {
                 this.shop.loading=false;
             })
         },
+        //获取位置
+        juli(item){
+            // setTimeout(()=>{
+                // x.juli=10
+            // },3000)
+            if(!this.$store.state.my_position.y){
+                return;
+            }
+            var obj={
+                destinations:this.$store.state.my_position.y+','+this.$store.state.my_position.x,         //起点
+                origins:item.y+','+item.x
+            }
+            this.$axios({
+                method:'get',
+                url:'/api-u/baidu/routematrix',
+                params:obj
+            }).then(x=>{
+                // console.log(x);
+                if(x.data.status==0 && x.data.result.length>0){
+                    item.juli=x.data.result[0].distance.text    //text 分为单位有米、公里两种
+                }
+            }).catch(err=>{
+                console.log(err)
+            }) 
+        },
     },
     beforeCreate: function() {
+        
         // console.group('------beforeCreate创建前状态------');
     },
     created: function() {
+        
         // console.group('------created创建完毕状态------');
     },
     beforeMount: function() {
@@ -298,11 +332,14 @@ export default {
         this.id=this.$route.query.id;
         this.title_name=this.$route.query.name;
         this.shop_type.pid=this.$route.query.id;
-        //根据id查询店铺类型
-        this.tree_list_init();
+        if(this.shops_tree_list && this.shops_tree_list.length>0){
+            this.get_index=1
+            //根据id查询店铺类型
+            this.tree_list_init();
+            console.log(789,this.shops_tree_list)
+        }
         //根据类型Id查询商铺
         this.get_shops()
-
         
         //根据类型查询商店
         // /api-s/api-s/shops/findAll
@@ -324,6 +361,10 @@ export default {
     },
     watch: {
         shops_tree_list(){
+            if(this.get_index==0){
+                this.tree_list_init();
+                console.log('456')
+            }
             console.log('123')
         }
     }

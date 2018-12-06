@@ -7,7 +7,7 @@
             </h1>
             <div class="text_1" @tap="QuestionRecord()">
                 记录
-                <span>1</span>
+                <!-- <span>1</span> -->
             </div>
         </header>
         <div class="mui-content mui-fullscreen">

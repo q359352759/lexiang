@@ -70,6 +70,19 @@ function dateFtt(val, format) {
         return "--";
     }
 }
+// 获取指定时间前后几天  getDateStr(天数)；
+function getDateStr (AddDayCount,time) {
+    if(time){
+        var dd = new Date(time);
+    }else{
+        var dd = new Date();
+    }
+    dd.setDate(dd.getDate() + AddDayCount);   //获取AddDayCount天后的日期
+    var year = dd.getFullYear();
+    var mon = dd.getMonth()+1;                             //获取当前月份的日期
+    var day = dd.getDate();
+    return year + '-' + ( mon < 10 ? ( '0' + mon ) : mon ) + '-' + ( day < 10 ? ( '0' + day ) : day) ;
+}
 
 //获取数字在数组中最接近那个数
 function limit(arr, num) {
@@ -163,6 +176,7 @@ function GetDistance(lat1,lng1,lat2,lng2){
 export { 
     Get_URL_parameters, 
     dateFtt, 
+    getDateStr,
     limit, 
     openloading, 
     bd_decrypt,

@@ -1,17 +1,9 @@
 <template>
     <div id="home">
-        <!-- <img alt="Vue logo" src="../assets/logo.png"> -->
-        <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
-        <!-- <header class="mui-bar mui-bar-nav">
-            <div class=""></div>
-            <h1 class="mui-title">乐享生活</h1>
-        </header> -->
         <ul class="box_header">
-                <li>
+                <li @tap="saoyisao()">
                     <div>
-                        <div>
-                            <i class="icon iconfont icon-iconfontscan"></i>
-                        </div>
+                        <i class="icon iconfont icon-iconfontscan"></i>
                     </div>
                 </li>
                 <li>
@@ -22,18 +14,14 @@
                         <input type="text" readonly>
                     </div>
                 </li>
-                <li>
+                <li @tap="erweima()">
                     <div>
-                        <div>
-                            <i class="icon iconfont icon-31erweima"></i>
-                        </div>
+                        <i class="icon iconfont icon-31erweima"></i>
                     </div>
                 </li>
                 <li>
                     <div>
-                        <div>
-                            <i class="icon iconfont icon-31xiaoxi"></i>
-                        </div>
+                        <i class="icon iconfont icon-31xiaoxi"></i>
                     </div>
                 </li>
             </ul>
@@ -87,41 +75,60 @@
                 <li @click="change_type_1(3)" :class="{'active':type_1==3}">商家</li>
             </ul>
             
+            <!-- 红包 -->
             <div class="box_4"  v-if="type_1==1">
-                <!-- <ul v-for="(x, index) in list_2" :key="index" @click="BusinessDetails()">
+                <ul v-for="(x, index) in redenvelope.list" :key="index">
                     <li>
-                        <div class="title_1">
-                            一米阳光(富顺店)
+                        <div class="title_1" @tap="BusinessDetails1(x)">{{x.shopName}}</div>
+                        <div class="dizhi" @tap="BusinessDetails1(x)">
+                            {{x.address}}
                         </div>
-                        <div class="dizhi">
-                            <span>保利国际</span>
-                            <span class="mui-pull-right">
-                                <i class="icon iconfont icon-location"></i>0.5km</span>
+                        <div class="text_1" v-if="x.deductionType==0">
+                            <span class="mui-pull-right juli" @tap="weixinmaptest(x)">
+                                <i class="icon iconfont icon-location"></i>{{x.juli | filter_juli}}
+                            </span>
+                            <div @tap="BusinessDetails1(x)">
+                                抵扣{{x.percentage}}%
+                            </div>
                         </div>
-                        <div class="text_1">满10.1可用</div>
+                        <div class="text_1" v-if="x.deductionType==1">
+                            <span class="mui-pull-right juli" @tap="weixinmaptest(x)">
+                                <i class="icon iconfont icon-location"></i>{{x.juli | filter_juli}}
+                            </span>
+                            <div @tap="BusinessDetails1(x)">
+                                满{{x.expire}},抵扣{{x.deduction}}
+                            </div>
+                        </div>
                     </li>
                     <li>
                         <div></div>
                         <div></div>
                     </li>
-                    <li>
+                    <li  @tap="RedEnvelopesList(x)">
                         <div>
                             <img src="image/redpackage.png" alt="">
-                            <span>10</span>
+                            <div>
+                                <span :style="{'font-size':x.font_size}" ref="font-size">{{x.amount}}</span>
+                            </div>
+                            <!-- <span v-if="x.type!=4">{{x.amount}}</span> -->
+                            <!-- <span v-if="x.type==4" class="dikou">抵扣</span> -->
                         </div>
                     </li>
-                    <li>
+                    <li @tap="RedEnvelopesList(x)">
                         <div>
                             <div>
                                 <div>已领取</div>
-                                <div>96%</div>
+                                <div>0%</div>
                             </div>
                             <div></div>
                         </div>
                         <div>领取</div>
                     </li>
-                </ul> -->
+                </ul>
             </div>
+            <loading v-if="type_1==1" :loadingtype="redenvelope.loading" :nodata="!redenvelope.loading && redenvelope.total==0" :end="!redenvelope.loading && redenvelope.total!=0 && redenvelope.list.length>=redenvelope.total"/>
+            
+
             
             <!-- 商品 -->
             <ul class="box_5" v-if="type_1==2">
@@ -171,13 +178,53 @@
             </ul>
             <loading v-if="type_1==3" :loadingtype="shop.loading" :nodata="!shop.loading && shop.total==0" :end="!shop.loading && shop.total!=0 && shop.list.length==shop.total"/>
 
+            <div class="QRCode" v-show="qrcode_show">
+                <div class="mask"></div>
+                <div class="content_1">
+                    
+                    <div class="close_1">
+                        <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
+                        <div></div>
+                    </div>
+                    <img :src="qrcode" alt="" srcset="">
+                </div>
+            </div>
 
+        </div>      
+          
+        <!-- 生产二维码的容器 -->
+        <div class="QRCode_box">
+            <div class="content_1" ref="printMe">
+                <div class="title_1">
+                    <div class="img_box">
+                        <img v-show="erweima_base64" class="head_img" :src="erweima_base64" alt="">
+                        <img v-show="!erweima_base64" class="head_img" src="image/lxlogo_180.png" alt="">
+                    </div>
+                    <div>
+                        <div v-show="userInfo.nickname" class="userName">{{userInfo.nickname}}</div>
+                        <div v-show="!userInfo.nickname" class="userName">{{userInfo.phone | fliter_phone}}</div>
+                        <!-- <div class="text">对酒当歌，人生几何。</div> -->
+                    </div>
+                </div>
+                <div class="erweima_box">
+                    <img v-show="erweima_base64" class="head_img" :src="erweima_base64" alt="">
+                    <img v-show="!erweima_base64" class="head_img" src="image/lxlogo_180.png" alt="">
+                    <div ref="qrcode">
+                        <!-- <img src="image/7a1f5483e159cad31c9f3712accc6c9b.jpg" alt=""> -->
+                    </div>
+                </div>
+                <div class="tishi">扫描加好友</div>
+            </div>
         </div>
-        
+
+
     </div>
 </template>
 
 <script>
+
+import html2canvas from 'html2canvas'
+import QRCode from 'qrcodejs2'
 // import Swiper from 'swiper';
 import { openloading, bd_decrypt,GetDistance } from "@/assets/js/currency";
 import loading from "@/components/loading.vue";
@@ -194,7 +241,6 @@ export default {
             //     { url: "image/fenlei/1.jpg", name: "直购", path: "" },
             // ],
             type_1: 1,
-            list_2: [1],
             commodity:{     //商品
                 start:0,
                 length:10,
@@ -216,7 +262,22 @@ export default {
             my_position:{           //我的位置模拟数据
                 x:"",         
                 y:""
-            }
+            },
+            redenvelope:{       //红包
+                list:[],
+                loading:true,
+                total:0,
+                page_index:0,
+                query:{
+                    start:0,
+                    length:10,
+                    type:'1'        //随便传的不是类型
+                }
+            },
+            userInfo:"",
+            qrcode:'',//二维码
+            qrcode_show:false,
+            erweima_base64:'',      //base64用于嵌入二维码中
         };
     },
     computed:{
@@ -236,19 +297,115 @@ export default {
         
     },
     filters:{
+        fliter_phone(phone) {
+            if (!phone) return "";
+            return (
+                phone.substring(0, 3) +
+                "***" +
+                phone.substring(phone.length - 3)
+            );
+        },
         //
         filter_juli(data){
+            if(!data) return '';
             return data.replace('米','m').replace('公里','km')
         }
     },
     methods: {
+        //扫一扫
+        saoyisao(){
+            wx.scanQRCode({
+                needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                success: function (res) {
+                    var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                }
+            });
+        },
+        //生产二维码
+        erweima(){
+            // console.log()
+            console.log('生产二维码。');
+            if(!this.userInfo){
+                mui.toast('登录后才有二维码，请先登录。',{ duration: "long",type: "div" });
+                return
+            }
+            var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
+            if(this.qrcode){
+                this.qrcode_show=true;
+            }else{
+                openloading(true);
+                this.$axios({
+                    method:'post',
+                    url:'/api-u/users/imgtobase64',
+                    data:this.$qs.stringify({
+                        url:this.userInfo.headImgUrl
+                    })
+                }).then(x=>{
+                    if(x.data.code==200){
+                        this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
+                        var el=this.$refs.qrcode
+                            el.innerHTML='';
+                        let qrcode = new QRCode(el, {  
+                                width: 200,  
+                                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                                text: url, // 二维码内容  
+                                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                                background: '#fff',
+                                foreground: '#fff',
+                            })
+                        setTimeout(()=>{
+                            this.print();
+                        },500)
+                    }else{
+                        openloading(false);
+                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                    }
+                }).catch(err=>{
+                    openloading(false);
+                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
+                    console.log(err);
+                })
+            }
+        },
+        print(){
+            const el = this.$refs.printMe;
+            const options = {
+                useCORS: true,
+                logging: false
+            }
+            html2canvas(el,options).then(canvas => {
+                this.qrcode=canvas.toDataURL();
+                this.qrcode_show=true;
+                openloading(false);
+            });
+        },
+        close_1(){
+            this.qrcode_show=false;
+        },
+        //红包处跳转商家
+        BusinessDetails1(x){
+            this.$store.state.redid=x.id;
+            this.$router.push("/BusinessDetails?shopid="+x.shopid);
+        },
+        //商家处跳转商家详情
+        BusinessDetails(x) {
+            this.$router.push("/BusinessDetails?shopid="+x.shopid);
+        },
+        //跳转到商家红包界面
+        RedEnvelopesList(x){
+            console.log(x);
+            this.$store.state.redid=x.id;
+            // this.$router.push('/RedEnvelopesList?shopid='+x.shopid+'&redid='+x.id);
+            this.$router.push('/RedEnvelopesList?shopid='+x.shopid+'&isshop=1');
+        },
         //跳转搜索
         SearchShop(){
             this.$router.push('/SearchShop');
         },
         //跳转商品详情
         CommodityDetails(x){
-            this.$router.push('/CommodityDetails?id='+x.id);
+            this.$router.push('/CommodityDetails?id='+x.id+'&isshop=1');
         },
         //滚动条
         content_scroll(e){
@@ -264,7 +421,12 @@ export default {
                 this.box_3_actvie=false;
             }
             if (h + t >= sh - 10) { 
-                if(this.type_1==2){
+                if(this.type_1==1){
+                    if(!this.redenvelope.loading && this.redenvelope.list.length<this.redenvelope.total){
+                        this.redenvelope.page_index++;
+                        this.get_redenvelope()
+                    }
+                }else if(this.type_1==2){
                     if(!this.commodity.loading && this.commodity.list.length<this.commodity.total){
                         this.commodity.page_index++;
                         this.get_commodity()
@@ -280,11 +442,11 @@ export default {
         },
         //跳转微信内置地图
         weixinmaptest(item) {
-            var ditu = bd_decrypt(item.y,item.x);
+            var ditu = bd_decrypt(item.x,item.y);
             console.log(ditu);
             wx.openLocation({
                 latitude: ditu.lat, // 纬度，浮点数，范围为90 ~ -90
-                longitude: ditu.lng, // 经度，浮点数，范围为180 ~ -180。
+                longitude:ditu.lng , // 经度，浮点数，范围为180 ~ -180。
                 name: item.name, // 位置名
                 address: item.address, // 地址详情说明
                 scale: 28, // 地图缩放级别,整形值,范围从1~28。默认为最大
@@ -295,10 +457,7 @@ export default {
         classification(){
             this.$router.push('/classification')
         },
-        //跳转商家详情
-        BusinessDetails(x) {
-            this.$router.push("/BusinessDetails?id="+x.id);
-        },
+       
         //点击了分类
         ShopClassification(x) {
             this.$router.push('/ShopClassification?id='+x.id+'&name='+x.name);
@@ -394,6 +553,39 @@ export default {
             }).catch(err=>{
                 console.log(err)
             }) 
+        },
+        //查询 首页显示的 红包
+        get_redenvelope(){
+            var this_1=this;
+            this.redenvelope.loading=true;
+            this.redenvelope.query.start=this.redenvelope.page_index*this.redenvelope.query.length
+            this.$axios({
+                method:'get',
+                url:'/api-s/shops/redenvelope/findData',
+                params:this.redenvelope.query
+            }).then(x=>{
+                this.redenvelope.loading=false;
+                var list=x.data.data.data;
+                for(var i=0;i<list.length;i++){
+                    list[i].juli='';
+                    var amount=list[i].amount;
+                    if(amount>999 && amount<1000){
+                       list[i].font_size='14px'
+                    }else if(amount>1000 && amount<9999){ 
+                        // 99999
+                        list[i].font_size='12px'
+                    }else if(amount>9999){
+                        list[i].font_size='10px'
+                    }
+                    this_1.juli(list[i])
+                }
+                this.redenvelope.list=this.redenvelope.list.concat(list);
+                this.redenvelope.total=x.data.data.total;
+                console.log('首页红包',x)
+            }).catch(err=>{
+                console.log('红包失败',err);
+                this.redenvelope.loading=false;
+            })
         }
     },
     beforeCreate: function() {
@@ -408,24 +600,35 @@ export default {
     mounted: function() {
         var this_1=this;
         this.img_list = ["home_1.jpg", "home_2.jpg", "home_3.jpg","home_4.jpg"];
-        
-        
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {}
+
+
+        //查询 首页显示的 红包 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
+        this.get_redenvelope();
+
         //获取当前位置
         if(!this.$store.state.my_position.x || this_1.$store.state.my_position.x==''){
-            var geolocation = new BMap.Geolocation();
-            geolocation.getCurrentPosition(function(r){
-                // console.log(r);
-                if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-                    // this_1.my_position.x=r.point.lng;   
-                    // this_1.my_position.y=r.point.lat;
-                    this_1.$store.state.my_position.x=r.point.lng;
-                    this_1.$store.state.my_position.y=r.point.lat;
-                }
+            try {
+                var geolocation = new BMap.Geolocation();
+                geolocation.getCurrentPosition(function(r){
+                    // console.log(r);
+                    if (this.getStatus() == BMAP_STATUS_SUCCESS) {
+                        // this_1.my_position.x=r.point.lng;   
+                        // this_1.my_position.y=r.point.lat;
+                        this_1.$store.state.my_position.x=r.point.lng;
+                        this_1.$store.state.my_position.y=r.point.lat;
+                    }
+                    //获取商家
+                    this_1.get_shop();
+                },{ enableHighAccuracy: true })
+            } catch (error) {
                 //获取商家
                 this_1.get_shop();
-            },{ enableHighAccuracy: true })
+            }
         }else{
-             this_1.get_shop();
+            this_1.get_shop();
         }
         
         //获取商品
@@ -481,7 +684,7 @@ export default {
                 // console.log("数据渲染完成");
                 this.getswiper();
             });
-        }
+        },
     }
 };
 </script>
@@ -669,7 +872,7 @@ export default {
     z-index: 2;
 }
 #home .box_4 ul {
-    margin: 0.15rem 0px;
+    margin: 0.07rem 0px;
     background: #ffffff;
     display: flex;
     > li:nth-child(1) {
@@ -677,6 +880,7 @@ export default {
         flex-wrap: wrap;
         flex-grow: 1;
         padding: 10px 20px 0px 20px;
+        width: 0;
         .title_1 {
             width: 100%;
             font-size: 0.14rem;
@@ -685,6 +889,9 @@ export default {
             width: 100%;
             color: #a6a6a6;
             font-size: 0.12rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             .Fraction {
                 color: red;
                 margin: 0px 0px 0px 5px;
@@ -692,11 +899,22 @@ export default {
             i{
                 font-size: 0.1rem;
             }
+            .juli{
+                margin: 3px 0px 0px;
+                color: rgba(166, 166, 166, 1);
+            }
         }
         .text_1 {
             width: 100%;
             color: #00baad;
-            font-size: 0.14rem;
+            font-size: 0.12rem;
+            .juli{
+                // i{
+                //     font-size: 0.1rem;
+                // }
+                margin: 3px 0px 0px;
+                color: rgba(166, 166, 166, 1);
+            }
         }
     }
     > li:nth-child(2) {
@@ -730,17 +948,34 @@ export default {
         > div {
             width: 0.4rem;
             position: relative;
+            font-size: 0;
             img {
                 width: 100%;
             }
-            span {
+            div{
+                font-size: 16px;
                 position: absolute;
-                top: 0.2rem;
-                bottom: 0px;
+                top: 0px;
                 left: 0px;
-                right: 0px;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 15px 0px 0px;
+            }
+            span {
+                // position: absolute;
+                // top: 0.2rem;
+                // bottom: 0px;
+                // left: 0px;
+                // right: 0px;
                 text-align: center;
                 color: #ffffff;
+                overflow: auto;
+            }
+            .dikou{
+                font-size: 12px;
             }
         }
     }
@@ -774,13 +1009,13 @@ export default {
         > div:nth-child(2) {
             width: 0.4rem;
         	height: 0.14rem;
-            font-size: 0.12rem;
-            line-height: 0.12rem;
+            font-size: 0.1rem;
+            line-height: 0.14rem;
             color: #ffffff;
             background:#FF5733;
             border-radius: 0.2rem;
             text-align: center;
-            margin: 5px 0px 0px;
+            margin: 5px auto 0px;
         }
     }
 }
@@ -926,6 +1161,7 @@ export default {
         padding: 17px 25px 15px 25px;
         .title_1{
             display:flex;
+            align-items: center;
             .img_box{
                 width: 40px;
                 height: 40px;
@@ -934,6 +1170,7 @@ export default {
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
+                    border-radius: 100%;
                 }
             }
             .userName{
@@ -964,7 +1201,7 @@ export default {
                 position: absolute;
                 width: 50px;
                 height: 50px;
-                border-radius: 5px;
+                border-radius: 10px;
                 top: 0px;
                 left: 0px;
                 right: 0px;
@@ -1034,42 +1271,6 @@ export default {
                 left: 0px;
                 margin: 0px auto;
             }
-        }
-        .title_1{
-            display:flex;
-            .img_box{
-                width: 40px;
-                height: 40px;
-                margin: 0px 14px 0px 0px;
-                img{
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
-                }
-            }
-            .userName{
-                color: rgba(80, 80, 80, 1);
-            	font-size: 14px;
-            }
-            .text{
-                color: rgba(80, 80, 80, 1);
-            	font-size: 10px;
-            }
-        }
-        .erweima_box{
-            width: 200px;
-            height: 200px;
-            margin: 28px auto 0px;
-            img{
-                width: 100%;
-                height: 100%;
-            }
-        }
-        .tishi{
-            color: rgba(166, 166, 166, 1);
-            font-size: 12px;
-            text-align: center;
-            margin: 14px 0px 0px;
         }
     }
 }
