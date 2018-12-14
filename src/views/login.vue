@@ -99,11 +99,11 @@ export default {
                         if(x.data.error_description=="Bad credentials"){
                             mui.toast('密码错误', {duration: "long", type: "div" });
                         }else{
-                            mui.toast(x.data.error_description ? x.data.error_description : x.data.message, { duration: "long",type: "div" });
+                            mui.alert(x.data.error_description ? x.data.error_description : x.data.message, "提示",'我知道了', function() {},"div");
                         }
                     } else if(x.data.error){
                         if(error_description)
-                        mui.toast(x.data.error_description ? x.data.error_description : x.data.message, {duration: "long",type: "div" });
+                        mui.alert(x.data.error_description ? x.data.error_description : x.data.message, "提示",'我知道了', function() {},"div");                 
                     }else{
                         localStorage.loginDate = JSON.stringify(x.data);
                         //更新store 用户登录信息
@@ -127,10 +127,10 @@ export default {
                             }).then(x => {
                                 if (x.data.code != 200) {
                                     mui.toast('获取个人信息失败。', {duration: "long", type: "div"});
+                                    // mui.alert('密码错误', "提示",'我知道了', function() {},"div");
                                     return;
                                 } else {
                                     // console.log("获取个人信息", x);
-                                    // state.userInfo = x.data.data;
                                     localStorage.userInfo = JSON.stringify(x.data.data);
                                     this.$router.push("/my");
                                 }
@@ -164,6 +164,7 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
+        
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {

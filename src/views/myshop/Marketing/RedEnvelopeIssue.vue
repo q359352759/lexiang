@@ -3,7 +3,15 @@
         
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">红包</h1>
+            <h1 class="mui-title">
+                <span v-if="url_type==0">店铺新人红包</span>
+                <span v-if="url_type==1">商品红包</span>
+                <span v-if="url_type==2">节日红包</span>
+                <span v-if="url_type==3">签到红包</span>
+                <span v-if="url_type==4">庆典红包</span>
+                <span v-if="url_type==5">生日红包</span>
+                <span v-if="!url_type">红包</span>
+            </h1>
             <div class="wenhao" @tap="hongBaoShuoMing()">
                 <i class="icon iconfont icon-wenhao"></i>
             </div>
@@ -11,7 +19,7 @@
         <div class="mui-content mui-fullscreen">
             <div></div>
             <ul class="mui-table-view box_1">
-				<li v-if="!id" class="mui-table-view-cell " >
+				<li v-if="!id && !url_type" class="mui-table-view-cell " >
 					<a class="mui-navigate-right item" @tap="select_type()" >
                         <span class="title_1">红包类型：</span>
                         <span v-if="type==0">店铺新人红包</span>
@@ -22,7 +30,7 @@
                         <span v-if="type==5">生日红包</span>
 					</a>
 				</li>
-                <li v-if="id" class="mui-table-view-cell item" >
+                <li v-if="id && !url_type" class="mui-table-view-cell item" >
 					<!-- <a class="mui-navigate-right item" @tap="select_type()"> -->
                         <span class="title_1">红包类型：</span>
                         <span v-if="type==0">店铺新人红包</span>
@@ -73,7 +81,7 @@
                 <li v-if="type==1" class="mui-table-view-cell" >
 					<a class="mui-navigate-right item" @tap="selset_commodity()">
                         <span class="title_1">选择商品：</span>
-                        <span class="tishi_1" v-if="!Red_envelopes.commodityName">请选择商品</span>
+                        <span class="tishi_1" v-if="!Red_envelopes.commodityName">选择商品</span>
                         <span v-if="Red_envelopes.commodityName">{{Red_envelopes.commodityName}}</span>
                     </a>
 				</li>
@@ -81,7 +89,7 @@
                 <li v-if="type==0 || type==1 || type==2 || type==4" class="mui-table-view-cell item" >
                     <span class="title_1">红包金额：</span>
                     <div class="input_1">
-                        <input type="text" v-model="Red_envelopes.amount" placeholder="请输入红包金额">
+                        <input type="text" v-model="Red_envelopes.amount" placeholder="红包金额" :readonly="type==1">
                     </div>
                     <span @tap="wenhao()" class="wenhao"><i class="icon iconfont icon-wenhao"></i></span>
                     <span>元</span>
@@ -132,7 +140,7 @@
                 <li v-if="type==1 || type==2 || type==4" class="mui-table-view-cell item" >
                     <span class="title_1">红包个数：</span>
                     <div class="input_1">
-                        <input type="text" v-model="Red_envelopes.quantity" placeholder="请输入红包个数">
+                        <input type="text" v-model="Red_envelopes.quantityMax_1" placeholder="请输入红包个数">
                     </div>
                     <span>个</span>
 				</li>
@@ -255,6 +263,7 @@ export default {
     },
     data(){
         return{
+            url_type:'',
             hongBaoShuoMing_show:false,
             id:'',      //如果有id表示详情
             type:0,             //0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
@@ -262,17 +271,19 @@ export default {
             picker_time:'',     //时间选择器
             ShopClassification_show:false,
             Red_envelopes:{
-                id:'',
+                id:'',              
                 shopid:'',
                 type:'0',           //0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
                 name:'',            //名称 对应上面的类型
-                headline:'店铺新人红包',        //标题
-                amount:'',          //金额
-                quantity:'',        //数量
+                headline:'店铺新人红包',   //标题
+                amount:'',          //金额  
+                quantity:'',        //数量            
+                quantityMax:'',     //总数量    100
+                quantityMax_1:'',   
                 startTime:'',       //开始时间  使用的时间
                 endTime:'',         //截止时间  
                 // ================
-                signInStartTime:'',  //签到开始时间
+                signInStartTime:'', //签到开始时间
                 signInEndTime:'',   //签到结束时间
                 commodityId:'',     //商品Id
                 commodityName:'',   //商品名称
@@ -335,12 +346,13 @@ export default {
             console.log(123)
             this.Red_envelopes.state=this.Red_envelopes.state==0 ? 1: 0;
         },
-        //
+        //接收选择的商品
         setShow(data){
             console.log('接受参数',data);
             if(data){
                 this.Red_envelopes.commodityId=data.id;
-                this.Red_envelopes.commodityName=data.name
+                this.Red_envelopes.commodityName=data.name;
+                this.Red_envelopes.amount=data.deduction;
             }
             this.ShopClassification_show=false;
             history.back();
@@ -374,7 +386,8 @@ export default {
             this.Picker_type.setData(obj);
             this.Picker_type.show(x => {
                 console.log(x);
-                this.type=x[0].value
+                this.type=x[0].value;
+                this.readonly=x[0].value==1 ? true : false;
                 this.Red_envelopes.type=x[0].value;
                 this.Red_envelopes.id='';
                 this.Red_envelopes.headline=x[0].text;
@@ -425,8 +438,8 @@ export default {
                     }
                 }
                 console.log('可以提交',this.Red_envelopes);
-                // this.Submission();
-                this.get_redenvelope()
+                this.Submission();
+                // this.get_redenvelope()
             }else if(this.type==1){
                 //商品红包
                  this.Red_envelopes.state=1
@@ -442,7 +455,7 @@ export default {
                 }else if(!number_test.test(this.Red_envelopes.amount) || this.Red_envelopes.amount<0){
                     mui.toast("红包金额有误。", { duration: 2000, type: "div" });
                     return
-                }else if(!zhengshu_test.test(this.Red_envelopes.quantity) || this.Red_envelopes.quantity<1){
+                }else if(!zhengshu_test.test(this.Red_envelopes.quantityMax_1) || this.Red_envelopes.quantityMax_1<1){
                     mui.toast("红包数量有误。", { duration: 2000, type: "div" });
                     return
                 }
@@ -460,7 +473,7 @@ export default {
                 }else if(!number_test.test(this.Red_envelopes.amount) || this.Red_envelopes.amount<0){
                     mui.toast("红包金额有误。", { duration: 2000, type: "div" });
                     return
-                }else if(!zhengshu_test.test(this.Red_envelopes.quantity) || this.Red_envelopes.quantity<1){
+                }else if(!zhengshu_test.test(this.Red_envelopes.quantityMax_1) || this.Red_envelopes.quantityMax_1<1){
                     mui.toast("红包数量有误。", { duration: 2000, type: "div" });
                     return
                 }else if(this.Red_envelopes.deductionType==0){
@@ -475,8 +488,8 @@ export default {
                     }
                 }
                 console.log('可以提交',this.Red_envelopes);
-                // this.Submission();
-                this.get_redenvelope()
+                this.Submission();
+                // this.get_redenvelope()
             }else if(this.type==3){
                  this.Red_envelopes.state=1
                 if(!this.Red_envelopes.headline){
@@ -518,8 +531,8 @@ export default {
                     }
                 }
                 console.log('可以提交',this.Red_envelopes);
-                // this.Submission()
-                this.get_redenvelope();
+                this.Submission()
+                // this.get_redenvelope();
             }else if(this.type==4){
                  this.Red_envelopes.state=1
                 if(!this.Red_envelopes.headline){
@@ -528,7 +541,7 @@ export default {
                 }else if(!this.Red_envelopes.startTime || !this.Red_envelopes.endTime || this.Red_envelopes.startTime>=this.Red_envelopes.endTime){
                     mui.toast("使用期限有误。", { duration: 2000, type: "div" });
                     return;
-                }else if(!zhengshu_test.test(this.Red_envelopes.quantity) || this.Red_envelopes.quantity<1){
+                }else if(!zhengshu_test.test(this.Red_envelopes.quantityMax_1) || this.Red_envelopes.quantityMax_1<1){
                     mui.toast("红包数量有误。", { duration: 2000, type: "div" });
                     return
                 }else if(this.Red_envelopes.deductionType==0){
@@ -543,8 +556,8 @@ export default {
                     }
                 }
                 console.log('可以提交',this.Red_envelopes);
-                // this.Submission();
-                this.get_redenvelope();
+                this.Submission();
+                // this.get_redenvelope();
             }else if(this.type==5){
                 if(!this.Red_envelopes.headline){
                     mui.toast("请填写红包标题。", { duration: 2000, type: "div" });
@@ -564,8 +577,8 @@ export default {
                     }
                 }
                 console.log('可以提交',this.Red_envelopes);
-                // this.Submission();
-                this.get_redenvelope();
+                this.Submission();
+                // this.get_redenvelope();
             }
         },
         //查询该类型的红包 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
@@ -574,7 +587,8 @@ export default {
                     start:0,
                     length:10,
                     shopid:this.myshop.shopid,
-                    type:this.type
+                    type:this.type,
+                    ccc:1
                 }
             this.$axios({
                 method:'get',
@@ -594,6 +608,9 @@ export default {
                             mui.confirm('已有此类红包，是否直接覆盖。','提示',['取消','是的'],(value)=>{
                                 if(value.index==1){
                                     this.Red_envelopes.id=x.data.data.data[0].id;
+                                    if(x.data.data.data[0].quantityMax){
+                                        this.Red_envelopes.quantityMax=this.Red_envelopes.quantityMax_1+x.data.data.data[0].quantityMax
+                                    }
                                     this.Submission();
                                 }
                             },'div')
@@ -611,11 +628,12 @@ export default {
             if(this.Red_envelopes.id){
                 this.update();
             }else{
-                this.add()
+                this.add();
             }
         },
         //添加
         add(){
+            this.Red_envelopes.quantityMax=this.Red_envelopes.quantityMax_1;
             openloading(true);
             this.$axios({
                 method:'post',
@@ -625,13 +643,8 @@ export default {
                 console.log(x)
                 if(x.data.code==200){
                     mui.toast('设置成功。', { duration: 2000, type: "div" });
-                    
-                }else if(x.data.code){
-                    // mui.toast(x.data.msg, { duration: 2000, type: "div" });
-                    mui.alert(x.data.msg,'提示','我知道了',()=>{},'div')
                 }else{
-                    // mui.toast(x.data.message, { duration: 2000, type: "div" });
-                    mui.alert(x.data.message,'提示','我知道了',()=>{},'div')
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
                 openloading(false);
             }).catch(err=>{
@@ -651,12 +664,8 @@ export default {
                 console.log(x)
                 if(x.data.code==200){
                     mui.toast('设置成功。', { duration: 2000, type: "div" });
-                }else if(x.data.code){
-                    // mui.toast(x.data.msg, { duration: 2000, type: "div" });
-                    mui.alert(x.data.msg,'提示','我知道了',()=>{},'div')
                 }else{
-                    // mui.toast(x.data.message, { duration: 2000, type: "div" });
-                    mui.alert(x.data.message,'提示','我知道了',()=>{},'div')
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
                 openloading(false);
             }).catch(err=>{
@@ -691,10 +700,8 @@ export default {
                             data.endTime=dateFtt(data.endTime,'yyyy-MM-dd')
                         }
                     this.Red_envelopes=x.data.data;
-                }else if(x.data.code){
-                    mui.toast(x.data.msg, { duration: 2000, type: "div" });
                 }else{
-                    mui.toast(x.data.message, { duration: 2000, type: "div" });
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err);
@@ -723,6 +730,7 @@ export default {
 
         if(query.type){
             this.type=query.type;
+            this.url_type=query.type;
             var list=['新人店铺红包','商品红包','节日红包','签到红包','庆典红包','生日红包']
             this.Red_envelopes.headline=list[this.type];
         }

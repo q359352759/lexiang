@@ -534,12 +534,9 @@ export default {
                         console.log(x);
                         if(x.data.code==200){
                             this.sub()
-                        }else if(x.data.code){
-                            mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
-                             openloading(false)
                         }else{
-                            mui.toast(x.data.message, { duration: 2000, type: "div" }); 
-                             openloading(false)
+                            openloading(false)
+                            mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                         }
                     }).catch(err=>{
                         console.log(err)
@@ -564,10 +561,8 @@ export default {
                     if(x.data.code==200){
                         this.Red_envelopes.shopid=x.data.data;
                         this.add_hongbao();
-                    }else if(x.data.code){
-                         mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
                     }else{
-                       mui.toast(x.data.message, { duration: 2000, type: "div" }); 
+                       mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                     }
                     openloading(false)
                 }).catch(err=>{
@@ -597,15 +592,8 @@ export default {
                         }else{
                             this.updata_hongbao();
                         }
-                        // mui.alert('提交成功，等待审核。', "提示", function() {
-                        //      this_1.getType=0;
-                        //     this_1.$store.commit('setMyshop');    //查询我的店铺
-                        //     this_1.$router.push("/my");
-                        // },"div");
-                    }else if(x.data.code){
-                         mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
                     }else{
-                       mui.toast(x.data.message, { duration: 2000, type: "div" }); 
+                       mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                     }
                     openloading(false)
                 }).catch(err=>{
@@ -629,10 +617,8 @@ export default {
                         this_1.$store.commit('setMyshop');    //查询我的店铺
                         this_1.$router.push("/my");
                     },"div");
-                }else if(x.data.code){
-                    mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
                 }else{
-                    mui.toast(x.data.message, { duration: 2000, type: "div" }); 
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err);
@@ -641,7 +627,6 @@ export default {
                     this_1.$store.commit('setMyshop');    //查询我的店铺
                     this_1.$router.push("/my");
                 },"div");
-                // mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" }); 
             })
         },
         updata_hongbao(){
@@ -659,10 +644,8 @@ export default {
                         this_1.$store.commit('setMyshop');    //查询我的店铺
                         this_1.$router.push("/my");
                     },"div");
-                }else if(x.data.code){
-                    mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
                 }else{
-                    mui.toast(x.data.message, { duration: 2000, type: "div" }); 
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err)

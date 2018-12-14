@@ -191,7 +191,7 @@ export default {
         },
         //跳转商品详情
         CommodityDetails(x){
-            this.$router.push('/CommodityDetails?id='+x.id);
+            this.$router.push('/commodity/CommodityDetails?id='+x.id);
         },
         //跳转微信内置地图
         weixinmaptest(item) {

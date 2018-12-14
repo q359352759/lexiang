@@ -17,8 +17,10 @@ localStorage.userInfo 用户个人信息
 localStorage.area       地区
 
 localStorage.search_history      搜索记录
-
+localStorage.homeDialog     //首页弹出框时间戳
 sessionStorage.Red_envelopes_0      //申请店铺的红包
+
+
 
 appid   wxe81f5f8fa2e34ac6
 APPSECRET   f4418d64b763bba286f06907beff433f

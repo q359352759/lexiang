@@ -66,7 +66,12 @@
             <div class="box_2" @click="ApplicationShop()">
                 申请开店
             </div>
-
+            
+            <div class="mask" v-show="get_myshop">
+                <span>
+                    正在获取店铺数据...
+                </span>
+            </div>
         </div>
     </div>
 </template>
@@ -76,14 +81,52 @@
 export default {
     name:'',
     data(){
-        return{}
+        return{
+            get_myshop:true,
+        }
+    },
+    computed:{
+        myshop(){
+            return this.$store.state.myshop
+        }
     },
     methods:{
         ApplicationShop(){
             sessionStorage.removeItem('Red_envelopes_0');
             this.$router.push('/ApplicationShop');
+        },
+        init(){
+            if(!this.myshop || !this.myshop.id){
+                console.log('没有店铺');
+                this.get_myshop=false
+            }else if(this.myshop.shopid && this.myshop.state!=1){
+                console.log('有店铺没通过');
+                this.get_myshop=false;
+                this.$router.push('/ApplicationShop')
+            }else if(this.myshop.shopid && this.myshop.state==1){
+                console.log('有店铺');
+                // this.get_myshop=false
+                this.$router.push('/myshop')
+            }
         }
-    }
+    },
+    mounted() {
+        //判断是否有店铺
+        //查询我的店铺
+        if(!this.myshop || !this.myshop.id){
+            this.$store.dispatch('getMyshop').then((x)=>{
+                console.log(this.myshop);
+                this.init();
+            }).catch(err=>{
+                console.log('获取店铺信息失败')
+            })
+        }else{
+            this.init()
+        }
+        // this.$store.commit('setMyshop');
+        // console.log(this.myshop);
+        // this.init();
+    },
 }
 </script>
 
@@ -111,6 +154,18 @@ export default {
     line-height: 0.44rem;
     font-size: 0.14rem;
     color: #ffffff;
+}
+.mask{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
 }
 </style>
 

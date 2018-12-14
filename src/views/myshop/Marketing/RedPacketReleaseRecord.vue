@@ -58,7 +58,8 @@ export default {
                 start:0,
                 length:10,
                 shopid:'',
-                type:0
+                type:0,
+                ccc:1
             },
             loading:true,
             page_index:0,

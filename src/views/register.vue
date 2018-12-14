@@ -105,7 +105,7 @@ export default {
                 })
                 .catch(err => {
                     console.log(err);
-                    mui.toast(data.message, { duration: 2000, type: "div" });
+                    mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" });
                 });
         },
         //用户注册协议
@@ -150,16 +150,8 @@ export default {
                 if (x.data.code == 200) {
                     mui.toast("注册成功", { duration: 2000, type: "div" });
                     this.$router.push("/login");
-                } else if (x.data.code == 400) {
-                    mui.toast(x.data.message, {
-                        duration: 2000,
-                        type: "div"
-                    });
-                } else {
-                    mui.toast(x.data.message, {
-                        duration: 2000,
-                        type: "div"
-                    });
+                } else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
                 openloading(false);
             }).catch(err => {

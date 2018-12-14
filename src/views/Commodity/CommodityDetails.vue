@@ -1,18 +1,19 @@
 <template>
     <div id="CommodityDetails">
+        <header class="mui-bar mui-bar-nav">
+            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <!-- <a @tap="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a> -->
+            <h1 class="mui-title"></h1>
+            
+            <span class="fenxiang mui-pull-right">
+                <i class="icon iconfont icon-fenxiang2"></i>
+            </span>
+            <span @click="erweima_show()" class="erweima mui-pull-right">
+                <i class="icon iconfont icon-31erweima"></i>
+            </span>
+        </header>
         <div class="mui-content mui-fullscreen">
-            <header class="mui-bar mui-bar-nav">
-                <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-                <!-- <a @tap="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a> -->
-                <h1 class="mui-title"></h1>
-                
-                <span class="fenxiang mui-pull-right">
-                    <i class="icon iconfont icon-fenxiang2"></i>
-                </span>
-                <span @click="erweima_show()" class="erweima mui-pull-right">
-                    <i class="icon iconfont icon-31erweima"></i>
-                </span>
-            </header>
+            
             <div class="swiper-container box_1">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide" v-for="(x, index) in img_list" :key="index">
@@ -34,7 +35,9 @@
                     </div>                
                     <div>
                         <span class="marketPrice"><s>{{commodity.marketPrice}}</s></span>
+                        <span class="danwei">{{commodity.unit}}</span>
                         <span class="sales mui-pull-right">已售:{{commodity.sales}}</span>
+                        
                     </div>
                 </li>
                 <li class="Red_envelopes">
@@ -100,7 +103,55 @@
             <div class="box_5" v-html="commodity.remark">
             </div>
 
-            <ul class="box_6">
+            
+            <!-- 二维码容器 -->
+            <div class="QRCode rongqi">
+                <div class="content_1" ref="printMe">
+                    <div class="title_2">
+                        <img src="image/WechatIMG311.png" alt="" srcset="">
+                        <div class="text_1">红包乐购</div>
+                        <div class="text_2">（红包促销购物平台）</div>
+                    </div>
+                    <div class="img_box">
+                        <img :src="img_base64" alt="">
+                    </div>                    
+                    <ul class="cont_1">
+                        <li>
+                            <div class="title_1">{{commodity.name}}</div>
+                            <div>
+                                <span class="sellingPrice">￥{{commodity.sellingPrice}}</span>
+                                <span class="marketPrice"><s>{{commodity.marketPrice}}</s></span>
+                                <span class="danwei">{{commodity.unit}}</span>
+                            </div>
+                            <div class="hongbao">
+                                <i class="icon_1 icon iconfont icon-hongbao1"></i>
+                                <span class="qian">可抵扣：{{commodity.deduction}}元</span>
+                            </div>
+                        </li>
+                        <li class="erweima_box" ref="qrcode">
+                            <!-- <img v-if="img_list.length>0" :src="img_list[0]" alt=""> -->
+                        </li>
+                    </ul>
+                    <div class="tishi">长按识别二维码，购买此商品</div>
+                </div>
+            </div>
+            <div class="QRCode content" v-show="QRCode_box">
+                <div class="mask"></div>
+                <div class="content_1">
+                    <div class="close_1">
+                        <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
+                        <div></div>
+                    </div>
+                    <div class="img_box1">
+                        <img :src="qrcode" alt="">
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+        <ul class="box_6">
                 <li @tap="shoucang()">
                     <i :class="{'icon-shoucang shoucang':UserFavorite,'icon-collect':!UserFavorite}" class="icon iconfont"></i>
                     <div>{{UserFavorite ? '取消收藏' : '收藏'}}</div>
@@ -108,42 +159,10 @@
                 <li>
                     <i class="icon iconfont icon-kefu1"></i>
                     <div>客服</div></li>
-                <li>
+                <li @click="goumai()">
                     立即购买
                 </li>
             </ul>
-
-            <div class="QRCode" v-show="QRCode_box">
-                <div class="mask"></div>
-                <div class="content_1">
-                    <div class="close_1">
-                        <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
-                        <div></div>
-                    </div>
-                    <div class="img_box">
-                        <img v-if="img_list.length>0" :src="img_list[0]" alt="">
-                    </div>
-                    <div class="title_1">{{commodity.name}}</div>
-                    <ul class="cont_1">
-                        <li class="erweima_box" ref="qrcode">
-                            <!-- <img v-if="img_list.length>0" :src="img_list[0]" alt=""> -->
-                        </li>
-                        <li>
-                            <div>
-                                <span class="sellingPrice">￥{{commodity.sellingPrice}}</span>
-                                <span class="marketPrice"><s>{{commodity.marketPrice}}</s></span>
-                            </div>
-                            <div class="hongbao">
-                                <i class="icon_1 icon iconfont icon-hongbao1"></i>
-                                <span class="qian">可抵扣：{{commodity.deduction}}元</span>
-                            </div>
-                        </li>
-                    </ul>
-                    <div class="tishi">长按识别二维码，购买此商品</div>
-                </div>
-            </div>
-
-        </div>
     </div>
 </template>
 
@@ -151,6 +170,7 @@
 
 import html2canvas from 'html2canvas'
 import QRCode from 'qrcodejs2'
+import {openloading} from '@/assets/js/currency.js';
 export default {
     name:'',
     data(){
@@ -162,14 +182,20 @@ export default {
             img_list:[],
             shop:{},        //店铺信息
             UserFavorite:'',    //收藏信息
-            userInfo:''     //用户信息
+            userInfo:'',     //用户信息
+
+            qrcode:null,
+            img_base64:'',
         }
     },
     methods: {
-        //
+        //立即购买
+        goumai(){
+            this.$router.push('/commodity/PurchaseSingle?id='+this.id);
+        },
         linghongbao(){
             // http://192.168.1.13:8080/#/RedEnvelopesList?shopid=D7004090906D139CD1492008D376E457
-            this.$router.push('/RedEnvelopesList?shopid='+this.shop.shopid)
+            this.$router.push('/RedEnvelopesList?shopid='+this.shop.shopid);
         },
         //点击收藏
         shoucang(){
@@ -202,7 +228,7 @@ export default {
                     mui.toast('收藏成功。',{ duration: 1000,type: "div" });
                     this.get_findDataUserFavorite()
                }else{
-                    mui.toast('收藏失败。',{ duration: 1000,type: "div" });
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err)
@@ -219,6 +245,8 @@ export default {
                     console.log('取消收藏成功。',x);
                     mui.toast('取消收藏成功。',{ duration: 1000,type: "div" });
                     this.get_findDataUserFavorite()
+                }else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err);
@@ -274,31 +302,73 @@ export default {
                 console.log(err);
             })
         },
-        //显示二维码
-        erweima_show(){
-            console.log('生成二维码');
-            console.log( location.href+"&isshop=1")
-            if(this.qrcode){
-                // this.qrcode_show=true;
-                this.QRCode_box=true;
-            }else{
+        //获取图片base64
+        imgtobase64(){
+            return new Promise((resolve, reject)=>{
+                this.$request('/api-u/users/imgtobase64',{url:this.img_list[0]},'post',true).then(x=>{
+                    if(x.data.code==200){
+                        this.img_base64='data:image/jpeg;base64,'+x.data.data;
+                        resolve(x);
+                    }else{
+                        reject('获取图片base64错误');
+                    }
+                }).catch(err=>{
+                    reject(err)
+                })
+            })
+        },
+        //生成二维码
+        shengcheng_erweima(){
+            console.log(location.href+"&isshop=1")
+            return new Promise((resolve,reject)=>{
                 var el=this.$refs.qrcode
                     el.innerHTML='';
-                let qrcode = new QRCode(el, {  
-                    width: 50,  
-                    height: 50, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                    text: location.href+"&isshop=1", // 二维码内容  
-                    // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                    background: '#fff',
-                    foreground: '#fff',
-                })
-                // console.log(qrcode)
+                    let qrcode = new QRCode(el, {  
+                        width: 80, 
+                        height: 80, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                        text: location.href+"&isshop=1", // 二维码内容  
+                        // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                        background: '#fff',
+                        foreground: '#fff',
+                    })
+                resolve('生成二维码');
+            })
+        },
+        //显示二维码
+        erweima_show(){
+            // console.log('生成二维码');
+            // console.log( location.href+"&isshop=1")
+            if(this.qrcode){
                 this.QRCode_box=true;
-                // setTimeout(()=>{
-                //     this.print();
-                // },500)
+            }else{
+                openloading(true);
+                Promise.all([this.imgtobase64(), this.shengcheng_erweima()]).then((results)=>{
+                    // console.log('1111111',results);
+                    
+                    setTimeout(()=>{
+                        this.print();
+                    },500)
+                }).catch((reason)=>{
+                    // console.log(22222222,reason);
+                    openloading(false);
+                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
+                });
+                // console.log(qrcode)
             }
-            
+        },
+        //生成带图片的二维码
+        print(){
+            const el = this.$refs.printMe;
+            const options = {
+                useCORS: true,
+                logging: false
+            }
+            html2canvas(el,options).then(canvas => {
+                this.qrcode=canvas.toDataURL()
+                // this.qrcode_show=true;
+                openloading(false);
+                this.QRCode_box=true;
+            },{useCORS: true});
         },
         //关闭二维码
         close_1(){
@@ -364,7 +434,10 @@ export default {
         img_list() {
             this.$nextTick(function() {
                 console.log("数据渲染完成");
-                this.getswiper();
+                console.log(this.img_list);
+                if(this.img_list.length>1){
+                    this.getswiper();
+                }
             });
         }
     }
@@ -372,9 +445,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mui-bar-nav{
+    box-shadow: none;
+}
 .mui-bar{
     // background-color: rgba(255,255,255,0.3);
-    background-color: rgba(195, 195, 195, 0.3);
+    background-color:rgba(88, 88, 88, 0.5);
+    
     .fenxiang,
     .erweima{
         color: #ffffff;
@@ -391,6 +468,7 @@ export default {
 }
 .mui-content{
     padding-bottom: 50px;
+    padding-top: 0px;
 }
 .box_1 .swiper-slide {
     height: 2.82rem;
@@ -427,6 +505,11 @@ export default {
     .marketPrice{
         color: rgba(166, 166, 166, 1);
     	font-size: 12px;
+    }
+    .danwei{
+        font-size: 12px;
+        color: #424242;
+        margin: 0px 0px 0px 5px;
     }
     .sales{
         color: rgba(166, 166, 166, 1);
@@ -629,7 +712,8 @@ export default {
 }
 
 
-.QRCode{
+
+.QRCode.content{
     position: fixed;
     width: 100%;
     height: 100%;
@@ -639,6 +723,18 @@ export default {
     justify-content: center;
     align-items: center;
     z-index: 11;
+    .content_1{
+        padding: 0px
+    }
+}
+.QRCode.rongqi{
+    position: fixed;
+    // width: 100%;
+    left: -100%;
+    // bottom: 50px;
+}
+.QRCode{
+    
     .mask{
         position: absolute;
         top: 0px;
@@ -652,7 +748,7 @@ export default {
         z-index: 1;
         background: #ffffff;
         width: 266px;
-        padding: 17px 17px 15px 17px;
+        padding: 7px 9px 17px;
         .close_1{
             width: 36px;
             height: 50px;
@@ -679,9 +775,32 @@ export default {
                 margin: 0px auto;
             }
         }
-
+        .img_box1{
+            img{
+                width: 100%;
+            }
+        }
+        .title_2{
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            margin: 0px 0px 7px 0px;
+            img{
+                width: 27px;
+            	height: 27px;
+                border-radius: 6px;
+                margin: 0px 6px 0px 0px;
+            }
+            .text_1{
+                color: #d43030;
+            }
+            .text_2{
+                color: #a6a6a6;
+            }
+        }
         .img_box{
             height: 174px;
+            margin: 0px 0px 10px 0px;
             img{
                 width: 100%;
                 height: 100%;
@@ -696,17 +815,15 @@ export default {
         }
         .cont_1{
             display: flex;
+            justify-content: space-between;
+            align-items: center;
             .erweima_box{
                 flex-shrink: 0;
-                width: 50px;
-                height: 50px;
+                width: 80px;
                 margin: 0px 8px 0px 0px;
                 img{
                     width: 100%;
                 }
-            }
-            >li:nth-child(2){
-                flex-grow: 1;
             }
             .sellingPrice{
                 color: rgba(212, 48, 48, 1);
@@ -715,6 +832,11 @@ export default {
             }
             .marketPrice{
                 color: rgba(166, 166, 166, 1);
+            	font-size: 12px;
+                margin: 0px 5px 0px 0px;
+            }
+            .danwei{
+                color: #333333;
             	font-size: 12px;
             }
             .hongbao{

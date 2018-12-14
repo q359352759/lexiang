@@ -111,10 +111,8 @@ export default {
                         openloading(false);
                         if(x.data.code==200){
                             this.commodity_list.splice(index,1);
-                        }else if(x.data.code){
-                            mui.toast(x.data.msg, { duration: 2000, type: "div" });
                         }else{
-                            mui.toast(x.data.message, { duration: 2000, type: "div" });
+                            mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                         }
                     }).catch(err=>{
                         openloading(false);
@@ -140,10 +138,8 @@ export default {
             }).then(res=>{
                 if(res.data.code==200){
                     x.state=x.state==0 ? 1 : 0;
-                }else if(res.data.code){
-                    mui.toast(x.data.msg, { duration: 2000, type: "div" });
                 }else{
-                    mui.toast(x.data.message, { duration: 2000, type: "div" });
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
                 console.log(res);
             }).catch(err=>{

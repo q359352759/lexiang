@@ -200,6 +200,9 @@ export default {
         color: #ffffff;
     }
 }
+.mui-content{
+    margin-bottom: 60px;
+}
 .mui-title {
     color: #ffffff;
 }

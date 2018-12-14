@@ -241,7 +241,8 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted() {
-        this.img_list = ["5.jpg", "6.jpg", "7.jpg"];
+        // this.img_list = ["5.jpg", "6.jpg", "7.jpg"];
+        this.img_list = ["home_1.jpg", "home_2.jpg", "home_3.jpg","home_4.jpg"];
 
         // console.group('------mounted 挂载结束状态------');
     },

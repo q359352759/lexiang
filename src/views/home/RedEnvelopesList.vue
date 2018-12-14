@@ -146,7 +146,8 @@ export default {
                     start:0,
                     length:10,
                     type:0,
-                    shopid:''
+                    shopid:'',
+                    ccc:1
                 }
             },
             redenvelope_1:{         //1商品红包
@@ -158,7 +159,8 @@ export default {
                     start:0,
                     length:10,
                     type:1,
-                    shopid:''
+                    shopid:'',
+                    ccc:1
                 }
             },
             redenvelope_2:{         //2节日红包
@@ -168,7 +170,8 @@ export default {
                     start:0,
                     length:10,
                     type:2,
-                    shopid:''
+                    shopid:'',
+                    ccc:1
                 }
             },
             // redenvelope_3:{      //3签到红包
@@ -187,7 +190,8 @@ export default {
                     start:0,
                     length:10,
                     type:4,
-                    shopid:''
+                    shopid:'',
+                    ccc:1
                 }
             },
             redenvelope_5:{     //5生日红包
@@ -198,7 +202,8 @@ export default {
                     length:10,
                     type:5,
                     state:1,
-                    shopid:''
+                    shopid:'',
+                    ccc:1
                 }
             },
             startTime:'',       //卡券上面的有效期
@@ -293,14 +298,16 @@ export default {
             }).then(x=>{
                 console.log(x);
                 if(x.data.code==200){
+                    console.log(1)
                     mui.toast('恭喜您，领取成功。',{ duration: 2000,type: "div" });
                 }else{
-                    mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: 1000,type: "div" });                    
+                    console.log(2)
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }
                 openloading(false)
             }).catch(err=>{
                 console.log(err)
-                 mui.toast('系统错误，稍后再试。',{ duration: 2000,type: "div" });
+                mui.toast('系统错误，稍后再试。',{ duration: 2000,type: "div" });
                 openloading(false);
             })
         },
@@ -524,6 +531,7 @@ export default {
         text-align: center;
         img{
             height: 100%;
+            width: 66px;
         }
     }
     .jieri_img{
@@ -531,6 +539,7 @@ export default {
         text-align: center;
         img{
             height: 100%;
+            width: 56px;
         }
     }
     .shangping_img{

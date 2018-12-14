@@ -45,7 +45,7 @@
             </ul>
 
             <ul class="box_4">
-                <li v-for="(item, index) in 1" :key="index">
+                <li v-for="(item, index) in 0" :key="index">
                     <div>
                         <img src="image/acb82200c21cf541e9cb20d916d835ba.jpg" alt="" srcset="">
                     </div>
@@ -86,14 +86,19 @@
                     </div>
                 </li>
             </ul>
+            <loading :nodata="true"/>
 
         </div>
     </div>
 </template>
 
 <script>
+import loading from '@/components/loading'
 export default {
     name:'',
+    components:{
+        loading
+    },
     data(){
         return{
             Picker_2:'',

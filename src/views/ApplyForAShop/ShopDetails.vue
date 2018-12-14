@@ -6,6 +6,13 @@
         </header>
 
         <div class="mui-content mui-fullscreen">
+            <div class="box_5" v-if="update_obj">
+                <span class="mui-pull-right shenhe" v-if="update_obj.state==0">审核中</span>
+                <span @tap="see_cause()" class="mui-pull-right weitongguo" v-if="update_obj.state==2">未通过，查看原因</span>
+                <span class="mui-pull-right tongguo" v-if="update_obj.state==1">已通过</span>
+                <span>上次修改时间：{{update_obj.updateTime | filter_time}}</span>
+            </div>
+
 
             <ul class="mui-table-view box_1">
                 <li class="mui-table-view-cell" @click="select_shop_type()">
@@ -213,7 +220,7 @@
 </template>
 
 <script>
-import { openloading, bd_decrypt,get_url } from "@/assets/js/currency";
+import { openloading, bd_decrypt,get_url,dateFtt } from "@/assets/js/currency";
 import { VueCropper } from "vue-cropper";
 import $ from "jquery";
 export default {
@@ -297,7 +304,14 @@ export default {
             getType:0,      //0表示什么都没做 1表示点击了重新提交
             in_index:0,
             isUpdata:false,      //是否可以修改
+            update_obj:'',      //修改的数据
         };
+    },
+    filters:{
+        filter_time(time){
+            // return yyyy.MM.dd hh:mm;
+            return dateFtt(time,'yyyy.MM.dd hh:mm:ss')
+        }
     },
     computed: {
         address() {     //开店地址
@@ -329,8 +343,13 @@ export default {
         }
     },
     methods: {
+        //查看未通过原因
+        see_cause(){
+            mui.alert(this.update_obj.cause,'驳回理由','我知道了',()=>{},'div');
+        },
         //点击重新提交 重新绑定数据
         chongxingtijiao(){
+            
             var this_1=this;
             var myshop=this.myshop;
             var shop_obj={};
@@ -411,6 +430,7 @@ export default {
                     }else{
                         this.isUpdata=true;
                     }
+                    this.update_obj=x.data.data;
                 }
             }).catch(error=>{
                 console.log(error)
@@ -418,12 +438,16 @@ export default {
         },
         //添加
         add(){
-            if(!this.isUpdata){
+            // if(!this.isUpdata){
+            //     mui.alert('请等待上次修改审核完成。', "提示", function() {
+            //     },"div");
+            //     return
+            // }
+            if(this.update_obj && this.update_obj.state==0){
                 mui.alert('请等待上次修改审核完成。', "提示", function() {
                 },"div");
                 return
             }
-
             var this_1=this;
             // this.$router.push('/myshop');
             if(this.shop_fenlei[2] && this.shop_fenlei[2].id){
@@ -507,25 +531,22 @@ export default {
                 return
             }
 
+
             openloading(true);
-            
+                let {...update_obj}=this.shop_obj;
+                    update_obj.state=0;
                 this.$axios({
                     method:'post',
                     url:'/api-s/shops/update/add',
-                    data:this.shop_obj
+                    data:update_obj
                 }).then(x=>{
                     console.log(x)
                     if(x.data.code==200){
                         mui.alert('提交成功，等待审核。', "提示", function() {
-                            // this_1.getType=0;
-                            // this_1.$store.commit('setMyshop');    //查询我的店铺
-                            // this_1.$router.push("/my");
                             history.back();
                         },"div");
-                    }else if(x.data.code){
-                         mui.toast(x.data.msg, { duration: 2000, type: "div" }); 
                     }else{
-                       mui.toast(x.data.message, { duration: 2000, type: "div" }); 
+                       mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                     }
                     openloading(false)
                 }).catch(err=>{
@@ -848,6 +869,23 @@ export default {
 }
 #ApplicationShop .mui-title {
     color: #ffffff;
+}
+
+#ApplicationShop .box_5{
+    height: 38px;
+    line-height: 38px;
+    color: rgba(166, 166, 166, 1);
+	font-size: 12px;
+    padding: 0px 10px;
+    .shenhe{
+        color: #ff8d1a;
+    }
+    .weitongguo{
+        color: #d43030;
+    }
+    .tongguo{
+        color: #00baad;
+    }
 }
 
 #ApplicationShop .box_1 {

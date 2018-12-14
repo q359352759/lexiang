@@ -80,14 +80,13 @@ export default {
         
         var loginDate = localStorage.loginDate;
         var baimingdan = [  "#/login", "#/register","#/home",
-                            "#/CommodityDetails",    //首页商品详情
+                            "#/commodity/CommodityDetails",    //首页商品详情
                             "#/BusinessDetails",     //首页商家详情
                             "#/RedEnvelopesList",     //首页商家领取红包页面
                             "#/RegistrationAgreement",
                             "#/ForgetPassword",
                             "#/Recommend",      //分享页面
                             "#/BeInvited",      //分享注册页面
-                            "#/CommodityDetails", //商品详情
                         ]; //未登录可以访问的白名单
             var index=path.indexOf('?');
             if(index!=-1){
@@ -193,7 +192,9 @@ export default {
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
-
+.mui-poppicker{
+    z-index: 1000;
+}
 .mui-table-view:after{
     display: none
 }

@@ -220,14 +220,17 @@ export default {
                 if(x.data.code==200){
                     this.img_list.push(x.data.data[0])
                 }else if(x.data.code){
-                    mui.toast(x.data.msg, {duration: "long",type: "div"});
+                    // mui.toast(x.data.msg, {duration: "long",type: "div"});
+                    mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
                 }else{
-                    mui.toast(x.data.error, {duration: "long",type: "div"});
+                    mui.alert(x.data.error, "提示",'我知道了', function() {},"div");
+                    // mui.toast(x.data.error, {duration: "long",type: "div"});
                 }
                 console.log('添加',x);
             }).catch(err=>{
                 openloading(false);
                 this.loading=false;
+                mui.toast('系统错误稍后再试。', {duration: "long",type: "div"});
                 console.log('添加失败',err);
             })
         },
@@ -265,9 +268,11 @@ export default {
                     this.img_list=this.img_list.concat(x.data.data.data);
                     this.total=x.data.data.total;
                 }else if(x.data.code){
-                    mui.toast(x.data.msg, {duration: "long",type: "div"});
+                    // mui.toast(x.data.msg, {duration: "long",type: "div"});
+                    mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
                 }else{
-                    mui.toast(x.data.error, {duration: "long",type: "div"});                    
+                    // mui.toast(x.data.error, {duration: "long",type: "div"});     
+                    mui.alert(x.data.error, "提示",'我知道了', function() {},"div");                                   
                 }
                 openloading(false);
                 this.loading=false;

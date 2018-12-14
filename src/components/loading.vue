@@ -6,7 +6,7 @@
             <div class="img_box">
                 <img src="image/nolist.png" alt="" srcset="">
             </div>
-            <div>暂无相关数据~</div>
+            <div>{{text ? text : '暂无相关数据~'}}</div>
         </li>
     </ul>
 </template>
@@ -17,7 +17,8 @@ export default {
   props: {
     loadingtype: Boolean, //加载中
     nodata: Boolean, //没有一条数据
-    end: Boolean //全部加载完成
+    end: Boolean, //全部加载完成
+    text:'',      //提示语
   },
   data() {
     return {};

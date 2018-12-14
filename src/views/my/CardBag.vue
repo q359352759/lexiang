@@ -16,7 +16,7 @@
                 </li>
                 <li  :class="{'active':type==1}" @tap="select_type(1)">
                     <div>平台红包</div>
-                    <div>￥0</div>
+                    <div>￥{{user_invited_sutotal.amount ? user_invited_sutotal.amount : 0}}</div>
                 </li>
                 <li  :class="{'active':type==2}" @tap="select_type(2)">
                     <div>店铺红包</div>
@@ -45,13 +45,12 @@
                     <qiandao :obj="{'name':'邹氏菜川馆'}"/>
                 </div> -->
                 
-                <loading v-if="type==0" :nodata="true"/>
+                <loading v-show="type==0" :nodata="true"/>
 
 
                 <!-- 平台红包 -->
-                <loading v-if="type==1" :nodata="true"/>
                 <ul class="Red_envelopes" v-if="type==1">
-                    <li v-for="(item, index) in 0" :key="index">
+                    <li v-for="(item, index) in invitedrecord.list" :key="index">
                         <div class="header_1">
                             <span class="time_1 mui-pull-right">2018.11.8 09:23:30</span>
                             <span class="title_1">红包乐购官方</span>
@@ -62,11 +61,11 @@
                             </li>
                             <li>
                                 <div class="title_1">
-                                    <span class="money">10元</span>
-                                    <span class="type">签到红包</span>
+                                    <span class="money">{{item.amount}}元</span>
+                                    <span class="type">{{item.name}}</span>
                                 </div>
                                 <div class="title_2">
-                                    好友推荐奖励
+                                    {{item.type==1 ? '注册奖励' : '好友推荐奖励'}}
                                 </div>
                                 <div class="time_2">
                                     长期有效
@@ -85,10 +84,12 @@
                         </ul>
                     </li>
                 </ul>
+                
+                <loading v-show="type==1" :loadtype="invitedrecord.loading"  :end="!invitedrecord.loading && invitedrecord.total==invitedrecord.list.length && invitedrecord.total!=0" :nodaa="!invitedrecord.loading && invitedrecord.total==0"/>
                
 
                 <!-- 店铺红包 -->
-                <ul class="Red_envelopes" v-if="type==2">
+                <ul class="Red_envelopes" v-show="type==2">
                     <li v-for="(item, index) in CardPackge_0.list" :key="index">
                         <div class="header_1">
                             <span class="time_1 mui-pull-right">{{item.pgCreateTime | filter_time}}</span>
@@ -113,7 +114,7 @@
                                         {{item.redStratTime | filter_time("yyyy.MM.dd")}}-{{item.redEndTime | filter_time("yyyy.MM.dd")}}
                                     </span>
                                     <!-- 生日红包 -->
-                                    <span v-if="item.redType==5">{{item.pgStartTime | filter_time("yyyy.MM.dd")}}-{{item.pgEndTime | filter_time('yyyy.MM.dd')}}</span>
+                                    <span v-if="item.redType==5">{{item.startTime | filter_time("yyyy.MM.dd")}}-{{item.endTime | filter_time('yyyy.MM.dd')}}</span>
                                 </div>
                             </li>
                             <li>
@@ -123,34 +124,34 @@
                             <li>
                                 <!-- 生日红包 -->
                                 <div v-if="item.redType==5">
-                                    <div v-if="item.pgState==1" class="type_2">已使用</div>
-                                    <span v-if="item.pgState==1" class="time_1">{{item.pgUpdateTime | filter_time}}</span>
-                                    <div v-if="item.pgState==0 && item.pgEndTime>date" class="type_1">有效</div>
-                                    <div v-if="item.pgState==0 && item.pgEndTime<date" class="type_2">失效</div>
+                                    <div v-if="item.state==1" class="type_2">已使用</div>
+                                    <span v-if="item.state==1" class="time_1">{{item.pgUpdateTime | filter_time}}</span>
+                                    <div v-if="item.state==0 && item.endTime>date" class="type_1">有效</div>
+                                    <div v-if="item.state==0 && item.endTime<date" class="type_2">失效</div>
                                 </div>
 
                                 <!-- 长期有效类型的 -->
                                 <div v-if="item.redType==0 || item.redType==4">
-                                    <div v-if="item.pgState==0" class="type_1">有效</div>
-                                    <div v-if="item.pgState==1" class="type_2">已使用</div>
-                                    <span v-if="item.pgState==1" class="time_1">{{item.updateTime | filter_time}}</span>
+                                    <div v-if="item.state==0" class="type_1">有效</div>
+                                    <div v-if="item.state==1" class="type_2">已使用</div>
+                                    <span v-if="item.state==1" class="time_1">{{item.updateTime | filter_time}}</span>
                                 </div>
                                 <!-- 有时间限制类型的 -->
                                 <div v-if="item.redType==2 || item.redType==3">
-                                    <div v-if="item.pgState==1" class="type_2">已使用</div>
-                                    <span v-if="item.pgState==1" class="time_1">{{item.pgUpdateTime | filter_time}}</span>
-                                    <div v-if="item.pgState==0 && item.redEndTime>date" class="type_1">有效</div>
-                                    <div v-if="item.pgState==0 && item.redEndTime<date" class="type_2">失效</div>
+                                    <div v-if="item.state==1" class="type_2">已使用</div>
+                                    <span v-if="item.state==1" class="time_1">{{item.pgUpdateTime | filter_time}}</span>
+                                    <div v-if="item.state==0 && item.redEndTime>date" class="type_1">有效</div>
+                                    <div v-if="item.state==0 && item.redEndTime<date" class="type_2">失效</div>
                                 </div>
                                 
                             </li>
                         </ul>
                     </li>
                 </ul>
-                <loading v-if="type==2" :loadingtype="CardPackge_0.loading" :nodata="!CardPackge_0.loading && CardPackge_0.total==0" :end="!CardPackge_0.loading && CardPackge_0.total!=0 && CardPackge_0.list.length==CardPackge_0.total"/>
+                <loading v-show="type==2" :loadingtype="CardPackge_0.loading" :nodata="!CardPackge_0.loading && CardPackge_0.total==0" :end="!CardPackge_0.loading && CardPackge_0.total!=0 && CardPackge_0.list.length==CardPackge_0.total"/>
 
                 <!-- 商品红包 -->
-                <ul class="Red_envelopes" v-if="type==3">
+                <ul class="Red_envelopes" v-show="type==3">
                     <li v-for="(item, index) in CardPackge_1.list" :key="index">
                         <div class="header_1">
                             <span class="time_1 mui-pull-right">{{item.createTime | filter_time("yyyy.MM.dd hh:mm")}}</span>
@@ -163,7 +164,7 @@
                             <li>
                                 <div class="title_1">
                                     <span class="money">{{item.redAmount}}元</span>
-                                    <span class="type">制定商品</span>
+                                    <span class="type">指定商品</span>
                                 </div>
                                 <div class="title_2" @tap="CommodityDetails(item)">
                                     {{item.commodityName}}
@@ -190,7 +191,7 @@
                     </li>
                 </ul>
 
-                <loading v-if="type==3" :loadingtype="CardPackge_1.loading" :nodata="!CardPackge_1.loading && CardPackge_1.total==0" :end="!CardPackge_1.loading && CardPackge_1.total!=0 && CardPackge_1.list.length==CardPackge_1.total"/>
+                <loading v-show="type==3" :loadingtype="CardPackge_1.loading" :nodata="!CardPackge_1.loading && CardPackge_1.total==0" :end="!CardPackge_1.loading && CardPackge_1.total!=0 && CardPackge_1.list.length==CardPackge_1.total"/>
 
             </div>
 
@@ -242,6 +243,19 @@ export default {
                     type:1,
                     userid:''
                 }
+            },
+            user_invited_sutotal:{},    //平台红啊金额
+            invitedrecord:{         //平台红包记录
+                loading:true,
+                total:0,
+                list:[],
+                page_index:0,
+                query:{
+                    start:0,
+                    length:10,
+                    // type:1,
+                    inviterId:'',       //邀请人
+                }
             }
         };
     },
@@ -271,7 +285,7 @@ export default {
         },
         //商品红包 跳转到商品
         CommodityDetails(item){
-            this.$router.push('/CommodityDetails?id='+item.redCommodityId+'&isshop=1')
+            this.$router.push('/commodity/CommodityDetails?id='+item.redCommodityId+'&isshop=1')
         },
         //选择 签到红包 平台红包  店铺红包 商品红包
         select_type(x){ 
@@ -364,6 +378,34 @@ export default {
             }).catch(err=>{
                 console.log(err)
             })
+        },
+        //获取平台红包金额
+        get_invitedsutotal(){
+            this.$request('/api-u/users/invitedsutotal/findByUserid/'+this.userInfo.username,'','get').then(x=>{
+                console.log('获取平台红包金额',x);
+                if(x.data.code==200){
+                    this.user_invited_sutotal=x.data.data
+                }
+            }).catch(err=>{
+                console.log(err);
+            })
+        },
+        //获取平台红包记录
+        get_invitedrecord(){
+            this.invitedrecord.loading=true;
+            this.invitedrecord.query.start=this.invitedrecord.page_index*this.invitedrecord.query.length;
+            this.invitedrecord.query.inviterId=this.userInfo.username;
+            this.$request('/api-u/users/invitedrecord/findAll',this.invitedrecord.query,'get').then(x=>{
+                console.log('平台红包记录',x);
+                if(x.data.code==200){
+                    this.invitedrecord.total=x.data.data.total;
+                    this.invitedrecord.list=x.data.data.data;
+                }
+                this.invitedrecord.loading=false
+            }).catch(err=>{
+                console.log(err);
+                this.invitedrecord.loading=false;
+            })
         }
     },
     beforeCreate: function() {
@@ -390,7 +432,10 @@ export default {
         //获取金额
         this.get_findStotal(0)  //店铺红包统计
         this.get_findStotal(1)  //商品红包统计
-
+        //获取平台红包金额
+        this.get_invitedsutotal();
+        //获取平台红包记录
+        this.get_invitedrecord()
 
         // console.group('------mounted 挂载结束状态------');
     },

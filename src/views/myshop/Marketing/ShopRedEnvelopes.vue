@@ -117,7 +117,6 @@ export default {
                 state:1,            //是否开启
                 increaseDays:'',    //递增天数
                 cycleDays:'',       //循环天数
-
                 // ===================
                 createTime:'',
                 deductionType:0,   //抵扣方式   0表示百分百 1表示满多少减多少
@@ -147,8 +146,6 @@ export default {
                         '<li style="text-indent: 20px;margin:0px 0px 10px;">2、顾客购买商品，该商品设置的可抵扣金额为20元，那么顾客购买时可以用红包抵扣20元。顾客还剩余780元的红包，可以下次购买时使用。</li>'+
                         '<li style="text-indent: 20px;margin:0px 0px 10px;">红包具体金额可根据自己店铺情况设置，不宜太大，若太大，您以后再次发放节日红包或庆典红包时会失去关注度，客户还有大量的红包就不再次领取。建议红包金额为“新人专享商品”的可抵扣价。</li>'+
                     '</ul>'
-            
-    
             mui.alert(html,"如何设置红包金额？",'我知道了',()=>{},'div')
         },
         //显示红包说明

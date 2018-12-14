@@ -21,8 +21,8 @@
                     <i class="icon iconfont icon-weixin"></i>
                 </li>
                 <li class="icon_box phone">
-                    <a href="tel:028-888888">
-                    <i class="icon iconfont icon-dianhua1"></i> 
+                    <a :href="'tel:'+referrer.phone">
+                        <i class="icon iconfont icon-dianhua1"></i> 
                     </a>
                 </li>
             </ul>

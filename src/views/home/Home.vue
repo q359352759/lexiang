@@ -118,7 +118,10 @@
                         <div>
                             <div>
                                 <div>已领取</div>
-                                <div>0%</div>
+                                <div v-if="x.quantityMax">
+                                    <span>{{x.quantity ? Math.floor(x.quantity/x.quantityMax*100) : 0}}%</span>
+                                </div>
+                                <div v-if="!x.quantityMax">{{x.quantity ? (Math.floor(x.quantity/300*100)>98 ? 98 : Math.floor(x.quantity/300*100)) : 0}}%</div>
                             </div>
                             <div></div>
                         </div>
@@ -213,11 +216,10 @@
                         <!-- <img src="image/7a1f5483e159cad31c9f3712accc6c9b.jpg" alt=""> -->
                     </div>
                 </div>
-                <div class="tishi">扫描加好友</div>
+                <div class="tishi">扫码领取20元红包</div>
             </div>
         </div>
-
-
+        <homeDialog v-if="homeDialog_show" @setHomeDialog="getHomeDialog" />
     </div>
 </template>
 
@@ -228,13 +230,17 @@ import QRCode from 'qrcodejs2'
 // import Swiper from 'swiper';
 import { openloading, bd_decrypt,GetDistance } from "@/assets/js/currency";
 import loading from "@/components/loading.vue";
+//弹出框
+import homeDialog from '@/components/homeDialog.vue';
 export default {
     name: "home",
     components: {
-        loading
+        loading,
+        homeDialog
     },
     data() {
         return {
+            homeDialog_show:false,
             box_3_actvie:false,
             img_list: [], //轮播图
             // type_list: [
@@ -294,7 +300,10 @@ export default {
             }
             return list
         },
-        
+        //实名认证信息
+        findByUserid(){    
+            return this.$store.state.findByUserid;
+        }
     },
     filters:{
         fliter_phone(phone) {
@@ -312,6 +321,10 @@ export default {
         }
     },
     methods: {
+        getHomeDialog(x){
+            console.log(x);
+            this.homeDialog_show=false;
+        },
         //扫一扫
         saoyisao(){
             wx.scanQRCode({
@@ -396,8 +409,105 @@ export default {
         RedEnvelopesList(x){
             console.log(x);
             this.$store.state.redid=x.id;
-            // this.$router.push('/RedEnvelopesList?shopid='+x.shopid+'&redid='+x.id);
+            
+            if(!this.userInfo){
+                // mui.toast('请先登录。',{ duration: "long",type: "div" });
+                mui.confirm('需要登录才能领取，是否现在去登录。','提示',['取消','是的'],(value)=>{
+                    if(value.index==1){
+                        this.$router.push('/login');
+                    }
+                })
+                return;
+            }
+
             this.$router.push('/RedEnvelopesList?shopid='+x.shopid+'&isshop=1');
+
+            if(!x || x==''){
+                mui.toast('尚未发布此红包。',{ duration: "long",type: "div" });
+                return;
+            }else if(x.type==5){
+                console.log('点击了生日红包');
+                if(this.userInfo.iaiState==1){
+                    mui.confirm('确认将自己的生日信息（不包含年龄）授权给此商铺吗？','提示',['取消','好的'],(value)=>{
+                        if(value.index==1){
+                                if(!this.findByUserid){
+                                    mui.toast('获取实名信息失败，稍后再试。',{ duration: 2000,type: "div" });
+                                    return;
+                                }
+                                var birthday=this.findByUserid.birthday;
+                                var myDate = new Date();
+                                var newdate=myDate.getFullYear()+'-'+birthday.substring(4,6)+'-'+birthday.substring(6);
+                                if(newdate>=getDateStr(0)){     //领取今年的
+                                    var startTime=getDateStr(-7,newdate);
+                                    var endTime=getDateStr(7,newdate);
+
+                                    var obj={
+                                            id:'',
+                                            userid:this.userInfo.username,      //红包id
+                                            envelopeId:x.id,  
+                                            state:'0',              //状态(使用等等)  0 刚领取
+                                            type:x.type,
+                                            startTime:startTime,           //生日使用有效期
+                                            endTime:endTime,
+                                        }
+                                    this.add_red(obj)
+                                }else{      //领取明年的
+                                    var newdate=(myDate.getFullYear()+1)+'-'+birthday.substring(4,6)+'-'+birthday.substring(6);
+                                    var startTime=getDateStr(-7,newdate);
+                                    var endTime=getDateStr(7,newdate);
+
+                                    var obj={
+                                            id:'',
+                                            userid:this.userInfo.username,      //红包id
+                                            envelopeId:x.id,  
+                                            state:'0',              //状态(使用等等)  0 刚领取
+                                            type:x.type,
+                                            startTime:startTime,           //生日使用有效期
+                                            endTime:endTime,
+                                        }
+                                    this.add_red(obj)
+                                }
+                        }
+                    },'div')
+                }else{
+                    mui.confirm('领取生日红包需要实名认证，您还未认证，请先认证。','提示',['取消','去认证'],(value)=>{
+                        if(value.index==1){
+                            this.$router.push('/RealName');
+                        }
+                    })
+                }
+                return
+            }
+            var obj={
+                    id:'',
+                    userid:this.userInfo.username,      //红包id
+                    envelopeId:x.id,  
+                    state:'0',              //状态(使用等等)  0 刚领取
+                    type:x.type,
+                    startTime:'',           //生日使用有效期
+                    endTime:'',
+                }
+            this.add_red(obj)
+        },
+        //调用添加红包接口
+        add_red(obj){
+            console.log(obj);
+            this.$axios({
+                method:'post',
+                url:'/api-s/shops/addUserCardPackge',
+                data:obj
+            }).then(x=>{
+                console.log(x);
+                if(x.data.code==200){
+                    mui.toast('恭喜您，领取成功。',{ duration: 2000,type: "div" });
+                }else{             
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
+                }
+                
+            }).catch(err=>{
+                console.log(err)
+                mui.toast('系统错误，稍后再试。',{ duration: 2000,type: "div" });
+            })
         },
         //跳转搜索
         SearchShop(){
@@ -405,7 +515,7 @@ export default {
         },
         //跳转商品详情
         CommodityDetails(x){
-            this.$router.push('/CommodityDetails?id='+x.id+'&isshop=1');
+            this.$router.push('/commodity/CommodityDetails?id='+x.id+'&isshop=1');
         },
         //滚动条
         content_scroll(e){
@@ -571,7 +681,7 @@ export default {
                     var amount=list[i].amount;
                     if(amount>999 && amount<1000){
                        list[i].font_size='14px'
-                    }else if(amount>1000 && amount<9999){ 
+                    }else if(amount>=1000 && amount<9999){ 
                         // 99999
                         list[i].font_size='12px'
                     }else if(amount>9999){
@@ -592,21 +702,48 @@ export default {
         // console.group('------beforeCreate创建前状态------');
     },
     created: function() {
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {}
+
+        var homeDialog_obj='';
+        var username=this.userInfo ? this.userInfo.username : '';
+        try {
+            homeDialog_obj=JSON.parse(localStorage.homeDialog);
+        } catch (error) {}
+        console.log('homeDialog_obj',homeDialog_obj);
+        if(!homeDialog_obj || homeDialog_obj=='' || username!=homeDialog_obj.userid){
+            this.homeDialog_show=true
+        }else{
+            var time1=new Date().getTime();
+            var time2=homeDialog_obj.time;
+            var time3=(time1-time2)/1000/60/60
+            if(!homeDialog_obj.Tips && time3>2){
+                this.homeDialog_show=true;
+            }
+        }
+
         // console.group('------created创建完毕状态------');
     },
     beforeMount: function() {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
+
         var this_1=this;
         this.img_list = ["home_1.jpg", "home_2.jpg", "home_3.jpg","home_4.jpg"];
-        try {
-            this.userInfo=JSON.parse(localStorage.userInfo);
-        } catch (error) {}
+        
 
+        if(this.userInfo){
+            this.$store.commit('setfindByUserid');
+        }
 
-        //查询 首页显示的 红包 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
-        this.get_redenvelope();
+        var query=this.$route.query;
+        if(query.saoyisao){
+            console.log('扫一扫');
+            this.saoyisao()
+        }
+        
 
         //获取当前位置
         if(!this.$store.state.my_position.x || this_1.$store.state.my_position.x==''){
@@ -622,13 +759,19 @@ export default {
                     }
                     //获取商家
                     this_1.get_shop();
+                    //查询 首页显示的 红包 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
+                    this_1.get_redenvelope();
                 },{ enableHighAccuracy: true })
             } catch (error) {
                 //获取商家
                 this_1.get_shop();
+                //查询 首页显示的 红包 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
+                this_1.get_redenvelope();
             }
         }else{
             this_1.get_shop();
+            //查询 首页显示的 红包 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
+            this_1.get_redenvelope();
         }
         
         //获取商品
@@ -662,8 +805,6 @@ export default {
         //         // var accuracy = res.accuracy;    // 位置精度
         //     }
         // });
-
-
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -1107,6 +1248,7 @@ export default {
             flex-shrink: 0;
             width: 0.77rem;
             height: 0.58rem;
+            background: #eeeeee;
             img{
                 width: 100%;
                 height: 100%;

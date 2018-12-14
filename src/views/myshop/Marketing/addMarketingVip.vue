@@ -16,7 +16,7 @@
                     <div class="radio_1" :class="{'active':obj.type==1}">
                         <i class="icon iconfont icon-xuanze"></i>
                     </div>
-                    <span>新人专享</span>
+                    <span>生日专享</span>
                 </li>
             </ul>
 
@@ -76,7 +76,7 @@
                 </li>
             </ul>
 
-            <div class="btn_1">确定</div>
+            <div @click="queding()" class="btn_1">确定</div>
         </div>
 
         <selectCommodity v-show="ShopClassification_show" v-on:setShow="setShow"/>
@@ -95,13 +95,21 @@ export default {
         return{
             ShopClassification_show:false,
             obj:{
-                type:0,
-                deduction:'',
+                shopid:'',      //店铺id
+                commodityId:'',     //商品id
+                type:0,         //0新人 1生日
+                typeName:'',    //   
+                deduction:'',   //抵扣金额
                 percentage:'',
             },
             commodity:{     //商品
 
             }
+        }
+    },
+    computed:{
+        myshop(){
+            return this.$store.state.myshop
         }
     },
     methods:{
@@ -110,7 +118,6 @@ export default {
             if(!this.commodity.sellingPrice || !this.obj[x] || !number_test.test(this.obj[x])){
                 return;
             }
-
             if(x=='deduction'){     //金额
                 this.obj.deduction=Math.floor(this.obj.deduction*100)/100;
                 var percentage=this.obj.deduction/this.commodity.sellingPrice*100
@@ -122,6 +129,40 @@ export default {
                 this.obj.deduction=Math.floor(deduction*100)/100;
             }
         },
+        //点击确定
+        queding(){
+            var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
+            if(!this.commodity || !this.commodity.id){
+                mui.toast('请选择商品。', { duration: "long",type: "div" });
+                return
+            }else if(!number_test.test(this.obj.deduction)){
+                mui.toast('请输入抵扣金额。', { duration: "long",type: "div" });
+                return;                
+            }else if(this.obj.deduction<this.commodity.deduction){
+                mui.toast('抵扣金额不能小于商品抵扣金额。', { duration: "long",type: "div" });
+                return;
+            }
+            this.obj.shopid=this.myshop.shopid;
+            this.obj.commodityId=this.commodity.id;
+            this.obj.typeName=this.obj.type==0 ? '新人专享': '新人专享';
+            console.log(this.obj);
+            this.$axios({
+                method:'post',
+                url:'/api-s/shops/addShopExclusive',
+                data:this.obj
+            }).then(x=>{
+                console.log(x);
+                if(x.data.code==200){
+                    mui.toast('添加成功。', { duration: "long",type: "div" });
+                    history.back();            
+                }else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
+                }
+            }).catch(err=>{
+                console.log(err);
+                mui.toast('系统错误，稍后再试。', { duration: "long",type: "div" });
+            })
+        },
         //选择商品
         select_1(){
             this.ShopClassification_show=true;
@@ -129,7 +170,8 @@ export default {
         },
         //选择类型
         change_radio_2(x){
-            this.obj.type=x
+            this.obj.type=x;
+            
         },
         //接受商品
         setShow(x){
@@ -137,9 +179,15 @@ export default {
             history.back()
             if(x){
                 this.commodity=x;
-
+                this.obj.deduction=x.deduction
                 this.input_change('deduction')
             }
+        }
+    },
+    mounted(){
+        if(!this.myshop || !this.myshop.shopid){
+            //获取我的店铺
+            this.$store.commit('setMyshop');
         }
     },
     watch:{

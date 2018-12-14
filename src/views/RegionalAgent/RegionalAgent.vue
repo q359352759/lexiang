@@ -458,29 +458,13 @@ export default {
                     console.log(x);
                     if (x.data.code == 200) {
                         this.areaManager();
-                        mui.alert(
-                            x.data.msg,
-                            "提示",
-                            "好的",
-                            function() {},
-                            "div"
-                        );
-                    } else if (
-                        x.data.code == "PAYEE_USER_INFO_ERROR" ||
-                        x.data.code == "PAYEE_ACC_OCUPIED"
-                    ) {
+                        mui.alert(x.data.msg,"提示","好的",function() {},"div");
+                    } else if (x.data.code == "PAYEE_USER_INFO_ERROR" ||  x.data.code == "PAYEE_ACC_OCUPIED" ) {
                         mui.toast(x.data.msg, { duration: 2000, type: "div" });
                         this.input_name_box = true;
-                    } else if (x.data.code) {
-                        mui.toast(x.data.message, {
-                            duration: 2000,
-                            type: "div"
-                        });
-                    } else {
-                        mui.toast("系统错误，请稍后再试。", {
-                            duration: 2000,
-                            type: "div"
-                        });
+                    } else{
+                        mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
+                        
                     }
                     this.CanBePresented = true;
                     openloading(false);

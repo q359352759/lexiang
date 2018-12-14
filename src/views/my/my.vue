@@ -74,7 +74,7 @@
 			</div>
 
 			<div class="box_3">
-				<ul class="title_1">
+				<ul class="title_1" @click="order()">
 					<li>我的订单</li>
 					<li>全部订单</li>
 					<li>
@@ -136,38 +136,6 @@
 				</li>
 			</ul>
 
-			<!-- <ul class="mui-table-view box_4">
-				<li class="mui-table-view-cell" @click="LoginPassword()">
-					<a class="mui-navigate-right">
-						<span>登录密码</span>
-					</a>
-				</li>
-				<li class="mui-table-view-cell" @click="PaymentPassword()">
-					<a class="mui-navigate-right">
-						<span>支付密码</span>
-					</a>
-				</li>
-			</ul> -->
-
-			<!-- <ul class="mui-table-view box_5">
-				<li class="mui-table-view-cell" @click="RealName()">
-					<a class="mui-navigate-right">
-						<span>实名认证</span>
-						<span>{{userInfo.iaiState!=1 ? '未认证' : '已认证'}}</span>
-					</a>
-				</li>
-				<li class="mui-table-view-cell">
-					<a class="mui-navigate-right">
-						<span>收货地址</span>
-					</a>
-				</li>
-				<li class="mui-table-view-cell">
-					<a class="mui-navigate-right">
-						<span>关于我们</span>
-					</a>
-				</li>
-			</ul> -->
-
 			<div @click="go_out()" class="go_out">退出登录</div>
 
             <!-- <button @click="test()">测试</button>
@@ -215,12 +183,12 @@
                 </div>
                 <div class="erweima_box">
                     <img v-show="erweima_base64" class="head_img" :src="erweima_base64" alt="">
-                    <img v-show="!erweima_base64" class="head_img" src="image/lxlogo_180.png" alt="">
+                    <img style="border-radius:100%;" v-show="!erweima_base64" class="head_img" src="image/lxlogo_180.png" alt="">
                     <div ref="qrcode">
                         <!-- <img src="image/7a1f5483e159cad31c9f3712accc6c9b.jpg" alt=""> -->
                     </div>
                 </div>
-                <div class="tishi">扫描加好友</div>
+                <div class="tishi">识别二维码领取20元新人红包！</div>
             </div>
         </div>
 
@@ -261,6 +229,10 @@ export default {
         }
     },
     methods: {
+        //订单
+        order(){
+            this.$router.push('/orders/orderList')
+        },
         //获取头像测试
         test(){
             this.$axios({
@@ -287,37 +259,53 @@ export default {
                 this.qrcode_show=true;
             }else{
                 openloading(true);
-                this.$axios({
-                    method:'post',
-                    url:'/api-u/users/imgtobase64',
-                    data: this.$qs.stringify({
-                        url:this.userInfo.headImgUrl
-                    })
-                }).then(x=>{
-                    if(x.data.code==200){
-                        this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
-                        var el=this.$refs.qrcode
-                            el.innerHTML='';
-                        let qrcode = new QRCode(el, {  
-                                width: 200,  
-                                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                                text: url, // 二维码内容  
-                                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                                background: '#fff',
-                                foreground: '#fff',
-                            })
-                        setTimeout(()=>{
-                            this.print();
-                        },500)
-                    }else{
+                if(!this.userInfo.headImgUrl){
+                    var el=this.$refs.qrcode
+                        el.innerHTML='';
+                    let qrcode = new QRCode(el, {  
+                            width: 200,  
+                            height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                            text: url, // 二维码内容  
+                            // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                            background: '#fff',
+                            foreground: '#fff',
+                        })
+                    setTimeout(()=>{
+                        this.print();
+                    },500)
+                }else{
+                    this.$axios({
+                        method:'post',
+                        url:'/api-u/users/imgtobase64',
+                        data: this.$qs.stringify({
+                            url:this.userInfo.headImgUrl
+                        })
+                    }).then(x=>{
+                        if(x.data.code==200){
+                            this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
+                            var el=this.$refs.qrcode
+                                el.innerHTML='';
+                            let qrcode = new QRCode(el, {  
+                                    width: 200,  
+                                    height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                                    text: url, // 二维码内容  
+                                    // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                                    background: '#fff',
+                                    foreground: '#fff',
+                                })
+                            setTimeout(()=>{
+                                this.print();
+                            },500)
+                        }else{
+                            openloading(false);
+                            mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                        }
+                    }).catch(err=>{
                         openloading(false);
-                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
-                    }
-                }).catch(err=>{
-                    openloading(false);
-                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
-                    console.log(err);
-                })
+                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
+                        console.log(err);
+                    })
+                }                
             }
         },
         print(){
@@ -374,6 +362,7 @@ export default {
             localStorage.removeItem("loginDate");
             localStorage.removeItem("userInfo");
             localStorage.removeItem('id');
+            localStorage.removeItem('homeDialog');
             this.$router.push("/login");
         },
         //修改登录密码

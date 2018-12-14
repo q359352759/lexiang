@@ -154,8 +154,7 @@ export default {
                 console.log(x);
                 //x.data==1 表示 新增加 x.data==0表示已经有了修改了数据
                 if(x.data==0 || x.data==1){
-                    mui.alert(x.data==1 ? tishi : tishi1, "提示", function() {
-                    },"div");
+                    mui.alert(x.data==1 ? tishi : tishi1, "提示", function() {},"div");
                 }else{
                     mui.alert('支付成功，购买广告机失败请联系客服。', "提示", function() {
                     },"div");

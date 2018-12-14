@@ -143,12 +143,9 @@ export default {
                 console.log(x);
                 if(x.data.code==200){
                     this.addguanggaoji()
-                }else if(x.data.code){
-                    openloading(false);
-                    mui.toast(x.data.msg, { duration: 2000, type: "div" });
                 }else{
                     openloading(false);
-                    mui.toast(x.data.message, { duration: 2000, type: "div" });
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 openloading(false);
@@ -226,7 +223,6 @@ export default {
                 console.log(x);
                 if(x.data.code==200){           //有代理商
                     this.Apply_type=1
-                    // mui.toast('该区域以后代理商，请选择其他区域申请。', { duration: 2000, type: "div" });
                     mui.alert('该区域已有代理商，请选择其他区域申请。', "提示", function() {
                     },"div");
                 }else if(x.data.code==201){     //没有代理商
@@ -237,10 +233,8 @@ export default {
                     this.Apply_type=3
                     mui.alert('该区域已有代理商，但你目前还有机会该区域代理商的备选人员，请联系我公司客服进行申请区域代理的具体事项，客服电话：<a href="tel:028-83401283">028-83401283</a>', "提示", function() {
                     },"div");
-                }else if(x.data.code){
-                    mui.toast(x.data.msg, { duration: 2000, type: "div" });
                 }else{
-                    mui.toast(x.data.message, { duration: 2000, type: "div" });
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
                 openloading(false)
             }).catch(err=>{

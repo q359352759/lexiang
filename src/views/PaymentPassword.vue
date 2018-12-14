@@ -77,20 +77,11 @@ export default {
                     .then(x => {
                         console.log(x);
                         if (x.data.code == 400) {
-                            mui.toast("验证码错误", {
-                                duration: 2000,
-                                type: "div"
-                            });
+                            mui.toast("验证码错误", {duration: 2000,type: "div"});
                         } else if (x.data.code == 200) {
-                            mui.toast("密码设置成功！", {
-                                duration: 2000,
-                                type: "div"
-                            });
+                            mui.toast("密码设置成功！", {duration: 2000,type: "div"});
                         } else {
-                            mui.toast(x.data.message, {
-                                duration: 2000,
-                                type: "div"
-                            });
+                            mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                         }
                         openloading(false);
                     })

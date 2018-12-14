@@ -22,11 +22,11 @@
                         </div>
                     </div>
                     <div class="zhuanshu">
-                        <img src="image/xingren.png" alt="" srcset="">
+                        <!-- <img src="image/xingren.png" alt="" srcset="">
                         <div>
                             <i class="icon iconfont icon-shengji"></i>
                             <span>0元</span>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="xuanzhe">
                         <span @click="jian(item)">-</span>
@@ -40,20 +40,20 @@
             <ul class="box_2">
                 <li>
                     <div>
-                        <span @tap="change_commodity_box(true)">已选择：{{shuliang}}件</span>
+                        <span @tap="change_commodity_box(true)">已选择：{{shangping_list.length}}件</span>
                     </div>
                     <div class="mui-text-center money_1">￥{{Total_price}}</div>
                     <div class="mui-text-right">
                         <span>实付：</span>
-                        <span class="money_2">￥0</span>
+                        <span class="money_2">￥{{Total_price-zong_dikou}}</span>
                     </div>
                 </li>                
                 <li>
-                    <div>
-                        <span>使用：0个红包</span>
+                    <div @tap="change_commodity_box(true)">
+                        <span>使用：{{hongbao_shiyong}}个红包</span>
                         <i class="mui-icon mui-icon-forward"></i>
                     </div>
-                    <div class="mui-text-center money_1">-￥0</div>
+                    <div class="mui-text-center money_1">-￥{{zong_dikou}}</div>
                     <div class="mui-text-right">
                         <button @tap="queding()" class="btn_1">确定</button>
                     </div>
@@ -67,60 +67,79 @@
             <div class="content_1">
                 <div @click="change_commodity_box(false)" class="close_1"><i class="icon iconfont icon-quxiao"></i></div>
                 <div class="cont_1">
-                    <div class="list">
-                        <ul v-for="(item, index) in new_list" :key="index">
+                    <div class="list" v-show="zhanshi_shangping.shangpin_dikou.length>0">
+                        <ul v-for="(item, index) in zhanshi_shangping.shangpin_dikou" :key="index">
                             <li>
-                                <div>雅居乐粉色梦幻</div>
+                                <div>{{item.name}}</div>
                                 <div class="mui-text-center"></div>
-                                <div class="mui-text-right">商品红包x1</div>
+                                <div class="mui-text-right">商品红包x{{item.number}}</div>
                             </li>
                             <li>
                                 <div>
                                     <span class="money_1">￥{{item.sellingPrice}}</span>
                                     <span>x{{item.number}}</span>
                                 </div>
-                                <div class="mui-text-center dikou">可抵扣￥0</div>
-                                <div class="mui-text-right money_1">-0元</div>
+                                <div class="mui-text-center dikou">可抵扣￥{{item.kedikou}}</div>
+                                <div class="mui-text-right money_1">-{{item.dikou}}元</div>
                             </li>
                         </ul>
                     </div>
-                    <!-- <div class="list">
-                        <ul v-for="(item, index) in 0" :key="index">
+                    <div class="list" v-show="zhanshi_shangping.qita_dikou.length>0">
+                        <ul v-for="(item, index) in zhanshi_shangping.qita_dikou" :key="index">
                             <li>
-                                <div>雅居乐粉色梦幻</div>
-                                <div class="mui-text-center">新人专享</div>
-                                <div class="mui-text-right">商品红包x1</div>
+                                <div>{{item.name}}</div>
+                                <!-- <div class="mui-text-center">新人专享</div> -->
+                                <!-- <div class="mui-text-right">商品红包x1</div> -->
                             </li>
                             <li>
                                 <div>
-                                    <span class="money_1">￥36000</span>
-                                    <span>x2</span>
+                                    <span class="money_1">￥{{item.sellingPrice}}</span>
+                                    <span>x{{item.number}}</span>
                                 </div>
-                                <div class="mui-text-center dikou">可抵扣￥2600</div>
-                                <div class="mui-text-right money_1">-2600元</div>
+                                <div class="mui-text-center dikou">可抵扣￥{{item.kedikou}}</div>
+                                <div class="mui-text-right money_1">-{{item.dikou ? item.dikou : 0}}元</div>
                             </li>
                         </ul>
-                    </div> -->
+                    </div>
                 </div>
                 <div class="footer_1">
                     <div class="select_1">
                         <div @click="change_select(true)">
-                            <span>平台红包</span>
+                            <span v-show="dikou_type==1">店铺生日红包</span>
+                            <span v-show="dikou_type==2">庆典红包</span>
+                            <span v-show="dikou_type==3">签到红包</span>
+                            <span v-show="dikou_type==4">店铺节日红包</span>
+                            <span v-show="dikou_type==5">平台节日红包</span>
+                            <span v-show="dikou_type==6">
+                                {{dianpu_pingtai==1 ? "店铺红包" : '店铺+平台红包'}}
+                                
+                            </span>
                             <i class="mui-icon mui-icon-arrowup"></i>
                         </div>
                         <ul v-show="select_show">
-                            <li @click="change_select(false)">
-                                <div>庆典红包</div>
-                                <div>4000元</div>
+                            <li v-for="(item, index) in qita_hongbao" v-show="item.type!=0" v-if="item.type!=5 || (item.type==5 && shengri_hongbao.length>0)" :key="index" @click="change_select(false,item.type)">
+                                <div>
+                                    <span v-if="item.type==0">店铺新人红包</span>
+                                    <span v-if="item.type==2">节日红包</span>
+                                    <span v-if="item.type==3">签到红包</span>
+                                    <span v-if="item.type==4">庆典红包</span>
+                                    <span v-if="item.type==5">店铺生日红包</span>
+                                </div>
+                                <div>{{item.redAmount}}元</div>
                             </li>
-                            <li @click="change_select(false)">
-                                <div>庆典红包</div>
-                                <div>4000元</div>
+                            <!-- 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包 -->
+                            <li @click="change_select(false,6)" >
+                                <div>{{dianpu_pingtai==1 ? "店铺红包":"店铺+平台红包"}}</div>
+                                <div v-if="dianpu_pingtai==1">{{invitedsutotal.sutotal}}元</div>
+                                <div v-if="dianpu_pingtai==2">
+                                    {{xinren_hongbao.length>0 ? xinren_hongbao[0].redAmount+invitedsutotal.sutotal : invitedsutotal.sutotal}}
+                                    元
+                                </div>
                             </li>
                         </ul>
                     </div>
                     <div class="money">
-                        总优惠：0元
+                        总优惠：{{zong_dikou}}元
                     </div>
                 </div>
             </div>
@@ -131,6 +150,7 @@
 
 <script>
 import loading from '@/components/loading.vue';
+import {getDateStr} from '@/assets/js/currency.js';
 export default {
     name:'',
     components:{
@@ -141,6 +161,7 @@ export default {
     },
     data(){
         return{
+            userInfo:'',
             commodity_box:false,        //选择的商品详情
             select_show:false,          //选择红包
             shangping:{
@@ -155,7 +176,26 @@ export default {
                     state:1
                 }
             },
-            select_height:0
+            select_height:0,
+            hongbao:{
+                list:[]
+            },
+            invitedsutotal:{},          //平台红包信息
+            
+            shangpin_hongbao:[],        //商品红包
+            shengri_hongbao:[],         //生日红包
+            qingdian_hongbao:[],        //庆典红包
+            jieri_hongbao:[],           //店铺节日红包
+            xinren_hongbao:[],          //店铺新人
+            pingtai_hongbao:[],         //平台红包
+            dikou_type:1,
+            dianpu_pingtai:1        //1表示店铺 2表示店铺+平台
+            // 1、店铺生日红包
+            // 2、店铺庆典红包
+            // 3、店铺签到红包
+            // 4、店铺节日红包
+            // 5、平台节日红包
+            // 6、店铺+平台红包
         }
     },
     computed:{
@@ -163,27 +203,183 @@ export default {
         new_list(){
             return this.shangping.list.filter(x => (x.number && x.number>0));
         },
-        // 计算数量
-        shuliang(){
-            var n=0;
+        //展开商品列表
+        shangping_list(){
+            var list=[];
             this.new_list.forEach(item=>{
-                n+=item.number
-            })
-            return n;
+                var number=item.number;
+                for(let i=0;i<number;i++){
+                    var obj=Object.assign({}, item)
+                    list.push(obj);
+                }
+            });
+            return list;
         },
-        //计算价格
+        //计算未抵扣价格
         Total_price(){
             var n=0;
             this.new_list.forEach(item=>{
                 n+=item.number*item.sellingPrice
             });
             return n;
+        },
+        //除开商品 以外的红包
+        qita_hongbao(){
+            return this.hongbao.list.filter(x => (x.type!=1 && x.type!=0));
+        },
+        //计算商品红包抵扣的数据
+        shangpin_dikou(){
+            var list=[];
+            this.hongbao.list.forEach(item=>{
+                item.shiyong=false;
+            })
+            this.shangping_list.forEach(item=>{
+                this.hongbao.list.forEach(hongbao=>{
+                    if(item.id==hongbao.redCommodityId && !hongbao.shiyong && !item.shiyong){
+                        hongbao.shiyong=true;
+                        item.shiyong=true;
+                        item.hongbao=hongbao;
+                        item.dikou=item.deduction<hongbao.redAmount ? item.deduction : hongbao.redAmount
+                        list.push(item);
+                    }
+                })
+            })
+            return list;
+        },
+        //没有抵扣商品红包的商品
+        qita_dikou(){
+            //计算没有抵扣的商品还能抵扣多少
+            var list=this.shangping_list.filter(x=>!x.shiyong)
+            var kedikou=0;
+                list.forEach(item=>{
+                    kedikou=kedikou+item.deduction;
+                })
+                console.log(kedikou);
+
+            //计算店铺+平台
+            var dianpu=0;
+            var pingtai=this.invitedsutotal.sutotal;
+            var dianpu_pingtai=0
+            if(this.xinren_hongbao.length>0){
+                dianpu=this.xinren_hongbao[0].redAmount
+            }
+            if(dianpu>kedikou){
+                this.dianpu_pingtai=1;              //20
+                dianpu_pingtai=dianpu;
+            }else{
+                this.dianpu_pingtai=2;
+                dianpu_pingtai=dianpu+pingtai;    //71
+            }
+
+            var honghao_kedikou=0
+            if(this.dikou_type==1){
+                honghao_kedikou=this.shengri_hongbao.length>0 ? this.shengri_hongbao[0].redAmount : 0;
+            }else if(this.dikou_type==2){
+                honghao_kedikou=this.qingdian_hongbao.length>0 ? this.qingdian_hongbao[0].redAmount : 0
+            }else if(this.dikou_type==4){
+                honghao_kedikou=this.jieri_hongbao.length>0 ? this.jieri_hongbao[0].redAmount : 0
+            }else if(this.dikou_type==6){
+                honghao_kedikou=dianpu_pingtai
+            }
+            // console.log(this.dikou_type,honghao_kedikou)
+
+            list.forEach(item=>{
+                if(honghao_kedikou>=0){
+                    var shiji_dikou=item.deduction>honghao_kedikou ? honghao_kedikou : item.deduction;
+                    item.dikou=shiji_dikou;
+                    // item.hongbao=[]
+                    honghao_kedikou=honghao_kedikou-shiji_dikou;
+                }
+            })
+            
+            return list;
+        },
+        //展示的数据
+        zhanshi_shangping(){
+            //商品抵扣展示数据
+            var list=[];
+            this.shangpin_dikou.forEach(item=>{
+                var obj=list.find(x=>x.id==item.id);
+                if(obj){
+                    obj.number++;
+                    obj.dikou=obj.dikou+item.dikou;
+                    obj.kedikou=obj.kedikou+item.deduction
+                }else{
+                    item.kedikou=item.deduction
+                    item.number=1;
+                    var obj=Object.assign({}, item)
+                    list.push(obj)
+                }
+            })
+            //其他红包抵扣展示数据
+            var list_1=[];
+            this.qita_dikou.forEach(item=>{
+                var obj=list_1.find(x=>x.id==item.id);
+                if(obj){
+                    obj.number++;
+                    obj.dikou=obj.dikou+(item.dikou ? item.dikou : 0);
+                    obj.kedikou=obj.kedikou+item.deduction
+                }else{
+                    item.kedikou=item.deduction
+                    item.number=1;
+                    var obj=Object.assign({}, item)
+                    list_1.push(obj)
+                }
+            })
+
+            var obj={
+                    shangpin_dikou:list,
+                    // shangpin_dikou:[],
+                    qita_dikou:list_1,
+                }
+            return obj;
+        },
+        //总优惠
+        zong_dikou(){
+            var money=0;
+            this.shangpin_dikou.forEach(item=>{
+                money=money+item.dikou
+            })
+            this.qita_dikou.forEach(item=>{
+                money=money+(item.dikou ? item.dikou : 0)
+            })
+            return money
+        },
+        //计算红包使用数量
+        hongbao_shiyong(){
+            var number=0
+                number=number+this.shangpin_dikou.length;
+                if(this.dikou_type!=6){
+                    number++
+                }else{
+                    number=number+(this.dikou_type==1 ? 1 : 2);
+                }
+            return number
         }
+
     },
     methods:{
         //点击红包详情
-        change_select(x){
+        change_select(x,type){
             this.select_show=x;
+            console.log(type);
+            if(type==0){
+                return "不会有等于0的"
+            }else if(type==1){
+                return "";
+            }else if(type==2){
+                this.dikou_type=4
+            }else if(type==3){
+                // this.dikou_type=
+                return
+            }else if(type==4){
+                this.dikou_type=2
+            }else if(type==5){
+                this.dikou_type=1
+            }else if(type==6){
+                this.dikou_type=6
+            }
+            console.log(this.dikou_type)
         },
         //显示商品详情
         change_commodity_box(x){
@@ -199,7 +395,7 @@ export default {
             if(item.number){
                 this.$set(item,'number',item.number+1)
             }else{
-                 this.$set(item,'number',1)
+                this.$set(item,'number',1)
             }
         },
         jian(item){
@@ -224,16 +420,92 @@ export default {
                 this.get_shangping();
             }
         },
+        //获取用户可抵扣红包
+        get_CardPackge(){
+            // console.log(this.shopid)
+            var findDataUserCardPackge_query={
+                    query:{         //
+                        start:0,
+                        length:1000,
+                        userid:this.userInfo.username,
+                        shopid:this.shopid
+                    },
+                    fc:this.CardPackge_return
+                }
+            this.$store.commit('hongbao/findDataUserCardPackge',findDataUserCardPackge_query);
+        },
+        //红包返回值
+        CardPackge_return(x){
+            console.log('红包返回值',x);
+            if(x.code && x.code==200){
+                this.hongbao.list=x.data.data;
+                var list=x.data.data;
+                //判断是优先使用哪种红包
+                //生日红包
+                this.shengri_hongbao=this.hongbao.list.filter(x=>(x.type==5 && x.startTime<=getDateStr(0) && x.endTime>=getDateStr(0)));
+                //庆典红包
+                this.qingdian_hongbao=this.hongbao.list.filter(x=>x.type==4)
+                //节日红包
+                this.jieri_hongbao=this.hongbao.list.filter(x=>x.type==2)
+                //店铺新人红包
+                this.xinren_hongbao=this.hongbao.list.filter(x=>x.type==0);
+
+                if(this.shengri_hongbao.length>0){
+                    this.dikou_type=1   //店铺生日红包
+                }else if(this.qingdian_hongbao.length>0){
+                    this.dikou_type=2   //庆典红包
+                }else if(this.jieri_hongbao.length>0){
+                    this.dikou_type=4   //节日红包
+                }else{
+                    this.dikou_type=6   //店铺+平台红包
+                }
+
+                // this.shangPing_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,this.id,1);
+                // this.shengri_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',5);
+                // this.qingdian_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',4);
+                // this.jieri_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',2);
+                // this.dianpu_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',0);
+                // 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
+
+                // 1、店铺生日红包
+                // 2、店铺庆典红包
+                // 3、店铺签到红包
+                // 4、店铺节日红包
+                // 5、平台节日红包
+                // 6、店铺新人+平台红包
+                
+            }
+        },
+        get_invitedsutotal(){
+            this.$request('/api-u/users/invitedsutotal/findByUserid/'+this.userInfo.username,'','get').then(x=>{
+                console.log('平台红包信息',x);
+                if(x.data.code==200){
+                    this.invitedsutotal=x.data.data;
+                }
+            }).catch(err=>{
+                console.log(err)
+            })
+        }
     },
     created(){
         // console.log('收到参数1',this.shopid);
     },
     mounted() {
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {}
+
         // console.log('收到参数',this.shopid)
         this.shangping.query.shopid=this.shopid;
+        //获取商品
         this.get_shangping();
+        //获取用户可使用红包
+        this.get_CardPackge();        
+        //获取用户平台红包金额
+        this.get_invitedsutotal()
 
-       
+
+    
     },
     watch:{
         shopid(){
@@ -416,7 +688,7 @@ export default {
     z-index: 10;
     display: flex;
     align-items: center;
-    padding: 50px 0.4rem 0px 20px;
+    padding: 50px 0.4rem 20px;
     // padding: 1.88rem 0.4rem 0.85rem;
     .content_1{
         background: #ffffff;

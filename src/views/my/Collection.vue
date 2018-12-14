@@ -147,7 +147,7 @@ export default {
         go_CommodityDetails(x){
             console.log(x);
             // http://192.168.1.13:8080/#/CommodityDetails?id=30&isshop=1
-            this.$router.push('/CommodityDetails?id='+x.commodityId+'&isshop=1')
+            this.$router.push('/commodity/CommodityDetails?id='+x.commodityId+'&isshop=1')
         },
         go_shop(x){
             // http://192.168.1.13:8080/#/BusinessDetails?shopid=D7004090906D139CD1492008D376E457
@@ -178,7 +178,7 @@ export default {
                             // this.get_findDataUserFavorite()
                             list.splice(index,1)
                         }else{
-                            mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: 1000,type: "div" });
+                            mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                         }
                         openloading(false)
                     }).catch(err=>{
@@ -242,7 +242,7 @@ export default {
                         }
                     }
                 }else{
-                    mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: 1000,type: "div" });
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
                 openloading(false)
             }).catch(err=>{

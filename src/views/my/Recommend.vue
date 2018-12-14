@@ -83,7 +83,8 @@ export default {
                 query:{
                     start:0,
                     length:10,
-                    inviterId:''
+                    inviterId:'',
+                    type:1
                 }
             }
         }

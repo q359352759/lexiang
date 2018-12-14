@@ -23,7 +23,14 @@ axios.interceptors.response.use(
 );
 import qs from "qs";
 import router from "./router";
-import shangPing from "./vuex/shangPing";
+import shangPing from "./vuex/shangPing";       //商品相关接口
+import hongbao from "./vuex/hongbao";           //红包相关接口
+
+// import orders from '@/vuex/orders.js'
+
+
+import request from '@/api/request'
+
 Vue.use(Vuex);
 
 
@@ -94,11 +101,21 @@ var vuex = new Vuex.Store({
         redid:'',       //红包id
     },
     getters: {
-        doneTodos(state, getters) {
+        test1(state){
+            // this.$store.getters.doneTodos  这种写法和下面的写法不一样
+            return state.todos.find(todo => todo.done)
+            return 'store测试1';
+        },
+        test:state=>()=>{
+            return 'store测试';
+        },
+        doneTodos:state=>()=>{
+            console.log(1)
             //this.$store.getters.doneTodos(...)
-            return state.todos.filter(todo => todo.done);
+            return state.todos.find(todo => todo.done)
         },
         filter_area: state => (id, list) => {
+            console.log('过滤地址');
             var arr = list ? list : [];
             // return state.area.filter(x => x.id==id)
             var obj = state.area.find(x => x.id == id);
@@ -200,7 +217,7 @@ var vuex = new Vuex.Store({
         setShopTree(){
             axios({
                 method:'get',
-                url:'http://122.114.169.178:8080/api-s/shops/tree/findAll',
+                url:'http://122.114.169.178:10002/api-s/shops/tree/findAll',
             }).then(x=>{
                 console.log('获取店铺类型',x);
                 //增加一个key
@@ -214,8 +231,13 @@ var vuex = new Vuex.Store({
                     }
                     return list;
                 }
-                var list=addKey(x.data.data);
-                this.state.shops_tree_list=list;
+                if(x.data.code==200){
+                    var list=addKey(x.data.data);
+                    localStorage.shops_tree_list=JSON.stringify(list)
+                    this.state.shops_tree_list=list;
+                }else{
+                    console.log('获取店铺类型失败',error)
+                }
             }).catch(error=>{
                 console.log('获取店铺类型失败',error)
             })
@@ -238,17 +260,37 @@ var vuex = new Vuex.Store({
             })
         },
         
-        
     },
     actions: {
         actions_agentUser({ dispatch, commit }) {
             //获取代理人信息
             commit("setagentUser"); // 等待 actionA 完成
         },
+        getMyshop({dispatch,commit}){
+            return new Promise((resolve, reject)=>{
+                // await dispatch('actionA') // 等待 actionA 完成
+                try {
+                    var userInfo = JSON.parse(localStorage.userInfo);                
+                } catch (error) {
+                    resolve();
+                    return
+                }
+                request('/api-s/shops/finByUserid/'+userInfo.username,'','get').then(x=>{
+                    this.state.myshop=x.data.data
+                    resolve()
+                }).catch(error=>{
+                    console.log(error);
+                    reject()
+                })
+                // resolve(1)
+            })
+        }
         // 调用 store.dispatch('actions_agentUser')
     },
     modules: {
-        shangPing:shangPing
+        shangPing:shangPing,
+        hongbao:hongbao,
+        // orders:orders
     },
 });
 // store.commit( 'setIsWeixin', 1);
@@ -276,14 +318,15 @@ vuex.commit('setShopTree')
 
 
 //获取地区
-if (
-    localStorage.area &&
-    localStorage.area != "" &&
-    localStorage.area != undefined &&
-    localStorage.area != "undefined"
-) {
+if (localStorage.area && localStorage.area != "" && localStorage.area != undefined && localStorage.area != "undefined") {
     vuex.state.area = JSON.parse(localStorage.area);
 }
+//初始化分类
+try {
+    var list=JSON.parse(localStorage.shops_tree_list)
+    vuex.state.shops_tree_list=list;
+} catch (error) {}
+
 axios({
     method: "get",
     url: "/api-u/area/findAll",

@@ -101,7 +101,7 @@ export default {
     mounted: function() {
         var this_1 = this;
         //获取我的店铺
-        this.$store.commit('setMyshop')
+        this.$store.commit('setMyshop');
         //获取商品
         if(this.myshop.shopid){
             this.get_commodity();

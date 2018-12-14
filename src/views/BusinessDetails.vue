@@ -3,11 +3,11 @@
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">商家展示厅</h1>
-            <span class="header_1">
+            <span class="title_header_1">
                 <div>
                     <i :class="{'icon-shoucangdianjihou shouchang':UserFavorite,'icon-shoucang1':!UserFavorite}" @click="Collection()" class="icon iconfont"></i>
                 </div>
-                <div>
+                <div @click="fenxiang()">
                     <i class="icon iconfont icon-fenxiang2"></i>
                 </div>
             </span>
@@ -98,26 +98,42 @@
                 <li><span @click="change_type(3)" :class="{'active':type_1==3}">简介</span></li>
             </ul>
 
-
+            <!--专享-->
             <ul class="box_4" v-if="type_1==0">
-                <li style="windth:100%" class="mui-text-center">
-                </li>
-                <!-- <li v-for="(item, index) in 1" :key="index">
-                    <div>
-                        <div class="bg"></div>
-                        <h1>店铺通用红包</h1>
-                        <h2>领取</h2>
-                        <h3>30元</h3>
-                        <h4>
-                            <img src="image/acb82200c21cf541e9cb20d916d835ba.jpg" alt="" srcset="">
-                        </h4>
-                        <h5>
-                            <div>每满100抵10</div>
-                            <div>每周限领一次</div>
-                        </h5>
+                <li v-for="(item, index) in Exclusive.list" :key="index" @tap="CommodityDetails_1(item)">
+                    <div class="img_box">
+                        <img v-if="item.comImg && item.comImg.split(',').length>0" :src="item.comImg.split(',')[0]" alt="" srcset="">
                     </div>
-                </li> -->
+                    <div class="text_box">
+                        <div>
+                            <div class="title_1">{{item.comName}}</div>
+                            <div class="money">
+                                <span>￥{{item.comSellingPrice}}</span>
+                                <s>{{item.comMarketPrice}}</s>
+                            </div>
+                        </div>
+                        <div class="dikou">
+                            <i class="icon iconfont icon-hongbao1"></i>
+                            <span>抵扣：￥{{item.comDeduction}}</span>
+                        </div>
+                    </div>
+                    <div class="fengexian">
+                    </div>
+                    <div class="zhuanxiang">
+                        <img v-if="item.type==0" src="image/xingren.png" alt="">
+                        <img v-if="item.type==1" src="image/shengri1.png" alt="">
+                        <div>
+                            <i class="icon iconfont icon-shengji"></i>
+                            <span>
+                                <!-- {{item.deduction}}{{item.comDeduction}}——————————  -->
+                                {{Math.floor(item.deduction*100-item.comDeduction*100)/100}}元
+                            </span>
+                        </div>
+                    </div>
+                </li>
             </ul>
+            <loading v-if="type_1==0" :loadingtype="Exclusive.loading" :end="!Exclusive.loading && Exclusive.list.length!=0" :nodata="!Exclusive.loading && Exclusive.list.length==0" :text="'该店铺未发布专享商品'"/>
+
 
             <ul class="box_5"  v-if="type_1==1">
                 <li v-for="(item, index) in commodity.list" :key="index" @click="CommodityDetails(item)">
@@ -148,6 +164,9 @@
             <div v-if="type_1==2">
                 <li class="mui-text-center"></li>
             </div>
+            <loading v-if="type_1==2" :nodata="true" :text="'暂无评论'"/>
+
+
             <ul v-if="type_1==3">
                 <li v-if="synopsis && synopsis.remark" v-html="synopsis.remark"></li>
             </ul>
@@ -158,11 +177,49 @@
                     <swperdome :imglist="img_list" :index="swper_index"/>
                 </div>
             </div>
+
+            <!-- 生成带图片的容器 -->
+            <div ref="printMe" class="qrcode_box">
+                <div class="header_1">
+                    <div class="img_box">
+                        <img v-if="erweima_base64" :src="erweima_base64" alt="" srcset="">
+                    </div>
+                    <div class="text_1" ref="zoom_box">
+                        <div ref="fontsize_1">{{shop.name}}</div>
+                        <div ref="fontsize_2">{{shop.address}}</div>
+                    </div>
+                </div>
+                <div class="erweima">
+                    <img v-if="erweima_base64" :src="erweima_base64" alt="">
+                    <div ref="qrcode">
+                        <!-- <img src="" alt="" srcset=""> -->
+                    </div>
+                </div>
+                <ul class="footer_1">
+                    <li>恭候尊驾，这厢有礼！</li>
+                    <li>识别二维码领取<span class="hongbao">{{xingren_hongbao.amount}}</span>红包</li>
+                </ul>
+            </div>
+            
+            <div class="QRCode" v-show="qrcode_show" @tap="qrcode_show=false">
+                <div class="mask"></div>
+                <div class="content_1">
+                    <div class="close_1">
+                        <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
+                        <div></div>
+                    </div>
+                    <img :src="qrcode" alt="" srcset="">
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+
+import html2canvas from 'html2canvas'
+import QRCode from 'qrcodejs2';
+
 import swperdome from '@/components/swperdome.vue';
 import {openloading, bd_decrypt,getDateStr} from "@/assets/js/currency.js";
 import loading from "@/components/loading.vue"
@@ -210,7 +267,16 @@ export default {
                 type:5,
                 startTime:'',           //生日使用有效期
                 endTime:'',
-            }
+            },
+            Exclusive:{         //专享商品
+                loading:true,
+                list:[]
+            },       
+
+            qrcode:null,
+            qrcode_show:false,
+            erweima_base64:'',
+            xingren_hongbao:{}
         };
     },
     computed:{
@@ -244,6 +310,95 @@ export default {
         }
     },
     methods: {
+        //动态设置字体大小
+        set_font_size(e,size){
+            console.log(e.clientWidth);
+            console.log(e.offsetWidth)
+            console.log(e.scrollWidth)
+            if(e.clientWidth<e.scrollWidth){
+                e.style['font-size']=parseInt(e.clientWidth/e.scrollWidth*size)+'px';
+            }
+        },
+        //生产二维码
+        fenxiang(){
+            console.log('生成二维码');
+            if(this.qrcode){
+                this.qrcode_show=true;
+            }else{
+                this.set_font_size(this.$refs.fontsize_1,14)
+                this.set_font_size(this.$refs.fontsize_2,12)
+                // return;
+                openloading(true);
+                //图片地址转图片
+                this.$axios({
+                    method:'post',
+                    url:'/api-u/users/imgtobase64',
+                    data: this.$qs.stringify({
+                        url:this.shop.signboard
+                    })
+                }).then(x=>{
+                    console.log(x);
+                    if(x.data.code==200){
+                        this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
+                        var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.shop.shopid+'&index=1';
+                        var el=this.$refs.qrcode
+                            el.innerHTML='';
+                        let qrcode = new QRCode(el, {  
+                            width: 200,  
+                            height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                            // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.shop.id, // 二维码内容  
+                            text: url, // 二维码内容  
+                            // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                            background: '#fff',
+                            foreground: '#fff',
+                        })
+                        setTimeout(()=>{
+                            this.print();
+                        },500)
+                    }else{
+                        openloading(false);
+                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                    }
+                }).catch(err=>{
+                    openloading(false);
+                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
+                    console.log(err);
+                })
+            }
+        },
+        //生成带图片的二维码
+        print(){
+            const el = this.$refs.printMe;
+            const options = {
+                useCORS: true,
+                logging: false
+            }
+            html2canvas(el,options).then(canvas => {
+                this.qrcode=canvas.toDataURL()
+                this.qrcode_show=true;
+                openloading(false);
+            },{useCORS: true});
+        },
+        CommodityDetails_1(x){
+            this.$router.push('/commodity/CommodityDetails?id='+x.comId)
+        },
+        //获取专享商品
+        findAllExclusive(){
+            this.Exclusive.loading=true;
+            this.$axios({
+                method:'get',
+                url:'/api-s/shops/findAllExclusive?start=0&length=1000&shopid='+this.shopid
+            }).then(x=>{
+                console.log('获取专享商品',x);
+                if(x.data.code==200){
+                    this.Exclusive.list=x.data.data.data;
+                }
+                this.Exclusive.loading=false;
+            }).catch(err=>{
+                console.log(err);
+                this.Exclusive.loading=false;
+            })
+        },
         //跳转买单
         Check(){
             if(!this.userInfo){
@@ -273,10 +428,16 @@ export default {
                         this.$router.push('/login');
                     }
                 })
-                return
-            }
-            mui.confirm('确认将自己的生日信息（不包含年龄）授权给此商铺吗？','提示',['取消','好的'],(value)=>{
-                if(this.userInfo.iaiState==1){
+                return;
+            }else if(this.userInfo.iaiState!=1){
+                mui.confirm('领取生日红包需要实名认证，您还未认证，请先认证。','提示',['取消','去认证'],(value)=>{
+                    if(value.index==1){
+                        this.$router.push('/RealName');
+                    }
+                })
+            }else{
+                mui.confirm('确认将自己的生日信息（不包含年龄）授权给此商铺吗？','提示',['取消','好的'],(value)=>{
+                    if(value.index!=1) return; 
                     if(!this.findByUserid){
                         mui.toast('获取实名信息失败，稍后再试。',{ duration: 2000,type: "div" });
                         return;
@@ -294,10 +455,8 @@ export default {
                         this.add_hongbao_obj.endTime=getDateStr(7,newdate);
                         this.add_red();
                     }
-                }else{
-                    this.$router.push('/RealName');
-                }
-            })
+                })
+            }
         },
         add_red(){
             this.add_hongbao_obj.userid=this.userInfo.username;
@@ -314,7 +473,7 @@ export default {
                 if(x.data.code==200){
                     mui.toast('恭喜您，领取成功。',{ duration: 2000,type: "div" });
                 }else{
-                    mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: 1000,type: "div" });                    
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");            
                 }
                 openloading(false)
             }).catch(err=>{
@@ -329,7 +488,7 @@ export default {
         },
         //跳转商品详情
         CommodityDetails(x){
-            this.$router.push('/CommodityDetails?id='+x.id);
+            this.$router.push('/commodity/CommodityDetails?id='+x.id);
         },
         //滚动条
         content_scroll(e){
@@ -337,7 +496,6 @@ export default {
             var sh = e.target.scrollHeight; //滚动条总高
             var t = e.target.scrollTop; //滚动条到顶部距离
             // event.currentTarget.offsetTop
-            // console.log('box_4',this.$refs.box_4.offsetTop,e.target.scrollTop)
             // console.log(e)
             if(this.$refs.box_3.offsetTop-44<=e.target.scrollTop){
                 this.box_3_actvie=true;
@@ -388,9 +546,10 @@ export default {
                 data:[this.UserFavorite.id]
             }).then(x=>{
                 if(x.data.code==200){
-                    console.log('取消收藏。',x);
                     mui.toast('取消收藏成功。',{ duration: 1000,type: "div" });
                     this.get_findDataUserFavorite()
+                }else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err);
@@ -415,7 +574,7 @@ export default {
                     mui.toast('收藏成功。',{ duration: 1000,type: "div" });
                     this.get_findDataUserFavorite()
                }else{
-                    mui.toast('收藏失败。',{ duration: 1000,type: "div" });
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err)
@@ -572,7 +731,8 @@ export default {
                     length:10,
                     type:5,
                     shopid:this.shopid,
-                    state:1
+                    state:1,
+                    ccc:1
                 }
             this.$axios({
                 method:'get',
@@ -588,8 +748,27 @@ export default {
             }).catch(err=>{
                 console.log(err)
             })
+        },
+        //查询店铺新人红包
+        get_hongbao(){
+            var query={
+                    start:0,
+                    length:10,
+                    ccc:1,
+                    type:0,
+                    shopid:this.shopid
+                }
+            this.$request('/api-s/shops/redenvelope/findAll',query,'get').then(x=>{
+                console.log('查询店铺新人红包',x);
+                if(x.data.code==200){
+                    if(x.data.data.data.length>0){
+                        this.xingren_hongbao=x.data.data.data[0]
+                    }
+                }
+            }).catch(err=>{
+                console.log(err)
+            })
         }
-
     },
     beforeCreate: function() {
         // console.group('------beforeCreate创建前状态------');
@@ -604,6 +783,9 @@ export default {
         var this_1 = this;
         this.id=this.$route.query.id;
         this.shopid=this.$route.query.shopid;
+        //查询店铺新人红包
+        this.get_hongbao()
+
 
         this.swiper_type = new Swiper(".swiper_type", {
             // loop: true,
@@ -639,7 +821,8 @@ export default {
             this.$store.commit('setfindByUserid');
         }
         
-
+        //获取专享产品
+        this.findAllExclusive();
         //根据id查询商品
         this.get_commodity();
         //查询服务类型
@@ -650,11 +833,6 @@ export default {
         this.get_shopAnnouncement()
         //获取生日红包
         this.get_redenvelope_5();
-
-        // mui.toast('恭喜你，领取成功！', { duration: "long",type: "div" });
-
-        
-
 
         //获取当前位置
         if(!this.$store.state.my_position.x || this_1.$store.state.my_position.x==''){
@@ -726,6 +904,142 @@ export default {
     color: #ffffff;
 }
 
+// 二维码
+#BusinessDetails .qrcode_box{
+    width: 273px;
+    background:#ffffff;
+    position: fixed;
+    padding: 20px 25px;
+    left: -100%;
+    // top: 40px;
+    .header_1{
+        display: flex;
+        .img_box{
+            width: 42px;
+        	height: 42px;
+            flex-shrink: 0;
+            margin: 0px 5px 0px 0px;
+            img{
+                width: 100%;
+                height: 100%;
+                border-radius: 100%;
+            }
+        }
+        .text_1{
+            height: 42px;
+            width: 0;
+            flex-grow: 1;
+            color: rgba(80, 80, 80, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            >div:nth-child(1){
+                font-size: 14px;
+                overflow: auto;
+                white-space: nowrap;
+                width: 100%;
+            }
+            >div:nth-child(2){
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: auto;
+                color: #afafaf;
+                width: 100%;
+            }
+        }
+    }
+    .erweima{
+        margin: 20px auto 8px;
+        width: 200px;
+        height: 200px;
+        position: relative;
+        >img{
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            margin: auto;
+            border-radius: 10px;
+        }
+        >div{
+            img{
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+    .footer_1{
+        color: rgba(80, 80, 80, 1);
+    	font-size: 12px;
+        text-align: center;
+        .hongbao{
+            color: #d43030;
+        }
+    }
+}
+
+#BusinessDetails .QRCode{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 11;
+    .mask{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.4);
+    }
+    .content_1{
+        >img{
+            width: 100%;
+        }
+        position: relative;
+        z-index: 1;
+        background: #ffffff;
+        width: 270px;
+        // padding: 17px 25px 15px 25px;
+        .close_1{
+            width: 36px;
+            height: 50px;
+            position: absolute;
+            top: -50px;
+            right: 0px;
+            >div:nth-child(1){
+                height: 36px;
+                text-align: center;
+                line-height: 36px;
+                background: #ffffff;
+                border-radius: 100%;
+                position: relative;
+                z-index: 1;
+            }
+            >div:nth-child(2){
+                position: absolute;
+                width: 1px;
+                height: 100%;
+                background: #ffffff;
+                top: 0px;
+                right: 0px;
+                left: 0px;
+                margin: 0px auto;
+            }
+        }
+    }
+}
+
+
+
 
 #BusinessDetails .swper_box{
     position: fixed;
@@ -748,7 +1062,7 @@ export default {
 }
 
 
-#BusinessDetails .header_1 {
+#BusinessDetails .title_header_1 {
     font-size: 17px;
     font-weight: 400;
     line-height: 44px;
@@ -965,67 +1279,101 @@ export default {
 }
 
 #BusinessDetails .box_4 {
-    display: flex;
-    flex-wrap: wrap;
-    padding: 1px 8px;
+    padding: 3px 5px;
     > li {
-        width: 50%;
-        padding: 15px 8px;
-        > div {
-            color: #ffffff;
-            background: #e06d68;
-            border-radius: 5px;
-            text-align: center;
-            padding: 1px 0px;
-            position: relative;
-            .bg {
-                position: absolute;
-                top: 0px;
-                left: 0px;
+        overflow: hidden;
+        background: #ffffff;
+        padding: 5px 0px 5px 5px;
+        margin: 0px 0px 3px 0px;
+        display: flex;
+        .img_box{
+            width: 96px;
+            height: 72px;
+            flex-shrink: 0;
+            margin: 0px 5px 0px 0px;
+            img{
                 width: 100%;
-                height: 55px;
-                background: #e05c57;
-                border-bottom-left-radius: 100%;
-                border-bottom-right-radius: 100%;
+                height: 100%;
             }
-            h1 {
-                position: relative;
-                z-index: 1;
-                font-size: 0.12rem;
-                font-weight: 400;
-                margin: 10px;
+        }
+        .text_box{
+            flex-grow: 1;
+            width: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            .title_1{
+                color: rgba(80, 80, 80, 1);
+            	font-size: 14px;
             }
-            h2 {
-                position: relative;
-                z-index: 1;
-                width: 0.4rem;
-                height: 0.4rem;
-                line-height: 0.4rem;
-                font-size: 0.12rem;
-                text-align: center;
-                background: #eb6f39;
-                border-radius: 100%;
-                box-shadow: 0px 0px 2px 2px #d26535;
-                margin: 5px auto;
-            }
-            h3 {
-                font-size: 0.14rem;
-                margin: 0.1rem 0px;
-            }
-            h4 {
-                margin: 0px auto;
-                max-width: 1rem;
-                height: 0.5rem;
-                img {
-                    width: 100%;
-                    height: 100%;
-                    object-fit: cover;
+            .money{
+                span{
+                    color: rgba(212, 48, 48, 1);
+                	font-size: 14px;
+                }
+                s{
+                    color: rgba(166, 166, 166, 1);
+                	font-size: 10px;
                 }
             }
-            h5 {
-                color: #ffffff;
-                font-size: 0.12rem;
-                margin: 0.1rem 0px;
+            .dikou{
+                display: flex;
+                align-items: center;
+                i{
+                    color: rgba(224, 28, 4, 1);
+                    height: 17px;
+                    margin: 0px 3px 0px 0px;
+                }
+                span{
+                    color: rgba(128, 128, 128, 1);
+                	font-size: 12px;
+                }
+            }
+        }
+        .fengexian{
+            width: 1px;
+            flex-shrink: 0;
+            position: relative;
+            border-left: 1px dashed #ff5733;
+        }
+        .fengexian::after,
+        .fengexian::before{
+            position: absolute;
+            width: 17px;
+            height: 17px;
+            background: #efeff4;
+            border-radius: 100%;
+            left:-9px;
+            content: '';
+        }
+        .fengexian::after{
+            top: -13px;
+        }
+        .fengexian::before{
+            bottom: -13px;
+        }
+        .zhuanxiang{
+            width: 104px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            img{
+                width: 40px;
+                height: 40px;
+                margin: 0px 0px 4px 0px;
+            }
+            >div{
+                display: flex;
+                justify-content: center;
+                color: rgba(212, 48, 48, 1);
+                i{
+                    font-size: 16px;
+                }
+                span{
+                	font-size: 14px;
+                }
             }
         }
     }
@@ -1107,3 +1455,4 @@ export default {
     }
 }
 </style>
+

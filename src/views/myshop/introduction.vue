@@ -188,10 +188,8 @@ export default {
                     // this.img_list=this.img_list.concat(x.data.data.data);
                     mui.toast('设置成功。', {duration: "long",type: "div"});
                     history.back();
-                }else if(x.data.code){
-                    mui.toast(x.data.msg, {duration: "long",type: "div"});
                 }else{
-                    mui.toast(x.data.error, {duration: "long",type: "div"});                    
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err);
@@ -209,10 +207,8 @@ export default {
                     // this.img_list=this.img_list.concat(x.data.data.data);
                     mui.toast('设置成功。', {duration: "long",type: "div"});
                     history.back();
-                }else if(x.data.code){
-                    mui.toast(x.data.msg, {duration: "long",type: "div"});
                 }else{
-                    mui.toast(x.data.error, {duration: "long",type: "div"});
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err);
@@ -241,10 +237,8 @@ export default {
                         }
                     }
                     set_editor();
-                }else if(x.data.code!=200){
-                    mui.toast(x.data.msg, {duration: "long",type: "div"});
                 }else{
-                    mui.toast(x.data.error, {duration: "long",type: "div"});
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 mui.toast('系统错误，稍后再试。', {duration: "long",type: "div"});

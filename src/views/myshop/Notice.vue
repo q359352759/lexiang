@@ -58,10 +58,8 @@ export default {
                 if(x.data.code==200){
                     mui.toast('设置成功。', { duration: 2000, type: "div" });
                     this.get_shopAnnouncement();
-                }else if(x.data.code){
-                    mui.toast(x.data.msg, { duration: 2000, type: "div" });
                 }else{
-                    mui.toast(x.data.message, { duration: 2000, type: "div" });
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 mui.toast('设置失败。', { duration: 2000, type: "div" });

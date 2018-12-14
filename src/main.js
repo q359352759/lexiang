@@ -37,6 +37,9 @@ import router from "./router";
 import store from "./store";
 Vue.config.productionTip = false;
 
+//封装后的请求接口
+import request from '@/api/request.js'
+Vue.prototype.$request = request;
 
 
 new Vue({
@@ -50,14 +53,13 @@ router.beforeEach((to, from, next) => {
     var loginDate = localStorage.loginDate;
     var baimingdan = [
             "/login", "/register","/home", 
-            "/CommodityDetails",    //首页商品详情
+            "/commodity/CommodityDetails",    //首页商品详情
             "/BusinessDetails",     //首页商家
             '/RedEnvelopesList',    //商家领取红包页面
             "/RegistrationAgreement",
             '/ForgetPassword',
             '/Recommend',       //分享页面
             '/BeInvited',        //分享注册页面
-            '/CommodityDetails'     //商品详情
         ]; //未登录可以访问的白名单
     if (!loginDate || loginDate == null || loginDate == undefined) {
         

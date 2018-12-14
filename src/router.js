@@ -102,15 +102,10 @@ const MarketingVip = resolve => { require.ensure([], () => { resolve(require("./
 const addMarketingVip = resolve => { require.ensure([], () => { resolve(require("./views/myshop/Marketing/addMarketingVip.vue")); }); }; //营销 添加专享营销
 
 
-
-
 const TimeSlot = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/TimeSlot.vue")); }); }; //营业时间
 const BusinessLicense = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/BusinessLicense.vue")); }); }; //营业执照
 const LegalPersonCertification = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/LegalPersonCertification.vue")); }); }; //法人认证页面
 const baiduMap = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/baiduMap.vue")); }); }; //百度地图
-
-
-
 
 
 const bill = resolve => { require.ensure([], () => { resolve(require("./views/AssetCenter/bill.vue")); }); }; //收支账单
@@ -121,9 +116,8 @@ const Album = resolve => { require.ensure([], () => { resolve(require("./views/A
 const albumManagement = resolve => { require.ensure([], () => { resolve(require("./views/Album/albumManagement.vue")); }); }; //相册管理
 
 //我的店铺
-const commodity = resolve => { require.ensure([], () => { resolve(require("./views/myshop/commodity.vue")); }); }; //商品管理
+const mycommodity = resolve => { require.ensure([], () => { resolve(require("./views/myshop/commodity.vue")); }); }; //商品管理
 const AddGoods = resolve => { require.ensure([], () => { resolve(require("./views/myshop/AddGoods.vue")); }); }; //添加商品
-
 
 
 //区域代理
@@ -132,8 +126,6 @@ const ApplicationRegionalAgents = resolve => { require.ensure([], () => { resolv
 const RegionalAgent = resolve => { require.ensure([], () => { resolve(require("./views/RegionalAgent/RegionalAgent.vue")); }); }; //区域代理
 const ExampleOfRevenue = resolve => { require.ensure([], () => { resolve(require("./views/RegionalAgent/ExampleOfRevenue.vue")); }); }; //区域代理商收益示例
 
-// 商品详情
-const CommodityDetails = resolve => { require.ensure([], () => { resolve(require("./views/Commodity/CommodityDetails.vue")); }); }; //商品详情
 
 
 // 协议
@@ -164,7 +156,9 @@ const WithdrawalAgreement = () => import ("@/views/xieyi/WithdrawalAgreement.vue
 import circularNav from "@/components/circularNav.vue";
 import err404 from "@/views/404.vue"
 
-import myshops from "@/router/myshop.js"
+import myshops from "@/router/myshop.js";
+import commodity from "@/router/commodity.js";
+import orders from '@/router/orders.js';
 // console.log(myshops)
 // require('@/router/myshop.js'),
 
@@ -172,7 +166,9 @@ Vue.use(Router);
 
 export default new Router({
     routes: [
-        ...myshops,
+        ...myshops, 
+        ...commodity,   //商品
+        ...orders,
         { path: "/", name: "", component: login },
         { path: "/editortest", name: "", component: editortest },
         {
@@ -569,7 +565,7 @@ export default new Router({
         {
             path:'/commodity',
             name:'',
-            component:commodity
+            component:mycommodity
         },{
             path:'/AddGoods',
             name:'',
@@ -577,10 +573,6 @@ export default new Router({
             meta: {
                 keepAlive: true //缓存当前页面
             }
-        },{
-            path:'/CommodityDetails',
-            name:'',
-            component:CommodityDetails
         },
 
 

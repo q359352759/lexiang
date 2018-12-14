@@ -324,15 +324,15 @@ export default {
                 url: "/api-u/certification/add"
             }).then(x => {
                 console.log("实名认证", x);
-                if (x.data.code!=200) {
-                    // mui.alert(x.data.message, "提示", function() {}, "div");
-                    mui.toast(x.data.message ? x.data.message : x.data.msg, {duration: "long",type: "div" });
-                } else {
+                if (x.data.code==200) {
                     this.$store.commit("setCurrent"); //获取个人信息
                     mui.alert( "认证成功","提示",function() {
                         history.back();
                     }, "div");
+                } else {
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");                    
                 }
+
                 this.add_loading = false;
             }).catch(error => {
                 this.add_loading = false;

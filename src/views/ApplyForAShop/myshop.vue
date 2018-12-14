@@ -24,7 +24,7 @@
 
             <ul class="box_2">
                 <li>
-                    <div><i class="icon iconfont icon-huiyuan1"></i></div>
+                    <div @tap="shopVip()"><i class="icon iconfont icon-huiyuan1"></i></div>
                     <div>会员</div>
                 </li>
                 <li>
@@ -40,9 +40,32 @@
                     <div>销售</div>
                 </li>
                 <li>
-                    <div @tap="Marketing()"><i class="icon iconfont icon-laba"></i></div>
+                    <div @tap="Marketing()"><i class="icon iconfont icon-laba2"></i></div>
                     <div @tap="Marketing()">营销</div>
                 </li>
+            </ul>
+            <ul class="box_2">
+                <li>
+                    <div  @tap="Notice()"><i class="icon iconfont icon-laba"></i></div>
+                    <div>公告</div>
+                </li>
+                <li>
+                    <div @tap="introduction()"><i class="icon iconfont icon-jianjie"></i></div>
+                    <div>简介</div>
+                </li>
+                <li>
+                    <div @tap="albumManagement()"><i class="icon iconfont icon-xiangce"></i></div>
+                    <div>相册</div>
+                </li>
+                <li>
+                    <div @tap="commentList()"><i class="icon iconfont icon-pinglun"></i></div>
+                    <div>评论</div>
+                </li>
+                <li>
+                    <div><i class="icon iconfont icon-icon_dianyuanguanli"></i></div>
+                    <div>店员</div>
+                </li>
+
             </ul>
 
             <div class="box_3">
@@ -81,7 +104,7 @@
                             </div>
                         </a>
                     </li>
-                    <li class="mui-table-view-cell">
+                    <li class="mui-table-view-cell" @click="tixian()">
                         <a class="mui-navigate-right">
                             <div class="cont_1">
                                 <div class="mui-pull-right tixian">
@@ -102,33 +125,6 @@
                             </div>
                         </a>
                     </li>
-                    <li class="mui-table-view-cell">
-                        <a class="mui-navigate-right" @tap="Notice()">
-                            <div class="cont_1">
-                                <div>
-                                    店铺公告
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="mui-table-view-cell">
-                        <a class="mui-navigate-right" @tap="introduction()">
-                            <div class="cont_1">
-                                <div>
-                                    店铺简介
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                    <li class="mui-table-view-cell">
-                        <a class="mui-navigate-right" @tap="albumManagement()">
-                            <div class="cont_1">
-                                <div>
-                                    相册管理
-                                </div>
-                            </div>
-                        </a>
-                    </li>
                 </ul>    
             </div>
             
@@ -145,7 +141,6 @@
                     </div>
                 </div>
                 <div class="erweima">
-                    <!-- <img :src="myshop.signboard" alt="" srcset=""> -->
                     <img v-if="erweima_base64" :src="erweima_base64" alt="">
                     <div ref="qrcode">
                         <!-- <img src="" alt="" srcset=""> -->
@@ -153,14 +148,13 @@
                 </div>
                 <ul class="footer_1">
                     <li>恭候尊驾，这厢有礼！</li>
-                    <li>识别二维码领取红包</li>
+                    <li>识别二维码领取<span class="hongbao">{{xingren_hongbao.amount}}</span>红包</li>
                 </ul>
             </div>
             
             <div class="QRCode" v-show="qrcode_show" @tap="qrcode_show=false">
                 <div class="mask"></div>
                 <div class="content_1">
-                    
                     <div class="close_1">
                         <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
                         <div></div>
@@ -185,6 +179,7 @@ export default {
             qrcode:null,
             qrcode_show:false,
             erweima_base64:'',
+            xingren_hongbao:{}
         }
     },
     computed:{
@@ -193,6 +188,18 @@ export default {
         }
     },
     methods: {
+        //提现
+        tixian(){
+            this.$router.push('/myshop/WithdrawMoney');
+        },
+        //跳转店铺会员
+        shopVip(){
+            this.$router.push('/myshop/Member/MemberList');
+        },
+        //跳转会员评论
+        commentList(){
+            this.$router.push('/myshop/comment/commentList')
+        },
         //跳转分销
         fenxiao(){
             this.$router.push('/myshop/distribution/ApplicationDistribution')
@@ -265,7 +272,7 @@ export default {
                     console.log(x);
                     if(x.data.code==200){
                         this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
-                        var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.myshop.shopid;
+                        var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.myshop.shopid+'&index=1';
                         var el=this.$refs.qrcode
                             el.innerHTML='';
                         let qrcode = new QRCode(el, {  
@@ -316,6 +323,26 @@ export default {
         //跳转商品管理
         commodity(){
             this.$router.push('/commodity');
+        },
+        //查询店铺新人
+        get_hongbao(){
+            var query={
+                    start:0,
+                    length:10,
+                    ccc:1,
+                    type:0,
+                    shopid:this.myshop.shopid
+                }
+            this.$request('/api-s/shops/redenvelope/findAll',query,'get').then(x=>{
+                console.log('查询店铺新人红包',x);
+                if(x.data.code==200){
+                    if(x.data.data.data.length>0){
+                        this.xingren_hongbao=x.data.data.data[0]
+                    }
+                }
+            }).catch(err=>{
+                console.log(err)
+            })
         }
     },
     beforeCreate: function() {
@@ -328,11 +355,15 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        this.$store.commit('setMyshop');
-        var a=[];
-            a[0]='ssssssss';
-            console.log(typeof a[0])
-
+        // var a=[];
+        //     a[0]='ssssssss';
+        //     console.log(typeof a[0])
+        //根据店铺查询店铺新人红包
+        if(this.myshop && this.myshop.shopid){
+            this.get_hongbao()
+        }else{
+            this.$store.commit('setMyshop');
+        }
     },
     activated(){
         console.log(11111111);
@@ -352,6 +383,11 @@ export default {
         // console.group('destroyed 销毁完成状态===============》');
     },
     watch: {
+        myshop(){
+            if(this.myshop && this.myshop.shopid){
+                this.get_hongbao()
+            }
+        }
         // img_list() {
         //     this.$nextTick(function() {
         //         console.log("数据渲染完成");
@@ -387,7 +423,6 @@ export default {
             height: 42px;
             width: 0;
             flex-grow: 1;
-            text-align: center;
             color: rgba(80, 80, 80, 1);
             display: flex;
             flex-direction: column;
@@ -435,13 +470,15 @@ export default {
         color: rgba(80, 80, 80, 1);
     	font-size: 12px;
         text-align: center;
+        .hongbao{
+            color: #d43030;
+        }
     }
 }
 </style>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
-
 
 .QRCode{
     position: fixed;
@@ -508,6 +545,7 @@ export default {
     display: flex;
     padding: 0.1rem;
     background: #ffffff;
+    margin:0px 0px 5px;
     li:nth-child(1){
         width: 0.6rem;
         height: 0.6rem;
@@ -562,7 +600,6 @@ export default {
     display: flex;
     text-align: center;
     background: #ffffff;
-    margin: 5px 0px 0px;
     padding: 8px 0px 5px;
     >li{
         width: 20%;

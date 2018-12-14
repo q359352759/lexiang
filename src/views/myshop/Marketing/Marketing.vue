@@ -33,7 +33,7 @@
             </ul>
 
             <ul class="box_2">
-                <!-- <li>
+                <li>
                     <div class="img_box">
                         <img src="image/hongbao_1.png" alt="">
                     </div>
@@ -60,7 +60,7 @@
                         </div>
                     </div>
                     <div class="right_1"><i class="mui-icon mui-icon-forward"></i></div>
-                </li> -->
+                </li>
                 <loading :nodata="true"/>
             </ul>
         </div>
@@ -124,6 +124,7 @@ export default {
         height: 32px;
         img{
             height: 32px;
+            width: 32px;
         }
     }
     .text{

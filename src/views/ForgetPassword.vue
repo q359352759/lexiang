@@ -70,7 +70,7 @@ export default {
                 if(x.data.code==200){
                     this.codes();
                 }else{
-                    mui.toast(x.data.msg, { duration: 2000, type: "div"});
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
                 console.log(err)
@@ -101,7 +101,7 @@ export default {
                     // this.key = x.data.key;
             }).catch(err => {
                 console.log(err);
-                mui.toast(data.message, { duration: 2000, type: "div" });
+                mui.toast('发送验证码失败。', { duration: 2000, type: "div" });
             });
         },
         //提交修改
@@ -133,10 +133,8 @@ export default {
                 if(x.data.code==200){
                     mui.toast("修改成功", { duration: 2000, type: "div"});
                     this.$router.push("/login");
-                }else if(x.data.code!=200){
-                    mui.toast(x.data.msg, { duration: 2000, type: "div"});
                 }else{
-                    mui.toast("系统错误，请稍后再试。", { duration: 2000, type: "div"});
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err => {
                 console.log(err);

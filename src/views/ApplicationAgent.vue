@@ -316,13 +316,9 @@ export default {
             }).then(x => {
                 console.log(x);
                 if (x.data.error) {
-                    mui.toast(x.data.message, { duration: 2000, type: "div" });
+                    mui.alert(x.data.message ? x.data.message : x.data.error, "提示",'我知道了', function() {},"div");
                 } else {
                     this_1.addguanggaoji()
-                    // mui.alert( "申请成功", "提示", function() {
-                    //     this_1.$store.commit("setagentUser"); //更新代理人信息
-                    //     this_1.$router.push("/Agent");
-                    // },"div");
                 }
             }).catch(err => {
                 console.log(err);
@@ -416,8 +412,6 @@ export default {
                 console.log("递归后的数据", cityData3);
             })
             .catch(err => {
-                // console.log(err)
-                // mui.toast('登录失败',{duration:2000, type:'div'})
             });
         // console.group('------mounted 挂载结束状态------');
     },

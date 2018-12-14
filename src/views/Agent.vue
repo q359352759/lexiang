@@ -61,6 +61,13 @@
                     <div class="title">店铺分佣</div>
                     <div class="money">0</div>
                 </li>
+                <li :class="{'active':type_1==5}" @click="change_type(5)">
+                    <div class="img_box">
+                        <i class="icon iconfont icon-fenrun"></i>
+                    </div>
+                    <div class="title">店铺分润</div>
+                    <div class="money">0</div>
+                </li>
                 <li :class="{'active':type_1==4}" @click="change_type(4)">
                     <div class="img_box">
                         <!-- <img src="image/d4.png" alt="" srcset=""> -->
@@ -233,6 +240,9 @@
                     <!-- <button class="btn_1" @click="alipay()">支付宝测试</button> -->
                 </div>
 
+                <div class="box_7" v-show="type_1==5">
+                    <loading :nodata="true"/>
+                </div>
             </div>
 
             <div class="payment" v-show="payment">
@@ -289,22 +299,24 @@
             <div class="header_1">
                 <div class="img_box">
                     <img v-if="erweima_base64" :src="erweima_base64" alt="" srcset="">
+                    <img v-if="!erweima_base64" src="image/WechatIMG311.png" alt="">
                 </div>
                 <div class="text_1">
-                    <div>{{agentUser.name}}</div>
+                    <div>{{agentUser.realName}}</div>
                     <div> <i class="icon iconfont icon-shouji"></i>{{agentUser.phone}}</div>
                 </div>
             </div>
             <div class="erweima">
                 <!-- <img :src="myshop.signboard" alt="" srcset=""> -->
                 <img v-if="erweima_base64" :src="erweima_base64" alt="">
+                <img v-if="!erweima_base64" src="image/WechatIMG311.png" alt="">
                 <div ref="qrcode">
                     <!-- <img src="" alt="" srcset=""> -->
                 </div>
             </div>
             <ul class="footer_1">
-                <li>恭喜你过得乐享生活新人红包20元，！</li>
-                <li>识别二维码领取</li>
+                <li>识别二维码领取20元新人红包！</li>
+                <li></li>
             </ul>
         </div>
 
@@ -372,41 +384,58 @@ export default {
             }else{
                 openloading(true);
                 //图片地址转图片
-                // 
-                this.$axios({
-                    method:'post',
-                    url:'/api-u/users/imgtobase64',
-                    data: this.$qs.stringify({
-                        url:this.userInfo.headImgUrl
+                if(!this.userInfo.headImgUrl){
+                    var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
+                    var el=this.$refs.qrcode
+                        el.innerHTML='';
+                    let qrcode = new QRCode(el, {  
+                        width: 200,  
+                        height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                        // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容  
+                        text: url, // 二维码内容  
+                        // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                        background: '#fff',
+                        foreground: '#fff',
                     })
-                }).then(x=>{
-                    console.log(x);
-                    if(x.data.code==200){
-                        this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
-                        var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
-                        var el=this.$refs.qrcode
-                            el.innerHTML='';
-                        let qrcode = new QRCode(el, {  
-                            width: 200,  
-                            height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                            // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容  
-                            text: url, // 二维码内容  
-                            // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                            background: '#fff',
-                            foreground: '#fff',
+                    setTimeout(()=>{
+                        this.print();
+                    },500)
+                }else{
+                    this.$axios({
+                        method:'post',
+                        url:'/api-u/users/imgtobase64',
+                        data: this.$qs.stringify({
+                            url:this.userInfo.headImgUrl
                         })
-                        setTimeout(()=>{
-                            this.print();
-                        },500)
-                    }else{
+                    }).then(x=>{
+                        console.log(x);
+                        if(x.data.code==200){
+                            this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
+                            var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
+                            var el=this.$refs.qrcode
+                                el.innerHTML='';
+                            let qrcode = new QRCode(el, {  
+                                width: 200,  
+                                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                                // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容  
+                                text: url, // 二维码内容  
+                                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                                background: '#fff',
+                                foreground: '#fff',
+                            })
+                            setTimeout(()=>{
+                                this.print();
+                            },500)
+                        }else{
+                            openloading(false);
+                            mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                        }
+                    }).catch(err=>{
                         openloading(false);
-                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
-                    }
-                }).catch(err=>{
-                    openloading(false);
-                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
-                    console.log(err);
-                })
+                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
+                        console.log(err);
+                    })
+                }
             }
         },
         print(){
@@ -492,22 +521,16 @@ export default {
                             function() {},
                             "div"
                         );
-                    } else if (
-                        x.data.code == "PAYEE_USER_INFO_ERROR" ||
-                        x.data.code == "PAYEE_ACC_OCUPIED"
-                    ) {
-                        mui.toast(x.data.msg, { duration: 2000, type: "div" });
+                    } else if ( x.data.code == "PAYEE_USER_INFO_ERROR" || x.data.code == "PAYEE_ACC_OCUPIED" ) {
+                        // mui.toast(x.data.msg, { duration: 2000, type: "div" });
+                        mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
                         this.input_name_box = true;
                     } else if (x.data.code) {
-                        mui.toast(x.data.message, {
-                            duration: 2000,
-                            type: "div"
-                        });
+                        // mui.toast(x.data.message, {duration: 2000,type: "div"});
+                        mui.alert(x.data.message, "提示",'我知道了', function() {},"div");
                     } else {
-                        mui.toast("系统错误，请稍后再试。", {
-                            duration: 2000,
-                            type: "div"
-                        });
+                        // mui.toast("系统错误，请稍后再试。", {duration: 2000,type: "div"});
+                        mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
                     }
                     openloading(false);
                     this.CanBePresented = true;

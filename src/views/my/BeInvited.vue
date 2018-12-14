@@ -42,6 +42,7 @@
                         </li>
                     </ul>
                     <button type="submit">领&nbsp;&nbsp;取</button>
+                    <div @click="go_login()" class="login">已有账号，去登陆</div>
                 </form>
                 <div class="box_5">
                     <img src="image/bg_5.png" alt="" srcset="">
@@ -69,6 +70,10 @@ export default {
         }
     },
     methods:{
+        //跳转登录
+        go_login(){
+            this.$router.push('/login')
+        },
          //获取手机验证码
         get_codes() {
             var phone_test = /^1\d{10}$/;
@@ -123,10 +128,8 @@ export default {
                 if (x.data.code == 200) {
                     mui.toast("注册成功", {duration: 2000, type: "div" });
                     this.$router.push("/login");
-                } else if (x.data.code == 400) {
-                    mui.toast(x.data.message, {duration: 2000,type: "div"});
-                } else {
-                    mui.toast(x.data.message, {duration: 2000,type: "div"});
+                } else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
                 openloading(false);
             }).catch(err => {
@@ -273,12 +276,17 @@ export default {
         width: 1.53rem;
     	height: 0.32rem;
         padding: 0px;
-        margin: 0.22rem auto 0.2rem;
+        margin: 0.22rem auto 0.14rem;
         background:#ec1515;
         color: #ffffff;
         border-radius: 0.32rem;
         border: none;
         box-shadow: 0px 2px 36px 0px rgba(0, 0, 0, 0.6142857142857143);
+    }
+    .login{
+        color: rgba(255, 255, 255, 1);
+    	font-size: 14px;
+        text-align: center;
     }
 }
 .box_5{

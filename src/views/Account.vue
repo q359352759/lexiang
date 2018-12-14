@@ -1,27 +1,39 @@
 <template>
-    <div id="Account">
-        <header class="mui-bar mui-bar-nav">
-            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">收款账号</h1>
-        </header>
-        <div class="mui-content">
-            <ul class="box_1">
-                <li>
-                    <div>
-                        <i class="icon iconfont icon-z-alipay zhifubao"></i>
-                        <span>支付宝账户：{{Account_obj.account ? Account_obj.account : ''}}</span>
-                        <!-- 已绑定 -->
-                        <span v-if="Account_obj.account" @click="xiugai()" class="modify">更换</span>
-                    </div>
-                    <!-- 已绑定 -->
-                    <div @click="change_radio_2()" v-if="Account_obj.account" class="radio_1" :class="{'active':radio_type_1==1}">
-                        <i class="icon iconfont icon-xuanze"></i>
-                    </div>
-                    <div v-if="!Account_obj.account" @click="addzhifubao()">
-                        <i class="mui-icon mui-icon-plusempty"></i>
-                    </div>
-                </li>
-                <!-- <li>
+  <div id="Account">
+    <header class="mui-bar mui-bar-nav">
+      <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+      <h1 class="mui-title">收款账号</h1>
+    </header>
+    <div class="mui-content">
+      <ul class="box_1">
+        <li>
+          <div>
+            <i class="icon iconfont icon-z-alipay zhifubao"></i>
+            <span>支付宝账户：{{Account_obj.account ? Account_obj.account : ''}}</span>
+            <!-- 已绑定 -->
+            <span
+              v-if="Account_obj.account"
+              @click="xiugai()"
+              class="modify"
+            >更换</span>
+          </div>
+          <!-- 已绑定 -->
+          <div
+            @click="change_radio_2()"
+            v-if="Account_obj.account"
+            class="radio_1"
+            :class="{'active':radio_type_1==1}"
+          >
+            <i class="icon iconfont icon-xuanze"></i>
+          </div>
+          <div
+            v-if="!Account_obj.account"
+            @click="addzhifubao()"
+          >
+            <i class="mui-icon mui-icon-plusempty"></i>
+          </div>
+        </li>
+        <!-- <li>
                     <div>
                         <i class="icon iconfont icon-weixin weixin"></i>
                         <span>微信账号：</span>
@@ -30,15 +42,15 @@
                         <i class="mui-icon mui-icon-plusempty"></i>
                     </div>
                 </li> -->
-            </ul>
+      </ul>
 
-            <div class="box_2">
-                提示：目前只支持提现到支付宝账号，请确定您已经有支付宝账号，绑定账号时请输入支付宝的手机号码，因用户自行输入错误造成的损失，本公司概不负责！
-                <br>
-                提现到微信功能正在开发中。
-            </div>
+      <div class="box_2">
+        提示：目前只支持提现到支付宝账号，请确定您已经有支付宝账号，绑定账号时请输入支付宝的手机号码，因用户自行输入错误造成的损失，本公司概不负责！
+        <br>
+        提现到微信功能正在开发中。
+      </div>
 
-            <!-- <input type="text" v-model="zhifubaozhangfu" placeholder="支付宝手机号码">
+      <!-- <input type="text" v-model="zhifubaozhangfu" placeholder="支付宝手机号码">
             <button @click="alertCode()">获取</button>
             <button @click="getCode()">调用后端接口</button>
             <button @click="tixian()">体现测试</button>
@@ -46,29 +58,48 @@
                 <img src="@/assets/image/2.png" alt="" srcset="">
             </div> -->
 
-        </div>
-
-        <div class="Popup" v-show="Popup">
-            <div class="Mask"></div>
-            <form @submit.prevent="form()">
-                <span class="close_1" @click="close()">
-                    <i class="icon iconfont icon-quxiao"></i>
-                </span>
-                <div class="header_1">绑定支付宝</div>
-                <ul>
-                    <li>
-                        <input type="text" v-model="account" required placeholder="请输入支付宝登录手机号">
-                        <div @click="Verification()" class="Verification">{{time==0 ? '获取验证码' : time+'s'}}</div>
-                    </li>
-                    <li>
-                        <input required type="text" v-model="code" placeholder="请输入验证码">
-                    </li>
-                </ul>
-                <button type="submit">确定</button>
-            </form>
-        </div>
-
     </div>
+
+    <div
+      class="Popup"
+      v-show="Popup"
+    >
+      <div class="Mask"></div>
+      <form @submit.prevent="form()">
+        <span
+          class="close_1"
+          @click="close()"
+        >
+          <i class="icon iconfont icon-quxiao"></i>
+        </span>
+        <div class="header_1">绑定支付宝</div>
+        <ul>
+          <li>
+            <input
+              type="text"
+              v-model="account"
+              required
+              placeholder="请输入支付宝登录手机号"
+            >
+            <div
+              @click="Verification()"
+              class="Verification"
+            >{{time==0 ? '获取验证码' : time+'s'}}</div>
+          </li>
+          <li>
+            <input
+              required
+              type="text"
+              v-model="code"
+              placeholder="请输入验证码"
+            >
+          </li>
+        </ul>
+        <button type="submit">确定</button>
+      </form>
+    </div>
+
+  </div>
 </template>
 
 <script>
@@ -120,27 +151,16 @@ export default {
             if (x.data.code == 200) {
               this.findAccount();
               this.Popup = false;
-              mui.toast("设置成功！", {
-                duration: 2000,
-                type: "div"
-              });
+              mui.toast("设置成功！", { duration: 2000, type: "div" });
             } else if (x.data.code == 400) {
-              mui.toast("验证码错误！", {
-                duration: 2000,
-                type: "div"
-              });
+              mui.toast("验证码错误！", { duration: 2000, type: "div" });
             } else {
-              mui.toast(x.data.message, {
-                duration: 2000,
-                type: "div"
-              });
+            //   mui.toast(x.data.message, { duration: 2000, type: "div" });
+              mui.alert(x.data.message ? x.data.message : x.data.msg, "提示", "我知道了", function() {}, "div");
             }
           },
           error => {
-            mui.toast("系统错误，请稍后再试！", {
-              duration: 2000,
-              type: "div"
-            });
+            mui.toast("系统错误，请稍后再试！", {duration: 2000,type: "div"});
             console.log(error);
           }
         );
@@ -173,10 +193,8 @@ export default {
                 type: "div"
               });
             } else {
-              mui.toast(x.data.message, {
-                duration: 2000,
-                type: "div"
-              });
+            //   mui.toast(x.data.message, {duration: 2000,type: "div"});
+                mui.alert(x.data.message ? x.data.message : x.data.msg, "提示",'我知道了', function() {},"div");
             }
           })
           .catch(error => {
@@ -209,8 +227,7 @@ export default {
         .then(x => {
           console.log(x);
           this.key = x.data.key;
-          mui.toast(
-            "短信已发送至" + this.userInfo.phone + "号码，请注意查收。",
+          mui.toast("短信已发送至" + this.userInfo.phone + "号码，请注意查收。",
             { duration: 2000, type: "div" }
           );
         })

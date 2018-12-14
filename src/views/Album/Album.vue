@@ -222,10 +222,8 @@ export default {
                 this.loading=false;
                 if(x.data.code==200){
                     this.img_list.push(x.data.data[0])
-                }else if(x.data.code){
-                    mui.toast(x.data.msg, {duration: "long",type: "div"});
                 }else{
-                    mui.toast(x.data.error, {duration: "long",type: "div"});
+                    mui.alert(x.data.msg ? x.data.msg : x.data.error, "提示",'我知道了', function() {},"div");
                 }
                 console.log('添加',x);
             }).catch(err=>{
@@ -267,10 +265,8 @@ export default {
                 if(x.data.code==200){
                     this.img_list=this.img_list.concat(x.data.data.data);
                     this.total=x.data.data.total;
-                }else if(x.data.code){
-                    mui.toast(x.data.msg, {duration: "long",type: "div"});
                 }else{
-                    mui.toast(x.data.error, {duration: "long",type: "div"});                    
+                    mui.alert(x.data.msg ? x.data.msg : x.data.error, "提示",'我知道了', function() {},"div");               
                 }
                 openloading(false);
                 this.loading=false;

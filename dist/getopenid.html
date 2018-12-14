@@ -46,7 +46,7 @@
             $.ajax({
                 type: "get",
                 // url:'http://localhost:8081/url',
-                url:'http://122.114.169.178:8080/api-u/users/getCode',
+                url:'http://122.114.169.178:10002/api-u/users/getCode',
                 data:{'code':CODE},
                 dataType:'json',
                 success: function (data) {
@@ -73,7 +73,7 @@
         function setoken(x){
             $.ajax({
                 type: "post",
-                url: "http://122.114.169.178:8080/api-u/user/getToken",
+                url: "http://122.114.169.178:10002/api-u/user/getToken",
                 data: x ,
                 dataType: "dataType",
                 success: function (response) {

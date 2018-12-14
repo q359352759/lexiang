@@ -13,11 +13,11 @@
                         <span>商品名：</span>
                         <input type="text" value="" v-model="add_obj.name">
                     </li>
-                    <li class="mui-table-view-cell item_box">
+                    <li class="mui-table-view-cell item_box" @tap="selset_unit()">
                         <!-- <a class="mui-navigate-right item_box"> -->
                             <span>单位：</span>
                             <!-- <div>份</div> -->
-                            <input class="mui-text-center" type="text" v-model="add_obj.unit"> 
+                            <input class="mui-text-center" type="text" v-model="add_obj.unit" readonly> 
                             <div></div>
                         <!-- </a> -->
                     </li>
@@ -118,6 +118,7 @@ export default {
     data(){
         return{
             // img_list:[],
+
             left:false,
             deduction:'',           //抵扣输入框中的内容
             commission:'',          //佣金输入框中的内容
@@ -321,23 +322,6 @@ export default {
         //点击确定
         add(){
             var this_1=this;
-            // if(this.add_obj.twtreid==1){
-            //     this.add_obj.deduction=this.deduction_money
-            //     this.add_obj.percentage=this.deduction
-            // }else{
-            //     this.add_obj.deduction=this.deduction;
-            //     this.add_obj.percentage='';
-            // }
-
-            // if(this.add_obj.commissionType==1){
-            //     this.add_obj.commission=this.commission_money;
-            //     this.add_obj.commissionPercentage=this.commission;
-            // }else{
-            //     this.add_obj.commission=this.commission;
-            //     this.add_obj.commissionPercentage=''
-            // }
-            // alert(this.um.getContent())
-            // var remark = this.editor.getContent();
             try {
                 var text = this.editor.getContentTxt();
             } catch (error) {
@@ -363,6 +347,9 @@ export default {
                 return
             }else if(!this.add_obj.deduction || isNaN(this.add_obj.deduction)){
                 mui.toast('请输入抵扣金额。', { duration: 2000, type: "div" });
+                return
+            }else if(this.add_obj.deduction>this.add_obj.sellingPrice*0.8){
+                mui.toast('可抵扣不能大于售价的80%', { duration: 2000, type: "div" });
                 return
             }else if(this.img_list.length==0){
                 mui.toast('请设置商品图片。', { duration: 2000, type: "div" });
@@ -396,10 +383,8 @@ export default {
                     if(x.data.code==200){
                         mui.toast('添加成功。', { duration: 2000, type: "div" });
                         this.$router.push('/commodity');
-                    }else if(x.data.code){
-                        mui.toast(x.data.msg, { duration: 2000, type: "div" });
                     }else{
-                        mui.toast(x.data.message, { duration: 2000, type: "div" });
+                        mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                     }
                     console.log(x)
                 }).catch(err=>{
@@ -419,10 +404,8 @@ export default {
                     if(x.data.code==200){
                         mui.toast('修改成功。', { duration: 2000, type: "div" });
                         this.$router.push('/commodity');
-                    }else if(x.data.code){
-                        mui.toast(x.data.msg, { duration: 2000, type: "div" });
                     }else{
-                        mui.toast(x.data.message, { duration: 2000, type: "div" });
+                        mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                     }
                     console.log(x)
                 }).catch(err=>{
@@ -431,6 +414,44 @@ export default {
                     console.log(err);
                 })
             }
+        },
+        //选择单位
+        selset_unit(){
+            var this_1=this;
+            var obj=[
+                    {'value':'个','text':'个'},
+                    {'value':'件','text':'件'},
+                    {'value':'套','text':'套'},
+                    {'value':'份','text':'份'},
+                    {'value':'盒','text':'盒'},
+                    {'value':'包','text':'包'},
+                    {'value':'瓶','text':'瓶'},
+                    {'value':'次','text':'次'},
+                    {'value':'间','text':'间'},
+                    {'value':'双','text':'双'},
+                    {'value':'只','text':'只'},
+                    {'value':'付','text':'付'},
+                    {'value':'尊','text':'尊'},
+                    {'value':'把','text':'把'},
+                    {'value':'块','text':'块'},
+                    {'value':'罐','text':'罐'},
+                    {'value':'辆','text':'辆'},
+                    {'value':'升','text':'升'},
+                    {'value':'方','text':'方'},
+                    {'value':'斤','text':'斤'},
+                    {'value':'吨','text':'吨'},
+                    {'value':'包月','text':'包月'},
+                    {'value':'包季','text':'包季'},
+                    {'value':'包年','text':'包年'},
+                    {'value':'小时','text':'小时'},
+                    {'value':'天','text':'天'}
+                ];
+            this.Picker1.setData(obj);
+            this.Picker1.show(x => {
+                console.log(x);
+                // this_1.add_obj.unit=x[0].value;
+                this.$set(this.add_obj,'unit',x[0].value)
+            });
         },
         //选择可抵扣类型
         set_twtreid(){
@@ -493,7 +514,7 @@ export default {
         });
 
         //图片轮播
-        this.swiper = new Swiper(".swiper-container", {
+        this.swiper = new Swiper(".swiper-container",{
             // loop: true,
             // autoplay: true,
             slidesPerView: 'auto',
@@ -537,11 +558,11 @@ export default {
 
         
         this.editor = UE.getEditor('editor', this.config); // 初始化UM
-        // // // this.editor.addListener("ready", function () {
-        // // //     alert('初始化完成')
-        // // //     // console.log(123)
-        // // //     // this_1.editor.setContent('请输入商品描述'); // 确保UM加载完成后，放入内容。
-        // // // });
+        // this.editor.addListener("ready", function () {
+        //     alert('初始化完成')
+        //     // console.log(123)
+        //     // this_1.editor.setContent('请输入商品描述'); // 确保UM加载完成后，放入内容。
+        // });
 
         UE.registerUI('上传图片',function(editor,uiName){
             //注册按钮执行时的command命令，使用命令默认就会带有回退操作
@@ -602,27 +623,11 @@ export default {
                 this.Submission_type='';
                 var commodity={}
             }
-        // if(query.type){
-            
             this.add_obj=commodity;
             this.img_list=commodity.img ? commodity.img.split(',') : [];
-
-            //  deduction:"",       //抵扣金额
-            // percentage:'',      //抵扣比例       
-            //1表示比例 2表示填写实际金额
-            // if(this.add_obj.twtreid==1){
-            //     this.deduction=this.add_obj.percentage;
-            // }else{
-            //     this.destroyed=this.add_obj.deduction
-            //     console.log(this.destroyed)
-            // }
-            // if(this.add_obj.commissionType==1){
-            //     this.commission=this.add_obj.commissionPercentage
-            // }else{
-            //     this.commission=this.add_obj.commission
-            //     console.log(this.commission);
-            // }
-
+            if(!this.add_obj.percentage){
+                this.input_change('deduction')
+            }
             if(this.editor){
                 setTimeout(()=>{
                     this.editor.setContent(this.add_obj.remark);
