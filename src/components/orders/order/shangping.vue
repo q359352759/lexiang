@@ -1,26 +1,30 @@
 <template>
-    <ul class="shangpng">
-        <li>
-            <div class="img_box">
-                <img src="image/43.png" alt="" srcset="">
-            </div>
-            <div class="text_box">
-                <div class="name">
-                    毛肚
-                    <span class="shuliang mui-pull-right">x2</span>
+    <div>
+        <ul class="shangpng" v-for="(item, index) in new_shangping_list" :key="index">
+            <li>
+                <div class="img_box">
+                    <img v-if="item.img && item.img.split(',').length>0" :src="item.img.split(',')[0]" alt="" srcset="">
                 </div>
-                <div>￥18</div>
-                <div>红包抵扣：8元</div>
-            </div>
-            <div class="zhuanxiang">
-                <img src="image/xingren.png" alt="" srcset="">
-            </div>
-        </li>
-        <li class="dikou">红包抵扣：商品红包-8元</li>
-    </ul>
+                <div class="text_box">
+                    <div class="name">
+                        {{item.name}}
+                        <span class="shuliang mui-pull-right">x{{item.number}}</span>
+                    </div>
+                    <div>￥{{item.sellingPrice}}</div>
+                    <div>红包抵扣：0元</div>
+                </div>
+                <div class="zhuanxiang">
+                    <img src="image/xingren.png" alt="" srcset="">
+                </div>
+                <div class="dikou"></div>
+            </li>
+            <li class="dikou">红包抵扣：商品红包-8元</li>
+        </ul>
+    </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
     name:'',
 
@@ -28,6 +32,11 @@ export default {
         return{
 
         }
+    },
+    computed:{
+        ...mapGetters({
+            new_shangping_list:'orders/order/new_shangping_list',   //过滤后的商品
+        })
     }
 }
 </script>

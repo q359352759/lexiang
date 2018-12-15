@@ -327,13 +327,21 @@ export default {
         },
         //扫一扫
         saoyisao(){
-            wx.scanQRCode({
-                needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-                scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
-                success: function (res) {
-                    var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-                }
-            });
+            if(this.$store.state.weixin_ready){
+                openloading(false)
+                wx.scanQRCode({
+                    needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                    scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                    success: function (res) {
+                        var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                    }
+                });
+            }else{
+                openloading(true);
+                setTimeout(()=>{
+                    this.saoyisao();
+                },1000)
+            }
         },
         //生产二维码
         erweima(){
@@ -739,9 +747,10 @@ export default {
         }
 
         var query=this.$route.query;
-        if(query.saoyisao){
+        if(query.saoyisao && !sessionStorage.saoyisao){
             console.log('扫一扫');
-            this.saoyisao()
+            this.saoyisao();
+            sessionStorage.saoyisao=1
         }
         
 
@@ -752,8 +761,6 @@ export default {
                 geolocation.getCurrentPosition(function(r){
                     // console.log(r);
                     if (this.getStatus() == BMAP_STATUS_SUCCESS) {
-                        // this_1.my_position.x=r.point.lng;   
-                        // this_1.my_position.y=r.point.lat;
                         this_1.$store.state.my_position.x=r.point.lng;
                         this_1.$store.state.my_position.y=r.point.lat;
                     }

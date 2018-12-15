@@ -534,6 +534,7 @@ export default {
         background-size: cover;
         background-color: rgba(0, 0, 0, 0);
         opacity: 1;
+        border:1px solid #ffffff;
     }
     .cropper-view-box {
         outline: none;

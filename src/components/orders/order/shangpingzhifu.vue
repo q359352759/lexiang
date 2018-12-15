@@ -1,7 +1,7 @@
 <template>
     <ul>
         <li>
-            <div>共计：0件</div>
+            <div>共计：{{xiangqing_2 && xiangqing_2.shopOrderCommoditys ? xiangqing_2.shopOrderCommoditys.length : 0}}件</div>
             <div class="money mui-text-center">0元</div>
             <div class="mui-text-right">实付：<span class="money">0元</span></div>
         </li>
@@ -12,17 +12,34 @@
             </div>
             <div class="money mui-text-center">0元</div>
             <div class="mui-text-right">
-                <div class="zhifu">支付</div>
+                <div @click="zhifu()" class="zhifu">支付</div>
             </div>
         </li>
     </ul>
 </template>
 
 <script>
+import { mapActions,mapGetters } from "vuex";
 export default {
     name:'',
     data(){
         return{}
+    },
+    computed:{
+        ...mapGetters({
+            new_shangping_list:'orders/order/new_shangping_list',   //过滤后的商品
+            xiangqing_2:'orders/order/xiangqing_2',         //
+        }),
+    },
+    methods:{
+        ...mapActions({
+            shoppingCopy:'orders/order/shoppingCopy',               //调用支付接口
+            set_orderid_openid:'orders/order/set_orderid_openid',   //初始化 openid和 ordreId
+            
+        }),
+        zhifu(){
+            this.shoppingCopy();
+        }
     }
 }
 </script>

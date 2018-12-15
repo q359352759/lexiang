@@ -261,6 +261,18 @@ export default {
         input_change(x){
             var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
             if(!this.add_obj.sellingPrice || !this.add_obj[x] || !number_test.test(this.add_obj[x])){
+                if(x=='sellingPrice'){
+                    this.add_obj.percentage='';
+                    this.add_obj.commissionPercentage='';
+                }else if(x=='percentage'){
+                    this.add_obj.deduction='';
+                }else if(x=='deduction'){
+                    this.add_obj.percentage='';
+                }else if(x=='commissionPercentage'){
+                    this.add_obj.commission='';
+                }else{
+                    this.add_obj.commissionPercentage='';
+                }
                 return;
             }
             if(x=='sellingPrice'){      //售价
@@ -444,7 +456,8 @@ export default {
                     {'value':'包季','text':'包季'},
                     {'value':'包年','text':'包年'},
                     {'value':'小时','text':'小时'},
-                    {'value':'天','text':'天'}
+                    {'value':'天','text':'天'},
+                    {'value':'人','text':'人'}
                 ];
             this.Picker1.setData(obj);
             this.Picker1.show(x => {

@@ -58,7 +58,7 @@ export default {
             var weixin = localStorage.weixin;
             if (!weixin || weixin == null || weixin == undefined) {
                 console.log("没有微信信息");
-                location.href = "getopenid.html";
+                // location.href = "getopenid.html";
             } else {
                 console.log("已有微信信息");
             }
@@ -75,6 +75,7 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
+        var this_1=this
         // var path = this.$route.path;
         var path = window.location.hash;
         
@@ -137,25 +138,26 @@ export default {
             console.log("jssdk签名", x);
             var data = x.data;
             wx.config({
-                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
                 appId: data.appId, // 必填，公众号的唯一标识
                 timestamp: data.timestamp, // 必填，生成签名的时间戳
                 nonceStr: data.nonceStr, // 必填，生成签名的随机串
                 signature: data.signature, // 必填，签名
                 jsApiList: jsApiList // 必填，需要使用的JS接口列表
             });
+            wx.ready(function() {
+                console.log(123)
+                this_1.$store.state.weixin_ready=true;
+                // console.log('config信息验证后会执行ready方法');
+            });
+            wx.error(function(res) {
+                console.log("config信息验证失败", res);
+            });
         }).catch(err => {
             console.log(err);
         });
 
-        wx.ready(function() {
-            // console.log('config信息验证后会执行ready方法');
-            // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
-        });
-        wx.error(function(res) {
-            console.log("config信息验证失败", res);
-            // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
-        });
+        
 
         // console.group('------mounted 挂载结束状态------');
     },

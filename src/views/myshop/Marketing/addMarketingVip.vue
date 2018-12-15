@@ -116,6 +116,11 @@ export default {
         input_change(x){
             var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
             if(!this.commodity.sellingPrice || !this.obj[x] || !number_test.test(this.obj[x])){
+                if(x=='deduction'){
+                    this.obj.percentage='';
+                }else{
+                    this.obj.deduction='';
+                }
                 return;
             }
             if(x=='deduction'){     //金额
@@ -171,7 +176,6 @@ export default {
         //选择类型
         change_radio_2(x){
             this.obj.type=x;
-            
         },
         //接受商品
         setShow(x){
@@ -179,8 +183,8 @@ export default {
             history.back()
             if(x){
                 this.commodity=x;
-                this.obj.deduction=x.deduction
-                this.input_change('deduction')
+                // this.obj.deduction=x.deduction
+                // this.input_change('deduction')
             }
         }
     },

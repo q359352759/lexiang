@@ -6,17 +6,18 @@
         </header>
         <div class="mui-content mui-fullscreen">
             <div class="content_1">
-                头部
+                <!-- 头部 -->
                 <orderHeader />
-                订单详情
-                <dingdanxiangqing />
-                商品
+                 <!-- 商品 -->
                 <shangping />
+                <!-- 订单详情 -->
+                <dingdanxiangqing />
+               
 
             </div>
             <div class="footer_1">
-                输入金额底部
-                <dangmianzhifu />
+                <!-- 输入金额底部 -->
+                <!-- <dangmianzhifu /> -->
                 商品支付底部
                 <shangpingzhifu/>
 
@@ -40,7 +41,7 @@ import shangpingzhifu from '@/components/orders/order/shangpingzhifu.vue';
 
 
 export default {
-    name:"",
+    name:"ordersOrder",
     components:{
         orderHeader,
         dangmianzhifu,
@@ -49,16 +50,53 @@ export default {
         shangpingzhifu
     },
     data(){
-        return{}
+        return{
+            weixin:''
+        }
     },
     computed:{
 
     },
     methods:{
-
+        ...mapActions({
+            order_set_lsit:'orders/order/set_list',
+            shoppingCopy:'orders/order/shoppingCopy',   //调用支付接口    
+            set_orderid_openid:'orders/order/set_orderid_openid',   //初始化 openid和 ordreId
+            findShopOrderByIda:'orders/order/findShopOrderByIda',   //订单详情
+            findShopOrdersById:'orders/order/findShopOrdersById'    //订单详情2
+        }),
+        ...mapActions({
+            get_shop:'shop/get_shop',   //查询店铺
+        })
     },
     mounted() {
-        
+        console.log(this.$route)
+        console.log(this.$route.params.zhifu);
+        if(this.$route.params.zhifu){
+            console.log('调用支付接口')
+        }
+        this.weixin=JSON.parse(localStorage.weixin)
+        //调用支付接口
+        var query={
+                ordreId:this.$route.query.ordreId,
+                openid:this.weixin.openid
+            }
+        //vuex 初始化 openid和 ordreId
+        this.set_orderid_openid(query).then(x=>{
+            console.log('数据初始化完成');
+            if(this.$route.params.zhifu){
+                this.shoppingCopy();    //支付
+            }
+            //订单详情
+            this.findShopOrderByIda().then(x=>{
+                console.log('查询店铺')
+                this.get_shop(this.findShopOrderByIda.shopid);
+            })
+            this.findShopOrdersById();
+        }).catch(err=>{
+
+        })
+        // this.order_set_lsit('传递参数');
     },
 }
 </script>

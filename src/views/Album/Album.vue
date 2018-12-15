@@ -408,11 +408,11 @@ export default {
 }
 
 .box_2{
-    // flex-grow: 1;
+    flex-grow: 1;
     overflow: auto;
     display: flex;
     flex-wrap: wrap;
-    padding: 12px 0.11rem 0.5rem;
+    padding: 12px 0.11rem 0.2rem;
     >li{
         width: calc(100% / 3);
         padding: 0px 0.04rem 5px;
@@ -448,10 +448,7 @@ export default {
 }
 
 .box_3{
-    position: absolute;
-    width: 100%;
-    bottom: 0px;
-    left: 0px;
+    flex-shrink: 0;
     display: flex;
     background: #ffffff;
     height: 0.44rem;

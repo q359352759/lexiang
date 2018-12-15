@@ -5,11 +5,30 @@
             <h1 class="mui-title">店铺简介</h1>
         </header>
         <div class="mui-content mui-fullscreen">
-            <div id="editor_1" ref="editor"></div>
-            <!-- <video width="100%" controls>
-                <source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4">
-                <source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/ogg">
-            </video> -->
+            
+            <ul class="contenteditable_box">
+               <li class="header">
+                    <div>
+                        <select name="16px" v-model="font_size" @change="change_font_size()">
+                            <option value="24px">24px</option>
+                            <option value="20px">20px</option>
+                            <option value="16px">16px</option>
+                            <option value="14px">14px</option>
+                            <option value="12px">12px</option>
+                        </select>
+                    </div>
+                    <div class="zitiyanse bg" v-show="isAndroid" @click="chnage_font_color()"></div>
+                    <div @click="add_shiping()" class="shiping bg"></div> 
+                    <div @click="set_Album_show()" class="tupian bg"></div>
+                    <input  type="color" class="font_color mui-hidden" v-model="font_color" ref="font_color">
+                </li>
+                <li class="content_box" ref="content_box">
+                    <div class="content_1" ref="content_1" :style="{'font-size':font_size,'color':font_color}" v-html="html" contenteditable="true"></div>
+                </li>
+            </ul>
+
+            <div @tap="submit()" class="btn_1">保&nbsp;存</div>
+            <!-- <div id="editor_1" ref="editor"></div> -->
             
             <div class="box_2" v-show="video_show">
                 <div class="mask"></div>
@@ -22,15 +41,17 @@
                     <button @tap="queding()" class="btn_2">确定</button>
                 </div>
             </div>
-
-            <Album v-if="Album_show" :size="size" :seetype="seetype" :type="seetype" v-on:setlist="reslist"/>
         </div>
-        <div @tap="submit()" class="btn_1">保&nbsp;存</div>
+
+        <Album v-if="Album_show" :size="size" :seetype="seetype" :type="seetype" v-on:setlist="reslist"/>
+
     </div>
 </template>
 
 <script>
+import { isAndroid } from "@/assets/js/currency";
 import Album from '@/components/Album.vue';
+import $ from 'jquery'
 export default {
     name:'',
     components:{
@@ -38,6 +59,9 @@ export default {
     },
     data(){
         return{
+            font_size:'16px',
+            font_color:'#000000',
+            isAndroid:true,
             get_index:0,
             seetype:5,             //1店招  2环境 3商品 4描述 5其他    
             Album_show:false,
@@ -124,6 +148,7 @@ export default {
                     ]
                 ]
             },
+            html:'',
         }
     },
     computed:{
@@ -132,36 +157,53 @@ export default {
         }
     },
     methods:{
+        //选择字体大小
+        change_font_size(){
+            console.log(this.font_size);
+        },
+        //选择颜色
+        chnage_font_color(){
+            console.log(this.font_color);
+            this.$refs.font_color.click()
+        },
         //选择图片返回值
         reslist(list){
             console.log('取得参数',list);
             if(list.length>0){
-               
                 var html='';
                 for(var i=0;i<list.length;i++){
-                    html+='<p style="margin:0px;font-size:0px;"><img style="max-width: 100%;" width="100%" src="'+list[i].url+'" alt=""></p><p></p>';
+                    html+='<p style="margin:0px;font-size:0px;"><img style="max-width: 100%;" width="100%" src="'+list[i].url+'" alt=""></p><div style="min-height:20px;"></div>';
                 }
                  console.log(html)
                 // this.editor.setContent(html);
-                this.editor.execCommand('insertHtml', html)
+                // this.editor.execCommand('insertHtml', html)
+                $('.content_1').append(html);
             }
         },
         //选择图片
         set_Album_show(){
-            this.Album_show=true;
+            // this.Album_show=true;
+            this.$router.push('/introduction?Album_show=1')
+        },
+        //点击添加视频
+        add_shiping(){
+            this.video_show=true;
         },
         //确定视频
         queding(){
+            //http://www.runoob.com/try/demo_source/movie.mp4
             if(!this.video_url){
                 mui.toast('请输入视频链接。', {duration: "long",type: "div"});
             }else{
                 var html='<video width="100%" controls src="'+this.video_url+'">'+
                             '<source src="'+this.video_url+'" type="video/mp4">'+
                             '<source src="'+this.video_url+'" type="video/ogg">'+
-                        '</video>'
-                this.editor.execCommand('insertHtml', html);
+                        '</video><div style="min-height:20px;"></div>'
+                // this.editor.execCommand('insertHtml', html);
+                $('.content_1').append(html);
                 this.video_url='';
-                history.back();
+                this.video_show=false;
+                // history.back();  //这个是用于百度输入框的时候用
             }
         },
         //关闭视频输入框
@@ -169,7 +211,9 @@ export default {
             history.back();
         },
         submit(){
-            this.synopsis.remark=this.editor.getContent();
+            console.log(this.$refs.content_box.innerHTML);
+            // console.log($('.content_1').html());
+            this.synopsis.remark=this.$refs.content_box.innerHTML;
             this.synopsis.shopid=this.myshop.shopid;
             if(this.synopsis.id){
                 this.update()
@@ -227,16 +271,24 @@ export default {
                 if(x.data.code==200 && x.data.data){
                     this.synopsis=x.data.data;
                     var this_1=this;
-                    function set_editor(){
-                        try {
-                            this_1.editor.setContent(this_1.synopsis.remark);
-                        } catch (error) {
-                            setTimeout(()=>{
-                                set_editor()
-                            },1000)
-                        }
-                    }
-                    set_editor();
+                    var str=this.synopsis.remark;
+                    // var str='<div data-v-845c3686="" contenteditable="true" class="content_1" style="font-size: 24px; color: rgb(0, 0, 255);">sdfsdfsdf</div>';
+                    var div=$(str)
+                    this.font_size=div.css('font-size') ? div.css('font-size') : '16px';
+                    this.font_size= parseInt(this.font_size)>10 ? this.font_size : '10px';
+                    this.font_color=div.css('color') ? div.css('color') : '#000000';
+                    this.html=div.html();
+
+                    // function set_editor(){
+                    //     try {
+                    //         this_1.editor.setContent(this_1.synopsis.remark);
+                    //     } catch (error) {
+                    //         setTimeout(()=>{
+                    //             set_editor()
+                    //         },1000)
+                    //     }
+                    // }
+                    // set_editor();
                 }else{
                     mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
@@ -244,7 +296,8 @@ export default {
                 mui.toast('系统错误，稍后再试。', {duration: "long",type: "div"});
                  console.log('查询简介失败',err);
             })
-        }
+        },
+        
     },
     beforeCreate: function() {
         // console.group('------beforeCreate创建前状态------');
@@ -271,91 +324,95 @@ export default {
             this.video_show=true;
         }
 
-        //http://www.runoob.com/try/demo_source/movie.mp4
-        this.config.initialFrameHeight=this.$refs.editor.offsetHeight;
-        // this.config.initialFrameHeight=300;
+
+        //判断是不是安卓
+        // alert(isAndroid())
+
+        // //http://www.runoob.com/try/demo_source/movie.mp4
+        // this.config.initialFrameHeight=this.$refs.editor.offsetHeight;
+        // // this.config.initialFrameHeight=300;
         
-        this.editor = UE.getEditor('editor_1', this.config); // 初始化UM
-        UE.registerUI('添加视频',function(editor,uiName){
-            //-320px -20px
-            //注册按钮执行时的command命令，使用命令默认就会带有回退操作
-            editor.registerCommand(uiName,{
-                execCommand:function(){
-                    // 1店招  2环境 3商品 4描述 5其他
-                    this_1.$router.push('/introduction?video_show=1');
-                    // alert('添加视频链接');
-                    // var html='<video width="100%" controls src="http://www.runoob.com/try/demo_source/movie.mp4">'+
-                    //             '<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4">'+
-                    //             '<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/ogg">'+
-                    //         '</video>'
-                    // this_1.editor.execCommand('insertHtml', html)
-                }
-            });
-            //创建一个button
-            var btn = new UE.ui.Button({
-                //按钮的名字
-                name:uiName,
-                //提示
-                title:uiName,
-                //需要添加的额外样式，指定icon图标，这里默认使用一个重复的icon
-                cssRules :'background-position: -320px -20px;',
-                //点击时执行的命令
-                onclick:function () {
-                    //这里可以不用执行命令,做你自己的操作也可
-                    editor.execCommand(uiName);
-                }
-            });
-            //当点到编辑内容上时，按钮要做的状态反射
-            editor.addListener('selectionchange', function () {
-                var state = editor.queryCommandState(uiName);
-                if (state == -1) {
-                    btn.setDisabled(true);
-                    btn.setChecked(false);
-                } else {
-                    btn.setDisabled(false);
-                    btn.setChecked(state);
-                }
-            });
-            //因为你是添加button,所以需要返回这个button
-            return btn;
-        })
-        UE.registerUI('上传图片',function(editor,uiName){
-            //注册按钮执行时的command命令，使用命令默认就会带有回退操作
-            editor.registerCommand(uiName,{
-                execCommand:function(){
-                    // alert('添加图片')
-                    this_1.$router.push('/introduction?Album_show=1')
-                    // 1店招  2环境 3商品 4描述 5其他
-                }
-            });
-            //创建一个button
-            var btn = new UE.ui.Button({
-                //按钮的名字
-                name:uiName,
-                //提示
-                title:uiName,
-                //需要添加的额外样式，指定icon图标，这里默认使用一个重复的icon
-                cssRules :'background-position: -380px 0px;',
-                //点击时执行的命令
-                onclick:function () {
-                    //这里可以不用执行命令,做你自己的操作也可
-                    editor.execCommand(uiName);
-                }
-            });
-            //当点到编辑内容上时，按钮要做的状态反射
-            editor.addListener('selectionchange', function () {
-                var state = editor.queryCommandState(uiName);
-                if (state == -1) {
-                    btn.setDisabled(true);
-                    btn.setChecked(false);
-                } else {
-                    btn.setDisabled(false);
-                    btn.setChecked(state);
-                }
-            });
-            //因为你是添加button,所以需要返回这个button
-            return btn;
-        })
+        // this.editor = UE.getEditor('editor_1', this.config); // 初始化UM
+        // UE.registerUI('添加视频',function(editor,uiName){
+        //     //-320px -20px
+        //     //注册按钮执行时的command命令，使用命令默认就会带有回退操作
+        //     editor.registerCommand(uiName,{
+        //         execCommand:function(){
+        //             // 1店招  2环境 3商品 4描述 5其他
+        //             this_1.$router.push('/introduction?video_show=1');
+        //             // alert('添加视频链接');
+        //             // var html='<video width="100%" controls src="http://www.runoob.com/try/demo_source/movie.mp4">'+
+        //             //             '<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4">'+
+        //             //             '<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/ogg">'+
+        //             //         '</video>'
+        //             // this_1.editor.execCommand('insertHtml', html)
+        //         }
+        //     });
+        //     //创建一个button
+        //     var btn = new UE.ui.Button({
+        //         //按钮的名字
+        //         name:uiName,
+        //         //提示
+        //         title:uiName,
+        //         //需要添加的额外样式，指定icon图标，这里默认使用一个重复的icon
+        //         cssRules :'background-position: -320px -20px;',
+        //         //点击时执行的命令
+        //         onclick:function () {
+        //             //这里可以不用执行命令,做你自己的操作也可
+        //             editor.execCommand(uiName);
+        //         }
+        //     });
+        //     //当点到编辑内容上时，按钮要做的状态反射
+        //     editor.addListener('selectionchange', function () {
+        //         var state = editor.queryCommandState(uiName);
+        //         if (state == -1) {
+        //             btn.setDisabled(true);
+        //             btn.setChecked(false);
+        //         } else {
+        //             btn.setDisabled(false);
+        //             btn.setChecked(state);
+        //         }
+        //     });
+        //     //因为你是添加button,所以需要返回这个button
+        //     return btn;
+        // })
+        // UE.registerUI('上传图片',function(editor,uiName){
+        //     //注册按钮执行时的command命令，使用命令默认就会带有回退操作
+        //     editor.registerCommand(uiName,{
+        //         execCommand:function(){
+        //             // alert('添加图片')
+        //             this_1.$router.push('/introduction?Album_show=1')
+        //             // 1店招  2环境 3商品 4描述 5其他
+        //         }
+        //     });
+        //     //创建一个button
+        //     var btn = new UE.ui.Button({
+        //         //按钮的名字
+        //         name:uiName,
+        //         //提示
+        //         title:uiName,
+        //         //需要添加的额外样式，指定icon图标，这里默认使用一个重复的icon
+        //         cssRules :'background-position: -380px 0px;',
+        //         //点击时执行的命令
+        //         onclick:function () {
+        //             //这里可以不用执行命令,做你自己的操作也可
+        //             editor.execCommand(uiName);
+        //         }
+        //     });
+        //     //当点到编辑内容上时，按钮要做的状态反射
+        //     editor.addListener('selectionchange', function () {
+        //         var state = editor.queryCommandState(uiName);
+        //         if (state == -1) {
+        //             btn.setDisabled(true);
+        //             btn.setChecked(false);
+        //         } else {
+        //             btn.setDisabled(false);
+        //             btn.setChecked(state);
+        //         }
+        //     });
+        //     //因为你是添加button,所以需要返回这个button
+        //     return btn;
+        // })
 
     },
     activated() {
@@ -370,7 +427,7 @@ export default {
         // console.group('beforeDestroy 销毁前状态===============》');
     },
     destroyed: function() {
-        this.editor.destroy()
+        // this.editor.destroy()
         // console.group('destroyed 销毁完成状态===============》');
     },
     watch: {
@@ -406,19 +463,83 @@ export default {
 //     height: 100%;
 // }
 .mui-content{
-    // background: #ffffff;
-    // height: 100%;
-    padding-bottom: 44px;
+    display: flex;
+    flex-direction: column;
+}
+// -webkit-user-select:text
+.contenteditable_box{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #c8c8ca;
+    border-radius: 3px;
+    .header{
+        flex-shrink: 0;
+        display: flex;
+        background: #f4f4f4;
+        padding: 3px;
+        flex-wrap: wrap;
+        div{
+            height: 22px;
+            font-size: 12px;
+            padding: 0px 3px;
+            line-height: 22px;
+            color: #565656;
+            margin: 0px 3px;
+        }
+        select{
+            height: 100%;
+            padding: 0px 5px;
+            margin: 0px;
+            border:1px solid #c8c8ca;
+            appearance: menulist;
+        }
+        .bg{
+            width: 22px;
+            background-image: url('/image/icons.png');
+        }
+        .zitiyanse{
+            background-position: -760px 0;
+        }
+        .shiping{
+            background-position: -320px -20px;
+        }
+        .tupian{
+            background-position: -380px 0px;
+        }
+        .font_color{
+        }
+    }
+    .content_box{
+        flex-grow: 1;
+        overflow: auto;
+        position: relative;
+    }
+    .content_1{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background: #ffffff;
+        min-height: 200px;
+        padding: 5px;
+        // -webkit-user-select:text;
+        user-select: text;
+        -webkit-user-select:text
+    }
+    
+    .content_1:empty:before{
+        content: '说点啥好呢？'; 
+        color: gray; 
+    }
+
 }
 #editor_1{
     height: 100%;
     overflow: auto;
 }
 .btn_1{
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
+    flex-shrink: 0;
     height: 44px;
     background: $header_background;
     font-size: 14px;
@@ -476,4 +597,13 @@ export default {
     }
 }
 
+</style>
+
+<style lang="scss">
+.contenteditable_box{
+    .content_1 *{
+        user-select: text;
+        -webkit-user-select:text
+    }
+}
 </style>

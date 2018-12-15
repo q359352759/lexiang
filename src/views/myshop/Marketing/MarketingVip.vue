@@ -2,7 +2,7 @@
     <div>
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">营销</h1>
+            <h1 class="mui-title">专享营销</h1>
             <span @tap="addMarketingVip()" class="tite_1">添加商品</span>
         </header>
         <div class="mui-content mui-fullscreen">

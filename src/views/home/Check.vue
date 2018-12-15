@@ -21,7 +21,7 @@
                 <li class="icon_2" @tap="dikou_show(true)"><i class="mui-icon mui-icon-forward"></i></li>
             </ul>
 
-            <ul class="box_2 type_1" @tap="select_shangping()">
+            <ul class="box_2 type_1" @click="select_shangping()">
                 <li class="icon_box">
                     <i :class="{'active':payment_type==1}" class="icon iconfont icon-xuanze1"></i>
                 </li>
@@ -97,11 +97,13 @@
 
 <script>
 
-import {mapState,mapGetters,mapActions,mapMutations} from 'vuex';
+// import {mapState,mapGetters,mapActions,mapMutations} from 'vuex';
 
 import PurchaseChoice from '@/components/PurchaseChoice.vue';
 import {getDateStr} from '@/assets/js/currency.js';
-// import { mapState, mapGetters } from "vuex";
+
+import { openloading } from "@/assets/js/currency.js";
+
 export default {
     name:"",
     components:{
@@ -188,7 +190,7 @@ export default {
             return this.Total_price-this.zong_dikou
         },
         xingren_pingtai(){
-            var xingren_pingtai=this.xinren_dikou+(this.invitedsutotal.sutotal ? this.invitedsutotal.sutotal : 0);
+            var xingren_pingtai=this.xinren_dikou+(this.invitedsutotal ? this.invitedsutotal.sutotal : 0);
             var dikou=0;
             var kedikou=0
             var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
@@ -206,6 +208,8 @@ export default {
     },
     methods:{
         zhifu(){
+            
+                   
             let amount=0
             if(this.payment_type==0){
                 amount=this.money_shijizhifu
@@ -267,10 +271,21 @@ export default {
                     submitCommodityList:submitCommodity  //商品实体类       
                 };
             console.log(obj)
-            this.$request('/api-s/shops/shopping',obj,'post').then(x=>{
-                console.log('添加订单',x)
+
+            openloading(true)
+            this.$request('/api-s/shops/createOrders',obj,'post').then(x=>{
+                console.log('添加订单',x);
+                if(x.data.code==200){
+                    // this.$router.push({path:'/orders/order?ordreId='+x.data.data.id,push:{zhifu:2}});
+                    this.$router.push({name:'ordersOrder',query:{ordreId:x.data.data.id},params:{zhifu:1}});
+                }else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                }
+                openloading(false);
             }).catch(err=>{
                 console.log('添加订单错误',err);
+                mui.toast('系统错误稍后再试。', {duration: "long", type: "div" });
+                openloading(false)
             })
             // /api-s/shops/shopping
         },
@@ -393,7 +408,7 @@ export default {
         get_invitedsutotal(){
             this.$request('/api-u/users/invitedsutotal/findByUserid/'+this.userInfo.username,'','get').then(x=>{
                 console.log('平台红包信息',x);
-                if(x.data.code==200){
+                if(x.data.code==200 && x.data.data && x.data.data!=null){
                     this.invitedsutotal=x.data.data;
                 }
             }).catch(err=>{
@@ -422,9 +437,7 @@ export default {
 
             })
         },
-        ...mapActions({
-            order_set_lsit:'orders/order/set_list'
-        })
+        
     },
     beforeCreate: function() {    
         // console.group('------beforeCreate创建前状态------');
@@ -438,6 +451,7 @@ export default {
         try {
             this.userInfo=JSON.parse(localStorage.userInfo);
         } catch (error) {}
+        
         //查询店铺
         this.get_shop();
         //获取用户可使用红包
@@ -447,7 +461,6 @@ export default {
         //获取新人红包抵扣规则
         this.get_xinrenhongbao();
         
-        this.order_set_lsit();
         // /shops/redenvelope/findAll
         // console.log(getDateStr(-7));
         // this.$store.commit('shangPing/get_shangping',150)

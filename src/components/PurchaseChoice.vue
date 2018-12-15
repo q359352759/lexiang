@@ -258,7 +258,7 @@ export default {
 
             //计算店铺+平台
             var dianpu=0;
-            var pingtai=this.invitedsutotal.sutotal;
+            var pingtai=this.invitedsutotal ? this.invitedsutotal.sutotal : 0;
             var dianpu_pingtai=0
             if(this.xinren_hongbao.length>0){
                 dianpu=this.xinren_hongbao[0].redAmount
@@ -495,7 +495,7 @@ export default {
         get_invitedsutotal(){
             this.$request('/api-u/users/invitedsutotal/findByUserid/'+this.userInfo.username,'','get').then(x=>{
                 console.log('平台红包信息',x);
-                if(x.data.code==200){
+                if(x.data.code==200 && x.data.data && x.data.data!=null){
                     this.invitedsutotal=x.data.data;
                 }
             }).catch(err=>{

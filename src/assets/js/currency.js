@@ -173,6 +173,19 @@ function GetDistance(lat1,lng1,lat2,lng2){
     return s;
 }
 
+//浏览器类型及版本
+function isAndroid() {
+    var u = navigator.userAgent, app = navigator.appVersion;
+    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //g
+    var isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+    if (isAndroid) {
+        return true
+    }
+    if (isIOS) {
+        return false
+    }
+}
+
 export { 
     Get_URL_parameters, 
     dateFtt, 
@@ -182,5 +195,6 @@ export {
     bd_decrypt,
     convert,
     get_url,
-    GetDistance
+    GetDistance,
+    isAndroid
 };

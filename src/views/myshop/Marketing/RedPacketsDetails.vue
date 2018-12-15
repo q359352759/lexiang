@@ -68,7 +68,10 @@
                         </li>
                         <li>
                             <span class="cuxiao mui-pull-right">促销额：-0元</span>
-                            <span class="name_1">{{commodity.name}}</span>
+                            <div>
+                                商品：
+                                <span class="name_1">{{commodity.name}}</span>
+                            </div>
                         </li>
                     </ul>
                     <!-- 庆典 和 节日红包详情 -->
@@ -150,6 +153,7 @@
 
             
             <div @click="RedEnvelopeIssue()" v-if="type==0 || type==5" class="btn_1">修改红包内容</div>
+            <div @click="RedEnvelopeIssue()" v-if="type==1" class="btn_1">发布红包</div>
         </div>
     </div>
 </template>
@@ -187,7 +191,11 @@ export default {
         },
         //跳转修改红包页面
         RedEnvelopeIssue(){
-            this.$router.push('/RedEnvelopeIssue?id='+this.id+'&url_type='+this.type);
+            if(this.type==1){
+                this.$router.push('/RedEnvelopeIssue?type='+this.type);
+            }else{
+                this.$router.push('/RedEnvelopeIssue?id='+this.id+'&url_type='+this.type);
+            }
         },
         //根据Id查询红包
         get_redenvelope_id(){
@@ -228,7 +236,9 @@ export default {
     },
     mounted(){
         console.log(this.$route);
-        this.type=this.$route.query.type;
+        if(this.$route.query.type){
+            this.type=this.$route.query.type;
+        }
         this.id=this.$route.query.id;
         this.shixiao=this.$route.query.shixiao ? this.$route.query.shixiao : '';
         //根据Id查询红包

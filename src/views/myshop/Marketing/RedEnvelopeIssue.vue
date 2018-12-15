@@ -10,7 +10,7 @@
                 <span v-if="url_type==3">签到红包</span>
                 <span v-if="url_type==4">庆典红包</span>
                 <span v-if="url_type==5">生日红包</span>
-                <span v-if="!url_type">红包</span>
+                <span v-if="!url_type && url_type!=0">红包</span>
             </h1>
             <div class="wenhao" @tap="hongBaoShuoMing()">
                 <i class="icon iconfont icon-wenhao"></i>
@@ -31,7 +31,6 @@
 					</a>
 				</li>
                 <li v-if="id && !url_type" class="mui-table-view-cell item" >
-					<!-- <a class="mui-navigate-right item" @tap="select_type()"> -->
                         <span class="title_1">红包类型：</span>
                         <span v-if="type==0">店铺新人红包</span>
                         <span v-if="type==1">商品红包</span>
@@ -39,7 +38,6 @@
                         <span v-if="type==3">签到红包</span>
                         <span v-if="type==4">庆典红包</span>
                         <span v-if="type==5">生日红包</span>
-					<!-- </a> -->
 				</li>
 
 
@@ -733,6 +731,11 @@ export default {
             this.url_type=query.type;
             var list=['新人店铺红包','商品红包','节日红包','签到红包','庆典红包','生日红包']
             this.Red_envelopes.headline=list[this.type];
+        }else if(query.url_type){
+            this.type=query.url_type;
+            this.url_type=query.url_type;
+            var list=['新人店铺红包','商品红包','节日红包','签到红包','庆典红包','生日红包']
+            this.Red_envelopes.headline=list[this.url_type];
         }
         //如果有id就是详情
         if(query.id){

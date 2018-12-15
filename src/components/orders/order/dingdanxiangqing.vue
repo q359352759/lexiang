@@ -3,21 +3,36 @@
         <div class="header">订单信息</div>
         <ul>
             <li>订单编号：sdfhw213213897s</li>
-            <li>下单时间：2018.12.08 09:58:32</li>
-            <li>支付方式：微信支付（孟哥）</li>
-            <li>订单金额：200元</li>
-            <li>
-                红包抵扣<span class="实际支付 mui-pull-right">实际支付：76元</span>
+            <li>下单时间：{{dingdanxiangqing.createTime | fitler_time}}</li>
+            <li>支付方式：{{dingdanxiangqing.payName}}</li>
+            <li>订单金额：{{dingdanxiangqing.paymentAmount}}</li>
+            <li v-if="dingdanxiangqing.state==1">
+                红包抵扣<span class="实际支付 mui-pull-right">实际支付：0元</span>
             </li>
         </ul>
     </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import { dateFtt } from "@/assets/js/currency.js";
 export default {
     name:"",
     data(){
         return{}
+    },
+    filters:{
+        fitler_time(time){
+            if(!time){
+                return time;
+            }
+            return dateFtt(time,' yyyy.MM.dd hh:mm:ss')
+        }
+    },
+    computed:{
+        ...mapGetters({
+            dingdanxiangqing:'orders/order/dingdanxiangqing',   
+        })
     }
 }
 </script>

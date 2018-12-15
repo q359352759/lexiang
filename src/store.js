@@ -26,6 +26,8 @@ import router from "./router";
 import shangPing from "./vuex/shangPing";       //商品相关接口
 import hongbao from "./vuex/hongbao";           //红包相关接口
 
+import shop from "@/vuex/shop.js";
+
 import orders from '@/vuex/orders.js'
 
 
@@ -36,6 +38,7 @@ Vue.use(Vuex);
 
 var vuex = new Vuex.Store({
     state: {
+        weixin_ready:false,     //微信准备就绪
         clientX: 100, //远点导航X
         clientY: 450, //远点导航Y
         isweixin: true,
@@ -217,7 +220,8 @@ var vuex = new Vuex.Store({
         setShopTree(){
             axios({
                 method:'get',
-                url:'http://122.114.169.178:10002/api-s/shops/tree/findAll',
+                // url:'http://122.114.169.178:10002/api-s/shops/tree/findAll',
+                url:'/api-s/shops/tree/findAll',
             }).then(x=>{
                 console.log('获取店铺类型',x);
                 //增加一个key
@@ -236,7 +240,7 @@ var vuex = new Vuex.Store({
                     localStorage.shops_tree_list=JSON.stringify(list)
                     this.state.shops_tree_list=list;
                 }else{
-                    console.log('获取店铺类型失败',error)
+                    console.log('获取店铺类型失败',x);
                 }
             }).catch(error=>{
                 console.log('获取店铺类型失败',error)
@@ -289,6 +293,7 @@ var vuex = new Vuex.Store({
     },
     modules: {
         shangPing:shangPing,
+        shop:shop,
         hongbao:hongbao,
         orders:orders
     },

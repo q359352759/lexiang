@@ -22,7 +22,7 @@
                             <li>
                                 <h1>
                                     <div class="mui-pull-right shangjia">
-                                        <span :class="{'active':x.state==1}">
+                                        <span :class="{'active':x.state==1}" @click="updata_state(x)">
                                             <span v-if="x.state==1">(已上架)</span>
                                             <span v-if="x.state==0">(已下架)</span>                                            
                                         </span>
@@ -124,6 +124,7 @@ export default {
         },
         //修改商品接口
         updata_state(x){
+            openloading(true);
             var obj=new Object();
             for(var key in x){
                 obj[key]=x[key]
@@ -138,13 +139,16 @@ export default {
             }).then(res=>{
                 if(res.data.code==200){
                     x.state=x.state==0 ? 1 : 0;
+                    mui.toast('设置成功。', { duration: 2000, type: "div" });
                 }else{
                     mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
                 console.log(res);
+                openloading(false)
             }).catch(err=>{
                 mui.toast('系统错误。', { duration: 2000, type: "div" });
                 console.lgo(err);
+                openloading(false);
             })
         },
         commodity_update(obj){

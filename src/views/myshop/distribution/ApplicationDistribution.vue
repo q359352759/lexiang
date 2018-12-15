@@ -68,7 +68,7 @@
                 您还未发布分销员招募信息，开通分销功能后，让更多销售员来免费替你推广。
             </div>
 
-            <div class="btn_1">马上开通</div>
+            <div class="btn_1">申请开通</div>
         </div>
     </div>
 </template>
