@@ -31,7 +31,7 @@ export default {
              *
              */
             request('/api-s/shops/findEffective',obj.query,'get').then(x=>{
-                obj.fc(x);
+                obj.fc(x.data);
             }).catch(err=>{
                 obj.fc(err)
             })

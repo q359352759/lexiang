@@ -26,7 +26,7 @@ import router from "./router";
 import shangPing from "./vuex/shangPing";       //商品相关接口
 import hongbao from "./vuex/hongbao";           //红包相关接口
 
-// import orders from '@/vuex/orders.js'
+import orders from '@/vuex/orders.js'
 
 
 import request from '@/api/request'
@@ -290,7 +290,7 @@ var vuex = new Vuex.Store({
     modules: {
         shangPing:shangPing,
         hongbao:hongbao,
-        // orders:orders
+        orders:orders
     },
 });
 // store.commit( 'setIsWeixin', 1);

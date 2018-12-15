@@ -42,7 +42,7 @@
                 <li class="youhui" v-show="payment_type==1">已优惠：{{zong_dikou}}</li>
             </ul>
             
-            <div class="box_3">
+            <div class="box_3" @click="zhifu()">
                 支&nbsp;&nbsp;付
             </div>
             
@@ -96,6 +96,9 @@
 </template>
 
 <script>
+
+import {mapState,mapGetters,mapActions,mapMutations} from 'vuex';
+
 import PurchaseChoice from '@/components/PurchaseChoice.vue';
 import {getDateStr} from '@/assets/js/currency.js';
 // import { mapState, mapGetters } from "vuex";
@@ -199,10 +202,78 @@ export default {
             }
                 dikou=xingren_pingtai<kedikou ? xingren_pingtai : kedikou;
             return dikou;
-        }
+        },
     },
     methods:{
-        
+        zhifu(){
+            let amount=0
+            if(this.payment_type==0){
+                amount=this.money_shijizhifu
+            }else{
+                amount=this.shijizhifu
+            }
+            if(amount==0){
+                mui.toast(this.payment_type==0 ? '请输入金额' : '请选择商品', {duration: "long", type: "div" });
+                return
+            }
+            console.log(amount);
+            // var submitCommodity={
+            //             shopCommodity:'',   //商品实体类
+            //             shopRedEnvelope:"", //红包实体类
+            //             deduction:'',       //抵扣金额
+            //             actualPayment:'',   //单个商品的实际金额
+            //         };
+            var submitCommodity=[];
+            //商品红包抵扣的商品
+            this.shangpin_dikou.forEach(item=>{
+                let obj={
+                        shopCommodity:item,                         //商品实体类
+                        shopRedEnvelope:[item.hongbao],               //红包实体类
+                        deduction:item.dikou ? item.dikou : 0,      //抵扣金额
+                        actualPayment:item.dikou ? (item.sellingPrice-item.dikou) : item.sellingPrice   //单个商品的实际金额
+                    }
+                submitCommodity.push(obj) 
+            })
+            //其他红包或者没有抵扣的商品
+            
+            this.qita_dikou.forEach(item=>{
+                var shopRedEnvelope=[];
+                if(item.hongbao==1){
+                    shopRedEnvelope[0]=this.shengri_hongbao.length>0 ? this.shengri_hongbao[0] : '';
+                }else if(item.hongbao==2){
+                    shopRedEnvelope[0]=this.qingdian_hongbao.length>0 ? this.qingdian_hongbao[0] : '';
+                }else if(item.hongbao==4){
+                    shopRedEnvelope[0]=this.jieri_hongbao.length>0 ? this.jieri_hongbao[0] : '';
+                }else if(item.hongbao==6){
+                    if(item.dianpu && this.xinren_hongbao.length>0){    //店铺红包
+                        shopRedEnvelope.push(this.xinren_hongbao[0])
+                    }
+                    if(item.pingtai){
+                        shopRedEnvelope.push(this.invitedsutotal)
+                    }
+                }
+                    let obj={
+                        shopCommodity:item,
+                        shopRedEnvelope:shopRedEnvelope,
+                        deduction:item.dikou ? item.dikou : 0,
+                        actualPayment:item.dikou ? (item.sellingPrice-item.dikou) : item.sellingPrice   //单个商品的实际金额
+                    }
+                submitCommodity.push(obj);
+            })
+            let obj={
+                    appUser:this.userInfo,         //用户
+                    shopBasics:this.shop,      //店铺信息
+                    amount:amount,           //金额
+                    submitCommodityList:submitCommodity  //商品实体类       
+                };
+            console.log(obj)
+            this.$request('/api-s/shops/shopping',obj,'post').then(x=>{
+                console.log('添加订单',x)
+            }).catch(err=>{
+                console.log('添加订单错误',err);
+            })
+            // /api-s/shops/shopping
+        },
         //计算抵扣
         jisuan_dikou(key){
             // console.log(key)
@@ -234,7 +305,12 @@ export default {
             this.zong_dikou=this.$refs.child.zong_dikou
             this.Total_price=this.$refs.child.Total_price
             this.shangpin_dikou=this.$refs.child.shangpin_dikou;
-            this.qita_dikou=this.$refs.child.qita_dikou
+            this.qita_dikou=this.$refs.child.qita_dikou;
+
+            //获取其他红包抵扣类型
+            this.qita=this.$refs.child.dikou_type;
+            //判断是否使用了店铺+平台  1表示只用了店铺 2表示店铺+平台
+            this.dianpu_pingtai=this.$refs.child.dianpu_pingtai;
             // console.log(this.$refs.child.zong_dikou);
             // console.log(this.$refs.child.shangpin_dikou);
             // console.log(this.$refs.child.qita_dikou);
@@ -345,7 +421,10 @@ export default {
             }).catch(err=>{
 
             })
-        }
+        },
+        ...mapActions({
+            order_set_lsit:'orders/order/set_list'
+        })
     },
     beforeCreate: function() {    
         // console.group('------beforeCreate创建前状态------');
@@ -367,6 +446,8 @@ export default {
         this.get_invitedsutotal();
         //获取新人红包抵扣规则
         this.get_xinrenhongbao();
+        
+        this.order_set_lsit();
         // /shops/redenvelope/findAll
         // console.log(getDateStr(-7));
         // this.$store.commit('shangPing/get_shangping',150)

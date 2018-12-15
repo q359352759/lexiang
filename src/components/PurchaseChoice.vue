@@ -281,13 +281,30 @@ export default {
             }else if(this.dikou_type==6){
                 honghao_kedikou=dianpu_pingtai
             }
+            
             // console.log(this.dikou_type,honghao_kedikou)
 
             list.forEach(item=>{
                 if(honghao_kedikou>=0){
                     var shiji_dikou=item.deduction>honghao_kedikou ? honghao_kedikou : item.deduction;
                     item.dikou=shiji_dikou;
-                    // item.hongbao=[]
+                    item.hongbao=this.dikou_type;
+                    if(this.dikou_type==6){
+                        if(dianpu>=shiji_dikou){   //店铺抵扣还有剩余
+                            item.dianpu=shiji_dikou;
+                        }else if(dianpu<shiji_dikou && dianpu>0){
+                            //交叉抵扣
+                            item.dianpu=dianpu;
+                            item.pingtai=pingtai>(shiji_dikou-dianpu) ? shiji_dikou-dianpu : pingtai;;
+                            pingtai=pingtai-shiji_dikou;
+                        }else if(pingtai>0){
+                            item.pingtai=pingtai>shiji_dikou ? shiji_dikou : pingtai;
+                            pingtai=pingtai-shiji_dikou;
+                        }
+                        dianpu=dianpu-shiji_dikou
+                        // 抵扣 100
+                        // 店铺剩余 30
+                    }
                     honghao_kedikou=honghao_kedikou-shiji_dikou;
                 }
             })
@@ -326,7 +343,6 @@ export default {
                     list_1.push(obj)
                 }
             })
-
             var obj={
                     shangpin_dikou:list,
                     // shangpin_dikou:[],

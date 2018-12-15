@@ -45,7 +45,7 @@ export default function request(url, data = {}, method = 'post',type) {
       axios(options)
         .then(res => {
           console.log('返回数据', res)
-          resolve(res.data)
+          resolve(res)
         })
         .catch(error => {
           reject()
