@@ -12,8 +12,14 @@ export default {
         openid:'',
         dingdanxiangqing:{},        //订单详情
         xiangqing_2:{},
+        // ...mapState({
+        //     test:state=>state.orders.order.test
+        // })
     },
     getters:{
+        // ...mapGetters({
+        //     test:'orders/order/test',   //过滤后的商品
+        // }),
         test(state){
             // this.$store.getters.doneTodos  这种写法和下面的写法不一样
             return 'order_getters测试';

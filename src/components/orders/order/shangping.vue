@@ -11,14 +11,14 @@
                         <span class="shuliang mui-pull-right">x{{item.number}}</span>
                     </div>
                     <div>￥{{item.sellingPrice}}</div>
-                    <div>红包抵扣：0元</div>
+                    <div>红包抵扣：{{item.deduction}}元</div>
                 </div>
                 <div class="zhuanxiang">
-                    <img src="image/xingren.png" alt="" srcset="">
+                    <!-- <img src="image/xingren.png" alt="" srcset=""> -->
                 </div>
                 <div class="dikou"></div>
             </li>
-            <li class="dikou">红包抵扣：商品红包-8元</li>
+            <li class="dikou">红包抵扣：商品红包-0元</li>
         </ul>
     </div>
 </template>

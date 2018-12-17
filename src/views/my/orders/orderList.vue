@@ -25,48 +25,51 @@
                     <span @click="select_type(5)" :class="{'active':type==5}">售后</span>
                 </li>
             </ul>
-
-            <div class="box_2" v-for="(item, index) in 3" :key="index">
-                <ul class="header">
-                    <li class="daipingjia mui-pull-right">
-                        待评价
-                    </li>
-                    <li class="shop">
-                        <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
-                        <span>mc火锅店</span>
-                        <i class="icon_right mui-icon mui-icon-arrowright"></i>
-                    </li>
-                </ul>
-                <ul class="shangpng">
-                    <li v-for="(item, index) in 2" :key="index">
-                        <div class="img_box">
-                            <img src="image/43.png" alt="" srcset="">
-                        </div>
-                        <div class="text_box">
-                            <div class="name">
-                                毛肚
-                                <span class="shuliang mui-pull-right">x2</span>
+            <div class="content_1">
+                
+                <div class="box_2" v-for="(item, index) in 5" :key="index">
+                    <ul class="header">
+                        <li class="daipingjia mui-pull-right">
+                            待评价
+                        </li>
+                        <li class="shop">
+                            <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
+                            <span>mc火锅店</span>
+                            <i class="icon_right mui-icon mui-icon-arrowright"></i>
+                        </li>
+                    </ul>
+                    <ul class="shangpng">
+                        <li v-for="(item, index) in 2" :key="index">
+                            <div class="img_box">
+                                <img src="image/43.png" alt="" srcset="">
                             </div>
-                            <div>￥18</div>
-                            <div>红包抵扣：8元</div>
-                        </div>
-                        <div class="zhuanxiang">
-                            <img src="image/xingren.png" alt="" srcset="">
-                        </div>
-                    </li>
-                </ul>
-                <ul class="footer">
-                    <li class="text_1">共计3个商品，合计94元，优惠18元。</li>
-                    <li class="btn_1 quxiao">取消</li>
-                    <li @click="order()" class="btn_1 zhifu">支付</li>
-                </ul>
+                            <div class="text_box">
+                                <div class="name">
+                                    毛肚
+                                    <span class="shuliang mui-pull-right">x2</span>
+                                </div>
+                                <div>￥18</div>
+                                <div>红包抵扣：8元</div>
+                            </div>
+                            <div class="zhuanxiang">
+                                <img src="image/xingren.png" alt="" srcset="">
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="footer">
+                        <li class="text_1">共计3个商品，合计94元，优惠18元。</li>
+                        <li class="btn_1 quxiao">取消</li>
+                        <li @click="order()" class="btn_1 zhifu">支付</li>
+                    </ul>
+                </div>
             </div>
-
+            
         </div>
     </div>
 </template>
 
 <script>
+import { mapGetters,mapActions } from "vuex";
 export default {
     name:'',
     data(){
@@ -74,18 +77,49 @@ export default {
             type:0,
         }
     },
+    computed:{
+        ...mapGetters({
+            list_all:'orders/orderList/list_all',   //全部
+            list_0:'orders/orderList/list_0',   //待支付
+            list_2:'orders/orderList/list_2',   //带评价
+        })
+    },
     methods:{
+        ...mapActions({
+            get_orderList:'orders/orderList/get_orderList',
+            init_state:'orders/orderList/init_state'    
+        }),
         select_type(x){
             this.type=x;
         },
         order(){
             this.$router.push('/orders/order');
+        },
+        //获取列表
+        get_list(){
+
         }
+    },
+    mounted () {
+        this.init_state().then(()=>{
+            this.get_orderList(this.list_all);
+        })
     }
 }
 </script>
 
 <style lang="scss" scoped>
+.mui-content{
+    display: flex;
+    flex-direction: column;
+    .box_1{
+        flex-shrink:0; 
+    }
+    .content_1{
+        flex-grow: 1;
+        overflow: auto;
+    }
+}
 .box_1{
     display: flex;
     text-align: center;

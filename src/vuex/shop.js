@@ -8,7 +8,9 @@ export default {
         shop:{},    //店铺
     },
     getters:{
-
+        shop(state){
+            return state.shop;
+        }
     },
     mutations:{
         set_shop(state,obj){

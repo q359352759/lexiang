@@ -36,7 +36,7 @@ import dingdanxiangqing from '@/components/orders/order/dingdanxiangqing.vue';
 import orderHeader from '@/components/orders/order/orderHeader.vue';
 // 商品
 import shangping from '@/components/orders/order/shangping.vue';
-//
+//商品支付底部
 import shangpingzhifu from '@/components/orders/order/shangpingzhifu.vue';
 
 
@@ -89,8 +89,8 @@ export default {
             }
             //订单详情
             this.findShopOrderByIda().then(x=>{
-                console.log('查询店铺')
-                this.get_shop(this.findShopOrderByIda.shopid);
+                console.log('查询店铺',x);
+                // this.get_shop(x.data.data.shopid);
             })
             this.findShopOrdersById();
         }).catch(err=>{

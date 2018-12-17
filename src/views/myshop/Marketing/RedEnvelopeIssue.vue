@@ -251,7 +251,7 @@
 import ShopClassification from '@/components/selectCommodity.vue'
 // 红包通用说明
 import hongBaoShuoMing from '@/components/hongBaoShuoMing.vue'
-import {openloading,dateFtt} from '@/assets/js/currency'
+import {openloading,dateFtt,getDateStr} from '@/assets/js/currency'
 
 export default {
     name:'',
@@ -401,7 +401,7 @@ export default {
                 this.Red_envelopes[x]=res.value;
                 if(this.type==3){
                     if(x=='signInEndTime'){
-                        this.Red_envelopes.startTime=res.value;
+                        this.Red_envelopes.startTime=getDateStr(1,res.value);
                     }
                 }
             })

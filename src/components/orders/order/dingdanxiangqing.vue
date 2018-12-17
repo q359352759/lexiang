@@ -10,16 +10,19 @@
                 红包抵扣<span class="实际支付 mui-pull-right">实际支付：0元</span>
             </li>
         </ul>
+        <!-- <div class="img"></div> -->
     </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapState,mapGetters } from "vuex";
 import { dateFtt } from "@/assets/js/currency.js";
 export default {
     name:"",
     data(){
-        return{}
+        return{
+           
+        }
     },
     filters:{
         fitler_time(time){
@@ -56,6 +59,11 @@ export default {
         font-weight: bold;
     }
 }
+// .img{
+//     width: 50px;
+//     height: 50px;
+//     background: url('~@/assets/image/2.png');
+// }
 </style>
 
 

@@ -32,6 +32,7 @@
 
 <script>
 import { Get_URL_parameters } from "@/assets/js/currency";
+import { mapGetters,mapState } from "vuex";
 export default {
     name: "",
     data() {
@@ -138,7 +139,7 @@ export default {
             console.log("jssdk签名", x);
             var data = x.data;
             wx.config({
-                debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
                 appId: data.appId, // 必填，公众号的唯一标识
                 timestamp: data.timestamp, // 必填，生成签名的时间戳
                 nonceStr: data.nonceStr, // 必填，生成签名的随机串
@@ -157,7 +158,34 @@ export default {
             console.log(err);
         });
 
-        
+
+        //初始化一些vuex数据
+        // 判断是不是微信
+        var agent = navigator.userAgent.toLowerCase();
+        if (agent.match(/MicroMessenger/i) == "micromessenger") {
+            this.$store.state.isweixin = true;
+        } else {
+            this.$store.state.isweixin = false;
+        }
+        //登录信息
+        var loginDate = localStorage.loginDate;
+        this.$store.commit("setloginDate", loginDate);
+        //微信登录的信息
+        var weixinobj = localStorage.weixin;
+        this.$store.commit("setweixinobj", weixinobj);
+        //查询店铺类型
+        this.$store.commit('setShopTree')
+        //获取地区
+        if (localStorage.area && localStorage.area != "" && localStorage.area != undefined && localStorage.area != "undefined") {
+            this.$store.state.area = JSON.parse(localStorage.area);
+        }
+        //初始化分类
+        try {
+            var list=JSON.parse(localStorage.shops_tree_list)
+            this.$store.state.shops_tree_list=list;
+        } catch (error) {}
+        //获取地区
+        this.$store.dispatch('get_area');
 
         // console.group('------mounted 挂载结束状态------');
     },

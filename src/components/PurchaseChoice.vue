@@ -57,7 +57,7 @@
                     <div class="mui-text-right">
                         <button @tap="queding()" class="btn_1">确定</button>
                     </div>
-                </li>            
+                </li>
             </ul>
             <loading :loadingtype="shangping.loading" :end="!shangping.loading && shangping.list.length==shangping.total && shangping.total!=0" :nodata="!shangping.loading && shangping.total==0"/>
         </div>
@@ -103,16 +103,21 @@
                     </div>
                 </div>
                 <div class="footer_1">
+
                     <div class="select_1">
-                        <div @click="change_select(true)">
+                        <div v-show="!youwu_hongbao">无红包可抵扣</div>
+                        <div @click="change_select(true)" v-show="youwu_hongbao">
                             <span v-show="dikou_type==1">店铺生日红包</span>
                             <span v-show="dikou_type==2">庆典红包</span>
                             <span v-show="dikou_type==3">签到红包</span>
                             <span v-show="dikou_type==4">店铺节日红包</span>
                             <span v-show="dikou_type==5">平台节日红包</span>
                             <span v-show="dikou_type==6">
-                                {{dianpu_pingtai==1 ? "店铺红包" : '店铺+平台红包'}}
-                                
+                                <span v-show="dianpu_pingtai==1">店铺红包</span>
+                                <span v-show="dianpu_pingtai!=1">
+                                    <span v-if="xinren_hongbao.length>0 && invitedsutotal.sutotal && invitedsutotal.sutotal>0">店铺+平台红包</span>
+                                    <span v-if="xinren_hongbao.length==0 && invitedsutotal.sutotal && invitedsutotal.sutotal>0">平台红包</span>
+                                </span>                                
                             </span>
                             <i class="mui-icon mui-icon-arrowup"></i>
                         </div>
@@ -129,7 +134,14 @@
                             </li>
                             <!-- 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包 -->
                             <li @click="change_select(false,6)" >
-                                <div>{{dianpu_pingtai==1 ? "店铺红包":"店铺+平台红包"}}</div>
+                                <div>
+                                    <!-- {{dianpu_pingtai==1 ? "店铺红包":"店铺+平台红包"}} -->
+                                    <span v-show="dianpu_pingtai==1">店铺红包</span>
+                                    <span v-show="dianpu_pingtai!=1">
+                                        <span v-if="xinren_hongbao.length>0 && invitedsutotal.sutotal && invitedsutotal.sutotal>0">店铺+平台红包</span>
+                                        <span v-if="xinren_hongbao.length==0 && invitedsutotal.sutotal && invitedsutotal.sutotal>0">平台红包</span>
+                                    </span> 
+                                </div>
                                 <div v-if="dianpu_pingtai==1">{{invitedsutotal.sutotal}}元</div>
                                 <div v-if="dianpu_pingtai==2">
                                     {{xinren_hongbao.length>0 ? xinren_hongbao[0].redAmount+invitedsutotal.sutotal : invitedsutotal.sutotal}}
@@ -199,6 +211,14 @@ export default {
         }
     },
     computed:{
+        //判断是否有红包
+        youwu_hongbao(){
+            if(!this.invitedsutotal.sutotal && this.shangpin_hongbao.length==0 && this.shengri_hongbao.length==0 && this.qingdian_hongbao.length==0 && this.jieri_hongbao.length==0 && this.xinren_hongbao.length==0){
+                return false;
+            }else{
+                return true
+            }
+        },
         //选择的商品
         new_list(){
             return this.shangping.list.filter(x => (x.number && x.number>0));
@@ -368,7 +388,11 @@ export default {
                 if(this.dikou_type!=6){
                     number++
                 }else{
-                    number=number+(this.dikou_type==1 ? 1 : 2);
+                    if(this.xinren_hongbao.length>0 && this.invitedsutotal.sutotal && this.invitedsutotal.sutotal>0){
+                        number=number+(this.dikou_type==1 ? 1 : 2);
+                    }else if(this.xinren_hongbao.length<0 && this.invitedsutotal.sutotal && this.invitedsutotal.sutotal>0){
+                        number=number+(this.dikou_type==1 ? 1 : 1);
+                    }
                 }
             return number
         }

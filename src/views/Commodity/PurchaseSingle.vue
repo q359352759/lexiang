@@ -21,7 +21,7 @@
                 </li>
             </ul>
 
-            <ul class="box_2" @click="dikou_shouw=true">
+            <ul class="box_2" @click="set_dikou_shouw()">
                 <li>需支付：</li>
                 <li class="money">￥{{shiji}}</li>
                 <li>已优惠：{{shiji_dikou}}元</li>
@@ -81,7 +81,7 @@
 			</ul>
             
             <!-- {{number}} -->
-            <div class="zhifu">支付</div>
+            <div @click="zhifu()" class="zhifu">支付</div>
             
 
         </div>
@@ -92,6 +92,7 @@
 import {mapActions, mapState,mapGetters} from "vuex";
 import jiajian from '@/components/jiajian';
 import request from '@/api/request';
+import { openloading ,getDateStr} from "@/assets/js/currency.js";
 export default {
     name:'',
     components:{
@@ -99,6 +100,7 @@ export default {
     },
     data(){
         return{
+            userInfo:'',
             dikou_shouw:false,
             get_index:0,
             id:'',
@@ -128,6 +130,94 @@ export default {
         }
     },
     computed:{
+        ...mapGetters({
+            shop:'shop/shop'
+        }),
+        //判断是否有红包可用
+        youwu_hongbao(){
+            if(this.shangPing_hongbao.length==0 && this.shengri_hongbao.length==0 && this.jieri_hongbao.length==0 && this.qingdian_hongbao.length==0 && this.dianpu_hongbao.length==0 && !this.invitedsutotal.sutotal){
+                return false
+            }else{
+                return true
+            }
+        },
+        //商品列表
+        shangPing_list(){
+            var this_1=this;
+            var number=this.number;
+            var list=[];
+            var shangPing_hongbao=this.shangPing_hongbao;
+            var shangPing_hongbao_number=this.shangPing_hongbao.length
+            console.log('商品红包长度',shangPing_hongbao_number)
+            var honghao_kedikou=0   //红包可抵扣总额
+            if(this.dikou==1){
+                honghao_kedikou=this.shengri_hongbao.length>0 ? this.shengri_hongbao[0].redAmount : 0;
+            }else if(this.dikou==2){
+                honghao_kedikou=this.qingdian_hongbao.length>0 ? this.qingdian_hongbao[0].redAmount : 0;
+            }else if(this.dikou==4){
+                honghao_kedikou=this.jieri_hongbao.length>0 ? this.jieri_hongbao[0].redAmount : 0;
+            }else if(this.dikou==6){
+                if(this.dianpu_hongbao.length>0){
+                    honghao_kedikou=honghao_kedikou+this.dianpu_hongbao[0].redAmount
+                }
+                if(this.invitedsutotal && this.invitedsutotal.sutotal){
+                    honghao_kedikou=honghao_kedikou+this.invitedsutotal.sutotal;
+                }
+            }
+            //店铺新人可抵扣
+            var dianpu_hongbao=this.dianpu_hongbao.length>0 ?  this.dianpu_hongbao[0].redAmount : 0;
+            //平台可抵扣
+            var pingtai_kedikou=(this.invitedsutotal && this.invitedsutotal.sutotal) ? this.invitedsutotal.sutotal : 0;
+            for(let i=0;i<number;i++){
+                var obj=Object.assign({}, this_1.shangPing)
+                    obj.kedikou=this_1.shangPing.deduction      //商品可抵扣
+                    obj.hongbao=[]
+                if(shangPing_hongbao_number>0){
+                    //如果商品红包存在并且没有抵扣完
+                    shangPing_hongbao_number=shangPing_hongbao_number-1;
+                    obj.hongbao=[shangPing_hongbao[shangPing_hongbao_number]];
+                        var money=shangPing_hongbao[shangPing_hongbao_number]['redAmount']<obj.kedikou ? shangPing_hongbao[shangPing_hongbao_number]['redAmount'] : obj.kedikou;
+                        obj.shiji_dikou=money;
+                }else{
+                    if(honghao_kedikou>=0){
+                        //其他红包抵扣
+                        obj.hongbao=[];
+                        var kedikou=obj.deduction;  //每个商品可抵扣
+                        if(this_1.dikou==1){
+                            obj.hongbao.push(this_1.shengri_hongbao[0]);
+                            obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou;
+                        }else if(this_1.dikou==2){
+                            obj.hongbao.push(this_1.qingdian_hongbao[0]);
+                            obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou
+                        }else if(this_1.dikou==3){
+                        }else if(this_1.dikou==4){
+                            obj.hongbao.push(this_1.jieri_hongbao[0])
+                            obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou
+                        }else if(this_1.dikou==5){
+                        }else if(this_1.dikou==6){
+                            if(dianpu_hongbao>obj.kedikou){
+                                obj.hongbao.push(this_1.dianpu_hongbao[0]);
+                                obj.shiji_dikou=obj.kedikou;
+                                dianpu_hongbao=dianpu_hongbao-obj.kedikou;  //减去已经用掉的金额
+                            }else if(dianpu_hongbao<obj.kedikou){
+                                obj.shiji_dikou=obj.kedikou<(dianpu_hongbao+pingtai_kedikou) ? obj.kedikou : (dianpu_hongbao+pingtai_kedikou);
+                                if(dianpu_hongbao>0){
+                                    obj.hongbao.push(this_1.dianpu_hongbao[0]);
+                                }
+                                if(this_1.invitedsutotal && this_1.invitedsutotal.sutotal && this_1.invitedsutotal.sutotal>0 && pingtai_kedikou>0){
+                                    obj.hongbao.push(this_1.invitedsutotal);
+                                    pingtai_kedikou=pingtai_kedikou-(obj.kedikou-dianpu_hongbao);
+                                }
+                                dianpu_hongbao=0;   //新人红包已经用完
+                            }
+                        }
+                        honghao_kedikou=honghao_kedikou-kedikou;
+                    }
+                }
+                list.push(obj)
+            }
+            return list;
+        },
         //计算 实际金额
         shiji(){
             var money=Math.floor(this.number*this.shangPing.sellingPrice*100)/100;
@@ -183,7 +273,6 @@ export default {
         },
         //庆典抵扣金额
         qingdian_dikou(){
-            //新人红包和平台   只管金额 不管百分比和满减
             //不需要抵扣
             if(this.number-this.shangPing_hongbao_dikou.number==0 || this.qingdian_hongbao.length==0){
                 return 0
@@ -241,20 +330,74 @@ export default {
             var number_1=this.number-this.shangPing_hongbao_dikou.number;
             //计算剩余可抵扣金额
             var shengyu = number_1*this.shangPing.deduction
-            obj.xingren_dikou=this.xingren_dikou;       //新人红包抵扣金额
+            obj.xingren_dikou=this.xingren_dikou;          //新人红包抵扣金额
             //是否还有剩余金额需要抵扣
             if(shengyu!=obj.xingren_dikou){
                 obj.pingtai_dikou=this.pingtai_dikou>(shengyu-obj.xingren_dikou) ? (shengyu-obj.xingren_dikou) : this.pingtai_dikou;
-                console.log(obj.pingtai_dikou)
+                console.log(obj.pingtai_dikou);
             }
             obj.zongshu=obj.xingren_dikou+obj.pingtai_dikou;
             return obj;
         },
-        userInfo(){
-            return this.$store.state.userInfo
-        }
     },
     methods:{
+        ...mapActions({
+            get_shop:'shop/get_shop',   //根据店铺Id查询店铺
+        }),
+        //点开优惠详情
+        set_dikou_shouw(){
+            if(this.youwu_hongbao){
+                this.dikou_shouw=true
+            }else{
+                mui.toast('没有红包可抵扣。', {duration: "long", type: "div" });                
+            }
+        },
+        //支付
+        zhifu(){
+            if(!this.number || this.number<=0){
+                mui.toast('请选择商品购买数量', {duration: "long", type: "div" });                
+                return;
+            }
+            var this_1=this;
+            // var submitCommodity={
+            //     shopCommodity:'',   //商品实体类
+            //     shopRedEnvelope:"", //红包实体类
+            //     deduction:'',       //抵扣金额
+            //     actualPayment:'',   //单个商品的实际金额
+            //};
+            var submitCommodityList=[];
+            this.shangPing_list.forEach(item => {
+                var obj={
+                        shopCommodity:item,
+                        shopRedEnvelope:item.hongbao,
+                        deduction:item.shiji_dikou ? item.shiji_dikou : 0,
+                        actualPayment:item.shiji_dikou ? (item.sellingPrice-item.shiji_dikou) : item.sellingPrice
+                    }
+                submitCommodityList.push(obj);
+            });
+
+            let sumit_obj={
+                    appUser:this.userInfo,      //用户
+                    shopBasics:this.shop,              //店铺信息
+                    amount:this.shiji,              //金额
+                    submitCommodityList:submitCommodityList        ////商品实体类
+                }
+            openloading(true)
+            this.$request('/api-s/shops/createOrders',sumit_obj,'post').then(x=>{
+                console.log('添加订单',x);
+                if(x.data.code==200){
+                    // this.$router.push({path:'/orders/order?ordreId='+x.data.data.id,push:{zhifu:2}});
+                    this.$router.push({name:'ordersOrder',query:{ordreId:x.data.data.id},params:{zhifu:1}});
+                }else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                }
+                openloading(false);
+            }).catch(err=>{
+                console.log('添加订单错误',err);
+                mui.toast('系统错误稍后再试。', {duration: "long", type: "div" });
+                openloading(false)
+            })
+        },
         setNumber(value){
             console.log('收到参数',value);
             this.number=value;
@@ -267,7 +410,10 @@ export default {
         get_shangPing(x){
             console.log('获取商品',x);
             this.shangPing=x;
+            //根据商品店铺Id查询店铺
+            this.get_shop(this.shangPing.shopid);
         },
+
         //获取用户商品卡包信息
         get_CardPackge(){
             if(this.shangPing.shopid){
@@ -299,7 +445,9 @@ export default {
                 this.hongbao.list=x.data.data;
                 // console.log(this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,this.id));
                 this.shangPing_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,this.id,1);
-                this.shengri_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',5);
+                // this.shengri_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',5);
+                //生日红包
+                this.shengri_hongbao=this.hongbao.list.filter(x=>(x.type==5 && x.startTime<=getDateStr(0) && x.endTime>=getDateStr(0)));
                 this.qingdian_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',4);
                 this.jieri_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',2);
                 this.dianpu_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',0);
@@ -324,7 +472,7 @@ export default {
         get_invitedsutotal(){
             this.$request('/api-u/users/invitedsutotal/findByUserid/'+this.userInfo.username,'','get').then(x=>{
                 console.log('平台红包信息',x);
-                if(x.data.code==200){
+                if(x.data.code==200 && x.data.data){
                     this.invitedsutotal=x.data.data;
                 }
             }).catch(err=>{
@@ -339,6 +487,10 @@ export default {
                 id:query.id,
                 fc:this.get_shangPing
             }
+        
+
+
+        this.userInfo=JSON.parse(localStorage.userInfo);
         this.$store.commit('shangPing/get_shangping_1',obj);
         // this.$store.commit('shangPing/get_shangping_2',this.id).then(x=>{
         //     console.log('_______',x)
@@ -348,28 +500,22 @@ export default {
         // this.$store.dispatch('shangPing/get_shangping_3',123).then((data) => {
         //     console.log(11111111,data)
         // })
-
-        if(this.userInfo.id){
             this.get_index=1
             //获取用户卡包信息
             this.get_CardPackge();
             //获取用户平台红包金额
             this.get_invitedsutotal()
-        }else{
-            //获取用户基本信息
-            this.$store.commit('setCurrent');
-        }
-        
 
+        
         
     },
     watch:{
-        userInfo(){
-            if(this.userInfo.id && this.get_index==0){
-                //获取用户卡包信息
-                this.get_CardPackge();
-            }
-        }
+        // userInfo(){
+        //     if(this.userInfo.id && this.get_index==0){
+        //         //获取用户卡包信息
+        //         this.get_CardPackge();
+        //     }
+        // }
     }
 }
 </script>

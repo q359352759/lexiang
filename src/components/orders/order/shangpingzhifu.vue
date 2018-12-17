@@ -2,15 +2,15 @@
     <ul>
         <li>
             <div>共计：{{xiangqing_2 && xiangqing_2.shopOrderCommoditys ? xiangqing_2.shopOrderCommoditys.length : 0}}件</div>
-            <div class="money mui-text-center">0元</div>
-            <div class="mui-text-right">实付：<span class="money">0元</span></div>
+            <div class="money mui-text-center">{{dingdan_zongshu}}元</div>
+            <div class="mui-text-right">实付：<span class="money">{{dingdanxiangqing.paymentAmount}}元</span></div>
         </li>
         <li>
             <div>
                 使用：3个红包
                 <i class="icon_font mui-icon mui-icon-arrowright"></i>
             </div>
-            <div class="money mui-text-center">0元</div>
+            <div class="money mui-text-center">{{dingdanxiangqing.deduction ? dingdanxiangqing.deduction : 0}}元</div>
             <div class="mui-text-right">
                 <div @click="zhifu()" class="zhifu">支付</div>
             </div>
@@ -19,17 +19,25 @@
 </template>
 
 <script>
-import { mapActions,mapGetters } from "vuex";
+import {mapState, mapActions,mapGetters } from "vuex";
 export default {
     name:'',
     data(){
         return{}
     },
     computed:{
+        ...mapState({
+            test:'orders/order/test'
+        }),
         ...mapGetters({
             new_shangping_list:'orders/order/new_shangping_list',   //过滤后的商品
-            xiangqing_2:'orders/order/xiangqing_2',         //
+            dingdanxiangqing:'orders/order/dingdanxiangqing',       //详情
+            xiangqing_2:'orders/order/xiangqing_2',                 //详情2
         }),
+        //总价
+        dingdan_zongshu(){
+            return this.dingdanxiangqing.paymentAmount+(this.dingdanxiangqing.deduction ? this.dingdanxiangqing.deduction : 0);
+        }
     },
     methods:{
         ...mapActions({

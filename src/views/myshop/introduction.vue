@@ -2,7 +2,7 @@
     <div class="introduction">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">店铺简介</h1>
+            <h1 class="mui-title">店铺简介1{{sol}}</h1>
         </header>
         <div class="mui-content mui-fullscreen">
             
@@ -59,6 +59,7 @@ export default {
     },
     data(){
         return{
+            sol:'-',
             font_size:'16px',
             font_color:'#000000',
             isAndroid:true,
@@ -268,7 +269,10 @@ export default {
                 url:'/api-s/shops/synopsis/'+this.myshop.shopid
             }).then(x=>{
                 console.log('查询简介',x);
-                if(x.data.code==200 && x.data.data){
+                if(x.data.code==200){
+                    if(!x.data.data){
+                        return;
+                    }
                     this.synopsis=x.data.data;
                     var this_1=this;
                     var str=this.synopsis.remark;
@@ -323,7 +327,9 @@ export default {
         }else{
             this.video_show=true;
         }
-
+        window.onscroll=function(){
+            this_1.sol=222
+        }
 
         //判断是不是安卓
         // alert(isAndroid())
@@ -462,9 +468,11 @@ export default {
 // .introduction{
 //     height: 100%;
 // }
+
 .mui-content{
     display: flex;
     flex-direction: column;
+    position: fixed;
 }
 // -webkit-user-select:text
 .contenteditable_box{
@@ -496,7 +504,8 @@ export default {
         }
         .bg{
             width: 22px;
-            background-image: url('/image/icons.png');
+            background-image: url('~@/assets/image/icons.png');
+            // background-image: url('/image/icons.png');
         }
         .zitiyanse{
             background-position: -760px 0;

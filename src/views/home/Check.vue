@@ -142,6 +142,14 @@ export default {
         }
     },
     computed:{
+        //判断是用于输入金额
+        youwu_hongbao(){
+            if(!this.invitedsutotal.sutotal && this.shengri_hongbao.length==0 && this.qingdian_hongbao.length==0 && this.jieri_hongbao.length==0 && this.xinren_hongbao.length==0){
+                return false;
+            }else{
+                return true
+            }
+        },
         money_shijizhifu(){
             var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
             var number=0;
@@ -207,9 +215,7 @@ export default {
         },
     },
     methods:{
-        zhifu(){
-            
-                   
+        zhifu(){            
             let amount=0
             if(this.payment_type==0){
                 amount=this.money_shijizhifu
@@ -342,8 +348,12 @@ export default {
         },
         //金额选择抵扣
         dikou_show(x){
-            this.dikou_box=x;
-            this.payment_type=0
+            this.payment_type=0;
+            if(this.youwu_hongbao){
+                this.dikou_box=x;
+            }else{
+                mui.toast('没有红包可抵扣。', {duration: "long", type: "div" });
+            }
         },
         //选商品
         select_shangping(){

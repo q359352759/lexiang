@@ -5,18 +5,31 @@
         </li>
         <li class="shop">
             <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
-            <span>mc火锅店</span>
+            <span @click="go_shop()">{{shop.name}}</span>
             <i class="icon_right mui-icon mui-icon-arrowright"></i>
         </li>
+        <div class="image"></div>
     </ul>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
     name:'',
     data(){
         return{}
+    },
+    computed:{
+        ...mapGetters({
+            shop:'shop/shop',
+        })
+    },
+    methods:{
+        go_shop(){
+            this.$router.push('/BusinessDetails?shopid='+this.shop.shopid);
+        }
     }
+
 }
 </script>
 
@@ -45,6 +58,10 @@ export default {
     .daipingjia{
         color: #505050;
     }
+}
+.image{
+    width: 50px;
+    height: 50px;
 }
 </style>
 
