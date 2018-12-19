@@ -18,7 +18,7 @@
                 </div>
                 <div class="dikou"></div>
             </li>
-            <li class="dikou">红包抵扣：商品红包-0元</li>
+            <li class="dikou">红包抵扣：商品红包-{{item.dikou}}元</li>
         </ul>
     </div>
 </template>

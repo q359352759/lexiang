@@ -59,7 +59,7 @@ export default {
             var weixin = localStorage.weixin;
             if (!weixin || weixin == null || weixin == undefined) {
                 console.log("没有微信信息");
-                // location.href = "getopenid.html";
+                location.href = "getopenid.html";
             } else {
                 console.log("已有微信信息");
             }
@@ -98,8 +98,8 @@ export default {
             if (baimingdan.indexOf(path) == -1) {
                 console.log("没有登录准备跳转至登录");
                 this.$router.push("/login");
+                return;
             }
-            return;
         }
 
         //支付宝授权后跳转地址
@@ -181,7 +181,7 @@ export default {
         }
         //初始化分类
         try {
-            var list=JSON.parse(localStorage.shops_tree_list)
+            var list=JSON.parse(localStorage.shops_tree_list);
             this.$store.state.shops_tree_list=list;
         } catch (error) {}
         //获取地区
@@ -202,19 +202,19 @@ export default {
         // console.group('destroyed 销毁完成状态===============》');
     },
     watch: {
-        $route(to, from) {
-            var topath = to.path;
-            var formpath = from.path;
-            // sessionStorage.path=from.path;  //当前页面
-            // console.log(to)
-            // console.log(from)
-            if (to.meta.index > from.meta.index) {
-                //设置动画名称
-                this.transitionName = "slide-left";
-            } else {
-                this.transitionName = "slide-right";
-            }
-        }
+        // $route(to, from) {
+        //     var topath = to.path;
+        //     var formpath = from.path;
+        //     // sessionStorage.path=from.path;  //当前页面
+        //     // console.log(to)
+        //     // console.log(from)
+        //     if (to.meta.index > from.meta.index) {
+        //         //设置动画名称
+        //         this.transitionName = "slide-left";
+        //     } else {
+        //         this.transitionName = "slide-right";
+        //     }
+        // }
     }
 };
 </script>

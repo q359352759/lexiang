@@ -146,6 +146,9 @@ export default {
             }else if(this.obj.deduction<this.commodity.deduction){
                 mui.toast('抵扣金额不能小于商品抵扣金额。', { duration: "long",type: "div" });
                 return;
+            }else if(this.obj.deduction>this.commodity.sellingPrice*0.9){
+                mui.toast('抵扣金额不能大于商品金额的90%。', { duration: "long",type: "div" });
+                return;
             }
             this.obj.shopid=this.myshop.shopid;
             this.obj.commodityId=this.commodity.id;

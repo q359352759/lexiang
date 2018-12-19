@@ -109,8 +109,8 @@
                                     <span v-if="item.redDeductionType==0">抵扣{{item.redPercentage}}%</span>                                    
                                 </div>
                                 <div class="time_2">
-                                    <span v-if="item.redType==0 || item.redType==4">长期有效</span>
-                                    <span v-if="item.redType==2 || item.redType==3">
+                                    <span v-if="item.redType==0">长期有效</span>
+                                    <span v-if="item.redType==2 || item.redType==3 || item.redType==4">
                                         {{item.redStratTime | filter_time("yyyy.MM.dd")}}-{{item.redEndTime | filter_time("yyyy.MM.dd")}}
                                     </span>
                                     <!-- 生日红包 -->
@@ -131,13 +131,13 @@
                                 </div>
 
                                 <!-- 长期有效类型的 -->
-                                <div v-if="item.redType==0 || item.redType==4">
+                                <div v-if="item.redType==0">
                                     <div v-if="item.state==0" class="type_1">有效</div>
                                     <div v-if="item.state==1" class="type_2">已使用</div>
                                     <span v-if="item.state==1" class="time_1">{{item.updateTime | filter_time}}</span>
                                 </div>
                                 <!-- 有时间限制类型的 -->
-                                <div v-if="item.redType==2 || item.redType==3">
+                                <div v-if="item.redType==2 || item.redType==3  || item.redType==4">
                                     <div v-if="item.state==1" class="type_2">已使用</div>
                                     <span v-if="item.state==1" class="time_1">{{item.pgUpdateTime | filter_time}}</span>
                                     <div v-if="item.state==0 && item.redEndTime>date" class="type_1">有效</div>
@@ -363,9 +363,16 @@ export default {
         },
         // 获取金额
         get_findStotal(type){
+            var url='';
+            if(type==0){
+                url='/api-s/shops/findStotal?aaa=1&userid='+this.userInfo.username
+            }else if(type==1){
+                 url='/api-s/shops/findStotal?bbb=1&userid='+this.userInfo.username
+            }
             this.$axios({
                 method:'get',
-                url:'/api-s/shops/findStotal?type='+type+'&userid='+this.userInfo.username
+                // url:'/api-s/shops/findStotal?type='+type+'&userid='+this.userInfo.username
+                url:url
             }).then(x=>{
                 console.log('获取金额',x);
                 if(x.data.code==200){
@@ -383,7 +390,7 @@ export default {
         get_invitedsutotal(){
             this.$request('/api-u/users/invitedsutotal/findByUserid/'+this.userInfo.username,'','get').then(x=>{
                 console.log('获取平台红包金额',x);
-                if(x.data.code==200){
+                if(x.data.code==200 && x.data.data){
                     this.user_invited_sutotal=x.data.data
                 }
             }).catch(err=>{

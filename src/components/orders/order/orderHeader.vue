@@ -1,7 +1,7 @@
 <template>
     <ul class="header">
         <li class="daipingjia mui-pull-right">
-            待评价
+            {{state_list[dingdanxiangqing.state]}}
         </li>
         <li class="shop">
             <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
@@ -17,11 +17,14 @@ import { mapGetters } from "vuex";
 export default {
     name:'',
     data(){
-        return{}
+        return{
+            state_list:['待付款','已付款','']
+        }
     },
     computed:{
         ...mapGetters({
             shop:'shop/shop',
+            dingdanxiangqing:'orders/order/dingdanxiangqing',
         })
     },
     methods:{

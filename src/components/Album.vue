@@ -118,12 +118,7 @@ export default {
             total:0,
             loading:true,
             capacity:0,          //容量
-            Select_picture:[     //选择的内容
-                // {'id':7},
-                // {'id':10},
-                // {'id':33},
-                // {'id':34},
-            ],
+            Select_picture:[],
         }
     },
     computed:{
@@ -134,26 +129,35 @@ export default {
             var this_1=this;
             var Select_picture=this.Select_picture;
             var img_list=this.img_list;
+            
             for(var i=0;i<img_list.length;i++){
                 for(var j=0;j<Select_picture.length;j++){
                     if(img_list[i].url==Select_picture[j]){
-                        img_list[i].active=true;
-                        // this_1.$set(img_list[i].active,'active',true);
+                        // img_list[i].active=true;
+                        this_1.$set(img_list[i],'active',true);
                     }
                 }
             }
             return img_list;
+        },
+        Select_picture_1(){
+            return this.$store.state.Select_picture.list;
         }
     },
     methods:{
+        init_img(){
+            var this_1=this;
+             var img_list=this.img_list;
+            for(var i=0;i<img_list.length;i++){
+                this_1.$set(img_list[i],'active',false);
+            }
+        },
         //确定
         Sure(){
             if(this.size==0){
-                // this.$store.state.Select_picture.list=this.Select_picture;
                 this.$emit('setlist',this.Select_picture);
                 history.back();
             }else if(this.size!=0 && this.Select_picture.length<=this.size){
-                // console.log(this.Select_picture);
                 this.$emit('setlist',this.Select_picture);
                 history.back();
             }else{
@@ -164,7 +168,6 @@ export default {
         select_img(x){
             this.$set(x,'active',!x.active);
             this.Select_picture=this.img_list.filter(x=>x.active);
-            // Vue.set(x,'articleType',x.name)
         },
         //滚动条
         scroll(e){
@@ -193,13 +196,9 @@ export default {
             this.loading=true
             this.Cropper_show = false;
             this.$refs.cropper.getCropData(data => {
-                // if (this.cropper_type == 1) {
-                    this.img = data;
-                    this.add_phone();
-                    this.get_capacity();
-                // } else {
-                //     this.img_list.push(data);
-                // }
+                this.img = data;
+                this.add_phone();
+                this.get_capacity();
             });
         },
         //添加图片
@@ -220,11 +219,9 @@ export default {
                 if(x.data.code==200){
                     this.img_list.push(x.data.data[0])
                 }else if(x.data.code){
-                    // mui.toast(x.data.msg, {duration: "long",type: "div"});
                     mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
                 }else{
                     mui.alert(x.data.error, "提示",'我知道了', function() {},"div");
-                    // mui.toast(x.data.error, {duration: "long",type: "div"});
                 }
                 console.log('添加',x);
             }).catch(err=>{
@@ -317,9 +314,6 @@ export default {
         var this_1 = this;
         var query=this.$route.query;
         
-
-
-        console.log('已选择的图片',this.$store.state.Select_picture)
         this.Select_picture=this.$store.state.Select_picture.list;
         //获取店铺信息
         this.$store.commit('setMyshop');
@@ -372,6 +366,11 @@ export default {
             //     console.log("数据渲染完成");
             //     this.getswiper();
             // });
+        },
+        Select_picture_1(){
+            console.log('选择的图片数据发生变化');
+            this.Select_picture=this.$store.state.Select_picture.list;
+            this.init_img();
         }
     }
 }

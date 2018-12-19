@@ -13,7 +13,7 @@ function  adapt(designWidth,  rem2px) {
 	var  st  =  document.createElement('style');  
 	var  portrait  =  "@media screen and (min-width:" + window.innerWidth + "px) {html{font-size:" + ((window.innerWidth / (designWidth / rem2px) / defaultFontSize) * 100)  + "%;}}";  
 	var  landscape  =  "@media screen and (min-width:" + window.innerHeight + "px) {html{font-size:" + ((window.innerHeight / (designWidth / rem2px) / defaultFontSize) * 100)  + "%;}}"  
-	st.innerHTML  =  portrait  +  landscape;  
+	st.innerHTML  =  portrait  +  landscape;
 	head.appendChild(st);
 	return  defaultFontSize
 };
@@ -21,6 +21,6 @@ function  adapt(designWidth,  rem2px) {
 // 	adapt(750,  100);
 // })
 window.onresize=function(){
-    adapt(375,  100);
+    adapt(375,100);
 }
 adapt(375,  100);

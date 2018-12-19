@@ -5,7 +5,7 @@
             <a @tap="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">{{Submission_type ? '商品详情' : '添加商品'}}</h1>
         </header>
-        <div class="mui-content">
+        <div class="mui-content mui-fullscreen">
 
             <div class="box_1">
                 <ul class="mui-table-view ">
@@ -97,26 +97,75 @@
                 </li>
             </ul>
 
-            <!-- <div class="editor_box">
-                <div class="header">
-                    商品介绍 <span></span>
-                </div>
-            </div> -->
-            <!-- <div contenteditable="true" class="editor">123</div> -->
-            <div id="editor" class="editor"></div>
+            <!-- <div id="editor" class="editor"></div> -->
 
+            <ul class="contenteditable_box">
+               <li class="header">
+                    <div>
+                        <select name="16px" v-model="font_size">
+                            <option value="24px">24px</option>
+                            <option value="20px">20px</option>
+                            <option value="16px">16px</option>
+                            <option value="14px">14px</option>
+                            <option value="12px">12px</option>
+                        </select>
+                    </div>
+                    <div class="zitiyanse bg" v-show="isAndroid" @click="chnage_font_color()"></div>
+                    <div @click="add_shiping()" class="shiping bg"></div> 
+                    <div @click="set_Album_show()" class="tupian bg"></div>
+                    <input  type="color" class="font_color mui-hidden" v-model="font_color" ref="font_color">
+                </li>
+                <li class="content_box" ref="content_box">
+                    <div class="content_1" ref="content_1" :style="{'font-size':font_size,'color':font_color}" v-html="html" contenteditable="true"></div>
+                </li>
+            </ul>
+
+            <!-- 视频选择框 -->
+            <div class="video_box" v-show="video_show">
+                <div class="mask"></div>
+                <div class="cont_1">
+                    <div @tap="close_1()" class="close_1"><i class="icon iconfont icon-quxiao"></i> </div>
+                    <div class="title" >请输入视频链接</div>
+                    <div class="input_box">
+                        <input type="text" v-model="video_url">
+                    </div>
+                    <button @tap="queding()" class="btn_2">确定</button>
+                </div>
+            </div>
         </div>
-         <div @click="add()" class="box_4">保存</div>
+        <div @click="add()" class="box_4">保存</div>
+
+        <!-- <Album v-show="Album_show" v-on:setShow="setShow"/> -->
+        <Album v-show="Album_show" :seetype="seetype" :type="seetype" v-on:setlist="reslist"/>
+        
     </div>
 </template>
 
 <script>
-import { openloading } from "@/assets/js/currency";
-
+import { openloading,isAndroid } from "@/assets/js/currency";
+import Album from '@/components/Album.vue';
+import $ from 'jquery'
 export default {
     name:'',
+    components: {
+        Album  
+    },
     data(){
         return{
+            
+            sol:'-',
+            font_size:'16px',
+            font_color:'#000000',
+            isAndroid:true,
+            html:'',
+            //视频选择器
+            video_show:false,
+            video_url:'',
+            //图片选择器
+            img_type:1,             //图片类型用于放在哪里 1表示选择的商品图片 2表示编译器的图片
+            Album_show:false,
+            seetype:3,              //1店招  2环境 3商品 4描述 5其他
+            select_img:[],          //已经选择的图片
             // img_list:[],
 
             left:false,
@@ -257,6 +306,68 @@ export default {
         }
     },
     methods:{
+        //点击添加视频
+        add_shiping(){
+            this.video_show=true;
+        },
+        //关闭视频输入框
+        close_1(){
+            this.video_show=false;
+        },
+        //确定视频
+        queding(){
+            //http://www.runoob.com/try/demo_source/movie.mp4
+            if(!this.video_url){
+                mui.toast('请输入视频链接。', {duration: "long",type: "div"});
+            }else{
+                var html='<video width="100%" controls src="'+this.video_url+'">'+
+                            '<source src="'+this.video_url+'" type="video/mp4">'+
+                            '<source src="'+this.video_url+'" type="video/ogg">'+
+                        '</video><div style="min-height:20px;"></div>'
+                // this.editor.execCommand('insertHtml', html);
+                $('.content_1').append(html);
+                this.video_url='';
+                this.video_show=false;
+                // history.back();  //这个是用于百度输入框的时候用
+            }
+        },
+        //选择颜色
+        chnage_font_color(){
+            if(!isAndroid()){
+                mui.toast('您的手机无此功能', {duration: "long",type: "div"});
+            }else{
+                this.$refs.font_color.click()
+            }
+        },
+        //编辑器图片
+        set_Album_show(){
+            this.Album_show=true;
+            this.img_type=2;
+            this.$store.state.Select_picture.list=[];
+            this.$router.push('/AddGoods?Album_show=true');
+        },
+        //图片返回值
+        reslist(list){
+            console.log('收到图片',list);
+            if(this.img_type==1){
+                var newlist=[];
+                list.forEach(item => {
+                    newlist.push(item.url)
+                });
+                this.img_list=newlist;
+            }else{
+                var html='';
+                for(var i=0;i<list.length;i++){
+                    if(list[i].url){
+                        html+='<div style="margin:0px;"><img style="max-width: 100%;" width="100%" src="'+list[i].url+'" alt=""></div><div style="min-height:20px;"></div>';
+                    }else{
+                        html+='<div style="margin:0px;"><img style="max-width: 100%;" width="100%" src="'+list[i]+'" alt=""></div><div style="min-height:20px;"></div>';
+                    }
+                }
+                console.log(html)
+                $('.content_1').append(html);
+            }
+        },
         //
         input_change(x){
             var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
@@ -277,53 +388,41 @@ export default {
             }
             if(x=='sellingPrice'){      //售价
                 if(this.add_obj.percentage && number_test.test(this.add_obj.percentage)){ //比例
-                    // this.add_obj.percentage=parseFloat(this.add_obj.percentage).toFixed(1);
                     this.add_obj.percentage=Math.floor(parseFloat(this.add_obj.percentage)*10) /10;
                     this.add_obj.deduction=(this.add_obj.percentage*this.add_obj.sellingPrice/100).toFixed(2)
                 }else if(this.add_obj.deduction && number_test.test(this.add_obj.deduction)){
-                    // this.add_obj.deduction=parseFloat(this.add_obj.deduction).toFixed(2);
                     this.add_obj.deduction=Math.floor(parseFloat(this.add_obj.deduction)*100)/100;
                     this.add_obj.percentage=(this.add_obj.deduction/this.add_obj.sellingPrice*100).toFixed(1);
                 }
 
                 if(this.add_obj.commissionPercentage && number_test.test(this.add_obj.commissionPercentage)){
-                    // this.add_obj.commissionPercentage=parseFloat(this.add_obj.commissionPercentage).toFixed(1);
                     this.add_obj.commissionPercentage=Math.floor(parseFloat(this.add_obj.commissionPercentage)*10)/10;
                     this.add_obj.commission=(this.add_obj.commissionPercentage*this.add_obj.sellingPrice/100).toFixed(1);
                 }else if(this.add_obj.commission && number_test.test(this.add_obj.commission)){
-                    // this.add_obj.commission=parseFloat(this.add_obj.commission).toFixed(2);
                     this.add_obj.commission=Math.floor(parseFloat(this.add_obj.commission)*100)/100;
                     this.add_obj.commissionPercentage=(this.add_obj.commission/this.add_obj.sellingPrice*100).toFixed(1)
                 }
             }
 
             if(x=='percentage'){    //百分比
-                // this.add_obj.percentage=this.add_obj.percentage.toFixed(1);
                 this.add_obj.percentage= Math.floor(this.add_obj.percentage * 10)/10 // this.add_obj.percentage.toFixed(1);
                 var deduction=this.add_obj.percentage/100*this.add_obj.sellingPrice
-                // this.add_obj.deduction=deduction.toFixed(2);
                 this.add_obj.deduction=Math.floor(deduction*100)/100;
             }
             if(x=='deduction'){     //金额
-                // this.add_obj.deduction=this.add_obj.deduction.toFixed(2);
                 this.add_obj.deduction=Math.floor(this.add_obj.deduction * 100) /100;
                 var percentage=this.add_obj.deduction/this.add_obj.sellingPrice*100
-                // this.add_obj.percentage=percentage.toFixed(1)
                 this.add_obj.percentage=Math.floor(percentage*10)/10;
             }
 
             if(x=='commissionPercentage'){  //百分比
-                // this.add_obj.commissionPercentage=this.add_obj.commissionPercentage.toFixed(1);
                 this.add_obj.commissionPercentage=Math.floor(this.add_obj.commissionPercentage*10)/10;
                 var commission=this.add_obj.commissionPercentage/100*this.add_obj.sellingPrice
-                // this.add_obj.commission=commission.toFixed(2)
                 this.add_obj.commission=Math.floor(commission*100)/100;
             }
             if(x=='commission'){    //金额
-                // this.add_obj.commission=this.add_obj.commission.toFixed(2);
                 this.add_obj.commission=Math.floor(this.add_obj.commission*100)/100;
                 var commissionPercentage=this.add_obj.commission/this.add_obj.sellingPrice*100;
-                // this.add_obj.commissionPercentage=commissionPercentage.toFixed(1)
                 this.add_obj.commissionPercentage=Math.floor(commissionPercentage*10)/10;
             }
         },
@@ -334,11 +433,6 @@ export default {
         //点击确定
         add(){
             var this_1=this;
-            try {
-                var text = this.editor.getContentTxt();
-            } catch (error) {
-                 var text ='';
-            }
             
             // alert(text)
             var test_number=/^[0-9]*$/;
@@ -374,12 +468,7 @@ export default {
             }
             this.add_obj.shopid=this.myshop.shopid
             this.add_obj.arrImg=img_list;
-            try {
-                this.add_obj.remark=this.editor.getContent();
-            } catch (error) {
-                this.add_obj.remark=''        
-            }
-
+            this.add_obj.remark=this.$refs.content_box.innerHTML;
             console.log(this.add_obj);
 
             // return
@@ -396,7 +485,7 @@ export default {
                         mui.toast('添加成功。', { duration: 2000, type: "div" });
                         this.$router.push('/commodity');
                     }else{
-                        mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
+                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                     }
                     console.log(x)
                 }).catch(err=>{
@@ -417,7 +506,7 @@ export default {
                         mui.toast('修改成功。', { duration: 2000, type: "div" });
                         this.$router.push('/commodity');
                     }else{
-                        mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
+                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                     }
                     console.log(x)
                 }).catch(err=>{
@@ -491,11 +580,15 @@ export default {
                 this.add_obj.commissionType=x[0].value;
             });
         },
-        //跳转相册
+        //选择商品图片
         Album(){
+            console.log(this.img_list);
+            this.img_type=1
+            this.Album_show=true;
             this.$store.state.Select_picture.list=this.img_list;
-            this.$store.state.Select_picture.type='huanjing';
-            this.$router.push('/Album?seetype=3&size=4');
+            this.$router.push('/AddGoods?Album_show=true');
+            // this.$store.state.Select_picture.type='huanjing';
+            // this.$router.push('/Album?seetype=3&size=4');
         },
         //删除图片
         delete_img(index){
@@ -545,90 +638,7 @@ export default {
             }
         });
 
-        
-        // setTimeout(()=>{
-            //ue 文件编辑器 
-            // this.editor = UM.getEditor('editor', this.config_1); // 初始化UM
-            // setTimeout(()=>{
-            //     this.editor.setContent('欢迎使用umeditor', false);
-            //     this.editor.setEnabled();
-            // },500)
-            
-            // this.um = UM.getEditor('myEditor',{
-            //     //这里可以选择自己需要的工具按钮名称,此处仅选择如下七个
-            //     toolbar:['fullscreen source undo redo bold italic underline'],
-            //     //focus时自动清空初始化时的内容
-            //     autoClearinitialContent:true,
-            //     //关闭字数统计
-            //     wordCount:false,
-            //     //关闭elementPath
-            //     elementPathEnabled:false,
-            //     //默认的编辑区域高度
-            //     initialFrameHeight:200
-            //     //更多其他参数，请参考umeditor.config.js中的配置项
-            // });
-        // },2000)
-
-        
-        this.editor = UE.getEditor('editor', this.config); // 初始化UM
-        // this.editor.addListener("ready", function () {
-        //     alert('初始化完成')
-        //     // console.log(123)
-        //     // this_1.editor.setContent('请输入商品描述'); // 确保UM加载完成后，放入内容。
-        // });
-
-        UE.registerUI('上传图片',function(editor,uiName){
-            //注册按钮执行时的command命令，使用命令默认就会带有回退操作
-            editor.registerCommand(uiName,{
-                execCommand:function(){
-                    // alert('execCommand:' + uiName)
-                    this_1.$store.state.Select_picture.type='ue';
-                    this_1.$store.state.Select_picture.list=[];
-                    this_1.$router.push('/Album?seetype=4');
-                    // 1店招  2环境 3商品 4描述 5其他
-                }
-            });
-
-            //创建一个button
-            var btn = new UE.ui.Button({
-                //按钮的名字
-                name:uiName,
-                //提示
-                title:uiName,
-                //需要添加的额外样式，指定icon图标，这里默认使用一个重复的icon
-                cssRules :'background-position: -380px 0px;',
-                //点击时执行的命令
-                onclick:function () {
-                    //这里可以不用执行命令,做你自己的操作也可
-                    editor.execCommand(uiName);
-                }
-            });
-            //当点到编辑内容上时，按钮要做的状态反射
-            editor.addListener('selectionchange', function () {
-                var state = editor.queryCommandState(uiName);
-                if (state == -1) {
-                    btn.setDisabled(true);
-                    btn.setChecked(false);
-                } else {
-                    btn.setDisabled(false);
-                    btn.setChecked(state);
-                }
-            });
-
-            //因为你是添加button,所以需要返回这个button
-            return btn;
-        })
-        /*index 指定添加到工具栏上的那个位置，默认时追加到最后,editorId 指定这个UI是那个编辑器实例上的，默认是页面上所有的编辑器都会添加这个按钮*/
-        // console.group('------mounted 挂载结束状态------');
-        // ==============================
-
-    },
-    activated() {
-        console.log('再次进入页面');
-
-        var query=this.$route.query;
-        if( this.$store.state.in_index==0){
-            this.$store.state.in_index=1
+            var query=this.$route.query;
             if(query.type){
                 this.Submission_type=query.type;
                 var commodity=JSON.parse(sessionStorage.commodity)
@@ -638,68 +648,27 @@ export default {
             }
             this.add_obj=commodity;
             this.img_list=commodity.img ? commodity.img.split(',') : [];
+            //计算比例
             if(!this.add_obj.percentage){
                 this.input_change('deduction')
             }
-            if(this.editor){
-                setTimeout(()=>{
-                    this.editor.setContent(this.add_obj.remark);
-                },1000)
-            }else{
-                setTimeout(()=>{
-                    this.editor.setContent(this.add_obj.remark);
-                },3000)
-            }
-            console.log('缓存数据',this.add_obj)
-        }
-
-            // return this.$store.state.Select_picture;
-        if(this.$store.state.Select_picture.type=='huanjing'){
-            var list=this.$store.state.Select_picture.list;
-            console.log(list)
-            var img_list=[];
-                for(var i=0;i<list.length;i++){
-                    if(list[i].url){
-                        img_list.push(list[i].url);
-                    }else{
-                        img_list.push(list[i]);
-                    }
-                }
-            this.img_list=img_list;
-            this.$store.state.Select_picture.type='';
-
-            console.log('获取内容',this.editor.getContent());
-            var html=this.editor.getContent();
-            setTimeout(x=>{
-                    // this.editor.execCommand('insertHtml', html)
-                    // this.editor.setContent(html, true);
-                    this.editor.setContent(html);
-                    // setContent
-            },1000)
-        }
-        console.log(this.$store.state.Select_picture.type)
-        if(this.$store.state.Select_picture.type=='ue'){
             
-            this.$store.state.Select_picture.type='';
-            var img_list=this.$store.state.Select_picture.list;
-            // if(img_list.length==0) return;
+            if(this.add_obj.remark && this.add_obj.remark!=''){
+                var str=this.add_obj.remark;
+                // var str='<div data-v-845c3686="" contenteditable="true" class="content_1" style="font-size: 24px; color: rgb(0, 0, 255);">sdfsdfsdf</div>';
+                var div=$(str)
+                this.font_size=div.css('font-size') ? div.css('font-size') : '16px';
+                this.font_size= parseInt(this.font_size)>10 ? this.font_size : '10px';
+                this.font_color=div.css('color') ? div.css('color') : '#000000';
+                this.html=div.html();
+            }
+                
+        var str='';
+        console.log(str.length)
+    },
+    activated() {
+        console.log('再次进入页面');
 
-            console.log('获取内容',this.editor.getContent());
-            var html=this.editor.getContent();
-            for(var i=0;i<img_list.length;i++){
-                html+='<p style="margin:0px;font-size:0px;"><img style="max-width: 100%;" width="100%" src="'+img_list[i].url+'" alt=""></p>';
-            }
-                html+='<p></p>';
-            // console.log('添加到编译器中',html)
-            if(this.editor){
-                setTimeout(x=>{
-                    // this.editor.execCommand('insertHtml', html)
-                    // this.editor.setContent(html, true);
-                    this.editor.setContent(html);
-                    // setContent
-                },1000)
-            }
-        }
         
     },
     deactivated(){
@@ -715,11 +684,20 @@ export default {
         // console.group('beforeDestroy 销毁前状态===============》');
     },
     destroyed: function() {
-        this.editor.destroy();	//销毁
+        // this.editor.destroy();	//销毁
         // console.group('destroyed 销毁完成状态===============》');
     },
     watch: {
-        
+        $route(){
+            var query=this.$route.query;
+            // console.log(query)
+            //选择图片
+            if(!query.Album_show){
+                this.Album_show=false;
+            }else{
+                this.Album_show=true;
+            }
+        }
     }
 }
 </script>
@@ -734,7 +712,9 @@ export default {
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 
-
+.mui-content{
+    padding-bottom: 50px;
+}
 .box_1 .mui-table-view-cell:after{
     right: 15px;
 }
@@ -886,9 +866,132 @@ export default {
     z-index: 1000;
 }
 
+.contenteditable_box{
+    height: 400px;
+    // flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #c8c8ca;
+    border-radius: 3px;
+    .header{
+        flex-shrink: 0;
+        display: flex;
+        background: #f4f4f4;
+        padding: 3px;
+        flex-wrap: wrap;
+        div{
+            height: 22px;
+            font-size: 12px;
+            padding: 0px 3px;
+            line-height: 22px;
+            color: #565656;
+            margin: 0px 3px;
+        }
+        select{
+            height: 100%;
+            padding: 0px 5px;
+            margin: 0px;
+            border:1px solid #c8c8ca;
+            appearance: menulist;
+        }
+        .bg{
+            width: 22px;
+            background-image: url('~@/assets/image/icons.png');
+            // background-image: url('/image/icons.png');
+        }
+        .zitiyanse{
+            background-position: -760px 0;
+        }
+        .shiping{
+            background-position: -320px -20px;
+        }
+        .tupian{
+            background-position: -380px 0px;
+        }
+        .font_color{
+        }
+    }
+    .content_box{
+        flex-grow: 1;
+        overflow: auto;
+        position: relative;
+    }
+    .content_1{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background: #ffffff;
+        padding: 5px;
+        // -webkit-user-select:text;
+        user-select: text;
+        -webkit-user-select:text
+    }
+    .content_1:empty:before{
+        content: '商品介绍，说点啥好呢？'; 
+        color: gray; 
+        position: absolute;
+        top: 3px;
+        left: 5px;
+    }
+}
 
 
-
+.video_box{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 1001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .close_1{
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        color: #5a5a5a;
+    }
+    .mask{
+        background: rgba(0,0,0,0.3);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0px;
+        left: 0px;
+    }
+    .cont_1{
+        width: 250px;
+        background: #ffffff;
+        position: relative;
+        z-index: 1;
+        padding: 10px;
+        .title{
+            font-size: 14px;
+            margin: 0px 0px 5px;
+            color: #565656;
+        }
+        input{
+            padding: 0px 15px;
+            height: 30px;
+            font-size: 14px;
+        }
+    }
+    .btn_2{
+        background: $header_background;
+        width: 100%;
+        color: #ffffff;
+    }
+}
+</style>
+<style lang="scss">
+.contenteditable_box{
+    .content_1 *{
+        user-select: text;
+        -webkit-user-select:text
+    }
+}
 </style>
 
 

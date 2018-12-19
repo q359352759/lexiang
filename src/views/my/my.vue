@@ -419,7 +419,7 @@ export default {
     },
     watch: {
         userInfo(x) {
-            console.log("监听userInfo数据变化", x);
+            // console.log("监听userInfo数据变化", x);
             this.$store.commit("setagentUser");
         }
     }

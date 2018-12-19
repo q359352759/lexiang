@@ -107,10 +107,7 @@ export default {
                     }else{
                         localStorage.loginDate = JSON.stringify(x.data);
                         //更新store 用户登录信息
-                        this.$store.commit(
-                            "setloginDate",
-                            JSON.stringify(x.data)
-                        );
+                        this.$store.commit("setloginDate",JSON.stringify(x.data));
 
                         this.$axios({
                             method: "get",

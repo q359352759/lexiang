@@ -70,7 +70,6 @@
 import { openloading } from "@/assets/js/currency.js";
 import { VueCropper } from "vue-cropper";
 import $ from 'jquery'
-import AlbumVue from '../../components/Album.vue';
 export default {
     name:'',
     components: {

@@ -36,8 +36,8 @@
                     <div @click="fenxiao()">分销</div>
                 </li>
                 <li>
-                    <div><i class="icon iconfont icon-leijixiaoshoue"></i></div>
-                    <div>销售</div>
+                    <div @click="xiaoshou()"><i class="icon iconfont icon-leijixiaoshoue"></i></div>
+                    <div @click="xiaoshou()">销售</div>
                 </li>
                 <li>
                     <div @tap="Marketing()"><i class="icon iconfont icon-laba2"></i></div>
@@ -188,6 +188,10 @@ export default {
         }
     },
     methods: {
+        //跳转销售
+        xiaoshou(){
+            this.$router.push('/myshop/xiaoshou/xiaoshou');
+        },
         //提现
         tixian(){
             this.$router.push('/myshop/WithdrawMoney');

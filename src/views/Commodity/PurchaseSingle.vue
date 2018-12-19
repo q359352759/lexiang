@@ -214,14 +214,20 @@ export default {
                         honghao_kedikou=honghao_kedikou-kedikou;
                     }
                 }
+                obj.shiji_dikou=obj.shiji_dikou ? Math.ceil(obj.shiji_dikou*100)/100 : 0;
                 list.push(obj)
             }
             return list;
         },
         //计算 实际金额
         shiji(){
-            var money=Math.floor(this.number*this.shangPing.sellingPrice*100)/100;
+            // var money=Math.floor(this.number*this.shangPing.sellingPrice*100)/100;
+            if(!this.number || !this.shangPing.sellingPrice){
+                return 0;
+            }
+            var money=this.number*this.shangPing.sellingPrice
                 money=money-this.shiji_dikou
+                money=Math.ceil((money.toFixed(2))*100)/100
             return money;
         },
         //计算实际抵扣金额
@@ -240,6 +246,7 @@ export default {
             }else if(this.dikou==6){
                 dikou=money+this.xingren_pingtai_dikou.zongshu
             }
+            dikou=Math.floor(dikou*100)/100;
             return dikou;
         },
         //计算 商品红包可抵扣金额
@@ -268,7 +275,8 @@ export default {
             var number_1=this.number-this.shangPing_hongbao_dikou.number;
             // 计算剩余可抵扣金额
             var shengyu = number_1*this.shangPing.deduction
-            var dikou = shengyu<this.shengri_hongbao[0].redAmount ? shengyu : this.shengri_hongbao[0].redAmount
+            var dikou = shengyu<this.shengri_hongbao[0].redAmount ? shengyu : this.shengri_hongbao[0].redAmount;
+                dikou=Math.floor(dikou*100)/100
             return dikou;
         },
         //庆典抵扣金额
@@ -281,6 +289,7 @@ export default {
             // 计算剩余可抵扣金额
             var shengyu = number_1*this.shangPing.deduction
             var dikou = shengyu<this.qingdian_hongbao[0].redAmount ? shengyu : this.qingdian_hongbao[0].redAmount
+                dikou=Math.floor(dikou*100)/100
             return dikou;
         },
         //店铺节日红包
@@ -293,6 +302,7 @@ export default {
             // 计算剩余可抵扣金额
             var shengyu = number_1*this.shangPing.deduction
             var dikou = shengyu<this.jieri_hongbao[0].redAmount ? shengyu : this.jieri_hongbao[0].redAmount
+                dikou=Math.floor(dikou*100)/100
             return dikou;
         },
         //店铺新人红包金额
@@ -306,6 +316,7 @@ export default {
             //计算剩余可抵扣金额
             var shengyu = number_1*this.shangPing.deduction
             var dikou = shengyu<this.dianpu_hongbao[0].redAmount ? shengyu : this.dianpu_hongbao[0].redAmount
+                dikou=Math.floor(dikou*100)/100
             return dikou;
         },
         //平台红包
@@ -318,6 +329,7 @@ export default {
             //计算剩余可抵扣金额
             var shengyu = number_1*this.shangPing.deduction
             var dikou = shengyu<this.invitedsutotal.sutotal ? shengyu : this.invitedsutotal.sutotal
+                dikou=Math.floor(dikou*100)/100
             return dikou;
         },
         //计算新人红包+平台红包
@@ -337,6 +349,7 @@ export default {
                 console.log(obj.pingtai_dikou);
             }
             obj.zongshu=obj.xingren_dikou+obj.pingtai_dikou;
+            obj.zongshu=Math.floor(obj.zongshu*100)/100
             return obj;
         },
     },
@@ -359,27 +372,23 @@ export default {
                 return;
             }
             var this_1=this;
-            // var submitCommodity={
-            //     shopCommodity:'',   //商品实体类
-            //     shopRedEnvelope:"", //红包实体类
-            //     deduction:'',       //抵扣金额
-            //     actualPayment:'',   //单个商品的实际金额
-            //};
             var submitCommodityList=[];
             this.shangPing_list.forEach(item => {
+                item.shopRedEnvelope=(item.shiji_dikou && item.shiji_dikou!=0) ?  item.hongbao : []
                 var obj={
                         shopCommodity:item,
-                        shopRedEnvelope:item.hongbao,
+                        // shopRedEnvelope:item.hongbao,
                         deduction:item.shiji_dikou ? item.shiji_dikou : 0,
-                        actualPayment:item.shiji_dikou ? (item.sellingPrice-item.shiji_dikou) : item.sellingPrice
+                        actualPayment:item.shiji_dikou ? Math.ceil((item.sellingPrice-item.shiji_dikou)*100)/100 : item.sellingPrice
                     }
                 submitCommodityList.push(obj);
             });
 
             let sumit_obj={
-                    appUser:this.userInfo,      //用户
-                    shopBasics:this.shop,              //店铺信息
-                    amount:this.shiji,              //金额
+                    orderType:0,        //0表示购买商品 1表示输入金额
+                    appUser:this.userInfo,              //用户
+                    shopBasics:this.shop,               //店铺信息
+                    amount:this.shiji,                  //金额
                     submitCommodityList:submitCommodityList        ////商品实体类
                 }
             openloading(true)
@@ -488,8 +497,6 @@ export default {
                 fc:this.get_shangPing
             }
         
-
-
         this.userInfo=JSON.parse(localStorage.userInfo);
         this.$store.commit('shangPing/get_shangping_1',obj);
         // this.$store.commit('shangPing/get_shangping_2',this.id).then(x=>{
@@ -505,9 +512,6 @@ export default {
             this.get_CardPackge();
             //获取用户平台红包金额
             this.get_invitedsutotal()
-
-        
-        
     },
     watch:{
         // userInfo(){

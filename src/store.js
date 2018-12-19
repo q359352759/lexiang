@@ -115,22 +115,23 @@ export default ()=>{
                 //this.$store.getters.doneTodos(...)
                 return state.todos.find(todo => todo.done)
             },
-            filter_area: state => (id, list) => {
+            filter_area: (state,getters) => (id, list) => {
                 console.log('过滤地址');
                 var arr = list ? list : [];
-                // return state.area.filter(x => x.id==id)
                 var obj = state.area.find(x => x.id == id);
                 if (obj) {
                     arr.unshift(obj);
                     if (obj.parentid) {
-                        vuex.getters.filter_area(obj.parentid, arr);
+                        getters.filter_area(obj.parentid, arr);
                     }
                 }
-                // return state.area.find(x => x.id === id)
                 return arr;
             }
         },
         mutations: {
+            filter_area(){
+
+            },
             setIsWeixin(state, msg) {
                 console.log("判断是否是微信");
             },
@@ -158,19 +159,17 @@ export default ()=>{
                 axios({
                     method: "get",
                     url: "/api-u/agentUser/me?userid=" + userInfo.username
-                })
-                    .then(x => {
-                        console.log("获取用户代理人信息", x);
-                        if (x.data.code == 200) {
-                            state.agentUser = x.data.data;
-                        } else {
-                            state.agentUser = false;
-                        }
-                    })
-                    .catch(error => {
+                }).then(x => {
+                    console.log("获取用户代理人信息", x);
+                    if (x.data.code == 200) {
+                        state.agentUser = x.data.data;
+                    } else {
                         state.agentUser = false;
-                        console.log("获取用户代理人信息失败", error);
-                    });
+                    }
+                }).catch(error => {
+                    state.agentUser = false;
+                    console.log("获取用户代理人信息失败", error);
+                });
             },
             //获取个人信息
             setCurrent(state) {

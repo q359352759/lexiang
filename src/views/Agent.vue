@@ -39,7 +39,6 @@
             <ul class="box_2">
                 <li :class="{'active':type_1==1}" @click="change_type(1)">
                     <div class="img_box">
-                        <!-- <img src="image/d1.png" alt="" srcset=""> -->
                         <i class="icon iconfont icon-tuandui"></i>
                     </div>
                     <div class="title">团队补贴</div>
@@ -47,7 +46,6 @@
                 </li>
                 <li :class="{'active':type_1==2}" @click="change_type(2)">
                     <div class="img_box">
-                        <!-- <img src="image/d2.png" alt="" srcset=""> -->
                         <i class="icon iconfont icon-kejiziyuanshujufuwupingtai"></i>
                     </div>
                     <div class="title">平台分佣</div>
@@ -55,7 +53,6 @@
                 </li>
                 <li :class="{'active':type_1==3}" @click="change_type(3)">
                     <div class="img_box">
-                        <!-- <img src="image/d3.png" alt="" srcset=""> -->
                         <i class="icon iconfont icon-jinrudianpu"></i>
                     </div>
                     <div class="title">店铺分佣</div>
@@ -70,7 +67,6 @@
                 </li>
                 <li :class="{'active':type_1==4}" @click="change_type(4)">
                     <div class="img_box">
-                        <!-- <img src="image/d4.png" alt="" srcset=""> -->
                         <i class="icon iconfont icon-ketixianjine"></i>
                     </div>
                     <div class="title">可提现</div>
@@ -98,9 +94,6 @@
                             <div>{{x.itSubsidies}}</div>
                             <div>{{x.itSubsidiesPlus}}</div>
                         </li>
-                        <!-- <div v-if="butie.loading" class="config_loading mui-text-center">拼命加载中···</div>
-                        <div v-if="!butie.loading && butie.list.length==butie.total" class="config_load mui-text-center">———没有更多了———</div>
-                        <div v-if="!butie.loading && butie.list.length==0" class="config_No_data mui-text-center">暂无数据</div> -->
                         <loading :loadingtype="butie.loading" :nodata="!butie.loading && butie.total==0" :end="!butie.loading && butie.list.length==butie.total && butie.total!=0"/>
                     </ul>
 
@@ -638,12 +631,8 @@ export default {
                         this.$router.push("/ApplicationAgent");
                     } else {
                         this.agentUser = x.data.data;
-                        this.amount = x.data.data.sutotal
-                            ? x.data.data.sutotal
-                            : 0;
-                        this.areaList = this.$store.getters.filter_area(
-                            x.data.data.areaCode
-                        );
+                        this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
+                        this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
                     }
                 })
                 .catch(error => {

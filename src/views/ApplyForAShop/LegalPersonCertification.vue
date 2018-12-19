@@ -8,17 +8,27 @@
         <div class="mui-content">
             <div v-if="userinfo.iaiState" class="box_3">
                 <ul class="mui-table-view">
-                    <li class="mui-table-view-cell" @click="select_shengfen()">
-                        <a class="mui-navigate-right">
-                            使用
-                            <span>{{findByUserid ? findByUserid.name : ''}}</span>的实名认证
-                        </a>
+                    <li class="mui-table-view-cell item">
+                        <div @click="select_shengfen(true)" class="radio_1" :class="{'active':false}">
+                            <i class="icon iconfont icon-xuanze"></i>
+                        </div>
+                        <span>{{findByUserid ? findByUserid.name : ''}}</span>
+                        <div>是法人？可直接使用他的认证。</div>
                     </li>
                 </ul>
             </div>
-
+            <div v-if="userinfo.iaiState" class="box_3">
+                <ul class="mui-table-view">
+                    <li class="mui-table-view-cell item">
+                        <div class="radio_1" :class="{'active':true}">
+                            <i class="icon iconfont icon-xuanze"></i>
+                        </div>
+                        <div>使用营业执照法人认证</div>
+                    </li>
+                </ul>
+            </div>
             <div class="box_4">
-                 温馨提示：请使用手机竖着拍照或手机相册中选择。
+                请用手机竖着拍照
             </div>
 
             <ul class="box_1" v-show="!Uncertified">
@@ -84,6 +94,15 @@
                     </div>
                 </li>
             </ul>
+            
+            <div class="box_5">
+                <div @click="change_radio_2()" class="radio_1" :class="{'active':xieyi}">
+                    <i class="icon iconfont icon-xuanze"></i>
+                </div>
+                <div @click="change_radio_2()">我已阅读并同意</div>
+                <div class="xieyi" @click="$router.push('/renzhengxieyi')">《实名认证协议》</div>
+            </div>
+
             <button @click="add()" class="btn_1">提交审核</button>
             <!-- <button @click="get_token()" class="btn_1">获取access_token</button> -->
         </div>
@@ -134,6 +153,7 @@ export default {
     },
     data() {
         return {
+            xieyi:true,
             userinfo: "", //用户信息
             add_loading: false, //正在添加
             zhengmian_ok: false, //正面已上传百度认证
@@ -193,6 +213,10 @@ export default {
     },
 
     methods: {
+        //协议
+        change_radio_2(){
+            this.xieyi=!this.xieyi;
+        },
         //选择以实名的省份证
         select_shengfen(){
             console.log(this.findByUserid);
@@ -339,11 +363,11 @@ export default {
         add() {
             var this_1 = this;
             if (!this.zhengmian_ok || !this.fanmian_ok) {
-                mui.toast("请先上传完整的证件照！", {
-                    duration: 2000,
-                    type: "div"
-                });
+                mui.toast("请先上传完整的证件照。", { duration: 2000, type: "div" });
                 return;
+            }else if(!this.xieyi){
+                mui.toast("请同意实名认证协议。", { duration: 2000, type: "div" });
+                return
             }
             // this.add_loading = true;
 
@@ -401,9 +425,29 @@ export default {
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
+#LegalPersonCertification .box_5{
+    display: flex;
+    padding: 10px 10px;
+    align-items: center;
+    color: rgba(80, 80, 80, 1);
+	font-size: 14px;
+    .radio_1{
+        margin: 0px 5px 0px 0px;
+    }
+    .xieyi{
+        color: #2a82e4;
+    }
+}
 #LegalPersonCertification .box_3{
     color: #505050;
     font-size:0.14rem;
+    .item{
+        display: flex;
+        align-items: center;
+        .radio_1{
+            margin: 0px 10px 0px 0px;
+        }
+    }
     span{
         color: #2a82e4;
     }
@@ -415,7 +459,7 @@ export default {
     height: 100%;
     .mui-content {
         height: 100%;
-        // background:#ffffff;
+        background:#ffffff;
     }
 }
 #LegalPersonCertification .mui-bar {
@@ -434,7 +478,7 @@ export default {
 #LegalPersonCertification .box_4{
     font-size: 0.12rem;
     text-align: center;
-    padding: 0.2rem 0px 0px;
+    padding: 10px 0px 0px;
     color: red;
 }
 #LegalPersonCertification .box_1 {

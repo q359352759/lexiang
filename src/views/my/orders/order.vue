@@ -9,7 +9,7 @@
                 <!-- 头部 -->
                 <orderHeader />
                  <!-- 商品 -->
-                <shangping />
+                <shangping v-if="dingdanxiangqing.orderType==0"/>
                 <!-- 订单详情 -->
                 <dingdanxiangqing />
                
@@ -17,12 +17,13 @@
             </div>
             <div class="footer_1">
                 <!-- 输入金额底部 -->
-                <!-- <dangmianzhifu /> -->
-                商品支付底部
-                <shangpingzhifu/>
-
+                <dangmianzhifu v-if="dingdanxiangqing.orderType==1"/>
+                <!-- 商品支付底部 -->
+                <shangpingzhifu v-if="dingdanxiangqing.orderType==0"/>
             </div>
         </div>
+        <!-- 抵扣详情 -->
+        <dikouxiangqing v-if="dingdanxiangqing.orderType==0"/>
     </div>
 </template>
 
@@ -38,7 +39,8 @@ import orderHeader from '@/components/orders/order/orderHeader.vue';
 import shangping from '@/components/orders/order/shangping.vue';
 //商品支付底部
 import shangpingzhifu from '@/components/orders/order/shangpingzhifu.vue';
-
+//抵扣详情
+import dikouxiangqing from "@/components/orders/order/dikouxiangqing.vue";
 
 export default {
     name:"ordersOrder",
@@ -47,7 +49,8 @@ export default {
         dangmianzhifu,
         dingdanxiangqing,
         shangping,
-        shangpingzhifu
+        shangpingzhifu,
+        dikouxiangqing
     },
     data(){
         return{
@@ -55,21 +58,23 @@ export default {
         }
     },
     computed:{
-
+        ...mapGetters({
+            dingdanxiangqing:'orders/order/dingdanxiangqing',   //订单基本信息
+        })
     },
     methods:{
         ...mapActions({
             order_set_lsit:'orders/order/set_list',
             shoppingCopy:'orders/order/shoppingCopy',   //调用支付接口    
             set_orderid_openid:'orders/order/set_orderid_openid',   //初始化 openid和 ordreId
-            findShopOrderByIda:'orders/order/findShopOrderByIda',   //订单详情
-            findShopOrdersById:'orders/order/findShopOrdersById'    //订单详情2
+            findShopOrdersById:'orders/order/findShopOrdersById'    //订单详情
         }),
         ...mapActions({
             get_shop:'shop/get_shop',   //查询店铺
         })
     },
     mounted() {
+        
         console.log(this.$route)
         console.log(this.$route.params.zhifu);
         if(this.$route.params.zhifu){
@@ -81,18 +86,19 @@ export default {
                 ordreId:this.$route.query.ordreId,
                 openid:this.weixin.openid
             }
-        //vuex 初始化 openid和 ordreId
+        //vuex  初始化 openid和 ordreId
         this.set_orderid_openid(query).then(x=>{
             console.log('数据初始化完成');
             if(this.$route.params.zhifu){
-                this.shoppingCopy();    //支付
+                this.shoppingCopy();                //支付
             }
             //订单详情
-            this.findShopOrderByIda().then(x=>{
-                console.log('查询店铺',x);
-                // this.get_shop(x.data.data.shopid);
+            this.findShopOrdersById().then(x=>{
+                console.log('订单详情',x);
+                //查询店铺信息
+                this.get_shop(x.data.data.shopid);
             })
-            this.findShopOrdersById();
+            
         }).catch(err=>{
 
         })

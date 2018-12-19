@@ -176,8 +176,6 @@ export default {
                     html+='<p style="margin:0px;font-size:0px;"><img style="max-width: 100%;" width="100%" src="'+list[i].url+'" alt=""></p><div style="min-height:20px;"></div>';
                 }
                  console.log(html)
-                // this.editor.setContent(html);
-                // this.editor.execCommand('insertHtml', html)
                 $('.content_1').append(html);
             }
         },
@@ -283,16 +281,6 @@ export default {
                     this.font_color=div.css('color') ? div.css('color') : '#000000';
                     this.html=div.html();
 
-                    // function set_editor(){
-                    //     try {
-                    //         this_1.editor.setContent(this_1.synopsis.remark);
-                    //     } catch (error) {
-                    //         setTimeout(()=>{
-                    //             set_editor()
-                    //         },1000)
-                    //     }
-                    // }
-                    // set_editor();
                 }else{
                     mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
                 }
@@ -333,92 +321,6 @@ export default {
 
         //判断是不是安卓
         // alert(isAndroid())
-
-        // //http://www.runoob.com/try/demo_source/movie.mp4
-        // this.config.initialFrameHeight=this.$refs.editor.offsetHeight;
-        // // this.config.initialFrameHeight=300;
-        
-        // this.editor = UE.getEditor('editor_1', this.config); // 初始化UM
-        // UE.registerUI('添加视频',function(editor,uiName){
-        //     //-320px -20px
-        //     //注册按钮执行时的command命令，使用命令默认就会带有回退操作
-        //     editor.registerCommand(uiName,{
-        //         execCommand:function(){
-        //             // 1店招  2环境 3商品 4描述 5其他
-        //             this_1.$router.push('/introduction?video_show=1');
-        //             // alert('添加视频链接');
-        //             // var html='<video width="100%" controls src="http://www.runoob.com/try/demo_source/movie.mp4">'+
-        //             //             '<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/mp4">'+
-        //             //             '<source src="http://www.runoob.com/try/demo_source/movie.mp4" type="video/ogg">'+
-        //             //         '</video>'
-        //             // this_1.editor.execCommand('insertHtml', html)
-        //         }
-        //     });
-        //     //创建一个button
-        //     var btn = new UE.ui.Button({
-        //         //按钮的名字
-        //         name:uiName,
-        //         //提示
-        //         title:uiName,
-        //         //需要添加的额外样式，指定icon图标，这里默认使用一个重复的icon
-        //         cssRules :'background-position: -320px -20px;',
-        //         //点击时执行的命令
-        //         onclick:function () {
-        //             //这里可以不用执行命令,做你自己的操作也可
-        //             editor.execCommand(uiName);
-        //         }
-        //     });
-        //     //当点到编辑内容上时，按钮要做的状态反射
-        //     editor.addListener('selectionchange', function () {
-        //         var state = editor.queryCommandState(uiName);
-        //         if (state == -1) {
-        //             btn.setDisabled(true);
-        //             btn.setChecked(false);
-        //         } else {
-        //             btn.setDisabled(false);
-        //             btn.setChecked(state);
-        //         }
-        //     });
-        //     //因为你是添加button,所以需要返回这个button
-        //     return btn;
-        // })
-        // UE.registerUI('上传图片',function(editor,uiName){
-        //     //注册按钮执行时的command命令，使用命令默认就会带有回退操作
-        //     editor.registerCommand(uiName,{
-        //         execCommand:function(){
-        //             // alert('添加图片')
-        //             this_1.$router.push('/introduction?Album_show=1')
-        //             // 1店招  2环境 3商品 4描述 5其他
-        //         }
-        //     });
-        //     //创建一个button
-        //     var btn = new UE.ui.Button({
-        //         //按钮的名字
-        //         name:uiName,
-        //         //提示
-        //         title:uiName,
-        //         //需要添加的额外样式，指定icon图标，这里默认使用一个重复的icon
-        //         cssRules :'background-position: -380px 0px;',
-        //         //点击时执行的命令
-        //         onclick:function () {
-        //             //这里可以不用执行命令,做你自己的操作也可
-        //             editor.execCommand(uiName);
-        //         }
-        //     });
-        //     //当点到编辑内容上时，按钮要做的状态反射
-        //     editor.addListener('selectionchange', function () {
-        //         var state = editor.queryCommandState(uiName);
-        //         if (state == -1) {
-        //             btn.setDisabled(true);
-        //             btn.setChecked(false);
-        //         } else {
-        //             btn.setDisabled(false);
-        //             btn.setChecked(state);
-        //         }
-        //     });
-        //     //因为你是添加button,所以需要返回这个button
-        //     return btn;
-        // })
 
     },
     activated() {
@@ -536,12 +438,10 @@ export default {
         user-select: text;
         -webkit-user-select:text
     }
-    
     .content_1:empty:before{
         content: '说点啥好呢？'; 
         color: gray; 
     }
-
 }
 #editor_1{
     height: 100%;

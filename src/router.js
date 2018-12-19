@@ -137,6 +137,7 @@ const shopAgreement = () => import ("@/views/xieyi/shopAgreement.vue"); //商家
 const xuyuan = () => import ("@/views/xieyi/xuyuan.vue"); //预选区域代理说明
 const dailijiaofei = () => import ("@/views/xieyi/dailijiaofei.vue"); //预选区域代理说明
 const WithdrawalAgreement = () => import ("@/views/xieyi/WithdrawalAgreement.vue"); //提现协议
+const renzhengxieyi = () => import ("@/views/xieyi/renzhengxieyi.vue"); //实名认证协议
 
 
 // require.ensure(dependencies: String[], callback: function(require), chunkName: String)
@@ -400,6 +401,10 @@ export default new Router({
             path:'/WithdrawalAgreement',
             name:'',
             component:WithdrawalAgreement
+        },{
+            path:'/renzhengxieyi',
+            name:'',
+            component:renzhengxieyi
         },
         {
             path: "/classification",
@@ -571,7 +576,7 @@ export default new Router({
             name:'',
             component:AddGoods,
             meta: {
-                keepAlive: true //缓存当前页面
+                // keepAlive: true //缓存当前页面
             }
         },
 

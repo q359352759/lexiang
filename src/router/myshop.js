@@ -15,6 +15,8 @@ const MemberList=()=>import('@/views/myshop/Member/MemberList')     //店铺会�
 //提现
 const WithdrawMoney= resolve => { require.ensure([], () => {resolve( require('@/views/myshop/WithdrawMoney.vue') )}) }
 
+//销售
+const xiaoshou=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/xiaoshou/xiaoshou.vue') )}) }
 //myshop       开头
 const myshops=[
     {
@@ -41,6 +43,12 @@ const myshops=[
         path:'/myshop/Member/MemberList',
         name:'',
         component:MemberList
+    },
+    // /myshop/xiaoshou/    销售
+    {
+        path:'/myshop/xiaoshou/xiaoshou',
+        name:'',
+        component:xiaoshou
     }
 
 ]

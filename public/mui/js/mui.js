@@ -2796,8 +2796,13 @@ Function.prototype.bind = Function.prototype.bind || function(to) {
 	window.addEventListener('tap', function(e) {
 		var action = $.targets.action;
 		if (action && action.classList.contains('mui-action-back')) {
-			$.back();
-			$.targets.action = false;
+			if(window.history.length==1){
+				console.log('返回按键');
+				location.href=location.origin+location.pathname+'#/my';
+			}else{
+				$.back();
+				$.targets.action = false;
+			}		
 		}
 	});
 	window.addEventListener('swiperight', function(e) {

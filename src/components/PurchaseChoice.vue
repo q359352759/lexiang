@@ -45,7 +45,7 @@
                     <div class="mui-text-center money_1">￥{{Total_price}}</div>
                     <div class="mui-text-right">
                         <span>实付：</span>
-                        <span class="money_2">￥{{Total_price-zong_dikou}}</span>
+                        <span class="money_2">￥{{Math.ceil((Total_price-zong_dikou).toFixed(2)*100)/100}}</span>
                     </div>
                 </li>                
                 <li>
@@ -102,8 +102,8 @@
                         </ul>
                     </div>
                 </div>
-                <div class="footer_1">
 
+                <div class="footer_1">
                     <div class="select_1">
                         <div v-show="!youwu_hongbao">无红包可抵扣</div>
                         <div @click="change_select(true)" v-show="youwu_hongbao">
@@ -379,6 +379,7 @@ export default {
             this.qita_dikou.forEach(item=>{
                 money=money+(item.dikou ? item.dikou : 0)
             })
+            money=money ? Math.floor(money.toFixed(2)*100)/100 : 0;
             return money
         },
         //计算红包使用数量
@@ -390,7 +391,7 @@ export default {
                 }else{
                     if(this.xinren_hongbao.length>0 && this.invitedsutotal.sutotal && this.invitedsutotal.sutotal>0){
                         number=number+(this.dikou_type==1 ? 1 : 2);
-                    }else if(this.xinren_hongbao.length<0 && this.invitedsutotal.sutotal && this.invitedsutotal.sutotal>0){
+                    }else if(this.xinren_hongbao.length==0 && this.shangping_list.length>0 && this.invitedsutotal.sutotal && this.invitedsutotal.sutotal>0){
                         number=number+(this.dikou_type==1 ? 1 : 1);
                     }
                 }

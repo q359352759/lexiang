@@ -625,7 +625,6 @@ export default {
                 this.$store.state.Select_picture.type='huanjing';
                 this.$store.state.Select_picture.list=this.img_list;
                 this.$router.push('/Album?seetype=2&size=12');
-
             }
             console.log(x)
             // if (x == 2 && this.img_list.length == 12) return;

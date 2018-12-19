@@ -1,18 +1,19 @@
 <template>
     <ul>
         <li>
-            <div>共计：{{xiangqing_2 && xiangqing_2.shopOrderCommoditys ? xiangqing_2.shopOrderCommoditys.length : 0}}件</div>
+            <div @click="get_dikouxiangqing_show(true)">共计：{{(dingdanxiangqing && dingdanxiangqing.shopOrderCommoditys) ? dingdanxiangqing.shopOrderCommoditys.length : 0}}件</div>
             <div class="money mui-text-center">{{dingdan_zongshu}}元</div>
-            <div class="mui-text-right">实付：<span class="money">{{dingdanxiangqing.paymentAmount}}元</span></div>
+            <div class="mui-text-right">实付：<span class="money">{{dingdanxiangqing.paymentAmount ? dingdanxiangqing.paymentAmount : 0}}元</span></div>
         </li>
         <li>
-            <div>
-                使用：3个红包
+            <div @click="get_dikouxiangqing_show(true)">
+                使用：{{shangpin_dikou_list.dikou_hongbao.length}}个红包
                 <i class="icon_font mui-icon mui-icon-arrowright"></i>
             </div>
             <div class="money mui-text-center">{{dingdanxiangqing.deduction ? dingdanxiangqing.deduction : 0}}元</div>
             <div class="mui-text-right">
-                <div @click="zhifu()" class="zhifu">支付</div>
+                <div v-show="dingdanxiangqing.state==0" @click="zhifu()" class="zhifu">支付</div>
+                <div v-show="dingdanxiangqing.state!=0" class="zhifu">去评价</div>
             </div>
         </li>
     </ul>
@@ -30,9 +31,8 @@ export default {
             test:'orders/order/test'
         }),
         ...mapGetters({
-            new_shangping_list:'orders/order/new_shangping_list',   //过滤后的商品
             dingdanxiangqing:'orders/order/dingdanxiangqing',       //详情
-            xiangqing_2:'orders/order/xiangqing_2',                 //详情2
+            shangpin_dikou_list:'orders/order/shangpin_dikou_list', //商品抵扣信息
         }),
         //总价
         dingdan_zongshu(){
@@ -43,7 +43,7 @@ export default {
         ...mapActions({
             shoppingCopy:'orders/order/shoppingCopy',               //调用支付接口
             set_orderid_openid:'orders/order/set_orderid_openid',   //初始化 openid和 ordreId
-            
+            get_dikouxiangqing_show:'orders/order/get_dikouxiangqing_show',     //显示框是否显示            
         }),
         zhifu(){
             this.shoppingCopy();

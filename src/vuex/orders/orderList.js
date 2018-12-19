@@ -6,6 +6,8 @@ export default {
         list_all:{                //全部
             loading:true,
             page_index:0,
+            list:[],
+            total:0,
             query:{
                 start:0,
                 length:10,
@@ -16,6 +18,8 @@ export default {
         list_0:{                //带支付
             loading:true,
             page_index:0,
+            list:[],
+            total:0,
             query:{
                 start:0,
                 length:10,
@@ -26,6 +30,8 @@ export default {
         list_2:{                //带评价
             loading:true,
             page_index:0,
+            list:[],
+            total:0,
             query:{
                 start:0,
                 length:10,
@@ -51,7 +57,21 @@ export default {
     actions:{
         async init_state({state}){
             return new Promise((resolve, reject) => {
-                var userInfo=JSON.parse(localStorage.userInfo)
+                var userInfo=JSON.parse(localStorage.userInfo);
+
+                state.list_all={                //全部
+                    loading:true,
+                    page_index:0,
+                    list:[],
+                    total:0,
+                    query:{
+                        start:0,
+                        length:10,
+                        // state:0,
+                        userid:userInfo.username,
+                    }
+                }
+
                 state.list_all.query.userid=userInfo.username;
                 state.list_0.query.userid=userInfo.username;
                 state.list_2.query.userid=userInfo.username;
@@ -65,6 +85,8 @@ export default {
                 var params=obj.query
                 axios.get('/api-s/shops/findAllShopOrders',{params}).then(x=>{
                     console.log(x);
+                    obj.list=obj.list.conat(x.data.data.data);
+                    obj.total=obj.total;
                     obj.loading=false;
                 }).catch(err=>{
                     console.log(err);
