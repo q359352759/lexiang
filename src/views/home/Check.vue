@@ -2,6 +2,7 @@
     <div>
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <!-- <a @tap="back_1()" class="mui-icon mui-icon-left-nav mui-pull-left"></a> -->
             <h1 class="mui-title">红包买单</h1>
         </header>
         <div class="mui-content mui-fullscreen">
@@ -107,6 +108,7 @@ import PurchaseChoice from '@/components/PurchaseChoice.vue';
 import {getDateStr} from '@/assets/js/currency.js';
 
 import { openloading } from "@/assets/js/currency.js";
+import { mapActions } from 'vuex';
 
 export default {
     name:"",
@@ -147,6 +149,7 @@ export default {
         }
     },
     computed:{
+       
         //判断是用于输入金额
         youwu_hongbao(){
             if(!this.invitedsutotal.sutotal && this.shengri_hongbao.length==0 && this.qingdian_hongbao.length==0 && this.jieri_hongbao.length==0 && this.xinren_hongbao.length==0){
@@ -222,6 +225,9 @@ export default {
         },
     },
     methods:{
+        ...mapActions({
+            set_isfenxiang:'shop/set_isfenxiang'
+        }),
         zhifu(){            
             let amount=0
             if(this.payment_type==0){
@@ -527,6 +533,7 @@ export default {
         //获取新人红包抵扣规则
         this.get_xinrenhongbao();
         
+        this.set_isfenxiang();
         // /shops/redenvelope/findAll
         // console.log(getDateStr(-7));
         // this.$store.commit('shangPing/get_shangping',150)

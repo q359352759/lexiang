@@ -12,8 +12,9 @@
                     <li class="mui-table-view-cell ">
                         <a class="mui-navigate-right item_box">
                             <span>头像</span>
-                            <div class="img_box">
-                                <img src="@/assets/image/lxlogo_180.png" alt="">
+                            <div class="img_box">                                
+			            		<img v-if="userInfo.headImgUrl!='' && userInfo.headImgUrl!=null" :src="userInfo.headImgUrl" alt="">
+            					<img v-if="userInfo.headImgUrl=='' || userInfo.headImgUrl==null" src="@/assets/image/lxlogo_180.png">
                             </div>
                         </a>
                     </li>
@@ -70,7 +71,7 @@
                         </a>
                     </li>
                     <li class="mui-table-view-cell ">
-                        <a class="mui-navigate-right item_box">
+                        <a class="mui-navigate-right item_box" @click="$router.push('/my/AboutUs')">
                             <span>关于我们</span>
                         </a>
                     </li>
@@ -171,6 +172,8 @@ export default {
             height: 44px;
             img{
                 width: 100%;
+                height: 100%;
+                border-radius: 100%;
             }
         }
         span{

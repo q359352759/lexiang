@@ -127,7 +127,6 @@ const RegionalAgent = resolve => { require.ensure([], () => { resolve(require(".
 const ExampleOfRevenue = resolve => { require.ensure([], () => { resolve(require("./views/RegionalAgent/ExampleOfRevenue.vue")); }); }; //区域代理商收益示例
 
 
-
 // 协议
 const AgencyCost = resolve => { require.ensure([], () => { resolve(require("./views/xieyi/AgencyCost.vue")); }); }; //代理人费用说明
 const RegistrationAgreement = () => import ("@/views/xieyi/RegistrationAgreement.vue"); //用户注册协议
@@ -160,6 +159,7 @@ import err404 from "@/views/404.vue"
 import myshops from "@/router/myshop.js";
 import commodity from "@/router/commodity.js";
 import orders from '@/router/orders.js';
+import mys from '@/router/my.js';
 // console.log(myshops)
 // require('@/router/myshop.js'),
 
@@ -170,6 +170,7 @@ export default new Router({
         ...myshops, 
         ...commodity,   //商品
         ...orders,
+        ...mys,
         { path: "/", name: "", component: login },
         { path: "/editortest", name: "", component: editortest },
         {

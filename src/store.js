@@ -28,9 +28,11 @@ import shangPing from "./vuex/shangPing";       //商品相关接口
 import hongbao from "./vuex/hongbao";           //红包相关接口
 import shop from "@/vuex/shop.js";
 import orders from '@/vuex/orders.js';          //订单
-
+import user from "@/vuex/user.js";
 import request from '@/api/request'
 Vue.use(Vuex);
+// 对名字进行解码
+import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
 
 export default ()=>{
 // var vuex = new Vuex.Store({
@@ -191,8 +193,13 @@ export default ()=>{
                         return;
                     } else {
                         console.log("获取个人信息", x);
-                        state.userInfo = x.data.data;
-                        localStorage.userInfo = JSON.stringify(x.data.data);
+                        let userInfo=x.data.data;
+                        try {
+                            userInfo.nickname=b64DecodeUnicode(userInfo.nickname)
+                        } catch (error) {}
+                        
+                        state.userInfo = userInfo;
+                        localStorage.userInfo = JSON.stringify(userInfo);
                     }
                 }).catch(error => {
                     alert("获取用户信息失败，请重新登录");
@@ -307,7 +314,8 @@ export default ()=>{
             shangPing:shangPing,
             shop:shop,
             hongbao:hongbao,
-            orders:orders
+            orders:orders,
+            user:user
         },
     });
 }

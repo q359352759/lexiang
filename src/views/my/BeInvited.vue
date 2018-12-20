@@ -42,8 +42,9 @@
                         </li>
                     </ul>
                     <button type="submit">领&nbsp;&nbsp;取</button>
-                    <div @click="go_login()" class="login">已有账号，去登陆</div>
                 </form>
+                
+                    <div @click="go_login()" class="login">已有账号，去登陆</div>
                 <div class="box_5">
                     <img src="image/bg_5.png" alt="" srcset="">
                 </div>
@@ -233,7 +234,7 @@ export default {
     z-index: 2;
     margin: -10px 0px 0px;
     display: block;
-    padding: 0.56rem 0.3rem 1px;
+    padding: 0.56rem 0.3rem 50px;
     // background: #fdba2c;
     li{
         display: flex;
@@ -283,11 +284,15 @@ export default {
         border: none;
         box-shadow: 0px 2px 36px 0px rgba(0, 0, 0, 0.6142857142857143);
     }
-    .login{
-        color: rgba(255, 255, 255, 1);
-    	font-size: 14px;
-        text-align: center;
-    }
+}
+.login{
+    color: rgba(255, 255, 255, 1);
+    font-size: 14px;
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    bottom: 0.35rem;
+    z-index: 2;
 }
 .box_5{
     position: absolute;

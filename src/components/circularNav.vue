@@ -4,7 +4,7 @@
         <!-- <ul class="move" @mousedown="mousedown($event)" @mousemove="mousemove($event)" @mouseup="mouseup($event)"> -->
         <ul :class="class_name" :style="{'top':this.$store.state.clientY+'px','left':this.$store.state.clientX+'px'}">
             <li @click="change_mask()" @touchmove="touchmove($event)" @touchend="touchend($event)">
-                <img src="@/assets/image/lxlogo_180.png" alt="">
+                <img src="image/12121.png" alt="">
             </li>
             <li class="min_1 min_11" v-show="mask_show">
                 <div @click="go('/home')">
@@ -184,7 +184,10 @@ export default {
     }
 };
 </script>
-<style>
+<style lang="scss">
+@import "@/assets/css/config.scss";
+
+
 #circularNav .mask {
     position: fixed;
     top: 0px;
@@ -221,7 +224,7 @@ export default {
     width: 34px;
     height: 34px;
     text-align: center;
-    background: rgba(39, 172, 110, 1);
+    background: $header_background;
     line-height: 35px;
     margin: 0px auto;
     border-radius: 50%;

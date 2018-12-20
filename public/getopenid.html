@@ -56,20 +56,47 @@
                         alert('授权失败');
                     }else{
                         localStorage.weixin=JSON.stringify(data);
-                        setoken(data)
-                        if(!geturl || geturl==null){
-                            console.log('没有Url地址')
-                            location.href="http://m.lxad.vip/test/dist/index.html#/login"
-                        }else{
-                            console.log('有地址')
-                            location.href="http://m.lxad.vip/test/dist/index.html"+geturl
-                        }
+                        setoken(data);
+                        get_weiinfo(data);
+                        // if(!geturl || geturl==null){
+                        //     console.log('没有Url地址');
+                        //     location.href="http://m.lxad.vip/test/dist/index.html#/login"
+                        // }else{
+                        //     console.log('有地址')
+                        //     location.href="http://m.lxad.vip/test/dist/index.html"+geturl
+                        // }
                     }
                     console.log(data)
                 }
             });
         }
-        
+        //获取微信头像
+        function get_weiinfo(x){
+            $.ajax({
+                type:'get',
+                url:'http://122.114.169.178:10002/api-u/users/getWeiXin?',
+                data:{
+                    token:x.access_token,
+                    openid:x.openid
+                },
+                dataType:'json',
+                success:function(data){
+                    console.log(data);
+                    if(!data.errcode){
+                        localStorage.weixininfo=JSON.stringify(data);
+                    }
+                    if(!geturl || geturl==null){
+                        // console.log('没有Url地址');
+                        location.href="http://m.lxad.vip/test/dist/index.html#/login"
+                    }else{
+                        // console.log('有地址')
+                        location.href="http://m.lxad.vip/test/dist/index.html"+geturl
+                    }
+                }
+            })
+        }
+
+        // refresh就是重新渲染的
         //发送 参数给后端
         function setoken(x){
             $.ajax({

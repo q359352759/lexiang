@@ -52,6 +52,9 @@
 
 <script>
 import { dateFtt, openloading } from "@/assets/js/currency";
+import { mapActions } from 'vuex';
+import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
+
 export default {
     name: "login",
     components: {},
@@ -64,7 +67,9 @@ export default {
         };
     },
     methods: {
-        
+        ...mapActions({
+            set_isfenxiang:'shop/set_isfenxiang'
+        }),
         //跳转忘记密码
         ForgetPassword(){
             this.$router.push('/ForgetPassword');
@@ -128,8 +133,17 @@ export default {
                                     return;
                                 } else {
                                     // console.log("获取个人信息", x);
-                                    localStorage.userInfo = JSON.stringify(x.data.data);
-                                    this.$router.push("/my");
+                                    let userInfo=x.data.data;
+                                    try {
+                                        userInfo.nickname=b64DecodeUnicode(userInfo.nickname)
+                                    } catch (error) {}
+                                    localStorage.userInfo = JSON.stringify(userInfo);
+                                    var backUrl=sessionStorage.backUrl ? sessionStorage.backUrl : '';
+                                    if(!backUrl){
+                                        this.$router.push("/my");
+                                    }else{
+                                        this.$router.push(backUrl)
+                                    }
                                 }
                                 openloading(false);
                             }).catch(error => {
@@ -161,7 +175,8 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        
+
+        this.set_isfenxiang(true);
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {

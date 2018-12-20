@@ -199,6 +199,8 @@
 import html2canvas from 'html2canvas'
 import QRCode from 'qrcodejs2'
 import {openloading} from '@/assets/js/currency.js';
+import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
+import { mapActions } from 'vuex';
 export default {
     name: "my",
     components: {},
@@ -207,7 +209,8 @@ export default {
             qrcode_show:false,
             qrcode:null,
             erweima_base64:'',
-            weixin:{}
+            weixin:{},
+            userInfo:''
         };
     },
     filters: {
@@ -218,34 +221,30 @@ export default {
                 "***" +
                 phone.substring(phone.length - 3)
             );
+        },
+        filter_name(name){
+            try {
+                return b64DecodeUnicode(name);
+            } catch (error) {
+                return name;
+            }
         }
     },
     computed: {
-        userInfo() {
-            return this.$store.state.userInfo;
-        },
         myshop(){
             return this.$store.state.myshop
         }
     },
     methods: {
+        ...mapActions({
+            updated_user:'user/updated_user',
+            get_user:'user/get_user'
+        }),
         //订单
         order(){
             this.$router.push('/orders/orderList')
         },
-        //获取头像测试
-        test(){
-            this.$axios({
-                method:'get',
-                // {"access_token":"16_JDIRSUDCBynjKHmXmreKfKEmBYItDkPs-14E1aajV_sRz0YN9D88LF7ZQz98LCBYCBWwvvY2jVaJBU0rqpFwMg","expires_in":7200,"refresh_token":"16_aW-_bgo0pjIskZHzOSI9TGfpzRvg5x0UTanpVhOO3h1gRU9IFRHqLOZNSMS0s1vYoXJXSeHNeyELBrhBtzHZbQ","openid":"oBfSm1MUjRgdHwvS9pKzikrMXlYg","scope":"snsapi_userinfo","unionid":"oszKI086pyjM1fSEA6VIp3nh8DZs"}
-                url:'/api-u/users/getWeiXin?token=16_JDIRSUDCBynjKHmXmreKfKEmBYItDkPs-14E1aajV_sRz0YN9D88LF7ZQz98LCBYCBWwvvY2jVaJBU0rqpFwMg&openid=oBfSm1MUjRgdHwvS9pKzikrMXlYg',
-            }).then(x=>{
-                console.log(x);
-                this.weixin=x.data;
-            }).catch(err=>{
-                console.log(err);
-            })
-        },
+        
         //跳转分享
         Recommend(){
             this.$router.push('/Recommend?pid='+this.userInfo.username+'&invitationtype=1')
@@ -363,6 +362,7 @@ export default {
             localStorage.removeItem("userInfo");
             localStorage.removeItem('id');
             localStorage.removeItem('homeDialog');
+            sessionStorage.removeItem('backUrl');
             this.$router.push("/login");
         },
         //修改登录密码
@@ -400,7 +400,21 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        this.$store.commit("setCurrent");
+        this.userInfo=JSON.parse(localStorage.userInfo);
+        if(!this.userInfo.headImgUrl){
+            this.updated_user().then(x=>{
+                console.log('需改用户信息',x)
+                // this.$store.commit('setCurrent');
+                this.get_user().then(res=>{
+                    console.log('获取用户头像',res);
+                    this.userInfo=JSON.parse(localStorage.userInfo);
+                }).catch(err=>{
+                    console.log('获取头像失败',err)
+                })
+            })
+        }
+
+        // /www/mystack/sites/b.hzjifen.com/www
         //查询和你自己申请的店铺
         this.$store.commit('setMyshop');
         // console.group('------mounted 挂载结束状态------');
@@ -420,7 +434,6 @@ export default {
     watch: {
         userInfo(x) {
             // console.log("监听userInfo数据变化", x);
-            this.$store.commit("setagentUser");
         }
     }
 };

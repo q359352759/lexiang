@@ -20,7 +20,7 @@
                             <img src="image/news_2.png" alt="">
                             <!-- <span>2</span> -->
                         </div>
-                        <div>店铺优惠</div>
+                        <div>促销快讯</div>
                     </li>
                     <li>
                         <div>

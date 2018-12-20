@@ -11,6 +11,9 @@ localStorage.loginDate          //登录的信息
     {"access_token":"96cd310b-517f-4add-855a-e998de1ee02e","token_type":"bearer","refresh_token":"57610c02-120d-4468-aa5a-3d5a76bb6090","expires_in":28799,"scope":"app"}
 localStorage.weixin             //微信授权 返回的信息
     {"access_token":"ACCESS_TOKEN","expires_in":7200,"refresh_token":"REFRESH_TOKEN","openid":"OPENID","scope":"SCOPE"}
+localStorage.weixininfo         //微信头像和昵称
+
+
 
 localStorage.userInfo 用户个人信息
 
@@ -19,7 +22,6 @@ localStorage.area       地区
 localStorage.search_history      搜索记录
 localStorage.homeDialog     //首页弹出框时间戳
 sessionStorage.Red_envelopes_0      //申请店铺的红包
-
 
 
 appid   wxe81f5f8fa2e34ac6

@@ -1,7 +1,8 @@
 <template>
     <div id="BusinessDetails">
         <header class="mui-bar mui-bar-nav">
-            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <!-- <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a> -->
+            <a @tap="back_1()" class="back mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">商家展示厅</h1>
             <span class="title_header_1">
                 <div>
@@ -212,6 +213,9 @@
                 </div>
             </div>
         </div>
+
+        <xinrenhongbao v-if="xinrenhongbao_box && isfenxiang" :shop="shop" :hongbao="xingren_hongbao" @setshow="setxinrenhongbao_show"/>
+
     </div>
 </template>
 
@@ -224,14 +228,22 @@ import swperdome from '@/components/swperdome.vue';
 import {openloading, bd_decrypt,getDateStr} from "@/assets/js/currency.js";
 import loading from "@/components/loading.vue"
 
+import xinrenhongbao from '@/components/home/myshop/xinrenhongbao.vue'
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
     name: "",
     components: {
         loading,
-        swperdome
+        swperdome,
+        xinrenhongbao
     },
     data() {
         return {
+            //分享进入店铺
+            xinrenhongbao_box:false,
+            isxinren:false,         //是否领取了信任红包
+
             swper_index:0,
             swperdome:false,
             box_3_actvie:false,
@@ -276,10 +288,14 @@ export default {
             qrcode:null,
             qrcode_show:false,
             erweima_base64:'',
-            xingren_hongbao:{}
+            xingren_hongbao:{},
+            // isfenxiang:false
         };
     },
     computed:{
+        ...mapGetters({
+            state_isfenxiang:'shop/isfenxiang'
+        }),
         //实名认证信息
         findByUserid(){    
             return this.$store.state.findByUserid;
@@ -310,6 +326,21 @@ export default {
         }
     },
     methods: {
+        //显示新人红包弹出框
+        setxinrenhongbao_show(x){
+            console.log('收到参数',x)
+            this.xinrenhongbao_box=x;
+        },
+        //
+        back_1(){
+            //二维码进入
+            var backUrl=sessionStorage.backUrl
+            if(this.isfenxiang || backUrl){
+                this.$router.push('/home')
+            }else{
+                history.back()
+            }
+        },
         //动态设置字体大小
         set_font_size(e,size){
             console.log(e.clientWidth);
@@ -340,7 +371,7 @@ export default {
                     console.log(x);
                     if(x.data.code==200){
                         this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
-                        var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.shop.shopid+'&index=1';
+                        var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.shop.shopid+'&fenxiang=1';
                         var el=this.$refs.qrcode
                             el.innerHTML='';
                         let qrcode = new QRCode(el, {  
@@ -402,7 +433,16 @@ export default {
         //跳转买单
         Check(){
             if(!this.userInfo){
-                mui.toast('请先登录。',{ duration: "long",type: "div" });
+                mui.confirm('需要登录才能领取，是否现在去登录。','提示',['取消','是的'],(value)=>{
+                    if(value.index==1){
+                        if(this.isfenxiang){
+                            sessionStorage.backUrl='/BusinessDetails?shopid='+this.shopid+'&fenxiang=1'
+                        }else{
+                            sessionStorage.backUrl='/BusinessDetails?shopid='+this.shopid;
+                        }
+                        this.$router.push('/login');
+                    }
+                })
                 return
             }
             this.$router.push('/Check?shopid='+this.shop.shopid)
@@ -635,6 +675,9 @@ export default {
                             this_1.swiper_type.slideTo(0, 0, false);//切换到第一个slide，速度为1秒
                         },300)
                     } catch (error) {}
+                    if(this.isfenxiang){
+                        localStorage.yaoqing='#/Recommend?pid='+this.shop.userid+'&invitationtype=2'
+                    }
                 }
             }).catch(err=>{
                 console.log(err);
@@ -724,7 +767,7 @@ export default {
             })
         },
         //获取生日红包
-         // 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
+        // 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
         get_redenvelope_5(){
             var obj={
                     start:0,
@@ -758,17 +801,50 @@ export default {
                     type:0,
                     shopid:this.shopid
                 }
-            this.$request('/api-s/shops/redenvelope/findAll',query,'get').then(x=>{
-                console.log('查询店铺新人红包',x);
-                if(x.data.code==200){
-                    if(x.data.data.data.length>0){
-                        this.xingren_hongbao=x.data.data.data[0]
+            return new Promise((resolve, reject) => {
+                this.$request('/api-s/shops/redenvelope/findAll',query,'get').then(x=>{
+                    console.log('查询店铺新人红包',x);
+                    if(x.data.code==200){
+                        if(x.data.data.data.length>0){
+                            this.xingren_hongbao=x.data.data.data[0]
+                        }
                     }
+                    resolve();
+                }).catch(err=>{
+                    console.log(err);
+                    resolve();
+                })
+            });
+        },
+        //查询用户是否领取该店铺的新人红包
+        findEffective(){
+            var query={
+                    start:0,
+                    length:1000,
+                    userid:this.userInfo.username,
+                    shopid:this.shopid,
                 }
-            }).catch(err=>{
-                console.log(err)
-            })
+            return new Promise((resolve, reject) => {
+                this.$axios.get('/api-s/shops/findEffective',{params:query}).then(x=>{
+                    console.log('获取用户领取的本店红包',x);
+                    if(x.data.code==200){
+                        var obj=x.data.data.data.find(item=>item.type==0);
+                        if(obj){
+                            this.isxinren=true;
+                        }
+                    }
+                    resolve();
+                }).catch(err=>{
+                    console.log('获取用户领取的本店红包',err)
+                    resolve();
+                })
+            });
         }
+        // request('/api-s/shops/findEffective',obj.query,'get').then(x=>{
+        //         obj.fc(x.data);
+        //     }).catch(err=>{
+        //         obj.fc(err)
+        //     })
     },
     beforeCreate: function() {
         // console.group('------beforeCreate创建前状态------');
@@ -783,8 +859,43 @@ export default {
         var this_1 = this;
         this.id=this.$route.query.id;
         this.shopid=this.$route.query.shopid;
-        //查询店铺新人红包
-        this.get_hongbao()
+        this.isfenxiang=this.$route.query.fenxiang ? true : false;
+
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {}
+
+        if(this.userInfo){
+            //查询是否收藏
+            this.get_findDataUserFavorite();
+            //获取实名认证信息
+            this.$store.commit('setfindByUserid');
+            //等待两个接口同时完成
+            openloading(true)
+            Promise.all([this.get_hongbao(),this.findEffective()]).then(x=>{
+                console.log(11111111111111111111111111111111,this.isxinren,this.xingren_hongbao);
+                if(this.isfenxiang && this.state_isfenxiang){
+                    if(!this.isxinren && this.xingren_hongbao && this.xingren_hongbao.id){
+                        this.xinrenhongbao_box=true;
+                    }else{
+                        console.log('准备跳转页面');
+                        this.$router.push('/Check?shopid='+this.shopid)
+                    }
+                }
+                openloading(false)
+            })
+        }else{
+            //查询店铺新人红包
+            openloading(true)
+            this.get_hongbao().then(x=>{
+                if(this.isfenxiang){
+                    if(this.state_isfenxiang && this.xingren_hongbao && this.xingren_hongbao.id){
+                        this.xinrenhongbao_box=true;
+                    }
+                }
+                openloading(false)
+            })
+        }
 
 
         this.swiper_type = new Swiper(".swiper_type", {
@@ -810,16 +921,7 @@ export default {
         });
 
 
-        try {
-            this.userInfo=JSON.parse(localStorage.userInfo);
-        } catch (error) {}
-
-        if(this.userInfo){
-            //查询是否收藏
-            this.get_findDataUserFavorite();
-            //获取实名认证信息
-            this.$store.commit('setfindByUserid');
-        }
+        
         
         //获取专享产品
         this.findAllExclusive();

@@ -13,16 +13,16 @@
 
 <script>
 export default {
-  name: "",
-  props: {
-    loadingtype: Boolean, //加载中
-    nodata: Boolean, //没有一条数据
-    end: Boolean, //全部加载完成
-    text:'',      //提示语
-  },
-  data() {
-    return {};
-  }
+    name: "",
+    props: {
+        loadingtype: Boolean, //加载中
+        nodata: Boolean, //没有一条数据
+        end: Boolean, //全部加载完成
+        text:'',      //提示语
+    },
+    data() {
+        return {};
+    }
 };
 </script>
 

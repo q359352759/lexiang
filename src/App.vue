@@ -32,17 +32,22 @@
 
 <script>
 import { Get_URL_parameters } from "@/assets/js/currency";
-import { mapGetters,mapState } from "vuex";
+import { mapGetters,mapState, mapActions } from "vuex";
 export default {
     name: "",
     data() {
         return {
-            transitionName: ""
+            transitionName: "",
+            userInfo:''
         };
     },
-    methods: {},
+    methods: {
+        ...mapActions({
+            updated_user:'user/updated_user',
+            get_user:'user/get_user',
+        })
+    },
     beforeCreate: function() {
-        
         //邀请注册页面 http://192.168.1.13:8080/#/Recommend?pid=9379FECD5A5C1CAB47983D6870DF6D27&invitationtype=1
 
         // console.log(this.$route);
@@ -57,11 +62,12 @@ export default {
             //判断是否是邀请页面
             
             var weixin = localStorage.weixin;
-            if (!weixin || weixin == null || weixin == undefined) {
+            var weixininfo = localStorage.weixininfo;
+            if (!weixin || weixin == null || weixin == undefined || weixin == 'undefined' || !weixininfo || weixininfo==null || weixininfo==undefined || weixininfo=='undefined'){
                 console.log("没有微信信息");
                 location.href = "getopenid.html";
             } else {
-                console.log("已有微信信息");
+                console.log("已有微信信息");      
             }
         } else {
             console.log("不是微信");
@@ -80,7 +86,9 @@ export default {
         // var path = this.$route.path;
         var path = window.location.hash;
         
-        var loginDate = localStorage.loginDate;
+        try {
+            this.userInfo = JSON.parse(localStorage.userInfo)
+        } catch (error) {}
         var baimingdan = [  "#/login", "#/register","#/home",
                             "#/commodity/CommodityDetails",    //首页商品详情
                             "#/BusinessDetails",     //首页商家详情
@@ -94,12 +102,25 @@ export default {
             if(index!=-1){
                 path=path.substring(0,index);
             }
-        if (!loginDate || loginDate == null || loginDate == undefined) {
+
+        if (!this.userInfo) {
+            console.log("没有登录准备跳转至登录");
             if (baimingdan.indexOf(path) == -1) {
-                console.log("没有登录准备跳转至登录");
                 this.$router.push("/login");
                 return;
             }
+        }else if(!this.userInfo.headImgUrl){
+            this.updated_user().then(x=>{
+                console.log('修改用户头像',x)
+                // this.$store.commit('setCurrent');
+                this.get_user().then(res=>{
+                    console.log('获取用户头像',res)
+                }).catch(err=>{
+                    console.log('获取头像失败',err)
+                })
+            }).catch(err=>{
+                console.log(err)
+            })
         }
 
         //支付宝授权后跳转地址

@@ -15,7 +15,7 @@
                 <i class="icon iconfont icon-fenxiang2"></i> 
             </span>
         </header>
-        <div class="mui-content mui-fullscreen" @scroll="scroll()">
+        <div class="mui-content mui-fullscreen">
             <div class="box_1">
                 <div>
                     <div class="img_box">
@@ -154,6 +154,9 @@
             
             <div @click="RedEnvelopeIssue()" v-if="type==0 || type==5" class="btn_1">修改红包内容</div>
             <div @click="RedEnvelopeIssue()" v-if="type==1" class="btn_1">发布红包</div>
+
+            <hongbaoerwima />
+            
         </div>
     </div>
 </template>
@@ -162,10 +165,13 @@
 import loading from '@/components/loading.vue';
 
 import {openloading,dateFtt} from '@/assets/js/currency'
+
+import hongbaoerwima from '@/components/myshop/hongbao/hongbaoerwima.vue'
 export default {
     name:'',
     components:{
-        loading
+        loading,
+        hongbaoerwima
     },
     data(){
         return{

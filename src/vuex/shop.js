@@ -6,10 +6,14 @@ export default {
     namespaced:true,
     state:{
         shop:{},    //店铺
+        isfenxiang:true,
     },
     getters:{
         shop(state){
             return state.shop;
+        },
+        isfenxiang(state){
+            return state.isfenxiang;
         }
     },
     mutations:{
@@ -18,6 +22,13 @@ export default {
         }
     },
     actions: {
+        //设置分享
+        async set_isfenxiang({state},type){
+            return new Promise((resolve, reject) => {
+                console.log('设置分享')
+                state.isfenxiang=type ? true : false;
+            });
+        },
         //根据店铺Id查询店铺
         async get_shop({commit},shopid){
             return new Promise((resolve, reject)=>{

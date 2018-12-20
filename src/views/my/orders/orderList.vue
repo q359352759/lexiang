@@ -25,56 +25,64 @@
                     <span @click="select_type(5)" :class="{'active':type==5}">售后</span>
                 </li>
             </ul>
-            <div class="content_1">
-                
-                <div class="box_2" v-for="(item, index) in 5" :key="index">
-                    <ul class="header">
-                        <li class="daipingjia mui-pull-right">
-                            待评价
-                        </li>
-                        <li class="shop">
-                            <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
-                            <span>mc火锅店</span>
-                            <i class="icon_right mui-icon mui-icon-arrowright"></i>
-                        </li>
-                    </ul>
-                    <ul class="shangpng">
-                        <li v-for="(item, index) in 2" :key="index">
-                            <div class="img_box">
-                                <img src="image/43.png" alt="" srcset="">
-                            </div>
-                            <div class="text_box">
-                                <div class="name">
-                                    毛肚
-                                    <span class="shuliang mui-pull-right">x2</span>
-                                </div>
-                                <div>￥18</div>
-                                <div>红包抵扣：8元</div>
-                            </div>
-                            <div class="zhuanxiang">
-                                <img src="image/xingren.png" alt="" srcset="">
-                            </div>
-                        </li>
-                    </ul>
-                    <ul class="footer">
-                        <li class="text_1">共计3个商品，合计94元，优惠18元。</li>
-                        <li class="btn_1 quxiao">取消</li>
-                        <li @click="order()" class="btn_1 zhifu">支付</li>
-                    </ul>
+            <div class="content_1" @scroll="scroll($event)">
+                <!-- 全部 -->
+                <div v-show="type==0">
+                    <div v-for="(item, index) in list_all.list" :key="index">
+                        <shangping v-if="item.orderType==0" :shangping="item"/>
+                        <xianjin v-if="item.orderType==1" :dingdan="item"/>
+                    </div>
+                    <loading :loadingtype="list_all.loading" :nodata="!list_all.loading && list_all.total==0" :end="!list_all.loading && list_all.total!=0 && list_all.total==list_all.list.length"/>
                 </div>
+                <!-- 待付款 -->
+                <div v-show="type==1">
+                    <div v-for="(item, index) in list_0.list" :key="index">
+                        <shangping v-if="item.orderType==0" :shangping="item"/>
+                        <xianjin v-if="item.orderType==1" :dingdan="item"/>
+                    </div>
+                    <loading :loadingtype="list_0.loading" :nodata="!list_0.loading && list_0.total==0" :end="!list_0.loading && list_0.total!=0 && list_0.total==list_0.list.length"/>
+                </div>
+                
+                <!-- 待发货 -->
+                <div v-show="type==2">
+                    <loading :nodata="true"/>
+                </div>
+                <!-- 待收货 -->
+                <div v-show="type==3">
+                    <loading :nodata="true"/>
+                </div>
+                <!-- 待评价 -->
+                <div v-show="type==4">
+                    <loading :nodata="true"/>
+                </div>
+                <!-- 售后 -->
+                <div v-show="type==5">
+                    <loading :nodata="true"/>
+                </div>
+
             </div>
-            
         </div>
     </div>
 </template>
 
 <script>
 import { mapGetters,mapActions } from "vuex";
+// 商品订单
+import shangping from '@/components/orders/orderList/shangping.vue';
+// 输入金额订单
+import xianjin from '@/components/orders/orderList/xianjin.vue';
+
+import loading from '@/components/loading.vue'
 export default {
     name:'',
+    components: {
+        shangping,
+        xianjin,
+        loading
+    },
     data(){
         return{
-            type:0,
+            type:0, //0 全部 1 待付款 2 待发货 3 待收货 4 待评价 5 售后
         }
     },
     computed:{
@@ -95,14 +103,39 @@ export default {
         order(){
             this.$router.push('/orders/order');
         },
-        //获取列表
-        get_list(){
+        //下拉加载
+        scroll(e){
+            var h = e.target.offsetHeight; //容器高度
+            var sh = e.target.scrollHeight; //滚动条总高
+            var t = e.target.scrollTop; //滚动条到顶部距离
+            // console.log(e)
+            if (h + t >= sh - 10) {
+                // type:0, //0 全部 1 待付款 2 待发货 3 待收货 4 待评价 5 售后
+                if(this.type==0 && !this.list_all.loading && this.list_all.list.length<this.list_all.total){
+                    this.get_orderList([this.list_all,true]);
+                }else if(this.type==1 && !this.list_0.loading && this.list_0.list.length<this.list_0.total){
+                    this.get_orderList([this.list_0,true]);
+                }else if (this.type==2) {
+                    
+                }else if (this.type==3) {
+                    
+                }else if (this.type==4) {
+                    
+                }else{
 
+                }
+                console.log("到底底部");
+                
+                // this.butie.page_index++;
+                // //查看下级带来的收益
+                // this.subsidies();
+            }
         }
     },
     mounted () {
         this.init_state().then(()=>{
-            this.get_orderList(this.list_all);
+            this.get_orderList([this.list_all,false]);
+            this.get_orderList([this.list_0,false]);
         })
     }
 }

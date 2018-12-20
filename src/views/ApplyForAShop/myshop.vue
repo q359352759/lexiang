@@ -276,7 +276,8 @@ export default {
                     console.log(x);
                     if(x.data.code==200){
                         this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
-                        var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.myshop.shopid+'&index=1';
+                        var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.myshop.shopid+'&fenxiang=1';
+                        console.log(url);
                         var el=this.$refs.qrcode
                             el.innerHTML='';
                         let qrcode = new QRCode(el, {  
