@@ -28,7 +28,7 @@
                 <li>
                     <div class="address">{{shop.address}}</div>
                     <div>
-                        <a class="phone" :href="'tel:'+shop.phone"><i class="icon iconfont icon-dianhua"></i></a></h2>
+                        <a class="phone" :href="'tel:'+shop.phone"><i class="icon iconfont icon-dianhua"></i></a>
                     </div>
                     <div @tap="weixinmap()" class="juli">
                         <i class="icon iconfont icon-daohang"></i>
