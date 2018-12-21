@@ -49,7 +49,7 @@
                                 <div v-if="item.type==0">有效期：长期有效</div>
                                 <div v-if="item.type==5">有效期：一年</div>
                             </div>
-                            <div class="fenxiang">
+                            <div class="fenxiang" @click="fenxiang(item)">
                                 <i class="icon iconfont icon-fenxiang2"></i>
                             </div>
                         </li>
@@ -102,11 +102,14 @@
 
             </div>
         </div>
+        
+        <hongbaoerwima :RongqiShow="RongqiShow" :new="isnew" :hongbao="this.fenxiang_obj"/>
     </div>
 </template>
 
 <script>
 import {openloading,dateFtt} from '@/assets/js/currency'
+import hongbaoerwima from '@/components/myshop/hongbao/hongbaoerwima.vue'
 
 import hongbao from '@/components/hongbao.vue';
 import loading from '@/components/loading.vue';
@@ -114,10 +117,16 @@ export default {
     name:'',
     components:{
         hongbao,
-        loading
+        loading,
+        hongbaoerwima
     },
     data(){
         return{
+            //生成二维码
+            fenxiang_obj:{},
+            isnew:false,
+            RongqiShow:false,
+
             get_index:0,
             type:0,
             shengxiao:{
@@ -143,7 +152,6 @@ export default {
                     bbb:1,
                     shopid:''
                 },
-                
             }
         }
     },
@@ -159,6 +167,12 @@ export default {
         },
     },
     methods:{
+        //分享
+        fenxiang(x){
+            this.isnew=this.fenxiang_obj!=x;
+            this.fenxiang_obj=x;
+            this.RongqiShow=!this.RongqiShow
+        },
         //查看详情
         xiangqing(item,type){
             // redPacketsDetails?type=0&id=22

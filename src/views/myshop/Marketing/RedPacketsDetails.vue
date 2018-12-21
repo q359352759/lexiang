@@ -150,14 +150,12 @@
             </ul>
             <loading :nodata="true"/>        
 
-
-            
             <div @click="RedEnvelopeIssue()" v-if="type==0 || type==5" class="btn_1">修改红包内容</div>
-            <div @click="RedEnvelopeIssue()" v-if="type==1" class="btn_1">发布红包</div>
-
-            <hongbaoerwima />
-            
+            <div @click="RedEnvelopeIssue()" v-if="type==1" class="btn_1">发布红包</div>            
         </div>
+
+        <hongbaoerwima :RongqiShow="RongqiShow" :hongbao="this.Red_envelopes"/>
+
     </div>
 </template>
 
@@ -175,6 +173,7 @@ export default {
     },
     data(){
         return{
+            RongqiShow:false,
             shixiao:'',     //是否失效
             type:'',        //0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
             id:'',
@@ -193,7 +192,7 @@ export default {
     methods:{
         //分享
         fenxiang(){
-            mui.toast('开发中', { duration: 2000, type: "div" });
+            this.RongqiShow=!this.RongqiShow
         },
         //跳转修改红包页面
         RedEnvelopeIssue(){

@@ -29,7 +29,9 @@ import hongbao from "./vuex/hongbao";           //红包相关接口
 import shop from "@/vuex/shop.js";
 import orders from '@/vuex/orders.js';          //订单
 import user from "@/vuex/user.js";
-import request from '@/api/request'
+import request from '@/api/request';
+
+import agent from '@/vuex/agent.js'
 Vue.use(Vuex);
 // 对名字进行解码
 import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
@@ -315,7 +317,8 @@ export default ()=>{
             shop:shop,
             hongbao:hongbao,
             orders:orders,
-            user:user
+            user:user,
+            agent:agent
         },
     });
 }

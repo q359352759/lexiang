@@ -83,34 +83,34 @@
 				</ul>
 				<ul class="list">
 					<li>
-						<div>
+						<div @click="$router.push('/orders/orderList?type=1')">
 							<i class="icon iconfont icon-daifukuan"></i>
 						</div>
-						<span>待付款</span>
+						<span @click="$router.push('/orders/orderList?type=1')">待付款</span>
 					</li>
 					<li>
-						<div>
+						<div @click="$router.push('/orders/orderList?type=2')">
 							<i class="icon iconfont icon-daifahuo"></i>
 						</div>
-						<span>待发货</span>
+						<span @click="$router.push('/orders/orderList?type=2')">待发货</span>
 					</li>
 					<li>
-						<div>
+						<div @click="$router.push('/orders/orderList?type=3')">
 							<i class="icon iconfont icon-daishouhuo"></i>
 						</div>
-						<span>待收货</span>
+						<span @click="$router.push('/orders/orderList?type=3')">待收货</span>
 					</li>
 					<li>
-						<div>
+						<div @click="$router.push('/orders/orderList?type=4')">
 							<i class="icon iconfont icon-pingjia"></i>
 						</div>
-						<span>待评价</span>
+						<span @click="$router.push('/orders/orderList?type=4')">待评价</span>
 					</li>
 					<li>
-						<div>
+						<div @click="$router.push('/orders/orderList?type=5')">
 							<i class="icon iconfont icon-shouhouwuyou"></i>
 						</div>
-						<span>售后</span>
+						<span @click="$router.push('/orders/orderList?type=5')">售后</span>
 					</li>
 				</ul>
 			</div>

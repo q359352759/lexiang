@@ -4,7 +4,7 @@
             <!-- <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a> -->
             <a @tap="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">商品管理</h1>
-            <span @tap="AddGoods()" class="add mui-pull-right">添加商品</span>
+            <span @tap="AddGoods()" class="add mui-pull-right">发布商品</span>
         </header>
         <div class="mui-content mui-fullscreen" @scroll="scroll($event)">
             <ul class="box_2">

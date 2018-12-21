@@ -3,7 +3,7 @@
         <header class="mui-bar mui-bar-nav">
             <!-- <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a> -->
             <a @tap="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">{{Submission_type ? '商品详情' : '添加商品'}}</h1>
+            <h1 class="mui-title">{{Submission_type ? '编辑商品' : '发布商品'}}</h1>
         </header>
         <div class="mui-content mui-fullscreen">
 
@@ -13,11 +13,11 @@
                         <span>商品名：</span>
                         <input type="text" value="" v-model="add_obj.name">
                     </li>
-                    <li class="mui-table-view-cell item_box" @tap="selset_unit()">
+                    <li class="mui-table-view-cell item_box" @click="selset_unit()">
                         <!-- <a class="mui-navigate-right item_box"> -->
                             <span>单位：</span>
                             <!-- <div>份</div> -->
-                            <input class="mui-text-center" type="text" v-model="add_obj.unit" readonly> 
+                            <input class="mui-text-center"  type="text" v-model="add_obj.unit" readonly> 
                             <div></div>
                         <!-- </a> -->
                     </li>
@@ -31,22 +31,6 @@
                         <input type="text" class="mui-text-center" v-model.number="add_obj.sellingPrice" @input="input_change('sellingPrice')">
                         <div>元</div>
                     </li>
-                    <!-- <li class="mui-table-view-cell">
-                        <a class="mui-navigate-right item_box">
-                            <span>可抵扣：</span>
-                            <input type="text" class="mui-text-center" v-model="deduction">
-                            <span class="money" v-if="add_obj.twtreid==1">{{deduction_money}}元</span>
-                            <div class="twtreid" @click="set_twtreid()">{{add_obj.twtreid==1 ? '%' : '元'}}</div>
-                        </a>
-                    </li> -->
-                    <!-- <li class="mui-table-view-cell" v-if="myshop.distribution!=0">
-                        <a class="mui-navigate-right item_box">
-                            <span>佣金：</span>
-                            <input type="text" class="mui-text-center" v-model="commission">
-                            <span class="money" v-if="add_obj.commissionType==1">{{commission_money}}元</span>
-                            <div @click="set_commissionType()" class="commissionType">{{add_obj.commissionType==1 ? '%' : '元'}}</div>
-                        </a>
-                    </li> -->
                     <li class="mui-table-view-cell item_box">
                         <span class="title_2">可抵扣：</span>
                         <input type="text" class="mui-text-center input_1" @input="input_change('deduction')" v-model.number="add_obj.deduction">
@@ -133,7 +117,7 @@
                 </div>
             </div>
         </div>
-        <div @click="add()" class="box_4">保存</div>
+        <div @click="add()" class="box_4">{{Submission_type ? '保存' : '确认发布'}}</div>
 
         <!-- <Album v-show="Album_show" v-on:setShow="setShow"/> -->
         <Album v-show="Album_show" :seetype="seetype" :type="seetype" v-on:setlist="reslist"/>
@@ -197,89 +181,6 @@ export default {
                 // sales:0,        //销量      
             },
             Picker1:'',
-            config_1:{
-                //这里可以选择自己需要的工具按钮名称,此处仅选择如下七个
-                toolbar:['fullscreen source undo redo bold italic underline'],
-                //focus时自动清空初始化时的内容
-                autoClearinitialContent:true,
-                //关闭字数统计
-                wordCount:false,
-                //关闭elementPath
-                elementPathEnabled:false,
-                //默认的编辑区域高度
-                initialFrameHeight:300,
-                initialFrameWidth:'100%'
-                //更多其他参数，请参考umeditor.config.js中的配置项
-            },
-            config:{					//编译器配置
-		          	initialFrameWidth: null,
-                    initialFrameHeight: 300,
-                    elementPathEnabled:false,       //是否显示路径
-                    wordCount:false,                 //是否开启字数统计  
-                    imageScaleEnabled:false,        //启用图片拉伸缩放
-                    imagePopup:false,                 //图片操作的浮层开关，默认打开
-		          	toolbars:[
-					    	[
-					        'undo', //撤销
-					        'bold', //加粗
-					        'italic', //斜体
-					        'underline', //下划线
-					        'strikethrough', //删除线
-					        'subscript', //下标
-					        'fontborder', //字符边框
-					        'superscript', //上标
-					        // 'formatmatch', //格式刷
-					        // 'source', //源代码
-					        // 'pasteplain', //纯文本粘贴模式
-					        'selectall', //全选
-					        // 'preview', //预览
-					        'horizontal', //分隔线
-					        // 'removeformat', //清除格式
-					        // 'time', //时间
-					        // 'date', //日期
-					        'inserttitle', //插入标题
-					        'cleardoc', //清空文档
-					        // 'fontfamily', //字体
-					        'fontsize', //字号
-					        // 'paragraph', //段落格式
-					        // 'simpleupload', //单图上传
-					        // 'insertimage', //多图上传
-					        // 'emotion', //表情
-					        'spechars', //特殊字符
-					        // 'searchreplace', //查询替换
-					        // 'insertvideo', //视频
-					        // 'help', //帮助
-					        'justifyleft', //居左对齐
-					        'justifyright', //居右对齐
-					        'justifycenter', //居中对齐
-					        'justifyjustify', //两端对齐
-					        'forecolor', //字体颜色
-					        'backcolor', //背景色
-					        // 'insertcode',	//语言
-					        'insertorderedlist', //有序列表
-					        'insertunorderedlist', //无序列表
-					        'fullscreen', //全屏
-					        // 'directionalityltr', //从左向右输入
-					        // 'directionalityrtl', //从右向左输入
-					        // 'rowspacingtop', //段前距
-					        // 'rowspacingbottom', //段后距
-					        // 'pagebreak', //分页
-					        // 'imagenone', //默认
-					        // 'imageleft', //左浮动
-					        // 'imageright', //右浮动
-					        // 'imagecenter', //居中
-					        // 'wordimage', //图片转存
-					        // 'lineheight', //行间距
-					        // 'edittip ', //编辑提示
-					        // 'customstyle', //自定义标题
-					        // 'autotypeset', //自动排版
-					        // 'background', //背景
-					        // 'template', //模板
-					        // 'scrawl', //涂鸦
-					        // 'charts', // 图表
-					    ]
-					]
-            },
             img_list:[],
             editor:'',
             Submission_type:'',
@@ -308,6 +209,7 @@ export default {
     methods:{
         //点击添加视频
         add_shiping(){
+            window.scroll(0,0);
             this.video_show=true;
         },
         //关闭视频输入框
@@ -339,11 +241,12 @@ export default {
                 this.$refs.font_color.click()
             }
         },
-        //编辑器图片
+        //编辑器选择图片
         set_Album_show(){
-            this.Album_show=true;
             this.img_type=2;
             this.$store.state.Select_picture.list=[];
+            window.scroll(0,0);
+            this.Album_show=true;
             this.$router.push('/AddGoods?Album_show=true');
         },
         //图片返回值
@@ -583,6 +486,7 @@ export default {
         //选择商品图片
         Album(){
             console.log(this.img_list);
+            window.scroll(0,0);
             this.img_type=1
             this.Album_show=true;
             this.$store.state.Select_picture.list=this.img_list;
@@ -928,7 +832,7 @@ export default {
         -webkit-user-select:text
     }
     .content_1:empty:before{
-        content: '商品介绍，说点啥好呢？'; 
+        content: '请填写商品介绍，支持文字、图片、视屏链接。'; 
         color: gray; 
         position: absolute;
         top: 3px;

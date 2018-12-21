@@ -1,0 +1,112 @@
+
+import axios from '@/api/axios.js'
+import qs from "qs";
+
+export default {
+    namespaced:true,
+    state:{
+        type:0,
+        //商家
+        list_1:{
+            loading:true,
+            list:[],
+            total:0,
+            page_index:0,
+            query:{
+                type:1,     //1店铺 2 用户的推荐人 3区域代理商
+                start:0,
+                length:20,
+                getShareProfitUser:'',  //获得分润者的ID（店铺推荐人ID，用户的推荐人ID，区域代理商ID）
+            }
+        },
+        //会员
+        list_2:{
+            loading:true,
+            list:[],
+            total:0,
+            page_index:0,
+            query:{
+                type:2,     //1店铺 2 用户的推荐人 3区域代理商
+                start:0,
+                length:20,
+                getShareProfitUser:'',  //获得分润者的ID（店铺推荐人ID，用户的推荐人ID，区域代理商ID）
+            }
+        }
+    },
+    getters:{
+        get_list1(state){
+            return state.list_1
+        },
+        get_list2(state){
+            return state.list_2
+        },
+        get_type(state){
+            return state.type
+        }
+    },
+    mutations:{
+        
+    },
+    actions: {
+        //设置类型
+        set_type({state},type){
+            state.type=type;
+        },
+        //数据初始化
+        ShopBonus_init({state}){
+            var userInfo=JSON.parse(localStorage.userInfo);
+            state.list_1={
+                loading:true,
+                list:[],
+                total:0,
+                page_index:0,
+                query:{
+                    type:1,     //1店铺 2 用户的推荐人 3区域代理商
+                    start:0,
+                    length:20,
+                    getShareProfitUser:userInfo.username,  //获得分润者的ID（店铺推荐人ID，用户的推荐人ID，区域代理商ID）
+                }
+            }
+            state.list_2={
+                loading:true,
+                list:[],
+                total:0,
+                page_index:0,
+                query:{
+                    type:2,     //1店铺 2 用户的推荐人 3区域代理商
+                    start:0,
+                    length:20,
+                    getShareProfitUser:userInfo.username,  //获得分润者的ID（店铺推荐人ID，用户的推荐人ID，区域代理商ID）
+                }
+            }
+        },
+        //获取类表
+        get_list({state},obj){
+            obj.loading=true;
+            obj.query.start=obj.page_index*obj.query.length;
+            return new Promise((resolve, reject) => {
+                // /shops/findAllShareProfitTable
+                axios.get('/api-s/shops/findAllShareProfitTable',{params:obj.query}).then(x=>{
+                    console.log('获取分润信息',x);
+                    if(x.data.code==200){
+                        obj.list=obj.list.concat(x.data.data.data);
+                        obj.total=x.data.data.total;
+                    }
+                    resolve(x);
+                }).catch(err=>{
+                    reject(err)
+                })
+            });
+        },
+        //下一页
+        xiayiye({dispatch},obj){
+            if(obj.list.length<obj.total && !obj.loading){
+                obj.page_index++;
+                dispatch('get_list',obj);
+            }
+        }
+    },
+    modules: {
+        
+    }
+}

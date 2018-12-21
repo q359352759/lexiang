@@ -137,6 +137,10 @@ export default {
             this.get_orderList([this.list_all,false]);
             this.get_orderList([this.list_0,false]);
         })
+        var query=this.$route.query;
+        if(query.type){
+            this.type=query.type
+        }
     }
 }
 </script>

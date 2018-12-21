@@ -447,6 +447,9 @@ export default {
                 }else if(!this.Red_envelopes.startTime || !this.Red_envelopes.endTime || this.Red_envelopes.startTime>=this.Red_envelopes.endTime){
                     mui.toast("使用期限有误。", { duration: 2000, type: "div" });
                     return;
+                }else if(this.Red_envelopes.startTime<getDateStr(-30,this.Red_envelopes.endTime)){
+                    mui.toast("<span style='white-space: nowrap;'>使用时间最大为30天。</span>", { duration: 2000, type: "div" });
+                    return;
                 }else if(!this.Red_envelopes.commodityId){
                     mui.toast("请选择商品", { duration: 2000, type: "div" });
                     return;
@@ -468,6 +471,9 @@ export default {
                 }else if(!this.Red_envelopes.startTime || !this.Red_envelopes.endTime || this.Red_envelopes.startTime>=this.Red_envelopes.endTime){
                     mui.toast("使用期限有误。", { duration: 2000, type: "div" });
                     return;                    
+                }else if(this.Red_envelopes.startTime<getDateStr(-30,this.Red_envelopes.endTime)){
+                    mui.toast("<span style='white-space: nowrap;'>使用时间最大为30天。</span>", { duration: 2000, type: "div" });
+                    return;
                 }else if(!number_test.test(this.Red_envelopes.amount) || this.Red_envelopes.amount<0){
                     mui.toast("红包金额有误。", { duration: 2000, type: "div" });
                     return
@@ -496,8 +502,14 @@ export default {
                 }else if(!this.Red_envelopes.signInStartTime || !this.Red_envelopes.signInEndTime || this.Red_envelopes.signInStartTim>=this.Red_envelopes.signInEndTime){
                     mui.toast('签到时间有误。',{ duration: 2000, type: "div" });
                     return
+                }else if(this.Red_envelopes.signInStartTime<getDateStr(-15,this.Red_envelopes.signInEndTime)){
+                    mui.toast("<span style='white-space: nowrap;'>签到时间最大为15天。</span>", { duration: 2000, type: "div" });
+                    return;
                 }else if(!this.Red_envelopes.startTime || !this.Red_envelopes.endTime || this.Red_envelopes.startTime>=this.Red_envelopes.endTime){
                     mui.toast("使用期限有误。", { duration: 2000, type: "div" });
+                    return;
+                }else if(this.Red_envelopes.startTime<getDateStr(-15,this.Red_envelopes.endTime)){
+                    mui.toast("<span style='white-space: nowrap;'>使用时间最大为15天。</span>", { duration: 2000, type: "div" });
                     return;
                 }else if(!number_test.test(this.Red_envelopes.startAmount) || this.Red_envelopes.startAmount<0){
                     mui.toast("起始金额有误。", { duration: 2000, type: "div" });
@@ -538,6 +550,9 @@ export default {
                     return
                 }else if(!this.Red_envelopes.startTime || !this.Red_envelopes.endTime || this.Red_envelopes.startTime>=this.Red_envelopes.endTime){
                     mui.toast("使用期限有误。", { duration: 2000, type: "div" });
+                    return;
+                }else if(this.Red_envelopes.startTime<getDateStr(-30,this.Red_envelopes.endTime)){
+                    mui.toast("<span style='white-space: nowrap;'>使用时间最大为30天。</span>", { duration: 2000, type: "div" });
                     return;
                 }else if(!zhengshu_test.test(this.Red_envelopes.quantityMax_1) || this.Red_envelopes.quantityMax_1<1){
                     mui.toast("红包数量有误。", { duration: 2000, type: "div" });
@@ -724,6 +739,7 @@ export default {
         //时间选择器
         this.picker_time=new mui.DtPicker({"type":"date"});
 
+        console.log('2018-10-01'<getDateStr(-30,'2018-10-31'),getDateStr(-30,'2018-10-31'))
         var query=this.$route.query;
 
         if(query.type){

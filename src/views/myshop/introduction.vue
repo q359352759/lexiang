@@ -181,11 +181,13 @@ export default {
         },
         //选择图片
         set_Album_show(){
+            window.scroll(0,0);
             // this.Album_show=true;
             this.$router.push('/introduction?Album_show=1')
         },
         //点击添加视频
         add_shiping(){
+            window.scroll(0,0);
             this.video_show=true;
         },
         //确定视频

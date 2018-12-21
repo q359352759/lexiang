@@ -71,7 +71,7 @@ export default {
             })
         },
         get_shangping_2(state,id){
-            var p=new Promise((resolve, reject)=>{
+            return new Promise((resolve, reject)=>{
                     axios({
                         method:'get',
                         url:'/api-s/shops/commodity/findById/'+id
@@ -87,7 +87,6 @@ export default {
                         console.log('获取商品失败',err)
                     })
                 })
-            return p;
         },
         test(state){
             console.log(123123)
@@ -102,7 +101,26 @@ export default {
                     resolve('根据商品Id获取店铺'+context);
                 },3000)
             })
-        }
+        },
+        //根据id查询商品
+        get_shangping_2(state,id){
+            return new Promise((resolve, reject)=>{
+                    axios({
+                        method:'get',
+                        url:'/api-s/shops/commodity/findById/'+id
+                    }).then(x=>{
+                        // console.log('获取单个商品',x)
+                        if(x.data.code==200){
+                            resolve(x);
+                        }else{
+                            reject(x)
+                        }
+                    }).catch(err=>{
+                        reject(err)
+                        console.log('获取商品失败',err)
+                    })
+                })
+        },
         // store.dispatch('actionA').then(() => {
         //     // ...
         //   })

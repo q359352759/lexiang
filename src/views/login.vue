@@ -81,6 +81,7 @@ export default {
         login() {
             // localStorage.loginDate='登录';
             // this.$router.push("/my");
+            window.scroll(0,0);
             openloading(true);
             this.$axios({
                 method: "post",
@@ -226,7 +227,7 @@ export default {
     // bottom: 0px;
     // left: 0px;
     width: 100%;
-    // height: 100%;
+    height: 3.9rem;
     display: flex;
     flex-direction: column;
     overflow: hidden;

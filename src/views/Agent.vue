@@ -7,7 +7,7 @@
             <span v-if="!isareaManager" @tap="RegionalAgencyAgreement()" class="quyu">区域代理</span>
         </header>
 
-        <div class="mui-content">
+        <div class="mui-content" @scroll="content_scroll($event)">
             <div class="box_1">
                 <div class="img_box">
                     <img v-if="!userInfo.headImgUrl" src="@/assets/image/lxlogo_180.png" alt="" srcset="">
@@ -58,14 +58,14 @@
                     <div class="title">店铺分佣</div>
                     <div class="money">0</div>
                 </li>
-                <li :class="{'active':type_1==5}" @click="change_type(5)">
+                <li :class="{'active':type_1==4}" @click="change_type(4)">
                     <div class="img_box">
                         <i class="icon iconfont icon-fenrun"></i>
                     </div>
                     <div class="title">店铺分润</div>
                     <div class="money">0</div>
                 </li>
-                <li :class="{'active':type_1==4}" @click="change_type(4)">
+                <li :class="{'active':type_1==5}" @click="change_type(5)">
                     <div class="img_box">
                         <i class="icon iconfont icon-ketixianjine"></i>
                     </div>
@@ -74,10 +74,10 @@
                 </li>
             </ul>
 
-            <div class="content">
+            <div class="content" ref="content">
                 <!-- 补贴 -->
                 <div class="box_3" v-show="type_1==1">
-                    <ul class="title">
+                    <ul class="title" :class="{'active':fixed}">
                         <li>姓名</li>
                         <li>日期</li>
                         <li>直补</li>
@@ -85,7 +85,7 @@
                         <li>间补</li>
                         <li>+间补</li>
                     </ul>
-                    <ul class="list" @scroll="butie_scroll($event)">
+                    <ul class="list">
                         <li v-for="(x, index) in butie.list" :key="index">
                             <div>{{x.realName}}</div>
                             <div>{{x.updateTime | datatime('yyyy-MM-dd')}}</div>
@@ -185,7 +185,11 @@
                     </div>
                 </div>
 
-                <div class="box_6" v-show="type_1==4">
+                <div class="店铺分润" v-show="type_1==4">
+                    <ShopBonus :fixed="fixed"/>
+                </div>
+
+                 <div class="box_6" v-show="type_1==5">
                     <ul class="list">
                         <li>
                             <div>补贴：{{agentUser.sutotal}}</div>
@@ -231,10 +235,6 @@
                     </div>
                     <button class="btn_1" @click="change_payment(true)">提交</button>
                     <!-- <button class="btn_1" @click="alipay()">支付宝测试</button> -->
-                </div>
-
-                <div class="box_7" v-show="type_1==5">
-                    <loading :nodata="true"/>
                 </div>
             </div>
 
@@ -322,14 +322,23 @@ import html2canvas from 'html2canvas'
 import QRCode from 'qrcodejs2'
 import loading from "@/components/loading.vue";
 import { dateFtt, openloading } from "@/assets/js/currency";
+import { mapActions, mapGetters } from 'vuex';
+
+// 店铺分润
+// import ShopBonus from '@/components/agent/ShopBonus.vue'
+const ShopBonus = resolve => { require.ensure([], () => { resolve(require("@/components/agent/ShopBonus.vue")); }); }; //关于我们
+
+
 export default {
     name: "Agent",
     components: {
-        loading
+        loading,
+        ShopBonus
     },
     data() {
         return {
-            type_1: 1,
+            fixed:false,    //判断是否定位到顶部
+            type_1: 4,
             list_1: [1, 2, 3, 4, 5, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             // list_1:[1]
             radio_type_2: true,
@@ -363,8 +372,20 @@ export default {
             return dateFtt(time, type);
         }
     },
-    computed: {},
+    computed: {
+        ...mapGetters({
+            fenrun_shangjia:'agent/ShopBonus/get_list1',
+            fenrun_huiyuan: 'agent/ShopBonus/get_list2',
+            fenrun_type:'agent/ShopBonus/get_type',
+        })
+        
+    },
     methods: {
+        ...mapActions({
+            ShopBonus_init:'agent/ShopBonus/ShopBonus_init',
+            get_fenrui:'agent/ShopBonus/get_list',
+            fenrun_fenye:'agent/ShopBonus/xiayiye'
+        }),
         //提现服务协议
         WithdrawalAgreement(){
             this.$router.push('/WithdrawalAgreement');
@@ -507,13 +528,7 @@ export default {
                     console.log(x);
                     if (x.data.code == 200) {
                         this.getagentUser();
-                        mui.alert(
-                            x.data.msg,
-                            "提示",
-                            "好的",
-                            function() {},
-                            "div"
-                        );
+                        mui.alert(x.data.msg, "提示", "好的", function() {}, "div");
                     } else if ( x.data.code == "PAYEE_USER_INFO_ERROR" || x.data.code == "PAYEE_ACC_OCUPIED" ) {
                         // mui.toast(x.data.msg, { duration: 2000, type: "div" });
                         mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
@@ -551,21 +566,28 @@ export default {
                 "/BusinessAgreement?name=" + this.agentUser.realName
             );
         },
-        // 补贴下拉
-        butie_scroll(e) {
+        content_scroll(e){
+            // console.log(e.target.scrollTop,this.$refs.content.offsetTop);
             var h = e.target.offsetHeight; //容器高度
             var sh = e.target.scrollHeight; //滚动条总高
             var t = e.target.scrollTop; //滚动条到顶部距离
-            // console.log(e)
-            if (
-                h + t >= sh - 10 &&
-                !this.butie.loading &&
-                this.butie.list.length < this.butie.total
-            ) {
-                console.log("到底底部");
-                this.butie.page_index++;
-                //查看下级带来的收益
-                this.subsidies();
+            if(this.type_1==1){
+                this.fixed=(e.target.scrollTop+44)>=this.$refs.content.offsetTop
+                if (h + t >= sh - 10 && !this.butie.loading && this.butie.list.length < this.butie.total ) {
+                    console.log("到底底部");
+                    this.butie.page_index++;
+                    //查看下级带来的收益
+                    this.subsidies();
+                }
+            }else if(this.type_1==2){
+                this.fixed=e.target.scrollTop>=this.$refs.content.offsetTop
+            }else if(this.type_1==3){
+                this.fixed=e.target.scrollTop>=this.$refs.content.offsetTop
+            }else if(this.type_1==4){
+                this.fixed=e.target.scrollTop>=this.$refs.content.offsetTop;
+                this.fenrun_fenye(this.fenrun_type)
+            }else if(this.type_1==5){
+                this.fixed=e.target.scrollTop>=this.$refs.content.offsetTop
             }
         },
         //跳转区域代理
@@ -700,15 +722,11 @@ export default {
         }
     },
     mounted: function() {
-        if (
-            localStorage.userInfo &&
-            localStorage.userInfo != "" &&
-            localStorage.userInfo != null &&
-            localStorage.userInfo != undefined &&
-            localStorage.userInfo != "undefined"
-        ) {
+        try {
             this.userInfo = JSON.parse(localStorage.userInfo);
-        }
+        } catch (error) {}
+        
+
 
         //获取代理人信息
         this.getagentUser();
@@ -719,6 +737,13 @@ export default {
         //获取代理商信息
         this.areaManager();
         // console.group('------mounted 挂载结束状态------');
+
+
+        this.ShopBonus_init();
+        //获取店铺分润 商家
+        this.get_fenrui(this.fenrun_shangjia)
+        //获取店铺分润 会员
+        this.get_fenrui(this.fenrun_huiyuan)
     }
 };
 </script>
@@ -866,16 +891,23 @@ export default {
 }
 
 #Agent .content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+    // flex-grow: 1;
+    // display: flex;
+    // flex-direction: column;
 }
 
 #Agent .box_3 {
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+    // display: flex;
+    // flex-direction: column;
     margin: 5px 0px 0px;
+    padding: 0px 0px 44px;
+    .title.active{
+        position: fixed;
+        width: 100%;
+        left: 0px;
+        top: 44px;
+    }
     .title {
         display: flex;
         flex-shrink: 0;
@@ -944,6 +976,10 @@ export default {
         }
     }
     .footer {
+        position: fixed;
+        width: 100%;
+        left: 0px;
+        bottom: 0px;
         display: flex;
         height: 32px;
         color: rgba(255, 255, 255, 1);

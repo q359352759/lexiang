@@ -130,43 +130,10 @@
                                     </div>
                                 </td>
                             </tr>
-                            
                         </tbody>
                     </table>
                 </li>
             </ul>
-            <!-- <ul class="box_4">
-                <li class="title_1">
-                    <span>店铺红包：</span>
-                    <span class="tishi">(顾客首次扫码赠送红包，每客赠送一次)</span>
-                </li>
-                <li class="table_box">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    WIFI：
-                                    <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_obj.WIFI}">
-                                        <i class="icon iconfont icon-xuanze"></i>
-                                    </div>
-                                </td>
-                                <td>
-                                    停车：
-                                    <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_obj.WIFI}">
-                                        <i class="icon iconfont icon-xuanze"></i>
-                                    </div>
-                                </td>
-                                <td>
-                                    休息室：
-                                    <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_obj.WIFI}">
-                                        <i class="icon iconfont icon-xuanze"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </li>
-            </ul> -->
             <div class="Agreement">
                 <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_Agreement}">
                     <i class="icon iconfont icon-xuanze"></i>
@@ -470,7 +437,9 @@ export default {
                 this.shop_obj.businessNature=this.shopType;
                 this.shop_obj.businessLicense=this.$store.state.apply_for_a_shop.businessLicense;
                 this.shop_obj.blnumber=this.$store.state.apply_for_a_shop.blnumber;
+                
                 // this.shop_obj.environmentalImg=this.img_list[0] ? this.img_list[0] : '';
+
                 this.shop_obj.arrEnvironmentalImg=this.img_list;
                 var serviceType=[];
                 var serviceType_list=this.serviceType_list;
@@ -675,18 +644,18 @@ export default {
         },
         //获取服务列表 如wifi等
         get_serviceType(){
-           
-            this.$axios({
-                method:'get',
-                url:'/api-s/shops/type/findAll?start=0&length=10000'
-            }).then(x=>{
-                console.log('获取服务列表',x);
-                if(x.data.code==200){
-                    this.serviceType_list=x.data.data.data;
-                }
-            }).catch(err=>{
-                console.log('获取服务列表',err);
-            })
+            return new Promise((resolve, reject) => {
+                this.$axios.get('/api-s/shops/type/findAll?start=0&length=10000').then(x=>{
+                    if(x.data.code==200){
+                        this.serviceType_list=x.data.data.data;
+                    }else{
+                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                    }
+                    resolve()
+                }).catch(err=>{
+                    resolve()
+                })
+            });
         }
     },
     beforeCreate: function() {
@@ -712,7 +681,9 @@ export default {
             layer: 3
         });
         //查询服务类别
-        this.get_serviceType();
+        this.get_serviceType().then(x=>{
+            this.chongxingtijiao();
+        });
 
         
 
@@ -771,7 +742,11 @@ export default {
         if(this.myshop.id && this.$store.state.in_index==0){
             this.$store.state.in_index=1
             console.log('更新店铺数据')
-            this.chongxingtijiao();
+            // this.chongxingtijiao();
+            //查询服务类别
+            this.get_serviceType().then(x=>{
+                this.chongxingtijiao();
+            });
             this.get_isUpdata()
         }
 
@@ -787,7 +762,11 @@ export default {
             var img_list=[];
             var list=this.$store.state.Select_picture.list;
             for(var i=0;i<list.length;i++){
-                img_list.push(list[i].url)
+                if(list[i].url){
+                    img_list.push(list[i].url)
+                }else{
+                    img_list.push(list[i])
+                }
             }
             this.img_list=img_list
             this.$store.state.Select_picture.list=[]
@@ -813,7 +792,10 @@ export default {
             if(this.$store.state.in_index==0){
                 this.$store.state.in_index=1
                 console.log('更新店铺数1')
-                this.chongxingtijiao();
+                this.get_serviceType().then(x=>{
+                    this.chongxingtijiao();
+                });
+                // this.chongxingtijiao();
                 this.get_isUpdata();
             }
         },

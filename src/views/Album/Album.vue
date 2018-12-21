@@ -13,22 +13,24 @@
                 <li :class="{'active':type==4}" @click="selset_type(4)"><div>描述</div></li>
                 <li :class="{'active':type==5}" @click="selset_type(5)"><div>其他</div></li>
             </ul>
-            <ul class="box_2" @scroll="scroll($event)">
-                <li v-for="(item, index) in img_list_1" :key="index">
-                    <div>
-                        <img @click="select_img(item)" :src="item.url" alt="">
-                        <div @click="select_img(item)" class="radio_1" :class="{'active':item.active}">
-                            <i class="icon iconfont icon-xuanze"></i>
+            <div class="content_1">
+                <ul class="box_2" @scroll="scroll($event)">
+                    <li v-for="(item, index) in img_list_1" :key="index">
+                        <div>
+                            <img @click="select_img(item)" :src="item.url" alt="">
+                            <div @click="select_img(item)" class="radio_1" :class="{'active':item.active}">
+                                <i class="icon iconfont icon-xuanze"></i>
+                            </div>
                         </div>
-                    </div>
-                </li>
-                <li class="add" @click="add_img()">
-                    <div>
-                        <!-- <span>+</span> -->
-                        <i class="icon iconfont icon-plus-add"></i>
-                    </div>
-                </li>
-            </ul>
+                    </li>
+                    <li class="add" @click="add_img()">
+                        <div>
+                            <!-- <span>+</span> -->
+                            <i class="icon iconfont icon-plus-add"></i>
+                        </div>
+                    </li>
+                </ul>
+            </div>
             <ul class="box_3">
                 <li>可用：{{capacity}}M</li>
                 <li>
@@ -384,6 +386,7 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
+
 .mui-content{
     display: flex;
     flex-direction: column;
@@ -405,7 +408,9 @@ export default {
         border-bottom: 2px solid $header_background;
     }
 }
-
+.content_1{
+    flex-grow: 1;
+}
 .box_2{
     flex-grow: 1;
     overflow: auto;
