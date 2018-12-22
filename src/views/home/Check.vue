@@ -43,9 +43,11 @@
                 <li class="youhui" v-show="payment_type==1">已优惠：{{zong_dikou}}</li>
             </ul>
             
-            <div class="box_3" @click="zhifu()">
+            <!-- <div class="box_3" @click="zhifu()">
                 支&nbsp;&nbsp;付
-            </div>
+            </div> -->
+
+            <btn class="box_3" value="支付" @click.native="zhifu()"/>
             
             <!-- {{this.$store.state.clientX}}
             {{this.$store.state.shangPing.clientX}} -->
@@ -109,11 +111,12 @@ import {getDateStr} from '@/assets/js/currency.js';
 
 import { openloading } from "@/assets/js/currency.js";
 import { mapActions } from 'vuex';
-
+import btn from '@/components/button.vue';
 export default {
     name:"",
     components:{
-        PurchaseChoice
+        PurchaseChoice,
+        btn
     },
     data(){
         return{
@@ -659,15 +662,7 @@ export default {
 }
 
 .box_3{
-    width: 175px;
-    height: 34px;
-    line-height: 34px;
-    background: $header_background;
-    border-radius: 34px;
-    color: rgba(255, 255, 255, 1);
-    font-size: 14px;
     margin: 30px auto;
-    text-align: center;
 }
 
 .dikou{

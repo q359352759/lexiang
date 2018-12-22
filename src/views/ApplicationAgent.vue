@@ -5,7 +5,7 @@
             <h1 class="mui-title">申请代理人</h1>
         </header>
 
-        <div class="mui-content">
+        <div class="mui-content  mui-fullscreen">
             <form @submit.prevent="selectOne()">
                 <table class="table_1">
                     <tbody>
@@ -89,8 +89,9 @@
                     <span @click="BusinessAgreement()">《业务代理合作协议》</span>
                 </div>
 
-                <button class="btn_1" type="submit">确定</button>
-            
+                <div class="btn_1">
+                    <btn type="submit"/>
+                </div>
 
             </form>
             <!-- <button @click="addguanggaoji()">添加广告测试</button> -->
@@ -110,9 +111,12 @@
 
 <script>
 import {openloading } from "@/assets/js/currency";
+import btn from '@/components/button.vue'
 export default {
     name: "ApplicationAgent",
-    components: {},
+    components: {
+        btn
+    },
     data() {
         return {
             loading: true,
@@ -605,16 +609,6 @@ export default {
     }
 }
 
-#ApplicationAgent .btn_1 {
-    width: 200px;
-    height: 30px;
-    display: block;
-    margin: 0px auto;
-    border-radius: 30px;
-    border: none;
-    background: $header_background;
-    color: #ffffff;
-}
 
 #ApplicationAgent .msg {
     display: flex;
@@ -648,9 +642,8 @@ export default {
     background: rgba(58, 182, 237, 1);
     border: 2px solid rgba(58, 182, 237, 1);
     color: #ffffff;
-
     i {
-        display: inline-block;
+        display: inherit;
     }
 }
 </style>

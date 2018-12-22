@@ -189,20 +189,29 @@
                     <ShopBonus :fixed="fixed"/>
                 </div>
 
-                 <div class="box_6" v-show="type_1==5">
+                <!-- 支付 -->
+                <div class="box_6" v-show="type_1==5">
                     <ul class="list">
                         <li>
+                            <div>团队补贴</div>
+                            <div>{{agentUser.sutotal}}</div>
+                        </li>
+                        <li>
+                            <div>平台分佣</div>
+                            <div>0</div>
+                        </li>
+                        <li>
+                            <div>店铺分佣</div>
+                            <div>0</div>
+                        </li>
+                        <li>
+                            <div>店铺分润</div>
+                            <div>0</div>
+                        </li>
+                        <!-- <li>
                             <div>补贴：{{agentUser.sutotal}}</div>
                             <div>累计：{{agentUser.subsidiesall}}</div>
-                        </li>
-                        <li>
-                            <div>广告机：0</div>
-                            <div>累计：0</div>
-                        </li>
-                        <li>
-                            <div>分润：0</div>
-                            <div>累计：0</div>
-                        </li>
+                        </li>-->
                     </ul>
                     <ul class="Collect_Money" @click="Account()">
                         <li>收款账户：{{Account_obj.account}}</li>
@@ -213,8 +222,6 @@
                         <li>
                             <span>
                                 <span>￥</span>
-
-                                <!-- {{agentUser.sutotal}} -->
                                 <input readonly type="text" v-model="amount" @input="amount_change()" />
                             </span>
                             <span>费率：4%</span>
@@ -338,7 +345,7 @@ export default {
     data() {
         return {
             fixed:false,    //判断是否定位到顶部
-            type_1: 4,
+            type_1: 5,
             list_1: [1, 2, 3, 4, 5, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             // list_1:[1]
             radio_type_2: true,
@@ -390,6 +397,23 @@ export default {
         WithdrawalAgreement(){
             this.$router.push('/WithdrawalAgreement');
         },
+        //生成二维码
+        shengchengerweima(){
+            var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
+            var el=this.$refs.qrcode
+                el.innerHTML='';
+            let qrcode = new QRCode(el, {  
+                width: 200,  
+                height: 200,    // 高度
+                text: url,      // 二维码内容  
+                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                background: '#fff',
+                foreground: '#fff',
+            })
+            setTimeout(()=>{
+                this.print();
+            },500)
+        },
         //生产二维码
         erweima(){
             console.log('生成二维码');
@@ -399,55 +423,20 @@ export default {
                 openloading(true);
                 //图片地址转图片
                 if(!this.userInfo.headImgUrl){
-                    var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
-                    var el=this.$refs.qrcode
-                        el.innerHTML='';
-                    let qrcode = new QRCode(el, {  
-                        width: 200,  
-                        height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                        // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容  
-                        text: url, // 二维码内容  
-                        // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                        background: '#fff',
-                        foreground: '#fff',
-                    })
-                    setTimeout(()=>{
-                        this.print();
-                    },500)
+                    console.log(1)
+                    this.shengchengerweima()
                 }else{
-                    this.$axios({
-                        method:'post',
-                        url:'/api-u/users/imgtobase64',
-                        data: this.$qs.stringify({
-                            url:this.userInfo.headImgUrl
-                        })
-                    }).then(x=>{
-                        console.log(x);
+                    this.$axios.post('/api-u/users/imgtobase64',this.$qs.stringify({url:this.userInfo.headImgUrl})).then(x=>{
                         if(x.data.code==200){
                             this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
-                            var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
-                            var el=this.$refs.qrcode
-                                el.innerHTML='';
-                            let qrcode = new QRCode(el, {  
-                                width: 200,  
-                                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                                // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容  
-                                text: url, // 二维码内容  
-                                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                                background: '#fff',
-                                foreground: '#fff',
-                            })
-                            setTimeout(()=>{
-                                this.print();
-                            },500)
+                            this.shengchengerweima();
                         }else{
                             openloading(false);
-                            mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                            mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });   
                         }
                     }).catch(err=>{
                         openloading(false);
                         mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
-                        console.log(err);
                     })
                 }
             }
@@ -606,10 +595,7 @@ export default {
                     mui.toast("请先同意协议。", { duration: 2000, type: "div" });
                     return;
                 }else if (!this.Account_obj.account) {
-                    mui.toast("请设置收款账号", {
-                        duration: 2000,
-                        type: "div"
-                    });
+                    mui.toast("请设置收款账号", {duration: 2000,type: "div"});
                     return;
                 } else if (this.amount == 0 && x) {
                     mui.toast("无提现金额", { duration: 2000, type: "div" });
@@ -618,10 +604,7 @@ export default {
                     mui.toast("请输入整数！", { duration: 2000, type: "div" });
                     return;
                 } else if (!this.CanBePresented) {
-                    mui.toast("提现处理中，请稍等。", {
-                        duration: 2000,
-                        type: "div"
-                    });
+                    mui.toast("提现处理中，请稍等。", { duration: 2000, type: "div"});
                     return;
                 }
                 this.payment = x;
@@ -645,23 +628,19 @@ export default {
             this.$axios({
                 method: "get",
                 url: "/api-u/agentUser/me?userid=" + this.userInfo.username
-            })
-                .then(x => {
-                    console.log("获取用户代理人信息", x);
-                    if (x.data.code != 200) {
-                        // this.agentUser = false;
-                        this.$router.push("/ApplicationAgent");
-                    } else {
-                        this.agentUser = x.data.data;
-                        this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
-                        this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
-                    }
-                })
-                .catch(error => {
-                    this.agentUser = false;
+            }).then(x => {
+                if (x.data.code != 200) {
+                    // this.agentUser = false;
                     this.$router.push("/ApplicationAgent");
-                    console.log("获取用户代理人信息失败", error);
-                });
+                } else {
+                    this.agentUser = x.data.data;
+                    this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
+                    this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
+                }
+            }).catch(error => {
+                this.agentUser = false;
+                this.$router.push("/ApplicationAgent");
+            });
         },
         //查看下级带来的收益
         subsidies() {
@@ -669,56 +648,37 @@ export default {
             this.$axios({
                 method: "get",
                 url:"/api-u/agentUser/subsidies/forme?referrerPhone=" + this.userInfo.phone + "&start=" + this.butie.page_index * this.butie.page_size + "&length=" + this.butie.page_size
-            })
-                .then(x => {
-                    if (x.data.code == 200) {
-                        this.butie.list = this.butie.list.concat(x.data.data.data);
-                        this.butie.total = x.data.data.total;
-                        this.butie.loading = false;
-                    }
-                    console.log("查看下级带来的收益", x);
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+            }).then(x => {
+                if (x.data.code == 200) {
+                    this.butie.list = this.butie.list.concat(x.data.data.data);
+                    this.butie.total = x.data.data.total;
+                    this.butie.loading = false;
+                }
+            }).catch(error => {
+                console.log(error);
+            });
         },
         //获取支付宝账号
         findAccount() {
-            this.$axios({
-                method: "get",
-                url: "/api-u/users/findAccount?userid=" + this.userInfo.username
+            this.$axios.get("/api-u/users/findAccount?userid="+this.userInfo.username).then(x=>{
+                if (x.data.data != null) {
+                    this.Account_obj = x.data.data;
+                }
+            }).catch(err=>{
+                console.log(err);
             })
-                .then(x => {
-                    console.log("获取支付宝账号", x);
-                    if (x.data.data != null) {
-                        this.Account_obj = x.data.data;
-                    }
-                })
-                .catch(error => {
-                    console.log(error);
-                });
         },
+        //获取代理人信息
         areaManager() {
-            this.$axios({
-                method: "get",
-                url:
-                    "/api-u/areaManager/findme?userid=" + this.userInfo.username
+            this.$axios.get("/api-u/areaManager/findme?userid=" + this.userInfo.username).then(x=>{
+                if (x.data.data != "" && x.data.data != null && x.data.data != "null") {
+                    this.isareaManager = true;
+                } else {
+                    this.isareaManager = false;
+                }
+            }).catch(err=>{
+                console.log("获取代理商信息错误", err);
             })
-                .then(x => {
-                    console.log("获取代理商信息", x);
-                    if (
-                        x.data.data != "" &&
-                        x.data.data != null &&
-                        x.data.data != "null"
-                    ) {
-                        this.isareaManager = true;
-                    } else {
-                        this.isareaManager = false;
-                    }
-                })
-                .catch(error => {
-                    console.log("获取代理商信息错误", error);
-                });
         }
     },
     mounted: function() {
@@ -726,8 +686,6 @@ export default {
             this.userInfo = JSON.parse(localStorage.userInfo);
         } catch (error) {}
         
-
-
         //获取代理人信息
         this.getagentUser();
         //查看下级带来的收益
@@ -737,7 +695,6 @@ export default {
         //获取代理商信息
         this.areaManager();
         // console.group('------mounted 挂载结束状态------');
-
 
         this.ShopBonus_init();
         //获取店铺分润 商家
@@ -1139,28 +1096,34 @@ export default {
 
 #Agent .box_6 {
     margin: 5px 0px 0px 0px;
-    .list > li {
-        position: relative;
+    .list{
         background: #ffffff;
-        color: rgba(56, 56, 56, 1);
-        font-size: 12px;
+        padding: 8px 0px;
         display: flex;
-        height: 37px;
-        border-bottom: 1px solid rgba(229, 229, 229, 1);
-        line-height: 37px;
-        > div {
-            width: 50%;
-            padding: 0px 0px 0px 0.25rem;
+        color: rgba(56, 56, 56, 1);
+    	font-size: 12px;
+        text-align: center;
+        li{
+            position: relative;
+            width: 25%;
+            div:nth-child(1){
+                margin: 0px 0px 10px;
+            }
         }
-    }
-    .list > li::after {
-        position: absolute;
-        content: "";
-        width: 1px;
-        height: 60%;
-        top: 20%;
-        left: 50%;
-        background: rgba(229, 229, 229, 1);
+        li::after{
+            position: absolute;
+            width: 1px;
+        	height: 33px;
+            background-color: rgba(229, 229, 229, 1);
+            content: "";
+            top: 0px;
+            left: 0px;
+            bottom: 0px;
+            margin: auto;
+        }
+        li:nth-child(1)::after{
+            display: none;
+        }
     }
     .Collect_Money {
         margin: 5px 0px 0px 0px;
@@ -1572,5 +1535,7 @@ export default {
         text-align: center;
     }
 }
+
+
 </style>
 

@@ -28,13 +28,13 @@ export default {
     props: {
         //下面3个参数最好是都传递
         type:{
-            define:'',
+            default:'',
         },
         sortType:{
-            define:''
+            default:''
         },
         list:{
-            define:[]
+            default:[]
         }
     },
     data () {

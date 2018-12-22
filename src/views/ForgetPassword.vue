@@ -26,7 +26,7 @@
                         <input v-model="password1" type="password" required placeholder="确认密码">
                     </li>
                 </ul>
-                <button class="btn_1" type="submit">确定</button>
+                <btn type="submit"/>
             </form>
         </div>
     </div>
@@ -34,9 +34,12 @@
 
 <script>
 import { openloading } from "@/assets/js/currency";
+import btn from '@/components/button.vue';
 export default {
     name: "ForgetPassword",
-    components: {},
+    components: {
+        btn
+    },
     data() {
         return {
             time: 0,

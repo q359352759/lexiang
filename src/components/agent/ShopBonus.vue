@@ -13,12 +13,12 @@
                 <div>分润</div>
             </li>
             <li v-for="(item, index) in fenrun_shangjia.list" :key="index">
-                <div class="name">{{item.shopid}}</div>
+                <div class="name" @click="BonusDetail(item)">{{item.shopName}}</div>
                 <div>{{item.createTime | filter_time}}</div>
                 <div>{{item.shareProfitAmount}}</div>
             </li>
         </ul>
-        <loading v-show="type==0" :loadingtype="fenrun_shangjia.loading" :end="!fenrun_shangjia.loading && fenrun_shangjia.total!=0 && fenrun_shangjia.total==fenrun_shangjia.list.length" :nodate="!fenrun_shangjia.loading && fenrun_shangjia.total==0"/>
+        <loading v-show="type==0" :loadingtype="fenrun_shangjia.loading" :end="!fenrun_shangjia.loading && fenrun_shangjia.total!=0 && fenrun_shangjia.total==fenrun_shangjia.list.length" :nodata="!fenrun_shangjia.loading && fenrun_shangjia.total==0"/>
 
         <!-- 会员 -->
         <ul class="List" v-show="type==1">
@@ -28,13 +28,12 @@
                 <div>分润</div>
             </li>
             <li v-for="(item, index) in fenrun_huiyuan.list" :key="index">
-                <div class="name">{{item.shopid}}</div>
+                <div class="name" @click="BonusDetail(item)">{{item.nickname | filteer_name}}</div>
                 <div>{{item.createTime | filter_time}}</div>
                 <div>{{item.shareProfitAmount}}</div>
             </li>
         </ul>
-        <loading v-show="type==1" :loadingtype="fenrun_huiyuan.loading" :end="!fenrun_huiyuan.loading && fenrun_huiyuan.total!=0 && fenrun_huiyuan.total==fenrun_huiyuan.list.length" :nodate="!fenrun_huiyuan.loading && fenrun_huiyuan.total==0"/>
-
+        <loading v-show="type==1" :loadingtype="fenrun_huiyuan.loading" :end="!fenrun_huiyuan.loading && fenrun_huiyuan.total!=0 && fenrun_huiyuan.total==fenrun_huiyuan.list.length" :nodata="!fenrun_huiyuan.loading && fenrun_huiyuan.total==0"/>
 
         <ul class="footer_1" v-show="type==0">
             <li>商家：0家</li>
@@ -49,6 +48,8 @@
 
 <script>
 import { dateFtt } from "@/assets/js/currency";
+import { b64DecodeUnicode } from "@/assets/js/base64jiema";
+
 
 import { mapGetters, mapActions } from 'vuex';
 import loading from "@/components/loading.vue";
@@ -71,6 +72,13 @@ export default {
         filter_time(time){
             if(!time) return time;
             return dateFtt(time,'yyyy.MM')
+        },
+        // 名字转Base64
+        filteer_name(name){
+            try {
+                name=b64DecodeUnicode(name)
+            } catch (error) {}
+            return name
         }
     },
     computed: {
@@ -83,7 +91,14 @@ export default {
     methods: {
         ...mapActions({
             set_type:'agent/ShopBonus/set_type'
-        })
+        }),
+        BonusDetail(item){
+            if(item.type==1){
+                this.$router.push('/agent/BonusDetail?id='+item.shopid+'&type='+item.type);
+            }else{
+                this.$router.push('/agent/BonusDetail?id='+item.userid+'&type='+item.type);
+            }
+        }
         // set_type()
     },
     mounted() {

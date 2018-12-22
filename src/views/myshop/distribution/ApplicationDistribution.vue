@@ -68,14 +68,20 @@
                 您还未发布分销员招募信息，开通分销功能后，让更多销售员来免费替你推广。
             </div>
 
-            <div class="btn_1">申请开通</div>
+            <!-- <div class="btn_1">申请开通</div> -->
+            <btn class="btn_1" value="申请开店"/>
         </div>
     </div>
 </template>
 
 <script>
+import btn from '@/components/button.vue';
+
 export default {
     name:'',
+    components: {
+        btn  
+    },
     data(){
         return{}
     },
@@ -146,15 +152,7 @@ export default {
 }
 
 .btn_1{
-    width: 158px;
-	height: 33px;
-    background: $header_background;
-    color: #ffffff;
-    line-height: 33px;
-    text-align: center;
     margin: 17px auto 20px;
-    border-radius: 33px;
-    font-size: 14px;
 }
 
 </style>

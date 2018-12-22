@@ -130,7 +130,7 @@ export default {
         set_orderid_openid(state,obj){
             console.log('数据初始化',obj)
             state.ordreId=obj.ordreId;
-            state.openid=obj.openid
+            state.openid=obj.openid;
         },
     },
     actions: {
@@ -138,20 +138,6 @@ export default {
         get_dikouxiangqing_show({state},type){
             state.dikouxiangqing_show=type;
         },
-        // async get_list({dispatch, commit},obj){
-        //     return new Promise((resolve, reject)=>{
-        //         axios({
-        //             method: "get",
-        //             url: "/api-u/area/findAll",
-        //             params: {start: 0, length: 30000 }
-        //         }).then(x => {
-        //             console.log("获取地区"+obj, x);
-        //             resolve(x.data)
-        //         }).catch(error=>{
-        //             reject(error);
-        //         })
-        //     })
-        // },
         async set_list({dispatch , commit},data){
             await dispatch('get_list',data);
             console.log('获取地区',data)
@@ -165,13 +151,16 @@ export default {
         },
         //查询订单下面面的信息
         async findShopOrdersById({state}){
+            openloading(true);
             return new Promise((resolve,reject)=>{
                 axios.get('/api-s/shops/findShopOrdersById/'+state.ordreId).then(x=>{
                     if(x.data.code==200){
                         state.dingdanxiangqing=x.data.data;
                     }
+                    openloading(false);
                     resolve(x)
                 }).catch(err=>{
+                    openloading(false);
                     reject()
                 })
             })
@@ -183,8 +172,9 @@ export default {
             return new Promise((resolve, reject)=>{
                 var this_1=this;
                 var query={
-                        ordreId:state.ordreId,
-                        openid:state.openid
+                        // ordreId:state.ordreId,
+                        openid:state.openid,
+                        ordreId:state.dingdanxiangqing.ordersid
                     }
                 axios({
                     method:'post',

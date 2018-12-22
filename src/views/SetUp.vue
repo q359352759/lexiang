@@ -10,9 +10,9 @@
             <div class="box_1">
                 <ul class="mui-table-view">
                     <li class="mui-table-view-cell ">
-                        <a class="mui-navigate-right item_box">
+                        <a class="mui-navigate-right item_box" @click="xiugaitouxiang()">
                             <span>头像</span>
-                            <div class="img_box">                                
+                            <div class="img_box">                               
 			            		<img v-if="userInfo.headImgUrl!='' && userInfo.headImgUrl!=null" :src="userInfo.headImgUrl" alt="">
             					<img v-if="userInfo.headImgUrl=='' || userInfo.headImgUrl==null" src="@/assets/image/lxlogo_180.png">
                             </div>
@@ -81,15 +81,24 @@
             <div class="box_2">当前版本1.0.2</div>
 
         </div>
+
+        <HeadPortrait ref="HeadPortrait" v-show="HeadPortrait_show" :isnew="isnew" @setShow="get_show"/>
+        
     </div>
 </template>
 
 <script>
+import HeadPortrait from '@/components/setUp/HeadPortrait.vue';
 export default {
     name:'',
+    components: {
+        HeadPortrait
+    },
     data(){
         return{
             userInfo:'',
+            HeadPortrait_show:false,
+            isnew:false
         }
     },
     filters:{
@@ -103,6 +112,16 @@ export default {
         }
     },
     methods:{
+        //修改头像
+        xiugaitouxiang(){
+            this.HeadPortrait_show=true;
+            // this.isnew=!this.isnew
+            this.$refs.HeadPortrait.xuanzhetupian();
+        },
+        //
+        get_show(x){
+            this.HeadPortrait_show=x;
+        },
         //注册协议
         RegistrationAgreement(){
             this.$router.push('/RegistrationAgreement')

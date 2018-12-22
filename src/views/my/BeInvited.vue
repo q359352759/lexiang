@@ -141,6 +141,13 @@ export default {
         }
     },
     created: function() {
+        var userInfo='';
+        try {
+            userInfo=JSON.parse(localStorage.userInfo)
+        } catch (error) {}
+        if(userInfo){
+            this.$router.push('/my');
+        }
         // console.group('------created创建完毕状态------');
     },
     beforeMount: function() {

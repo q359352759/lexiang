@@ -50,15 +50,15 @@ export default {
     props: {
         //红包
         hongbao:{
-            define:{}
+            default:{}
         },
         //店铺
         shop:{
-            define:{}
+            default:{}
         },
         //红包Id 主要用于判断
         hongbaoid:{
-            define:''
+            default:''
         }
     },
     data () {

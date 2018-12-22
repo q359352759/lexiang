@@ -3,7 +3,7 @@
 		<header class="mui-bar mui-bar-nav">
 			<h1 class="mui-title">个人中心</h1>
 		</header>
-		<div class="mui-content">
+		<div class="mui-content mui-fullscreen">
 
 			<ul class="box_1">
 				<li class="img_box" @click="SetUp()">
@@ -136,7 +136,9 @@
 				</li>
 			</ul>
 
-			<div @click="go_out()" class="go_out">退出登录</div>
+			<div @click="go_out()" class="go_out">
+                <btn value="退出登录" />
+            </div>
 
             <!-- <button @click="test()">测试</button>
             {{weixin}} -->
@@ -201,9 +203,12 @@ import QRCode from 'qrcodejs2'
 import {openloading} from '@/assets/js/currency.js';
 import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
 import { mapActions } from 'vuex';
+import btn from '@/components/button.vue'
 export default {
     name: "my",
-    components: {},
+    components: {
+        btn
+    },
     data() {
         return {
             qrcode_show:false,
@@ -249,52 +254,39 @@ export default {
         Recommend(){
             this.$router.push('/Recommend?pid='+this.userInfo.username+'&invitationtype=1')
         },
-        //生产二维码
+        //生成二维码
+        shengchengerweima(){
+            var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
+            var el=this.$refs.qrcode
+                el.innerHTML='';
+            let qrcode = new QRCode(el, {  
+                    width: 200,  
+                    height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                    text: url, // 二维码内容  
+                    // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                    background: '#fff',
+                    foreground: '#fff',
+                })
+            setTimeout(()=>{
+                this.print();
+            },500)
+        },
+        //开始生成二维码
         erweima(){
             // console.log()
             console.log('生产二维码。');
-            var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
             if(this.qrcode){
                 this.qrcode_show=true;
             }else{
                 openloading(true);
                 if(!this.userInfo.headImgUrl){
-                    var el=this.$refs.qrcode
-                        el.innerHTML='';
-                    let qrcode = new QRCode(el, {  
-                            width: 200,  
-                            height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                            text: url, // 二维码内容  
-                            // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                            background: '#fff',
-                            foreground: '#fff',
-                        })
-                    setTimeout(()=>{
-                        this.print();
-                    },500)
+                    this.shengchengerweima();
                 }else{
-                    this.$axios({
-                        method:'post',
-                        url:'/api-u/users/imgtobase64',
-                        data: this.$qs.stringify({
-                            url:this.userInfo.headImgUrl
-                        })
-                    }).then(x=>{
+                    this.$axios.post('/api-u/users/imgtobase64',this.$qs.stringify({url:this.userInfo.headImgUrl})).then(x=>{
+                        console.log(x);
                         if(x.data.code==200){
                             this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
-                            var el=this.$refs.qrcode
-                                el.innerHTML='';
-                            let qrcode = new QRCode(el, {  
-                                    width: 200,  
-                                    height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                                    text: url, // 二维码内容  
-                                    // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                                    background: '#fff',
-                                    foreground: '#fff',
-                                })
-                            setTimeout(()=>{
-                                this.print();
-                            },500)
+                            this.shengchengerweima();
                         }else{
                             openloading(false);
                             mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
@@ -302,7 +294,6 @@ export default {
                     }).catch(err=>{
                         openloading(false);
                         mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
-                        console.log(err);
                     })
                 }                
             }
@@ -314,12 +305,9 @@ export default {
                 logging: false
             }
             html2canvas(el,options).then(canvas => {
-                // document.getElementById('canvas').appendChild(canvas)
                 this.qrcode=canvas.toDataURL();
                 this.qrcode_show=true;
                 openloading(false);
-                // console.log('生成的图片',canvas)
-                // console.log(canvas.toDataURL())
             });
         },
         close_1(){
@@ -631,7 +619,6 @@ export default {
     height: 30px;
     line-height: 30px;
     color: rgba(255, 255, 255, 1);
-    background-color: $header_background;
     border-radius: 30px;
     font-size: 14px;
     text-align: center;

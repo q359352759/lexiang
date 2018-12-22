@@ -180,7 +180,8 @@
                 <span @click="RegistrationAgreement()">《商家服务协议》</span>
             </div>
 
-            <button @click="add()" class="btn_1">提 交</button>
+            <!-- <button @click="add()" class="btn_1">提 交</button> -->
+            <btn @click.native="add()" value="提交"/>
             <!-- <button @click="weixinmaptest()">跳转微信地图测试</button>
             <button @click="add()">申请通过后的店铺</button> -->
         </div>
@@ -218,7 +219,8 @@
         <!-- <div class="jujue" v-if="myshop && getType==0"> -->
             <i class="icon iconfont icon-weitongguo"></i>
             <div class="text_box" v-html="myshop.cause"></div>
-            <button @click="chongxingtijiao()">重新提交</button>
+            <!-- <button @click="chongxingtijiao()">重新提交</button> -->
+            <btn @click.native="chongxingtijiao()" value="重新提交"/>
         </div>
 
         <div class="get_myshop" v-show="get_myshop">
@@ -231,11 +233,14 @@
 <script>
 import { openloading, bd_decrypt,get_url } from "@/assets/js/currency";
 import { VueCropper } from "vue-cropper";
+import btn from '@/components/button.vue';
+
 import $ from "jquery";
 export default {
     name: "",
     components: {
-        VueCropper
+        VueCropper,
+        btn
     },
     data() {
         return {
@@ -931,9 +936,10 @@ export default {
 
 #ApplicationShop {
     height: 100%;
-    // .mui-content{
-    //     background: #ffffff;
-    // }
+    .mui-content{
+        // background: #ffffff;
+        padding-bottom: 20px;
+    }
 }
 #ApplicationShop .get_myshop{
     position: fixed;

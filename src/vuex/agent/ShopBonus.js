@@ -92,9 +92,11 @@ export default {
                         obj.list=obj.list.concat(x.data.data.data);
                         obj.total=x.data.data.total;
                     }
+                    obj.loading=false;
                     resolve(x);
                 }).catch(err=>{
                     reject(err)
+                    obj.loading=false;
                 })
             });
         },

@@ -55,7 +55,8 @@ export default {
             clientX: "",
             clientY: "",
             is_touchmove: false, //是否拖动
-            class_name: "right"
+            class_name: "right",
+            active:true
         };
     },
     computed: {
@@ -84,11 +85,7 @@ export default {
         go_Agent() {
             this.mask_show = false;
             console.log(this.$store.state.agentUser);
-            if (
-                !this.$store.state.agentUser ||
-                this.$store.state.agentUser == null ||
-                this.$store.state.agentUser == ""
-            ) {
+            if (!this.$store.state.agentUser || this.$store.state.agentUser == null || this.$store.state.agentUser == "") {
                 this.$router.push("/ApplicationAgent"); //跳转注册代理人页面
             } else {
                 this.$router.push("/Agent"); //跳转代理人
@@ -105,25 +102,28 @@ export default {
             this.$router.push(x);
         },
         //开始拖动
-        touchmove(x) {
+        touchmove(x){
+            this.class_name=""
             this.mask_show = false;
             this.is_touchmove = true;
             var event = x.target;
             var targetTouches = x.targetTouches[0];
+            // targetTouches.style.opacity=0.3
+            // targetTouches
+            // target
+            x.target.style.opacity=0.5
             var obj = {
                 clientX: targetTouches.clientX - 25,
                 clientY: targetTouches.clientY - 25
             };
             this.$store.state.clientX = targetTouches.clientX - 25;
             this.$store.state.clientY = targetTouches.clientY - 25;
-            // this.$store.commit("setClient", obj);
-            // document.getElementById('move').style.left=clientX-25+'px'
-            // document.getElementById('move').style.top=clientY-25+'px'
         },
         //手指头松开
         touchend(x) {
             // console.log(window.innerHeight);
             // console.log(this.$store.state.clientX);
+            x.target.style.opacity=1
             var ww = window.innerWidth;
             var wh = window.innerHeight;
             if (this.$store.state.clientX - 25 > ww / 2) {
@@ -132,16 +132,16 @@ export default {
                 this.class_name = "left";
             }
 
-            if (this.$store.state.clientX > ww - 50) {
-                this.$store.state.clientX = ww - 50;
-            } else if (this.$store.state.clientX < 0) {
-                this.$store.state.clientX = 0;
+            if (this.$store.state.clientX>ww/2) {
+                this.$store.state.clientX = ww - 55;
+            } else {
+                this.$store.state.clientX = 5;
             }
 
             if (this.$store.state.clientY < 90) {
                 this.$store.state.clientY = 90;
-            } else if (this.$store.state.clientY > wh - 90) {
-                this.$store.state.clientY = wh - 90;
+            } else if (this.$store.state.clientY > wh - 120) {
+                this.$store.state.clientY = wh - 120;
             }
         }
     },
@@ -151,7 +151,7 @@ export default {
     created: function() {
         this.$store.commit('setMyshop');
         var ww= window.innerWidth;
-        this.$store.state.clientX = ww - 50;
+        this.$store.state.clientX = ww - 55;
         // console.group('------created创建完毕状态------');
     },
     beforeMount: function() {
@@ -162,6 +162,9 @@ export default {
         setTimeout(function() {
             document.getElementById("circularNav").addEventListener("touchmove", touchmove_1, { passive: false });
         }, 500);
+        
+        //获取代理人信息
+        this.$store.dispatch("actions_agentUser");
         //{ passive: false }
         // console.group('------mounted 挂载结束状态------');
     },
@@ -189,6 +192,7 @@ export default {
 
 
 #circularNav .mask {
+    
     position: fixed;
     top: 0px;
     left: 0px;
@@ -240,7 +244,10 @@ export default {
     font-size: 12px;
     color: #ffffff;
 }
-
+#circularNav .right,
+#circularNav .left{
+    transition: all 0.5s;
+}
 #circularNav .right .min_11 {
     top: -70px;
     left: 7px;

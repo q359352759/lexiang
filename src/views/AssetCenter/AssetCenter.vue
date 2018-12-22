@@ -8,9 +8,11 @@
             <ul class="box_1">
                 <li>
                     <div class="img_box">
-                        <img src="image/touxiang.png" alt="" srcset="">
+                        <img v-if="!userInfo.headImgUrl" src="image/touxiang.png" alt="" srcset="">
+                        <img v-if="userInfo.headImgUrl" :src="userInfo.headImgUrl" alt="" srcset="">
                     </div>
-                    <span>{{userInfo.phone | fliter_phone}}</span>
+                    <span v-if="!userInfo.nickname">{{userInfo.phone | fliter_phone}}</span>
+                    <span v-if="userInfo.nickname">{{userInfo.nickname}}</span>
                 </li>
                 <li>
                     <div>
@@ -146,12 +148,17 @@ export default {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        border-radius: 100%;
       }
     }
     span {
       font-size: 0.12rem;
       color: #505050;
       margin: 5px 0px 0px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
     }
   }
   > li:nth-child(2) {

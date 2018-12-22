@@ -30,7 +30,8 @@
                             <span v-if="!password">请输入密码</span>
                         </li>
                     </ul>
-                    <button class="Sign_in" type="submit">登录</button>
+                    <!-- <button class="Sign_in" type="submit">登录</button> -->
+                    <btn type="submit" value="登录"/>
                     <div class="weixing">
                         <!-- <div><i class="mui-icon mui-icon-weixin"></i></div> -->
                     </div>
@@ -54,10 +55,12 @@
 import { dateFtt, openloading } from "@/assets/js/currency";
 import { mapActions } from 'vuex';
 import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
-
+import btn from '@/components/button.vue';
 export default {
     name: "login",
-    components: {},
+    components: {
+        btn
+    },
     filters: {},
     data() {
         return {

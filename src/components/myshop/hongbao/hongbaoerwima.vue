@@ -66,14 +66,14 @@ export default {
     props:{
         //显示隐藏
         RongqiShow:{
-            define:false
+            default:false
         },
         //红包
         hongbao:{
-            define:{}
+            default:{}
         },
         new:{
-            define:false,
+            default:false,
         }
     },
     name:'',

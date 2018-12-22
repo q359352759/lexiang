@@ -73,15 +73,23 @@
                 </span>
                 <!-- <span @click="RegistrationAgreement()">《用户注册协议》</span> -->
             </div>
-            <button @click="goumai()" class="btn_1">购买</button>
+            <!-- <button @click="goumai()" class="btn_1">购买</button> -->
+            <div class="btn_1">
+                <btn @click.native="goumai()" value="购买"/>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 import {openloading } from "@/assets/js/currency";
+import btn from '@/components/button.vue';
+
 export default {
     name: "",
+    components: {
+        btn  
+    },
     data() {
         return {
             radio_type_2: true,
@@ -297,15 +305,7 @@ export default {
 }
 
 #Advertising .btn_1 {
-    width: 1.7rem;
-    height: 0.28rem;
     margin: 0.18rem auto 0.5rem;
-    display: block;
-    font-size: 0.14rem;
-    background: $header_background;
-    color: #ffffff;
-    border-radius: 0.28rem;
-    border: none;
 }
 
 // 单选

@@ -160,6 +160,9 @@ import myshops from "@/router/myshop.js";
 import commodity from "@/router/commodity.js";
 import orders from '@/router/orders.js';
 import mys from '@/router/my.js';
+
+import agents from '@/router/agents.js'
+
 // console.log(myshops)
 // require('@/router/myshop.js'),
 
@@ -171,6 +174,7 @@ export default new Router({
         ...commodity,   //商品
         ...orders,
         ...mys,
+        ...agents,
         { path: "/", name: "", component: login },
         { path: "/editortest", name: "", component: editortest },
         {

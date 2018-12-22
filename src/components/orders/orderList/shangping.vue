@@ -43,7 +43,7 @@
 export default {
     props: {
         shangping:{
-            define:{}
+            default:{}
         }
     },
     name:'',

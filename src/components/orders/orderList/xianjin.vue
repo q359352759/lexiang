@@ -29,7 +29,7 @@ export default {
     name:'',
     props:{
         dingdan:{
-            define:{}
+            default:{}
         }
     },
     data () {

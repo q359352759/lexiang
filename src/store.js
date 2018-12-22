@@ -42,7 +42,7 @@ export default ()=>{
         state: {
             weixin_ready:false,     //微信准备就绪
             clientX: 100, //远点导航X
-            clientY: 450, //远点导航Y
+            clientY: 350, //远点导航Y
             isweixin: true,
             loginDate: {}, //login信息
             weixinobj: {}, //微信授权信息
@@ -130,7 +130,7 @@ export default ()=>{
                     }
                 }
                 return arr;
-            }
+            },
         },
         mutations: {
             filter_area(){
@@ -159,7 +159,6 @@ export default ()=>{
             setagentUser(state) {
                 // console.log(this.state.userInfo)
                 var userInfo = JSON.parse(localStorage.userInfo);
-
                 axios({
                     method: "get",
                     url: "/api-u/agentUser/me?userid=" + userInfo.username

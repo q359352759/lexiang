@@ -9,15 +9,21 @@
             <div class="box_1">
                 <div class="tishi">当前公告：{{dangqian}}</div>
                 <textarea cols="30" rows="10" placeholder="请填写公告内容" v-model="obj.remark"></textarea>
-                <button @tap="submit()" class="btn_1">发布</button>
+                <!-- <button @tap="submit()" class="btn_1">发布</button> -->
+                <btn value="发布" @click.native="submit()" class="btn_1"/>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import btn from '@/components/button.vue';
+
 export default {
     name:'',
+    components: {
+        btn
+    },
     data(){
         return{
             get_index:0,
@@ -162,15 +168,7 @@ export default {
         margin: 0px 0px 17px;
     }
     .btn_1{
-        background: $header_background;
-        display: block;
-        width: 175px;
-    	height: 34px;
-        font-size: 14px;
         margin: 40px auto 20px;
-        border-radius: 34px;
-        border: none;
-        color: #ffffff;
     }
 }
 </style>

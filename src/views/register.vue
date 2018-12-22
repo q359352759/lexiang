@@ -47,7 +47,7 @@
                     <span @click="change_radio_2()"> 我也阅读并同意</span>
                     <span @click="RegistrationAgreement()">《用户注册协议》</span>
                 </div>
-                <button class="btn_1" type="submit">立即注册</button>
+                <btn type="submit" value="立即注册"/>
             </form>
             <div class="box_2">
                 <img src="image/bg_3.png" alt="" srcset="">
@@ -58,9 +58,13 @@
 
 <script>
 import { openloading } from "@/assets/js/currency";
+import btn from '@/components/button.vue';
+
 export default {
     name: "register",
-    components: {},
+    components: {
+        btn
+    },
     data() {
         return {
             time: 0,
@@ -77,15 +81,27 @@ export default {
         };
     },
     methods: {
-        //获取手机验证码
-        get_codes() {
-            var phone_test = /^1\d{10}$/;
-            if (this.time != 0) {
-                return;
-            } else if (this.phone == "" || !phone_test.test(this.phone)) {
-                return;
-            }
-
+        //获取手机是否已经注册
+        get_phone(){
+            openloading(true)
+            return new Promise((resolve, reject) => {
+                this.$axios.get('/api-u/users/findByPhone?phone='+this.phone).then(x=>{
+                    openloading(false)
+                    if(x.data.code==200){
+                        mui.toast('已有此账号', { duration: 2000, type: "div" }); 
+                        reject()
+                    }else{
+                        resolve()
+                    }
+                }).catch(err=>{
+                    openloading(false)
+                    mui.toast('系统错误稍后再试。', { duration: 2000, type: "div" }); 
+                    reject()
+                })
+            });
+        },
+        //获取验证码
+        get_yanzhengma(){
             var this_1 = this;
             this.time = 60;
             var time = setInterval(function() {
@@ -97,16 +113,27 @@ export default {
             this.$axios({
                 method: "post",
                 url: "/api-n/notification-anon/codes?phone=" + this.phone
-            })
-                .then(x => {
-                    console.log(x);
-                    localStorage.keys = x.data.key;
-                    // this.key = x.data.key;
-                })
-                .catch(err => {
-                    console.log(err);
-                    mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" });
-                });
+            }).then(x => {
+                console.log(x);
+                localStorage.keys = x.data.key;
+            }).catch(err => {
+                console.log(err);
+                mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" });
+            });
+        },
+        get_codes() {
+            var phone_test = /^1\d{10}$/;
+            if (this.time != 0) {
+                return;
+            } else if (this.phone == "" || !phone_test.test(this.phone)){
+                mui.toast('请输入电话号码。', { duration: 2000, type: "div" }); 
+                return;
+            }else{
+                
+                this.get_phone().then(x=>{
+                    this.get_yanzhengma()
+                }).catch(err=>{})
+            }
         },
         //用户注册协议
         RegistrationAgreement() {

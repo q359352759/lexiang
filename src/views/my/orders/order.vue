@@ -89,19 +89,19 @@ export default {
         //vuex  初始化 openid和 ordreId
         this.set_orderid_openid(query).then(x=>{
             console.log('数据初始化完成');
-            if(this.$route.params.zhifu){
-                this.shoppingCopy();                //支付
-            }
-            //订单详情
             this.findShopOrdersById().then(x=>{
                 console.log('订单详情',x);
                 //查询店铺信息
                 this.get_shop(x.data.data.shopid);
+                if(this.$route.params.zhifu){
+                    //支付
+                    this.shoppingCopy();         
+                }
             })
-            
-        }).catch(err=>{
-
-        })
+        }).catch(err=>{})
+        //订单详情
+        
+        
         // this.order_set_lsit('传递参数');
     },
 }

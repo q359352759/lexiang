@@ -8,7 +8,8 @@
         <div class="mui-content">
             <ul class="box_1">
                 <li class="img_box">
-                    <img src="@/assets/image/lxlogo_180.png" alt="" srcset="">
+                    <img v-if="!userInfo.headImgUrl" src="@/assets/image/lxlogo_180.png" alt="" srcset="">
+                    <img v-if="userInfo.headImgUrl" :src="userInfo.headImgUrl" alt="" srcset="">
                 </li>
                 <li class="text">
                     <h1>{{areaManager_obj.name}}</h1>
