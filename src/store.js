@@ -131,6 +131,9 @@ export default ()=>{
                 }
                 return arr;
             },
+            get_myshop(state){
+                return state.myshop;
+            }
         },
         mutations: {
             filter_area(){
@@ -271,6 +274,22 @@ export default ()=>{
             
         },
         actions: {
+            //获取自己的店铺
+            async setMyshop(){
+                var userInfo = JSON.parse(localStorage.userInfo);
+                return new Promise((resolve, reject) => {
+                    axios({
+                        method:'get',
+                        url:'/api-s/shops/finByUserid/'+userInfo.username
+                    }).then(x=>{
+                        console.log('获取自己的店铺',x);
+                        this.state.myshop=x.data.data;
+                        resolve()
+                    }).catch(err=>{
+                        reject()
+                    })
+                });
+            },
             actions_agentUser({ dispatch, commit }) {
                 //获取代理人信息
                 commit("setagentUser"); // 等待 actionA 完成

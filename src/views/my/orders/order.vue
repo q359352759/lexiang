@@ -100,8 +100,12 @@ export default {
             })
         }).catch(err=>{})
         //订单详情
-        
-        
+        var number=3;
+        for(let i=0;i<7;i++){
+            var a=number+3
+            number=Math.floor(a*100)/100
+        }
+        console.log(number);
         // this.order_set_lsit('传递参数');
     },
 }

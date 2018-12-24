@@ -40,15 +40,39 @@ export default {
                     var obj=new_list.find(x=>x.commodityid==item.commodityid);
                     if(obj){
                         obj.number++;
-                        obj.dikou=obj.dikou+(item.realDeduction ? item.realDeduction : 0);
+                        var dikou=obj.dikou+(item.realDeduction ? item.realDeduction : 0);
+                            dikou=Math.floor(dikou*100)/100;
+                            item.shopOrderRedEnvelopeList.forEach(hongbao=>{
+                                obj.hongbao_list.push(hongbao)
+                            })
+                        obj.dikou=dikou;
                         // obj.kedikou=obj.kedikou+(item.realDeduction ? item.realDeduction : 0)
                     }else{
-                        item.dikou=item.realDeduction ? item.realDeduction : 0
-                        item.number=1;
-                        var obj=Object.assign({}, item)
-                        new_list.push(obj);
+                        var newobj=Object.assign({}, item)
+                        newobj.dikou=item.realDeduction ? item.realDeduction : 0;
+                        newobj.hongbao_list=item.shopOrderRedEnvelopeList
+                        newobj.number=1;
+                        new_list.push(newobj);
                     }
                 });
+                new_list.forEach(item=>{
+                    item.filter_hongbao=[];
+                    item.hongbao_list.forEach(hongbao=>{
+                        if(hongbao.envelopeType){
+                            var obj=item.filter_hongbao.find(x=>x.envelopeType==hongbao.envelopeType);
+                        }else{
+                            var obj=item.filter_hongbao.find(x=>!x.envelopeType)
+                        }
+                        if(obj){
+                            obj.money=obj.money+hongbao.paymentAmount;
+                            obj.money=Math.round(obj.money*100)/100
+                        }else{
+                            var newobj=Object.assign({}, hongbao);
+                                newobj.money=newobj.paymentAmount;
+                            item.filter_hongbao.push(newobj)
+                        }
+                    })
+                })
             return new_list;
         },
         //显示商品抵扣的数据和其他抵扣的数据
@@ -170,7 +194,6 @@ export default {
             console.log('调用支付接口id');
             openloading(true);
             return new Promise((resolve, reject)=>{
-                var this_1=this;
                 var query={
                         // ordreId:state.ordreId,
                         openid:state.openid,
@@ -193,7 +216,7 @@ export default {
                         success: function(res){
                             // 支付成功后的回调函数
                             console.log(res);
-                            this_1.findShopOrdersById()
+                            dispatch('findShopOrdersById')
                         }
                     });
                     resolve(x);

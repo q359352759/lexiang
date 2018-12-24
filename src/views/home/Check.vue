@@ -169,7 +169,7 @@ export default {
                     number=this.money-this.money_zong_dikou;
                 }
             }
-            number=number ? Math.ceil(number.toFixed(2)*100)/100 : 0
+            number=number ? Math.round(number*100)/100 : 0
             return number;
         },
         money_zong_dikou(){
@@ -208,7 +208,7 @@ export default {
         },
         //实际支付
         shijizhifu(){
-            return  Math.floor((this.Total_price-this.zong_dikou).toFixed(2)*100)/100
+            return  Math.round((this.Total_price-this.zong_dikou)*100)/100
         },
         xingren_pingtai(){
             var xingren_pingtai=this.xinren_dikou+(this.invitedsutotal ? this.invitedsutotal.sutotal : 0);
@@ -301,7 +301,9 @@ export default {
                 var submitCommodity=[];
                 //商品红包抵扣的商品
                 this.shangpin_dikou.forEach(item=>{
-                    item.shopRedEnvelope=[item.hongbao];
+                    var shangPingHongbao=item.hongbao;
+                        shangPingHongbao.paymentAmount=item.dikou
+                    item.shopRedEnvelope=[shangPingHongbao];
                     let obj={
                             shopCommodity:item,                             //商品实体类
                             // shopRedEnvelope:[item.hongbao],              //红包实体类
@@ -311,23 +313,34 @@ export default {
                     submitCommodity.push(obj) 
                 })
                 //其他红包或者没有抵扣的商品
-                
                 this.qita_dikou.forEach(item=>{
+                    console.log(item.dikou)
+                    if(item.dikou>0.8){
+                        console.log(item);
+                    }
                     var shopRedEnvelope=[];
                     if(item.hongbao==1){
                         shopRedEnvelope[0]=this.shengri_hongbao.length>0 ? this.shengri_hongbao[0] : '';
+                        shopRedEnvelope[0].paymentAmount=item.dikou;
                     }else if(item.hongbao==2){
                         shopRedEnvelope[0]=this.qingdian_hongbao.length>0 ? this.qingdian_hongbao[0] : '';
+                        shopRedEnvelope[0].paymentAmount=item.dikou;
                     }else if(item.hongbao==4){
                         shopRedEnvelope[0]=this.jieri_hongbao.length>0 ? this.jieri_hongbao[0] : '';
+                        shopRedEnvelope[0].paymentAmount=item.dikou
                     }else if(item.hongbao==6){
                         if(item.dianpu && this.xinren_hongbao.length>0){    //店铺红包
-                            shopRedEnvelope.push(this.xinren_hongbao[0])
+                            let xinren_hongbao=this.xinren_hongbao[0]
+                                xinren_hongbao.paymentAmount=item.dianpu;
+                            shopRedEnvelope.push(xinren_hongbao)
                         }
                         if(item.pingtai){
-                            shopRedEnvelope.push(this.invitedsutotal)
+                            let pingtai=this.invitedsutotal;
+                                pingtai.paymentAmount=item.pingtai;
+                            shopRedEnvelope.push(pingtai);
                         }
                     }
+
                         item.shopRedEnvelope=item.dikou ? shopRedEnvelope : [];
                         let obj={
                             shopCommodity:item,
@@ -344,6 +357,7 @@ export default {
                         amount:amount,           //金额
                         submitCommodityList:submitCommodity  //商品实体类       
                     };
+                console.log(JSON.stringify(obj));
                 openloading(true)
                 this.$request('/api-s/shops/createOrders',obj,'post').then(x=>{
                     console.log('添加订单',x);

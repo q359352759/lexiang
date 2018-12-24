@@ -2,12 +2,12 @@
     <div class="box">
         <div class="header">订单信息</div>
         <ul>
-            <li>订单编号：sdfhw213213897s</li>
+            <li>订单编号：{{dingdanxiangqing.ordersid}}</li>
             <li>下单时间：{{dingdanxiangqing.createTime | fitler_time}}</li>
             <li>支付方式：{{dingdanxiangqing.payName}}</li>
-            <li>订单金额：{{dingdanxiangqing.paymentAmount}}</li>
+            <li>订单金额：{{dingdanxiangqing.paymentAmount+dingdanxiangqing.deduction}}元</li>
             <li v-if="dingdanxiangqing.state==1">
-                红包抵扣<span class="实际支付 mui-pull-right">实际支付：0元</span>
+                红包抵扣：{{dingdanxiangqing.deduction}}元<span class="实际支付 mui-pull-right">实际支付：{{dingdanxiangqing.paymentAmount}}元</span>
             </li>
         </ul>
         <!-- <div class="img"></div> -->

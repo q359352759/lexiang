@@ -11,7 +11,7 @@
             </ul>
             <ul class="footer">
                 <li @click="quxiao()">取消</li>
-                <li>保存</li>
+                <li @click="baochun()">保存</li>
             </ul>
         </div>
         <div class="mui-hidden HeadPortrait_input">
@@ -25,6 +25,7 @@ import { openloading } from "@/assets/js/currency.js";
 
 import { VueCropper } from "vue-cropper";
 import $ from 'jquery'
+import { mapMutations, mapActions } from 'vuex';
 export default {
     name:'',
     props: {
@@ -56,6 +57,9 @@ export default {
         }
     },
     methods: {
+        ...mapActions({
+            get_user:'user/get_user'
+        }),
         xuanzhetupian(){
             console.log(123)
             $('.HeadPortrait_input').html('<input type="file" accept="image/*" name="" id="">');
@@ -72,6 +76,32 @@ export default {
         //取消
         quxiao(){
             this.$emit('setShow',false);
+        },
+        baochun(){
+            openloading(true);
+            this.$refs.cropper.getCropData(data => {
+                var userInfo=JSON.parse(localStorage.userInfo);
+                userInfo.headImgUrl=data;
+                // userInfo.nickname=weixininfo.nickname;
+                this.$axios.post('/api-u/users/update/headImgUrl',this.$qs.stringify(userInfo)).then(x=>{
+                    if(x.data.code==200){
+                        mui.toast('设置成功。', {duration: "long", type: "div" });
+                        this.get_user().then(x=>{
+                            this.$emit('setShow',false,true);
+                        }).catch(err=>{
+                            this.$emit('setShow',false,true);
+                        })
+                    }else{
+                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");           
+                        this.$emit('setShow',false,true);
+                    }
+                    openloading(false);
+                }).catch(err=>{
+                    openloading(false);
+                    this.$emit('setShow',false);
+                    mui.alert('系统错误稍后再试。', "提示",'我知道了', function() {},"div");                    
+                })
+            });
         }
     },
     mounted () {
@@ -88,6 +118,7 @@ export default {
                     img.onload=function(){
                         console.log(img.width)
                         console.log(img.height)
+                        //计算宽度或者比例
                         if(img.width<img.height){
                             //宽高
                             this_1.option.mode="100px auto"
@@ -100,13 +131,12 @@ export default {
                 openloading(false);
             };
         })
-
         console.log(this.isnew);
     },
     watch: {
-        isnew(){
-            console.log('数据花生变化')
-        }
+        // isnew(){
+        //     console.log('数据花生变化')
+        // }
     }
 }
 </script>

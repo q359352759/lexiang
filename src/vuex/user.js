@@ -27,7 +27,7 @@ export default {
                 }
                 var userInfo=JSON.parse(localStorage.userInfo);
                     userInfo.headImgUrl=weixininfo.headimgurl;
-                    userInfo.nickname=weixininfo.nickname
+                    userInfo.nickname=weixininfo.nickname;
                 axios.post('/api-u/users/update/headImgUrl',qs.stringify(userInfo)).then(x=>{
                     if(x.data.code==200){
                         
@@ -73,7 +73,7 @@ export default {
                     resolve(error)
                 });
             });
-        }
+        },
     },
     modules: {
         

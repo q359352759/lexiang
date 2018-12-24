@@ -318,6 +318,7 @@ export default {
 <style lang="scss" scoped>
 .mui-content {
   background: #ffffff;
+  position: fixed;
 }
 .quxiao,
 .quding {

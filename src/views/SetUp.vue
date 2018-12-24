@@ -119,8 +119,12 @@ export default {
             this.$refs.HeadPortrait.xuanzhetupian();
         },
         //
-        get_show(x){
+        get_show(x,setUserInfo){
             this.HeadPortrait_show=x;
+            if(setUserInfo){
+                console.log(123)
+                this.userInfo=JSON.parse(localStorage.userInfo);
+            }
         },
         //注册协议
         RegistrationAgreement(){
@@ -155,9 +159,7 @@ export default {
     mounted: function() {
         try {
             this.userInfo=JSON.parse(localStorage.userInfo);
-        } catch (error) {
-            
-        }
+        } catch (error) {}
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "clipboard": "^2.0.4",
     "cropperjs": "^1.4.3",
     "html2canvas": "^1.0.0-alpha.12",
     "jquery": "^3.3.1",

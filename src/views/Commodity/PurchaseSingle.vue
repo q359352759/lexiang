@@ -184,28 +184,50 @@ export default {
                         obj.hongbao=[];
                         var kedikou=obj.deduction;  //每个商品可抵扣
                         if(this_1.dikou==1){
-                            obj.hongbao.push(this_1.shengri_hongbao[0]);
-                            obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou;
+                             obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou;
+                            var hongbao=this_1.shengri_hongbao[0];
+                                hongbao.paymentAmount=obj.shiji_dikou
+                            obj.hongbao.push(hongbao);
                         }else if(this_1.dikou==2){
-                            obj.hongbao.push(this_1.qingdian_hongbao[0]);
                             obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou
+                            var hongbao=this_1.qingdian_hongbao[0]
+                                hongbao.paymentAmount=obj.shiji_dikou;
+                            obj.hongbao.push(hongbao);
                         }else if(this_1.dikou==3){
                         }else if(this_1.dikou==4){
-                            obj.hongbao.push(this_1.jieri_hongbao[0])
                             obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou
+                            var hongbao=this_1.jieri_hongbao[0];
+                                hongbao.paymentAmount=obj.shiji_dikou
+                            obj.hongbao.push(hongbao)
                         }else if(this_1.dikou==5){
                         }else if(this_1.dikou==6){
                             if(dianpu_hongbao>obj.kedikou){
-                                obj.hongbao.push(this_1.dianpu_hongbao[0]);
                                 obj.shiji_dikou=obj.kedikou;
+                                obj.dianpu=obj.kedikou;
+                                var hongbao=this_1.dianpu_hongbao[0]
+                                    hongbao.paymentAmount=obj.shiji_dikou;
+                                obj.hongbao.push(hongbao);
                                 dianpu_hongbao=dianpu_hongbao-obj.kedikou;  //减去已经用掉的金额
                             }else if(dianpu_hongbao<obj.kedikou){
                                 obj.shiji_dikou=obj.kedikou<(dianpu_hongbao+pingtai_kedikou) ? obj.kedikou : (dianpu_hongbao+pingtai_kedikou);
                                 if(dianpu_hongbao>0){
-                                    obj.hongbao.push(this_1.dianpu_hongbao[0]);
+                                    obj.dianpu=dianpu_hongbao
+                                    var hongbao=this_1.dianpu_hongbao[0];
+                                        hongbao.paymentAmount=obj.dianpu
+                                    obj.hongbao.push(hongbao);
                                 }
                                 if(this_1.invitedsutotal && this_1.invitedsutotal.sutotal && this_1.invitedsutotal.sutotal>0 && pingtai_kedikou>0){
-                                    obj.hongbao.push(this_1.invitedsutotal);
+                                    
+                                    var money=0
+                                    if(pingtai_kedikou<obj.kedikou){
+                                        money=pingtai_kedikou
+                                    }else{
+                                        money=obj.kedikou-(obj.dianpu && obj.dianpu>0 ? obj.dianpu : 0);
+                                    }
+                                    obj.pingtai=money
+                                    var hongbao=this_1.invitedsutotal;
+                                        hongbao.paymentAmount=money;
+                                    obj.hongbao.push(hongbao);
                                     pingtai_kedikou=pingtai_kedikou-(obj.kedikou-dianpu_hongbao);
                                 }
                                 dianpu_hongbao=0;   //新人红包已经用完
@@ -349,7 +371,7 @@ export default {
                 console.log(obj.pingtai_dikou);
             }
             obj.zongshu=obj.xingren_dikou+obj.pingtai_dikou;
-            obj.zongshu=Math.floor(obj.zongshu*100)/100
+            obj.zongshu=Math.floor(obj.zongshu*100)/100;
             return obj;
         },
     },
@@ -375,6 +397,10 @@ export default {
             var submitCommodityList=[];
             this.shangPing_list.forEach(item => {
                 item.shopRedEnvelope=(item.shiji_dikou && item.shiji_dikou!=0) ?  item.hongbao : []
+                // shopRedEnvelope[0].paymentAmount=item.dikou
+                if(item.shiji_dikou){
+
+                }
                 var obj={
                         shopCommodity:item,
                         // shopRedEnvelope:item.hongbao,
@@ -391,6 +417,7 @@ export default {
                     amount:this.shiji,                  //金额
                     submitCommodityList:submitCommodityList        ////商品实体类
                 }
+            console.log(sumit_obj);
             openloading(true)
             this.$request('/api-s/shops/createOrders',sumit_obj,'post').then(x=>{
                 console.log('添加订单',x);
@@ -499,14 +526,6 @@ export default {
         
         this.userInfo=JSON.parse(localStorage.userInfo);
         this.$store.commit('shangPing/get_shangping_1',obj);
-        // this.$store.commit('shangPing/get_shangping_2',this.id).then(x=>{
-        //     console.log('_______',x)
-        // }).catch(err=>{
-        //     console.log('_______',err)
-        // })
-        // this.$store.dispatch('shangPing/get_shangping_3',123).then((data) => {
-        //     console.log(11111111,data)
-        // })
             this.get_index=1
             //获取用户卡包信息
             this.get_CardPackge();
@@ -514,12 +533,6 @@ export default {
             this.get_invitedsutotal()
     },
     watch:{
-        // userInfo(){
-        //     if(this.userInfo.id && this.get_index==0){
-        //         //获取用户卡包信息
-        //         this.get_CardPackge();
-        //     }
-        // }
     }
 }
 </script>

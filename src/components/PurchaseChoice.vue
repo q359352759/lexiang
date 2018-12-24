@@ -45,7 +45,7 @@
                     <div class="mui-text-center money_1">￥{{Total_price}}</div>
                     <div class="mui-text-right">
                         <span>实付：</span>
-                        <span class="money_2">￥{{Math.ceil((Total_price-zong_dikou).toFixed(2)*100)/100}}</span>
+                        <span class="money_2">￥{{Math.ceil(Math.round((Total_price-zong_dikou)*100))/100}}</span>
                     </div>
                 </li>                
                 <li>
@@ -307,18 +307,31 @@ export default {
             list.forEach(item=>{
                 if(honghao_kedikou>=0){
                     var shiji_dikou=item.deduction>honghao_kedikou ? honghao_kedikou : item.deduction;
+                        shiji_dikou=Math.round(shiji_dikou*100)/100
                     item.dikou=shiji_dikou;
                     item.hongbao=this.dikou_type;
-                    if(this.dikou_type==6){
+                    item.hongbao_list=[];
+                    if(this.dikou_type==1 && this.shengri_hongbao.length>0){
+                        // item.hongbao_list.push(this.shengri_hongbao[0]);
+                    }else if(this.dikou_type==2 && this.qingdian_hongbao.length>1){
+                        // item.hongbao_list.push(this.qingdian_hongbao[0]);
+                    }else if(this.dikou_type==3){
+                    }else if(this.dikou_type==4 && this.jieri_hongbao.length>1){
+                        // item.hongbao_list.push(this.jieri_hongbao[0]);
+                    }else if(this.dikou_type==6){
                         if(dianpu>=shiji_dikou){   //店铺抵扣还有剩余
-                            item.dianpu=shiji_dikou;
+                            item.dianpu=Math.round(shiji_dikou*100)/100;
+                            // item.hongbao_list.push(this.xinren_hongbao[0])
                         }else if(dianpu<shiji_dikou && dianpu>0){
+                            // item.hongbao_list.push(this.xinren_hongbao[0])
                             //交叉抵扣
-                            item.dianpu=dianpu;
-                            item.pingtai=pingtai>(shiji_dikou-dianpu) ? shiji_dikou-dianpu : pingtai;;
-                            pingtai=pingtai-shiji_dikou;
+                            item.dianpu=Math.fround(dianpu*100)/100;
+                            var money=pingtai>(shiji_dikou-dianpu) ? shiji_dikou-dianpu : pingtai;
+                            item.pingtai=Math.round(money*100)/100;
+                            pingtai=pingtai-(shiji_dikou-dianpu);
                         }else if(pingtai>0){
-                            item.pingtai=pingtai>shiji_dikou ? shiji_dikou : pingtai;
+                            var money=pingtai>shiji_dikou ? shiji_dikou : pingtai;
+                            item.pingtai=Math.round(money*100)/100;
                             pingtai=pingtai-shiji_dikou;
                         }
                         dianpu=dianpu-shiji_dikou
@@ -340,7 +353,7 @@ export default {
                 if(obj){
                     obj.number++;
                     obj.dikou=obj.dikou+item.dikou;
-                    obj.kedikou=obj.kedikou+item.deduction
+                    obj.kedikou=Math.round((obj.kedikou+item.deduction)*100)/100;
                 }else{
                     item.kedikou=item.deduction
                     item.number=1;
@@ -354,8 +367,8 @@ export default {
                 var obj=list_1.find(x=>x.id==item.id);
                 if(obj){
                     obj.number++;
-                    obj.dikou=obj.dikou+(item.dikou ? item.dikou : 0);
-                    obj.kedikou=obj.kedikou+item.deduction
+                    obj.dikou=Math.round((obj.dikou+(item.dikou ? item.dikou : 0))*100)/100;
+                    obj.kedikou=Math.round((obj.kedikou+item.deduction)*100)/100
                 }else{
                     item.kedikou=item.deduction
                     item.number=1;
@@ -380,6 +393,7 @@ export default {
                 money=money+(item.dikou ? item.dikou : 0)
             })
             money=money ? Math.floor(money.toFixed(2)*100)/100 : 0;
+        
             return money
         },
         //计算红包使用数量
