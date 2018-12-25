@@ -175,28 +175,30 @@ export default {
                 if(shangPing_hongbao_number>0){
                     //如果商品红包存在并且没有抵扣完
                     shangPing_hongbao_number=shangPing_hongbao_number-1;
-                    obj.hongbao=[shangPing_hongbao[shangPing_hongbao_number]];
-                        var money=shangPing_hongbao[shangPing_hongbao_number]['redAmount']<obj.kedikou ? shangPing_hongbao[shangPing_hongbao_number]['redAmount'] : obj.kedikou;
-                        obj.shiji_dikou=money;
+                    var hongbao=Object.assign({},shangPing_hongbao[shangPing_hongbao_number])
+                    var money=hongbao.redAmount<obj.kedikou ? hongbao.redAmount : obj.kedikou;
+                    obj.shiji_dikou=money;
+                        hongbao.paymentAmount=obj.shiji_dikou;
+                    obj.hongbao=[hongbao];
                 }else{
                     if(honghao_kedikou>=0){
                         //其他红包抵扣
                         obj.hongbao=[];
                         var kedikou=obj.deduction;  //每个商品可抵扣
                         if(this_1.dikou==1){
-                             obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou;
-                            var hongbao=this_1.shengri_hongbao[0];
+                            obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou;
+                            var hongbao=Object.assign({},this_1.shengri_hongbao[0]);
                                 hongbao.paymentAmount=obj.shiji_dikou
                             obj.hongbao.push(hongbao);
                         }else if(this_1.dikou==2){
                             obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou
-                            var hongbao=this_1.qingdian_hongbao[0]
+                            var hongbao=Object.assign({},this_1.qingdian_hongbao[0])
                                 hongbao.paymentAmount=obj.shiji_dikou;
                             obj.hongbao.push(hongbao);
                         }else if(this_1.dikou==3){
                         }else if(this_1.dikou==4){
                             obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou
-                            var hongbao=this_1.jieri_hongbao[0];
+                            var hongbao=Object.assign({},this_1.jieri_hongbao[0]);
                                 hongbao.paymentAmount=obj.shiji_dikou
                             obj.hongbao.push(hongbao)
                         }else if(this_1.dikou==5){
@@ -204,7 +206,7 @@ export default {
                             if(dianpu_hongbao>obj.kedikou){
                                 obj.shiji_dikou=obj.kedikou;
                                 obj.dianpu=obj.kedikou;
-                                var hongbao=this_1.dianpu_hongbao[0]
+                                var hongbao= Object.assign({},this_1.dianpu_hongbao[0])
                                     hongbao.paymentAmount=obj.shiji_dikou;
                                 obj.hongbao.push(hongbao);
                                 dianpu_hongbao=dianpu_hongbao-obj.kedikou;  //减去已经用掉的金额
@@ -212,12 +214,11 @@ export default {
                                 obj.shiji_dikou=obj.kedikou<(dianpu_hongbao+pingtai_kedikou) ? obj.kedikou : (dianpu_hongbao+pingtai_kedikou);
                                 if(dianpu_hongbao>0){
                                     obj.dianpu=dianpu_hongbao
-                                    var hongbao=this_1.dianpu_hongbao[0];
+                                    var hongbao=Object.assign({},this_1.dianpu_hongbao[0]);
                                         hongbao.paymentAmount=obj.dianpu
                                     obj.hongbao.push(hongbao);
                                 }
                                 if(this_1.invitedsutotal && this_1.invitedsutotal.sutotal && this_1.invitedsutotal.sutotal>0 && pingtai_kedikou>0){
-                                    
                                     var money=0
                                     if(pingtai_kedikou<obj.kedikou){
                                         money=pingtai_kedikou
@@ -225,7 +226,7 @@ export default {
                                         money=obj.kedikou-(obj.dianpu && obj.dianpu>0 ? obj.dianpu : 0);
                                     }
                                     obj.pingtai=money
-                                    var hongbao=this_1.invitedsutotal;
+                                    var hongbao=Object.assign({},this_1.invitedsutotal);
                                         hongbao.paymentAmount=money;
                                     obj.hongbao.push(hongbao);
                                     pingtai_kedikou=pingtai_kedikou-(obj.kedikou-dianpu_hongbao);
@@ -396,6 +397,7 @@ export default {
             var this_1=this;
             var submitCommodityList=[];
             this.shangPing_list.forEach(item => {
+                
                 item.shopRedEnvelope=(item.shiji_dikou && item.shiji_dikou!=0) ?  item.hongbao : []
                 // shopRedEnvelope[0].paymentAmount=item.dikou
                 if(item.shiji_dikou){
@@ -417,7 +419,9 @@ export default {
                     amount:this.shiji,                  //金额
                     submitCommodityList:submitCommodityList        ////商品实体类
                 }
-            console.log(sumit_obj);
+            console.log(sumit_obj)
+            console.log(JSON.stringify(sumit_obj));
+            // return;
             openloading(true)
             this.$request('/api-s/shops/createOrders',sumit_obj,'post').then(x=>{
                 console.log('添加订单',x);

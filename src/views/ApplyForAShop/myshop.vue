@@ -2,7 +2,7 @@
     <div id="myshop">
         <header class="mui-bar mui-bar-nav">
             <!-- <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a> -->
-            <a @tap="back_1()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <a @tap="$router.push('/my')" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">{{myshop.name}}</h1>
             <span class="erweima mui-pull-right " @tap="qrcode_1()"><i class="icon iconfont icon-31erweima"></i></span>
         </header>
@@ -18,47 +18,47 @@
                     <h3>联系电话：{{myshop.phone}}</h3>
                 </li>
                 <li>
-                    <i class="icon iconfont icon-kefunv"></i>
+                    <i v-if="myshop.referrerPhone" @click="set_referrer_show(true)" class="icon iconfont icon-kefunv"></i>
                 </li>
             </ul>
 
             <ul class="box_2">
                 <li>
-                    <div @tap="shopVip()"><i class="icon iconfont icon-huiyuan1"></i></div>
+                    <div @click="$router.push('/myshop/Member/MemberList')"><i class="icon iconfont icon-huiyuan1"></i></div>
                     <div>会员</div>
                 </li>
                 <li>
-                    <div @click="commodity()"><i class="icon iconfont icon-shangping"></i></div>
-                    <div @click="commodity()">商品</div>
+                    <div @click="$router.push('/commodity')"><i class="icon iconfont icon-shangping"></i></div>
+                    <div>商品</div>
                 </li>
                 <li>
-                    <div @click="fenxiao()"><i class="icon iconfont icon-distribute"></i></div>
-                    <div @click="fenxiao()">分销</div>
+                    <div @click="$router.push('/myshop/distribution/ApplicationDistribution')"><i class="icon iconfont icon-distribute"></i></div>
+                    <div>分销</div>
                 </li>
                 <li>
-                    <div @click="xiaoshou()"><i class="icon iconfont icon-leijixiaoshoue"></i></div>
-                    <div @click="xiaoshou()">销售</div>
+                    <div @click="$router.push('/myshop/xiaoshou/xiaoshou')"><i class="icon iconfont icon-leijixiaoshoue"></i></div>
+                    <div>销售</div>
                 </li>
                 <li>
-                    <div @tap="Marketing()"><i class="icon iconfont icon-laba2"></i></div>
-                    <div @tap="Marketing()">营销</div>
+                    <div @click="$router.push('/Marketing')"><i class="icon iconfont icon-laba2"></i></div>
+                    <div>营销</div>
                 </li>
             </ul>
             <ul class="box_2">
                 <li>
-                    <div  @tap="Notice()"><i class="icon iconfont icon-laba"></i></div>
+                    <div  @click="$router.push('/Notice')"><i class="icon iconfont icon-laba"></i></div>
                     <div>公告</div>
                 </li>
                 <li>
-                    <div @tap="introduction()"><i class="icon iconfont icon-jianjie"></i></div>
+                    <div @click="$router.push('/introduction')"><i class="icon iconfont icon-jianjie"></i></div>
                     <div>简介</div>
                 </li>
                 <li>
-                    <div @tap="albumManagement()"><i class="icon iconfont icon-xiangce"></i></div>
+                    <div @tap="$router.push('/albumManagement')"><i class="icon iconfont icon-xiangce"></i></div>
                     <div>相册</div>
                 </li>
                 <li>
-                    <div @tap="commentList()"><i class="icon iconfont icon-pinglun"></i></div>
+                    <div @click="$router.push('/myshop/comment/commentList')"><i class="icon iconfont icon-pinglun"></i></div>
                     <div>评论</div>
                 </li>
                 <li>
@@ -104,14 +104,14 @@
                             </div>
                         </a>
                     </li>
-                    <li class="mui-table-view-cell" @click="tixian()">
+                    <li class="mui-table-view-cell" @click="$router.push('/myshop/WithdrawMoney')">
                         <a class="mui-navigate-right">
                             <div class="cont_1">
                                 <div class="mui-pull-right tixian">
                                 提现
                                 </div>
                                 <div>
-                                    可提现金额：0元
+                                    可提现金额：{{ketixian}}元
                                 </div>
                             </div>
                         </a>
@@ -162,7 +162,11 @@
                     <img :src="qrcode" alt="" srcset="">
                 </div>
             </div>
+            
+
         </div>
+
+        <tuijianren v-if="myshop.referrerPhone" v-show="referrer_show"/>
     </div>
 </template>
 
@@ -172,66 +176,54 @@ import html2canvas from 'html2canvas'
 import QRCode from 'qrcodejs2';
 import {openloading} from '@/assets/js/currency.js';
 import $ from "jquery"
+import { mapActions, mapGetters } from 'vuex';
+import tuijianren from '@/components/myshop/tuijianren.vue'
 export default {
     name:'',
+    components:{
+        tuijianren
+    },
     data(){
         return{
             qrcode:null,
             qrcode_show:false,
             erweima_base64:'',
-            xingren_hongbao:{}
+            xingren_hongbao:{},
         }
     },
     computed:{
-        myshop(){
-            return this.$store.state.myshop
+        // myshop(){
+        //     return this.$store.state.myshop
+        // },
+        ...mapGetters({
+            myshop:'get_myshop',
+            zichan:'myshops/zichan/g_zichan',
+            referrer_show:'myshops/referrer_show',
+            referrer:'myshops/referrer'
+        }),
+        ketixian(){
+            if(this.zichan.balance){
+                return Math.floor(this.zichan.balance*100)/100
+            }else{
+                return 0;
+            }
         }
     },
     methods: {
-        //跳转销售
-        xiaoshou(){
-            this.$router.push('/myshop/xiaoshou/xiaoshou');
-        },
-        //提现
-        tixian(){
-            this.$router.push('/myshop/WithdrawMoney');
-        },
-        //跳转店铺会员
-        shopVip(){
-            this.$router.push('/myshop/Member/MemberList');
-        },
-        //跳转会员评论
-        commentList(){
-            this.$router.push('/myshop/comment/commentList')
-        },
-        //跳转分销
-        fenxiao(){
-            this.$router.push('/myshop/distribution/ApplicationDistribution')
-        },
-        //跳转店铺简介
-        introduction(){
-            this.$router.push('/introduction');
-        },
-        //跳转
-        Notice(){
-            this.$router.push('/Notice')
-        },
-        //跳转营销
-        Marketing(){
-            this.$router.push('/Marketing')
-        },
-        //
-        back_1(){
-            this.$router.push('/my')
-        },
+        ...mapActions({
+            getMyshop:'getMyshop',
+            set_zichan_shopid:'myshops/zichan/set_shopid',
+            findshopTurnoverByShopid:'myshops/zichan/findshopTurnoverByShopid',
+            set_referrer_show:'myshops/set_referrer_show'       //推荐人显示框
+        }),
         close_1(){
             this.qrcode_show=false;
         },
         //动态设置字体大小
         set_font_size(e,size){
-            console.log(e.clientWidth);
-            console.log(e.offsetWidth)
-            console.log(e.scrollWidth)
+            // console.log(e.clientWidth);
+            // console.log(e.offsetWidth)
+            // console.log(e.scrollWidth)
             if(e.clientWidth<e.scrollWidth){
                 e.style['font-size']=parseInt(e.clientWidth/e.scrollWidth*size)+'px';
             }
@@ -316,18 +308,10 @@ export default {
                 openloading(false);
             },{useCORS: true});
         },
-        //跳转相册管理
-        albumManagement(){
-            this.$router.push('/albumManagement');
-        },
         //跳转店铺详情
         ShopDetails(){
             this.$store.state.in_index=0
             this.$router.push('/ShopDetails')
-        },
-        //跳转商品管理
-        commodity(){
-            this.$router.push('/commodity');
         },
         //查询店铺新人
         get_hongbao(){
@@ -348,7 +332,17 @@ export default {
             }).catch(err=>{
                 console.log(err)
             })
-        }
+        },
+        async shopinit(){
+            openloading(true)
+            await this.getMyshop();
+            this.get_hongbao();
+            this.set_zichan_shopid(this.myshop.shopid);
+            this.findshopTurnoverByShopid().then(x=>{
+                openloading(false);
+            });
+        },
+
     },
     beforeCreate: function() {
         // console.group('------beforeCreate创建前状态------');
@@ -365,9 +359,15 @@ export default {
         //     console.log(typeof a[0])
         //根据店铺查询店铺新人红包
         if(this.myshop && this.myshop.shopid){
-            this.get_hongbao()
+            openloading(true)
+            this.get_hongbao();
+            this.set_zichan_shopid(this.myshop.shopid);
+            this.findshopTurnoverByShopid().then(x=>{
+                openloading(false);
+            });
         }else{
-            this.$store.commit('setMyshop');
+            // this.$store.commit('setMyshop');
+            this.shopinit();
         }
     },
     activated(){
@@ -388,17 +388,7 @@ export default {
         // console.group('destroyed 销毁完成状态===============》');
     },
     watch: {
-        myshop(){
-            if(this.myshop && this.myshop.shopid){
-                this.get_hongbao()
-            }
-        }
-        // img_list() {
-        //     this.$nextTick(function() {
-        //         console.log("数据渲染完成");
-        //         this.getswiper();
-        //     });
-        // }
+        
     }
 }
 </script>

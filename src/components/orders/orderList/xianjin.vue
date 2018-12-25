@@ -41,7 +41,11 @@ export default {
         
     },
     methods: {
-        
+        //支付
+        zhifu(){       
+            console.log(123)     
+            this.$router.push({name:'ordersOrder',query:{ordreId:this.dingdan.id},params:{zhifu:1}});
+        }
     },
     mounted() {
         

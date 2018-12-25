@@ -312,30 +312,35 @@ export default {
                         }
                     submitCommodity.push(obj) 
                 })
+                var a=1
                 //其他红包或者没有抵扣的商品
                 this.qita_dikou.forEach(item=>{
-                    console.log(item.dikou)
+                    
                     if(item.dikou>0.8){
                         console.log(item);
                     }
                     var shopRedEnvelope=[];
-                    if(item.hongbao==1){
-                        shopRedEnvelope[0]=this.shengri_hongbao.length>0 ? this.shengri_hongbao[0] : '';
-                        shopRedEnvelope[0].paymentAmount=item.dikou;
-                    }else if(item.hongbao==2){
-                        shopRedEnvelope[0]=this.qingdian_hongbao.length>0 ? this.qingdian_hongbao[0] : '';
-                        shopRedEnvelope[0].paymentAmount=item.dikou;
-                    }else if(item.hongbao==4){
-                        shopRedEnvelope[0]=this.jieri_hongbao.length>0 ? this.jieri_hongbao[0] : '';
-                        shopRedEnvelope[0].paymentAmount=item.dikou
+                    if(item.hongbao==1 && this.shengri_hongbao.length>0 && item.dikou){
+                        var hongbao=Object.assign({},this.shengri_hongbao[0])
+                            hongbao.paymentAmount=item.dikou;
+                            shopRedEnvelope.push(hongbao)
+                    }else if(item.hongbao==2 && this.qingdian_hongbao.length>0 && item.dikou){
+                        var hongbao=Object.assign({}, this.qingdian_hongbao[0]);
+                            hongbao.paymentAmount=item.dikou;
+                            hongbao.aaaaaa=a;
+                            shopRedEnvelope.push(hongbao);
+                    }else if(item.hongbao==4 && this.jieri_hongbao.length>0 && item.dikou){
+                        var hongbao=Object.assign({},this.jieri_hongbao[0]);
+                            hongbao.paymentAmount=item.dikou;
+                            shopRedEnvelope.push(hongbao)
                     }else if(item.hongbao==6){
                         if(item.dianpu && this.xinren_hongbao.length>0){    //店铺红包
-                            let xinren_hongbao=this.xinren_hongbao[0]
+                            var xinren_hongbao=Object.assign({},this.xinren_hongbao[0]);
                                 xinren_hongbao.paymentAmount=item.dianpu;
                             shopRedEnvelope.push(xinren_hongbao)
                         }
                         if(item.pingtai){
-                            let pingtai=this.invitedsutotal;
+                            var pingtai=Object.assign({},this.invitedsutotal);
                                 pingtai.paymentAmount=item.pingtai;
                             shopRedEnvelope.push(pingtai);
                         }
@@ -357,7 +362,8 @@ export default {
                         amount:amount,           //金额
                         submitCommodityList:submitCommodity  //商品实体类       
                     };
-                console.log(JSON.stringify(obj));
+                // console.log(JSON.stringify(obj));
+                // return
                 openloading(true)
                 this.$request('/api-s/shops/createOrders',obj,'post').then(x=>{
                     console.log('添加订单',x);
@@ -406,7 +412,7 @@ export default {
             this.Total_price=this.$refs.child.Total_price
             this.shangpin_dikou=this.$refs.child.shangpin_dikou;
             this.qita_dikou=this.$refs.child.qita_dikou;
-            
+            console.log(JSON.stringify(this.qita_dikou))
             //获取其他红包抵扣类型
             this.qita=this.$refs.child.dikou_type;
             //判断是否使用了店铺+平台  1表示只用了店铺 2表示店铺+平台

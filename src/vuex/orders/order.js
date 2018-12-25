@@ -58,11 +58,7 @@ export default {
                 new_list.forEach(item=>{
                     item.filter_hongbao=[];
                     item.hongbao_list.forEach(hongbao=>{
-                        if(hongbao.envelopeType){
-                            var obj=item.filter_hongbao.find(x=>x.envelopeType==hongbao.envelopeType);
-                        }else{
-                            var obj=item.filter_hongbao.find(x=>!x.envelopeType)
-                        }
+                        var obj=item.filter_hongbao.find(x=>x.envelopeType==hongbao.envelopeType);
                         if(obj){
                             obj.money=obj.money+hongbao.paymentAmount;
                             obj.money=Math.round(obj.money*100)/100

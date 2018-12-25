@@ -20,7 +20,7 @@
                         <div>分销员：<span class="name">无</span></div>
                     </li>
                     <li>
-                        <div>金额：￥{{obj.paymentAmount}}</div>
+                        <div>金额：￥{{obj.paymentAmount+obj.deduction}}</div>
                         <div>分佣：￥0</div>
                     </li>
                     <li>
@@ -38,7 +38,7 @@
                         <div class="text_1">
                             <div class="header_1">
                                 <div class="mui-pull-right">x{{item.number}}</div>
-                                <div></div>
+                                <div>{{item.name}}</div>
                             </div>
                             <div class="money">￥{{item.sellingPrice}}</div>
                         </div>

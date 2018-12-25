@@ -8,13 +8,13 @@
             
 
             <div class="box_6">
-                <ul class="Collect_Money" @click="Account()">
+                <ul class="Collect_Money" @click="$router.push('/Account')">
                     <li>收款账户：{{Account_obj ? Account_obj.account : ''}}</li>
                     <li><i class="mui-icon mui-icon-arrowright"></i></li>
                 </ul>
                 <ul class="ketixian">
                     <li class="mui-pull-right quanbu">全部提取</li>
-                    <li>可提现金额：￥0</li>
+                    <li>可提现金额：￥{{ketixian}}</li>
                 </ul>
                 <ul class="money">
                     <li>提现金额： </li>
@@ -22,7 +22,7 @@
                         <span>
                             <span>￥</span>
                             <!-- {{agentUser.sutotal}} -->
-                            <input type="text" v-model="amount" @input="amount_change()" />
+                            <input type="text" :value="ketixian"  @input="amount_change()" readonly />
                         </span>
                         <span>无手续费</span>
                     </li>
@@ -32,9 +32,9 @@
                         <i class="icon iconfont icon-xuanze"></i>
                     </div>
                     <span @click="change_radio_2()">我也阅读并同意</span>
-                    <span @click="WithdrawalAgreement()">《提现服务协议》</span>
+                    <span @click="$router.push('/WithdrawalAgreement')">《提现服务协议》</span>
                     <span>
-                        <span @click="go('/EmbodyRecord?type=3')">
+                        <span @click="$router.push('/EmbodyRecord?type=3')">
                             提现记录
                         </span>
                     </span>
@@ -47,17 +47,39 @@
 </template>
 
 <script>
+
+import { mapGetters,mapActions } from 'vuex';
+import {openloading} from '@/assets/js/currency.js';
+
 export default {
     name:'',
     data(){
         return{
             Account_obj:'',
             amount:'',
-            radio_type_2:false,
+            radio_type_2:true,
             userInfo:''
         }
     },
+    computed: {
+        ...mapGetters({
+            myshop:'get_myshop',
+            zichan:'myshops/zichan/g_zichan'
+        }),
+        ketixian(){
+            if(this.zichan.balance){
+                return Math.floor(this.zichan.balance*100)/100
+            }else{
+                return 0;
+            }
+        }
+    },
     methods:{
+        ...mapActions({
+            getMyshop:'getMyshop',
+            set_zichan_shopid:'myshops/zichan/set_shopid',
+            findshopTurnoverByShopid:'myshops/zichan/findshopTurnoverByShopid',
+        }),
         //开发中
         change_payment(){
             mui.toast("功能开发中。", { duration: 2000, type: "div" });
@@ -73,34 +95,38 @@ export default {
         change_radio_2(){
             this.radio_type_2=!this.radio_type_2;
         },
-        //跳转绑定账号
-        Account(){
-            this.$router.push("/Account");
-        },
-        WithdrawalAgreement(){
-            this.$router.push('/WithdrawalAgreement');
-        },
-        go(x){
-            this.$router.push(x)
-        },
         //获取支付宝账号
         findAccount() {
-            this.$axios({
-                method: "get",
-                url: "/api-u/users/findAccount?userid=" + this.userInfo.username
-            }).then(x => {
-                console.log("获取支付宝账号", x);
+            this.$axios.get("/api-u/users/findAccount?userid=" + this.userInfo.username).then(x=>{
                 if (x.data.code==200) {
                     this.Account_obj = x.data.data;
                 }
-            }).catch(error => {
+            }).catch(err=>{
                 console.log(error);
-            });
+            })
         },
+        async shopinit(){
+            openloading(true)
+            await this.getMyshop();
+            this.set_zichan_shopid(this.myshop.shopid);
+            this.findshopTurnoverByShopid().then(x=>{
+                openloading(false);
+            });
+        }
     },
     mounted() {
         this.userInfo=JSON.parse(localStorage.userInfo);
+        //获取支付宝账号
         this.findAccount();
+        if(this.myshop && this.myshop.shopid){
+            openloading(true)
+            this.set_zichan_shopid(this.myshop.shopid);
+            this.findshopTurnoverByShopid().then(x=>{
+                openloading(false)
+            });
+        }else{
+            this.shopinit();
+        }
     },
 }
 </script>

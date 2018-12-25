@@ -516,7 +516,8 @@ export default {
                 .then(x => {
                     console.log(x);
                     if (x.data.code == 200) {
-                        this.getagentUser();
+                        // this.getagentUser();
+                        this.$store.dispatch("actions_agentUser")
                         mui.alert(x.data.msg, "提示", "好的", function() {}, "div");
                     } else if ( x.data.code == "PAYEE_USER_INFO_ERROR" || x.data.code == "PAYEE_ACC_OCUPIED" ) {
                         // mui.toast(x.data.msg, { duration: 2000, type: "div" });
@@ -624,24 +625,24 @@ export default {
             this.$router.push(x);
         },
         //获取代理人信息
-        getagentUser() {
-            this.$axios({
-                method: "get",
-                url: "/api-u/agentUser/me?userid=" + this.userInfo.username
-            }).then(x => {
-                if (x.data.code != 200) {
-                    // this.agentUser = false;
-                    this.$router.push("/ApplicationAgent");
-                } else {
-                    this.agentUser = x.data.data;
-                    this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
-                    this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
-                }
-            }).catch(error => {
-                this.agentUser = false;
-                this.$router.push("/ApplicationAgent");
-            });
-        },
+        // getagentUser() {
+        //     this.$axios({
+        //         method: "get",
+        //         url: "/api-u/agentUser/me?userid=" + this.userInfo.username
+        //     }).then(x => {
+        //         if (x.data.code != 200) {
+        //             // this.agentUser = false;
+        //             this.$router.push("/agent/ApplicationNotes");
+        //         } else {
+        //             this.agentUser = x.data.data;
+        //             this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
+        //             this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
+        //         }
+        //     }).catch(error => {
+        //         this.agentUser = false;
+        //         this.$router.push("/agent/ApplicationNotes");
+        //     });
+        // },
         //查看下级带来的收益
         subsidies() {
             this.butie.loading = true;
@@ -687,7 +688,22 @@ export default {
         } catch (error) {}
         
         //获取代理人信息
-        this.getagentUser();
+        // this.getagentUser();
+        //获取代理人信息
+        this.$store.dispatch("actions_agentUser").then(x=>{
+            console.log('获取代理人信息',x)
+            if (x.data.code != 200) {
+                // this.agentUser = false;
+                this.$router.push("/agent/ApplicationNotes");
+            } else {
+                this.agentUser = x.data.data;
+                this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
+                this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
+            }
+        }).catch(err=>{
+            // this.agentUser = false;
+            this.$router.push("/agent/ApplicationNotes");
+        });
         //查看下级带来的收益
         this.subsidies();
         //查询支付宝账号

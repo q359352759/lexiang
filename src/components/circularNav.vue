@@ -86,7 +86,9 @@ export default {
             this.mask_show = false;
             console.log(this.$store.state.agentUser);
             if (!this.$store.state.agentUser || this.$store.state.agentUser == null || this.$store.state.agentUser == "") {
-                this.$router.push("/ApplicationAgent"); //跳转注册代理人页面
+                // this.$router.push("/ApplicationAgent"); //跳转注册代理人页面
+                this.$router.push("/agent/ApplicationNotes"); //跳转注册代理人页面
+                
             } else {
                 this.$router.push("/Agent"); //跳转代理人
             }

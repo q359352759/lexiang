@@ -1,8 +1,8 @@
 <template>
     <div id="ApplicationAgent">
         <header class="mui-bar mui-bar-nav">
-            <a @click="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">申请代理人</h1>
+            <a class="mui-icon mui-action-back mui-icon-left-nav mui-pull-left"></a>
+            <h1 class="mui-title">申请成为业务代理人</h1>
         </header>
 
         <div class="mui-content  mui-fullscreen">
@@ -15,12 +15,12 @@
                                 <input type="text" v-model="realName" maxlength="10" placeholder="您的真实名字" required>
                             </td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <td>推荐人：</td>
                             <td>
                                 <input type="text" v-model="referrerPhone" pattern="^1\d{10}$" placeholder="推荐人电话号码">
                             </td>
-                        </tr>
+                        </tr> -->
                         <tr>
                             <td>实名认证：</td>
                             <td @click="renzheng()">
@@ -46,18 +46,23 @@
                         </tr>
                         <tr>
                             <td>费&nbsp;&nbsp;用：</td>
-                            <td class="money">
-                                <span>￥88</span>
-                                <span>(业务代理费)</span>
-                                <span @click="AgencyCost()" class="mui-pull-right"><i class="icon iconfont icon-help"></i></span>
+                            <td class="money" style="padding:0px;">
+                                <div class="money_1">
+                                    <span class="text_1">￥198</span>
+                                    <s class="text_2">258</s>
+                                    <span class="text_3">（广告365条，时长365天）</span>
+                                </div>
+                                <!-- <span @click="$router.push('/AgencyCost')" class="mui-pull-right"><i class="icon iconfont icon-help"></i></span> -->
                             </td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div class="box_2">
-                    <img src="image/libao.png" alt="">
-                    <span>活动：前1000名代理人免费赠送价值198元的广告机套餐！</span>
+                    <!-- <img src="image/libao.png" alt="">
+                    <span>活动：前1000名代理人免费赠送价值198元的广告机套餐！</span> -->
+                    　　说明：为证明你具备业务代理人的业务拓展能力及资格，平台需要你个人承销一个广告机套餐，此套餐需要销售给商家。
+                    　　支付成功后系统会给你一个激活码，已激活时间为准。
                 </div>
                 <ul class="box_3">
                     <li @click="change_radio_1(1)">
@@ -67,18 +72,6 @@
                         <i class="icon iconfont icon-weixin weixin"></i>
                         <span>微信支付</span>
                     </li>
-                    <!-- <li @click="change_radio_1(2)">
-                        <div class="radio_1" :class="{'active':radio_type_1==2}">
-                            <i class="icon iconfont icon-xuanze"></i>
-                        </div>
-                        <i class="icon iconfont icon-zhifubao zhifubao"></i>
-                        <span>支付宝</span>
-                    </li> -->
-                    <!-- <li class="haochu">
-                        <span @click="AgentAdvantage()">
-                            成为代理人的好处？
-                        </span>
-                    </li> -->
                 </ul>
 
                 <div class="box_4">
@@ -86,22 +79,15 @@
                         <i class="icon iconfont icon-xuanze"></i>
                     </div>
                     <span @click="change_radio_2()">我也阅读并同意</span>
-                    <span @click="BusinessAgreement()">《业务代理合作协议》</span>
+                    <span @click="$router.push('/BusinessAgreement?name='+realName)">《业务代理合作协议》</span>
                 </div>
 
                 <div class="btn_1">
                     <btn type="submit"/>
                 </div>
-
+                <!-- <button type="button" @click="add_angentActivation()">添加代理人激活码测试</button>-->
             </form>
-            <!-- <button @click="addguanggaoji()">添加广告测试</button> -->
-            <!-- <input type="text" v-model="mo"> -->
-            <!-- <button @click="zhifu()">支付测试1</button>
-            <button @click="zhifu1()">支付测试2</button>
-            <button @click="zhifu2()">支付测试3</button>
-            <button @click="fenxiang()">分享测试</button>
-            <button @click="fenxiang1()">分享测试1</button> -->
-            <!-- <button @click="ceshi()">检测</button> -->
+
         </div>
         <div class="msg" v-show="loading">
             <span>数据获取中</span>
@@ -112,6 +98,7 @@
 <script>
 import {openloading } from "@/assets/js/currency";
 import btn from '@/components/button.vue'
+import { mapGetters, mapActions } from 'vuex';
 export default {
     name: "ApplicationAgent",
     components: {
@@ -136,15 +123,35 @@ export default {
     computed: {
         weixinobj() {
             return this.$store.state.weixinobj;
-        }
-        // userInfo(){
-        //     return this.$store.state.userInfo;
-        // }
+        },
     },
     methods: {
-        //跳转代理费用
-        AgencyCost(){
-            this.$router.push('/AgencyCost')
+        ...mapActions({
+            actions_agentUser:'actions_agentUser',  //获取代理商信息
+        }),
+        //添加代理人激活码测试
+        add_angentActivation(){
+            var tishi="恭喜您已成为代理人，成功获得价值198元的广告机套餐，在我的/广告套餐右上角点击激活。";
+            var tishi1="恭喜您已成为代理人，广告机未成功获取，请联系客服。"
+            var name=this.userInfo.nickname;
+            var obj={
+                    username:this.userInfo.username,
+                    name:this.realName,
+                    remarks:'代理人注册自动赠送'
+                }
+            this.$axios.post('http://www.lxad.vip/api/add_angentActivation.php',this.$qs.stringify(obj)).then(x=>{
+                console.log(x);
+                mui.alert(x.data==true ? tishi : tishi1, "提示", ()=>{
+                    this.$store.commit("setagentUser"); //更新代理人信息
+                    this.$router.push("/Agent");
+                },"div");
+            }).catch(err=>{
+                mui.alert(tishi1, "提示", ()=>{
+                    this.$store.commit("setagentUser"); //更新代理人信息
+                    this.$router.push("/Agent");
+                },"div");
+                console.log(err);
+            })
         },
         //添加广告机
         addguanggaoji(){
@@ -205,14 +212,6 @@ export default {
                 this.$router.push("/AlreadyRealName");
             }
         },
-        //跳转成为合伙人的好处
-        AgentAdvantage() {
-            this.$router.push("/AgentAdvantage");
-        },
-        //跳转业务代理协议
-        BusinessAgreement() {
-            this.$router.push("/BusinessAgreement?name=名字");
-        },
         //选择支付类型
         change_radio_1(x) {
             this.radio_type_1 = x;
@@ -225,7 +224,6 @@ export default {
             // console.log(this.cityPicker3)
             var this_1 = this;
             this.cityPicker3.show(function(items) {
-                console.log(items);
                 this_1.city = items;
                 //return false;
             });
@@ -245,7 +243,7 @@ export default {
                 url: "/api-u/agentUser/selectOne?phone=" + this.referrerPhone
             }).then(x => {
                 if(x.data.code==200 && x.data.data!= null && x.data.data!= "null"){
-                    this.add();
+                    this.add(); //添加
                 }else{
                     mui.toast("没有此推荐人。", { duration: 2000, type: "div" });
                 }
@@ -255,7 +253,6 @@ export default {
         },
         //注册
         add() {
-            // alert(this.weixinobj.openid)
             var this_1 = this;
             //先支付
             this.$axios({
@@ -265,36 +262,30 @@ export default {
                 data: this.$qs.stringify({
                     openid: this.weixinobj.openid
                 })
-            })
-                .then(x => {
-                    // this_1.registered();      //正式环境放在支付成功后面
-                    console.log(x);
-                    var data = x.data;
-                    wx.chooseWXPay({
-                        timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
-                        nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
-                        package: data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
-                        signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
-                        paySign: data.paysign, // 支付签名
-                        success: function(res) {
-                            // 支付成功后的回调函数
-                            console.log(res);
-                            this_1.registered();
-                        }
-                    });
-                })
-                .catch(err => {
-                    console.log(err);
+            }).then(x => {
+                // this.addguanggaoji();     //添加广告机
+                // this_1.registered();      //正式环境放在支付成功后面
+                console.log(x);
+                var data = x.data;
+                wx.chooseWXPay({
+                    timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                    nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
+                    package: data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                    signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                    paySign: data.paysign, // 支付签名
+                    success: function(res) {
+                        // 支付成功后的回调函数
+                        console.log(res);
+                        this_1.registered();
+                    }
                 });
+            }).catch(err => {
+                console.log(err);
+            });
         },
         //添加
         registered() {
             var this_1 = this;
-            if (!this.referrerPhone) {
-                mui.toast("请填写推荐人号码", { duration: 2000, type: "div" });
-                return;
-            }
-
             var areaCode = "";
             if (this.city[2].value) {
                 areaCode = this.city[2].value;
@@ -304,12 +295,12 @@ export default {
                 areaCode = this.city[0].value;
             }
             var obj = {
-                referrerPhone: this.referrerPhone, //推荐人电话号码
-                areaCode: areaCode, //区域code
-                realName: this.realName, //真实姓名
-                userid: this.userInfo.username,
-                phone: this.userInfo.phone
-            };
+                    referrerPhone: this.referrerPhone, //推荐人电话号码
+                    areaCode: areaCode, //区域code
+                    realName: this.realName, //真实姓名
+                    userid: this.userInfo.username,
+                    phone: this.userInfo.phone
+                };
             openloading(true)
             this.$axios({
                 method: "post",
@@ -318,19 +309,15 @@ export default {
                 // data:this.$qs.stringify(obj)
                 data: obj
             }).then(x => {
-                console.log(x);
                 if (x.data.error) {
-                    mui.alert(x.data.message ? x.data.message : x.data.error, "提示",'我知道了', function() {},"div");
+                    mui.alert(x.data.message ? x.data.message : x.data.msg, "提示",'我知道了', function() {},"div");
                 } else {
-                    this_1.addguanggaoji()
+                    // this.addguanggaoji();
+                    this.add_angentActivation()
                 }
             }).catch(err => {
-                console.log(err);
-                mui.toast("系统错误请稍后再试！", {
-                    duration: 2000,
-                    type: "div"
-                });
-                 openloading(false)
+                mui.toast("系统错误请稍后再试！", {duration: 2000,type: "div"});
+                openloading(false)
             });
         }
     },
@@ -348,36 +335,36 @@ export default {
             this.userInfo = JSON.parse(localStorage.userInfo);
         }
 
+        this.referrerPhone=this.$route.query.phone;
+        if(!this.referrerPhone){
+            this.$router.push('/agent/ApplicationNotes'); 
+        }
+
         //获取代理人信息
-        this.$axios({
-            method: "get",
-            url: "/api-u/agentUser/me?userid=" + this.userInfo.username
-        }).then(x => {
-                console.log("获取用户代理人信息", x);
-                if (x.data.code == 200) {
-                    this.$router.push("/Agent");
-                } else {
-                    this.loading = false;
-                }
-        }).catch(error => {
-                console.log("获取代理人信息失败");
+        this.actions_agentUser().then(x=>{
+            console.log("获取用户代理人信息", x);
+            if (x.data.code == 200) {
+                this.$router.push("/Agent");
+            } else {
                 this.loading = false;
-        });
+            }
+        }).catch(err=>{
+            this.loading = false;
+        })
+        
 
         //获取认证信息
         this.$axios({
             method: "get",
-            url:
-                "/api-u/certification/findByUserid?userid=" +
-                this.userInfo.username
+            url:"/api-u/certification/findByUserid?userid=" + this.userInfo.username
         }).then(x => {
-                console.log("获取认证信息", x);
-                if (x.data != "") {
-                    this.Authentication = x.data;
-                    this.realName = x.data.name;
-                }
+            console.log("获取认证信息", x);
+            if (x.data != "") {
+                this.Authentication = x.data;
+                this.realName = x.data.name;
+            }
         }).catch(error => {
-                console.log("获取认证信息错误", error);
+            console.log("获取认证信息错误", error);
         });
 
         //获取区域
@@ -387,36 +374,29 @@ export default {
             params: {
                 start: 0,
                 length: 30000
-                // 'arealevel':1,
-                // 'id':110000
             }
-        })
-            .then(x => {
-                function convert(arr, id) {
-                    // return 'sdfsad';
-                    var res = [];
-                    for (var i = 0; i < arr.length; i++) {
-                        arr[i].value = arr[i].id;
-                        arr[i].text = arr[i].name;
-
-                        if (arr[i].parentid == id) {
-                            res.push(arr[i]);
-                            // var func = eval(arguments.callee.name);
-                            arr[i].children = convert(arr, arr[i].id);
-                        }
+        }).then(x => {
+            function convert(arr, id) {
+                // return 'sdfsad';
+                var res = [];
+                for (var i = 0; i < arr.length; i++) {
+                    arr[i].value = arr[i].id;
+                    arr[i].text = arr[i].name;
+                    if (arr[i].parentid == id) {
+                        res.push(arr[i]);
+                        // var func = eval(arguments.callee.name);
+                        arr[i].children = convert(arr, arr[i].id);
                     }
-                    return res;
                 }
-                var cityData3 = convert(x.data.data, null);
-                this.cityPicker3 = new mui.PopPicker({
-                    layer: 3
-                });
-                this.cityPicker3.setData(cityData3);
-
-                console.log("递归后的数据", cityData3);
-            })
-            .catch(err => {
+                return res;
+            }
+            var cityData3 = convert(x.data.data, null);
+            this.cityPicker3 = new mui.PopPicker({
+                layer: 3
             });
+            this.cityPicker3.setData(cityData3);
+            // console.log("递归后的数据", cityData3);
+        }).catch(err => {});
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -525,39 +505,29 @@ export default {
 
     .money {
         line-height: 38px;
-        > span:nth-child(1) {
-            color: red;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        > span:nth-child(2) {
-            font-size: 14px;
-            color: rgba(166, 166, 166, 1);
-            margin: 0px 0px 0px 10px;
-        }
-        > span:nth-child(3) {
-            i{
-                font-size: 18px;
-                color: rgba(24, 148, 220, 1)
+        .money_1{
+            .text_1{
+                color: red;
+                font-weight: bold;
+                font-size: 19px;
+            }
+            .text_2{
+                color: rgba(166, 166, 166, 1);
+                font-size: 14px;
+            }
+            .text_3{
+                color: rgba(80, 80, 80, 1);
+                font-size: 14px;
             }
         }
-        
     }
 }
 
 #ApplicationAgent .box_2 {
-    height: 44px;
-    background: #ffffff;
     color: rgba(80, 80, 80, 1);
 	font-size: 12px;
-    display: flex;
-    align-items: center;
-    padding: 0px 0px 0px 0.18rem;
-    border-bottom: 1px solid #ececec;
-    img{
-        width: 22px;
-        margin: 0px 5px 0px 0px;
-    }
+	line-height: 150%;
+    padding: 7px 13px;
 }
 
 #ApplicationAgent .box_3 {

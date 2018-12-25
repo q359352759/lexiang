@@ -29,8 +29,9 @@ import hongbao from "./vuex/hongbao";           //红包相关接口
 import shop from "@/vuex/shop.js";
 import orders from '@/vuex/orders.js';          //订单
 import user from "@/vuex/user.js";
-import request from '@/api/request';
+import myshops from '@/vuex/myshops.js'
 
+import request from '@/api/request';
 import agent from '@/vuex/agent.js'
 Vue.use(Vuex);
 // 对名字进行解码
@@ -133,6 +134,9 @@ export default ()=>{
             },
             get_myshop(state){
                 return state.myshop;
+            },
+            g_agentUser(state){
+                return state.agentUser;
             }
         },
         mutations: {
@@ -290,9 +294,22 @@ export default ()=>{
                     })
                 });
             },
-            actions_agentUser({ dispatch, commit }) {
+            actions_agentUser({ dispatch,state}) {
                 //获取代理人信息
-                commit("setagentUser"); // 等待 actionA 完成
+                var userInfo = JSON.parse(localStorage.userInfo);
+                return new Promise((resolve, reject) => {
+                    axios.get("/api-u/agentUser/me?userid="+userInfo.username).then(x=>{
+                        if(x.data.code==200){
+                            state.agentUser = x.data.data;
+                        }else{
+                            state.agentUser = false;
+                        }
+                        resolve(x)
+                    }).catch(err=>{
+                        state.agentUser = false;
+                        resolve(err)
+                    })
+                });
             },
             getMyshop({dispatch,commit}){
                 return new Promise((resolve, reject)=>{
@@ -336,7 +353,8 @@ export default ()=>{
             hongbao:hongbao,
             orders:orders,
             user:user,
-            agent:agent
+            agent:agent,
+            myshops:myshops
         },
     });
 }

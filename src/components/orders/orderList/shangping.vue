@@ -34,7 +34,7 @@
         <li class="text_1" v-show="shangping.state==0">共计{{shangping.shopOrderCommoditys.length}}个商品，合计{{shangping.paymentAmount+shangping.deduction}}元，优惠{{shangping.deduction}}元。</li>
         <li class="text_1" v-show="shangping.state==1">共计{{shangping.shopOrderCommoditys.length}}个商品，合计{{shangping.paymentAmount+shangping.deduction}}元，优惠{{shangping.deduction}}元。</li>
         <li class="btn_1 quxiao" v-if="shangping.state==0">取消</li>
-        <li @click="zhifu()" class="btn_1 zhifu" v-if="shangping.state==0">支付</li>
+        <li @click="zhifu()" class="btn_1 zhifu" v-show="shangping.state==0">支付</li>
         <li class="btn_1 zhifu" v-if="shangping.state==1">评价</li>
     </ul>
 </div>
@@ -77,7 +77,8 @@ export default {
             this.$router.push('/orders/order?ordreId='+this.shangping.id);
         },
         //支付
-        zhifu(){            
+        zhifu(){       
+            console.log(123)     
             this.$router.push({name:'ordersOrder',query:{ordreId:this.shangping.id},params:{zhifu:1}});
         }
     },

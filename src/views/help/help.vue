@@ -10,7 +10,7 @@
             <ul class="box_1" v-if="userInfo.referrerid">
                 <li class="title_1">我的客服专员：</li>
                 <li class="name">
-                    <span v-if="referrer.nickname">{{referrer.nickname}}</span>
+                    <span v-if="referrer.nickname">{{referrer.nickname | fliter_name}}</span>
                     <span v-if="!referrer.nickname">{{referrer.phone | fliter_phone}}</span>
                 </li>
                 <li class="icon_box xiaoxi">
@@ -59,6 +59,7 @@
 </template>
 
 <script>
+import { b64DecodeUnicode } from "@/assets/js/base64jiema.js";
 export default {
     name:'',
     data(){
@@ -97,6 +98,12 @@ export default {
                 "***" +
                 phone.substring(phone.length - 3)
             );
+        },
+        fliter_name(name){
+            try {
+                name= b64DecodeUnicode(name)
+            } catch (error) {}
+            return name;
         }
     },
     methods:{
@@ -170,11 +177,10 @@ export default {
             this.$axios({
                 method:'get',
                 url:'/api-u/users/findByUserid/'+this.userInfo.referrerid,
-                // url:'/api-u/users-anon/internal?username='+this.userInfo.referrerid,
                 // params:{}
             }).then(x=>{
                 console.log('查询推荐人',x);
-                this.referrer=x.data.data
+                this.referrer=x.data.data;
             }).catch(err=>{
                 console.log(err);
             })
@@ -204,7 +210,6 @@ export default {
             this.get_Recommender();
         }
 
-    
         //查询和你自己申请的店铺
         this.$store.commit('setMyshop');
 

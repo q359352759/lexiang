@@ -3,7 +3,8 @@
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
             <!-- <h1 class="mui-title">{{this.$store.state.isweixin ? "":"广告机"}}</h1> -->
-            <h1 class="mui-title">广告机</h1>
+            <h1 class="mui-title" >广告机</h1>
+            <span v-if="jihuoma" @click="jihuo(true)">激活</span>
         </header>
         <div class="mui-content">
             <div class="box_1">
@@ -78,6 +79,29 @@
                 <btn @click.native="goumai()" value="购买"/>
             </div>
         </div>
+
+        <div class="jihuo_box" v-show="jihuo_box">
+            <div class="cont_1">
+                <div class="close_1" @click="jihuo(false)"><i class="icon iconfont icon-quxiao"></i></div>
+                <ul class="header_1">
+                    <li>你有一个套餐</li>
+                    <li>可直接激活</li>
+                </ul>
+                <ul class="shuru">
+                    <li>
+                        <div>手机：</div>
+                        <div><input type="text" v-model="jihuo_obj.phone" placeholder="请输入客户手机号" required></div>
+                    </li>
+                    <li>
+                        <div>手机：</div>
+                        <div><input type="password" v-model="jihuo_obj.pwd" placeholder="请输入初始密码" required></div>
+                    </li>
+                </ul>
+                <div class="btn_1">
+                    <btn @click.native="use()" value="激活"/>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -93,7 +117,14 @@ export default {
     data() {
         return {
             radio_type_2: true,
-            userInfo:''
+            userInfo:'',
+            jihuoma:'',
+            jihuo_box:false,
+            jihuo_obj:{
+                username:'',
+                phone:'',
+                pwd:''
+            }
         };
     },
     computed: {
@@ -137,7 +168,7 @@ export default {
             })
         },
         addguanggaoji(){
-             var this_1=this;
+            var this_1=this;
             var tishi="恭喜您购买广告机成功，点击公众号内的“广告管理”使用，初始账号为您的手机号，密码为手机号后6位，请在广告机内点击“会员服务”修改密码（请勿在红包乐购中修改）。";
             var tishi1="恭喜您成功获得广告机套餐，已经叠加到您的广告机账户。";
             var obj={
@@ -175,6 +206,11 @@ export default {
                 console.log(error);
             })
         },
+
+        //
+        jihuo(x){
+            this.jihuo_box=x;
+        },
         //视频展示
         video_Exhibition(){
             window.location.href="http://www.lxad.vip/about_1.php"
@@ -182,6 +218,56 @@ export default {
         //效果展示
         EffectDisplay(){
             window.location.href="http://www.lxad.vip/view_1.php?fid=1542077512213"
+        },
+        //获取广告机激活状态
+        get_angentActivation(){
+            var obj={
+                    username:this.userInfo.username
+                }
+            this.$axios.post('http://www.lxad.vip/api/get_angentActivation.php',this.$qs.stringify(obj)).then(x=>{
+                console.log(x)
+                if(x.data){
+                    this.jihuoma=x.data;
+                }else{
+                    this.jihuoma='';
+                }
+            }).catch(err=>{
+                this.jihuoma='';
+                console.log(err);
+            })
+        },
+        use(){
+
+            var phone_test=/^[1][0-9]{10}/;
+            if(!this.jihuo_obj.phone || !phone_test.test(this.jihuo_obj.phone)){
+                mui.toast('请输入正确电话号码。', { duration: 2000, type: "div" });                 
+                return
+            }else if(!this.jihuo_obj.pwd || this.jihuo_obj.pwd.length<6 || this.jihuo_obj.pwd.length>12){
+                mui.toast('密码为6-12位。', { duration: 2000, type: "div" });
+                return;
+            }
+            openloading(true);
+            this.jihuo_obj.username=this.userInfo.username;
+            this.$axios.post('http://www.lxad.vip/api/use_angentActivation.php',this.$qs.stringify(this.jihuo_obj)).then(x=>{
+                console.log(x)
+                openloading(false);
+                var tishi="恭喜您激活成功，点击公众号内的“广告管理”使用，请在广告机内点击“会员服务”修改密码（请勿在红包乐购中修改）。";
+                var tishi1="恭喜您激活成功，已经叠加到您的广告机账户。";
+                if(x.data==0 || x.data==1){
+                    mui.alert(x.data==1 ? tishi : tishi1, "提示", function() {},"div");
+                }else{
+                    mui.alert(x.data, "提示", function() {},"div");
+                }
+                this.get_angentActivation();
+                this.jihuo_box=false;
+                
+            }).catch(err=>{
+                console.log(err);
+                openloading(false);
+                this.jihuo_box=false;
+                this.get_angentActivation();
+                mui.alert('激活失败，请联系管理员。', "提示", function() {},"div");
+            })
         }
     },
     beforeCreate: function() {
@@ -196,9 +282,9 @@ export default {
     mounted: function() {
         try {
             this.userInfo=JSON.parse(localStorage.userInfo);
-        } catch (error) {
-            
-        }
+        } catch (error) {}
+
+        this.get_angentActivation();
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -216,7 +302,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 #Advertising {
     height: 100%;
@@ -229,6 +315,14 @@ export default {
     background: $header_background;
     a {
         color: #ffffff;
+    }
+    span{
+        position: absolute;
+        color: rgba(255, 255, 255, 1);
+    	font-size: 14px;
+        line-height: 44px;
+        top: 0px;
+        right: 15px;
     }
 }
 #Advertising .mui-title {
@@ -328,6 +422,68 @@ export default {
     color: #ffffff;
     i {
         display: inline-block;
+    }
+}
+
+#Advertising .jihuo_box{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .cont_1{
+        width: 239px;
+        color: rgba(80, 80, 80, 1);
+        background-color: rgba(255, 255, 255, 1);
+        border-radius: 16px;
+        font-size: 14px;
+        position: relative;
+    }
+    .close_1{
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        color: #999999;
+    }
+    .header_1{
+        padding: 14px 0px 18px;
+        font-weight: bold;
+        color: rgba(80, 80, 80, 1);
+    	font-size: 14px;
+        text-align: center;
+    }
+    .shuru{
+        li{
+            display: flex;
+            align-items: center;
+            margin: 0px 0px 11px 0px;
+            div:nth-child(1){
+                width: 80px;
+                text-align: right;
+                flex-shrink: 0;
+            }
+            div:nth-child(2){
+                flex-grow: 1;
+                padding: 0px 14px 0px 0px;
+            }
+            input{
+                height: 27px;
+                color: rgba(166, 166, 166, 1);
+                background-color: rgba(246, 246, 246, 1);
+                font-size: 14px;
+                padding: 0px 5px 0px;
+                margin: 0px;
+                border:none;
+            }
+        }
+    }
+    .btn_1{
+        margin: 26px 0px 35px;
     }
 }
 </style>
