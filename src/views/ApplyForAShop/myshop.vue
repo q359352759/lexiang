@@ -62,7 +62,7 @@
                     <div>评论</div>
                 </li>
                 <li>
-                    <div><i class="icon iconfont icon-icon_dianyuanguanli"></i></div>
+                    <div @click="$router.push('/myshop/dianyuan/guanli')"><i class="icon iconfont icon-icon_dianyuanguanli"></i></div>
                     <div>店员</div>
                 </li>
 

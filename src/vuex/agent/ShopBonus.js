@@ -31,7 +31,8 @@ export default {
                 length:20,
                 getShareProfitUser:'',  //获得分润者的ID（店铺推荐人ID，用户的推荐人ID，区域代理商ID）
             }
-        }
+        },
+        dailiren_fenrun_zichan:{}
     },
     getters:{
         get_list1(state){
@@ -42,6 +43,9 @@ export default {
         },
         get_type(state){
             return state.type
+        },
+        dailiren_fenrun_zichan(state){
+            return state.dailiren_fenrun_zichan;
         }
     },
     mutations:{
@@ -106,7 +110,26 @@ export default {
                 obj.page_index++;
                 dispatch('get_list',obj);
             }
-        }
+        },
+        //查询代理人分润
+        dailiren_fenrun({state}){
+            var userInfo=JSON.parse(localStorage.userInfo);
+            var obj={
+                    userid:userInfo.username,
+                    userType:1 //代理人
+                }
+            return new Promise((resolve, reject) => {
+                axios.get('/api-s/shops/findAgentsShareProfitByUseridAndUserType',{params:obj}).then(x=>{
+                    console.log('获取代理商分润资产',x)
+                    if(x.data.code==200 && x.data.data.length>0){
+                        state.dailiren_fenrun_zichan=x.data.data[0];
+                    }
+                }).catch(err=>{
+                    console.log('获取代理商分润资产',err);
+                })
+            });
+        },
+
     },
     modules: {
         

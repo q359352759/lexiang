@@ -20,6 +20,7 @@
                     <li>
                         <i class="icon iconfont icon-shouji"></i>
                         <input type="text" v-model="phone" required pattern="^1\d{10}$">
+                        <!-- oninvalid="setCustomValidity('无效号码');" oninput="setCustomValidity('') -->
                         <span v-if="!phone" class="tishi_1">手机号码</span>
                     </li>
                     <li>

@@ -41,7 +41,7 @@
         </ul>
         <ul class="footer_1" v-show="type==1">
             <li>商家：0家</li>
-            <li>总分润：0元</li>
+            <li>总分润：{{dailiren_fenrun_zichan.aggregateAmount ? dailiren_fenrun_zichan.aggregateAmount : 0}}元</li>
         </ul>
     </div>
 </template>
@@ -86,6 +86,7 @@ export default {
             type:'agent/ShopBonus/get_type',
             fenrun_shangjia:'agent/ShopBonus/get_list1',
             fenrun_huiyuan: 'agent/ShopBonus/get_list2',
+            dailiren_fenrun_zichan:'agent/ShopBonus/dailiren_fenrun_zichan',    //代理人店铺分润资产
         })
     },
     methods: {

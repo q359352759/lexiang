@@ -65,7 +65,7 @@ export default {
             var weixininfo = localStorage.weixininfo;
             if (!weixin || weixin == null || weixin == undefined || weixin == 'undefined' || !weixininfo || weixininfo==null || weixininfo==undefined || weixininfo=='undefined'){
                 console.log("没有微信信息");
-                location.href = "getopenid.html";
+                // location.href = "getopenid.html";
             } else {
                 console.log("已有微信信息");      
             }

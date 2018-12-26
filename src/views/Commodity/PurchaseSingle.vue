@@ -463,11 +463,11 @@ export default {
                             start:0,
                             length:1000,
                             userid:this.userInfo.username,
-                            shopid:this.shangPing.shopid
+                            shopid:this.shangPing.shopid,
                             // type:1,
                             // commodityId:this.id,
                             // ccc:1,
-                            // state:0
+                            state:0
                         },
                         fc:this.CardPackge_return
                     }

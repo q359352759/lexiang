@@ -483,7 +483,8 @@ export default {
                         start:0,
                         length:1000,
                         userid:this.userInfo.username,
-                        shopid:this.shopid
+                        shopid:this.shopid,
+                        state:0
                     },
                     fc:this.CardPackge_return
                 }

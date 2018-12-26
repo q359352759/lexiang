@@ -20,7 +20,7 @@
                         <div class="money">￥-0元</div>
                     </div>
                 </li>
-                <li class="baobiao">报表</li>
+                <li class="baobiao" @click="$router.push('/myshop/xiaoshou/baobiao')">报表</li>
             </ul>
 
             <div class="box_2">

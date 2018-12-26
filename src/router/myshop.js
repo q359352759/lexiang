@@ -18,8 +18,12 @@ const WithdrawMoney= resolve => { require.ensure([], () => {resolve( require('@/
 //销售
 const xiaoshou=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/xiaoshou/xiaoshou.vue') )}) }  
 const orderDetails=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/xiaoshou/orderDetails.vue') )}) }  //订单详情
+const baobiao=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/xiaoshou/baobiao.vue') )}) }  //报表
+
+import dianyuan from '@/router/dianyuan.js'
 //myshop       开头
 const myshops=[
+    ...dianyuan,
     {
         path:'/myshop/WithdrawMoney',
         name:'',
@@ -55,6 +59,10 @@ const myshops=[
         path:'/myshop/xiaoshou/orderDetails',
         name:'',
         component:orderDetails
+    },{
+        path:'/myshop/xiaoshou/baobiao',
+        name:'',
+        component:baobiao
     }
 
 ]

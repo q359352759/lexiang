@@ -63,7 +63,7 @@
                         <i class="icon iconfont icon-fenrun"></i>
                     </div>
                     <div class="title">店铺分润</div>
-                    <div class="money">0</div>
+                    <div class="money">{{dailiren_fenrun_zichan.aggregateAmount ? dailiren_fenrun_zichan.aggregateAmount : 0}}</div>
                 </li>
                 <li :class="{'active':type_1==5}" @click="change_type(5)">
                     <div class="img_box">
@@ -76,7 +76,7 @@
 
             <div class="content" ref="content">
                 <!-- 补贴 -->
-                <div class="box_3" v-show="type_1==1">
+                <div class="box_3 团队补贴" v-show="type_1==1">
                     <ul class="title" :class="{'active':fixed}">
                         <li>姓名</li>
                         <li>日期</li>
@@ -105,7 +105,7 @@
                     </ul>
                 </div>
 
-                <div class="box_4" v-show="type_1==2">
+                <div class="box_4 平台分佣" v-show="type_1==2">
                     <!-- <ul class="title">
                         <li>客户</li>
                         <li>订单</li>
@@ -142,7 +142,7 @@
                     </div>
                 </div>
 
-                <div class="box_5" v-show="type_1==3">
+                <div class="box_5 店铺分佣" v-show="type_1==3">
                     <!-- <ul class="title">
                         <li>客户</li>
                         <li>店铺</li>
@@ -206,7 +206,7 @@
                         </li>
                         <li>
                             <div>店铺分润</div>
-                            <div>0</div>
+                            <div>{{dailiren_fenrun_zichan.balance ? dailiren_fenrun_zichan.balance : 0}}</div>
                         </li>
                         <!-- <li>
                             <div>补贴：{{agentUser.sutotal}}</div>
@@ -384,6 +384,7 @@ export default {
             fenrun_shangjia:'agent/ShopBonus/get_list1',
             fenrun_huiyuan: 'agent/ShopBonus/get_list2',
             fenrun_type:'agent/ShopBonus/get_type',
+            dailiren_fenrun_zichan:'agent/ShopBonus/dailiren_fenrun_zichan',    //代理人分润资产
         })
         
     },
@@ -391,7 +392,8 @@ export default {
         ...mapActions({
             ShopBonus_init:'agent/ShopBonus/ShopBonus_init',
             get_fenrui:'agent/ShopBonus/get_list',
-            fenrun_fenye:'agent/ShopBonus/xiayiye'
+            fenrun_fenye:'agent/ShopBonus/xiayiye',
+            dailiren_fenrun:'agent/ShopBonus/dailiren_fenrun',  //代理商分润
         }),
         //提现服务协议
         WithdrawalAgreement(){
@@ -716,7 +718,9 @@ export default {
         //获取店铺分润 商家
         this.get_fenrui(this.fenrun_shangjia)
         //获取店铺分润 会员
-        this.get_fenrui(this.fenrun_huiyuan)
+        this.get_fenrui(this.fenrun_huiyuan);
+        //代理商分润资产
+        this.dailiren_fenrun()
     }
 };
 </script>

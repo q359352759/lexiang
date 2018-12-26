@@ -1,7 +1,7 @@
 <template>
     <div id="RegionalAgent">
         <header class="mui-bar mui-bar-nav">
-            <a @tap="back_1()" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <a @tap="$router.push('/Agent')" class=" mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">区域代理商</h1>
         </header>
 
@@ -16,10 +16,10 @@
                     <h2> {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? '/'+areaList[1].name : ''}}{{areaList[2] ? '/'+areaList[2].name : ''}}</h2>
                 </li>
                 <li class="shangjia">
-                    <div @click="MarketManagement()">
+                    <div @click="$router.push('/MarketManagement')">
                         <i class="icon iconfont icon-dianpu1"></i>
                     </div>
-                    <span @click="MarketManagement()">市场管理</span>
+                    <span @click="$router.push('/MarketManagement')">市场管理</span>
                 </li>
             </ul>
             <ul class="box_2">
@@ -206,7 +206,7 @@
                         </li>
                         <li>
                             <div>店铺分润</div>
-                            <span>0</span>
+                            <span>{{daiLiShang_fenrun_zichan.balance ? daiLiShang_fenrun_zichan.balance : 0}}</span>
                         </li>
                     </ul>
                     <ul class="list_1">
@@ -219,10 +219,10 @@
                         </li>
                         <li>
                             <div>已缴纳：3000元</div>
-                            <div @tap="dailijiaofei()" class="mui-text-center">《代理费缴纳说明》</div>
+                            <div @click="$router.push('/dailijiaofei')" class="mui-text-center">《代理费缴纳说明》</div>
                         </li>
                     </ul>
-                    <ul class="Collect_Money" @click="Account()">
+                    <ul class="Collect_Money" @click="$router.push('/Account')">
                         <li>收款账户：{{Account_obj.account}}</li>
                         <li>
                             <i class="mui-icon mui-icon-arrowright"></i>
@@ -263,9 +263,9 @@
                             <i class="icon iconfont icon-xuanze"></i>
                         </div>
                         <span @click="change_radio_2()">我也阅读并同意</span>
-                        <span @click="WithdrawalAgreement()">《提现服务协议》</span>
+                        <span @click="$router.push('/WithdrawalAgreement')">《提现服务协议》</span>
                         <span>
-                            <span @click="go('/EmbodyRecord?type=1')">
+                            <span @click="$router.push('/EmbodyRecord?type=1')">
                                 提现记录
                             </span>
                         </span>
@@ -279,7 +279,7 @@
         <div class="payment" v-show="payment">
             <div class="mask"></div>
             <div class="payment_1">
-                <div class="forget" @click="PaymentPassword()">忘记密码？</div>
+                <div class="forget" @click="$router.push('/PaymentPassword')">忘记密码？</div>
                 <div class="close_1" @click="change_payment(false)">
                     <i class="mui-icon mui-icon-closeempty"></i>
                 </div>
@@ -318,6 +318,7 @@
 <script>
 import { openloading } from "@/assets/js/currency";
 import loading from "@/components/loading.vue";
+import { mapActions, mapGetters } from 'vuex';
 export default {
     name: "",
     components: {
@@ -348,14 +349,15 @@ export default {
             name: "" //收钱放名字
         };
     },
-    computed: {},
+    computed: {
+        ...mapGetters({
+            daiLiShang_fenrun_zichan:'agent/RegionalAgent/ShopBonus/daiLiShang_fenrun_zichan'       //代理商 商家分润资产
+        })
+    },
     methods: {
-        back_1(){
-            this.$router.push('/Agent')
-        },
-        MarketManagement() {
-            this.$router.push("/MarketManagement");
-        },
+        ...mapActions({
+            get_daiLiShang_fenrun_zichan:'agent/RegionalAgent/ShopBonus/daiLiShang_fenrun_zichan'       //获取代理商 商家分润资产
+        }),
         amount_change() {
             if (!this.areaManager_obj.sutotal) {
                 this.amount = 0;
@@ -363,17 +365,9 @@ export default {
                 this.amount = this.areaManager_obj.sutotal;
             }
         },
-        //区域合同
-        dailijiaofei(){
-            this.$router.push('/dailijiaofei');
-        },
         //预选代理说明
         xuyuan(){
             this.$router.push("/xuyuan?name=" + this.areaManager_obj.name);
-        },
-        //提现协议
-        WithdrawalAgreement(){
-            this.$router.push('/WithdrawalAgreement');
         },
         //滚动条
         scroll(e, obj) {
@@ -382,16 +376,9 @@ export default {
             var sh = e.target.scrollHeight; //滚动条总高
             var t = e.target.scrollTop; //滚动条到顶部距离
             // console.log(e)
-            if (
-                h + t >= sh - 10 &&
-                !obj.loading &&
-                obj.list.length < obj.total
-            ) {
-                console.log("到底底部");
-                // this.butie.page_index++;
+            if (h + t >= sh - 10 && !obj.loading && obj.list.length < obj.total) {
                 obj.page_index++;
                 this.subformanager(obj);
-                //查看下级带来的收益
             }
         },
         //选择类型
@@ -401,16 +388,6 @@ export default {
         //合作协议
         change_radio_2(x) {
             this.radio_type_2 = !this.radio_type_2;
-        },
-        go(x) {
-            this.$router.push(x);
-        },
-        Account() {
-            this.$router.push("/Account");
-        },
-        //忘记密码
-        PaymentPassword() {
-            this.$router.push("/PaymentPassword");
         },
         //支付密码
         passwad_change() {
@@ -430,10 +407,7 @@ export default {
         Put_forward() {
             var password_test = /^\d{6}$/; //6位数字验证
             if (!password_test.test(this.accout_password)) {
-                mui.toast("支付密码为6位数字。", {
-                    duration: 2000,
-                    type: "div"
-                });
+                mui.toast("支付密码为6位数字。", { duration: 2000,type: "div"});
                 return;
             }
             this.payment = false;
@@ -451,50 +425,40 @@ export default {
             this.$axios({
                 method: "get",
                 url: "/api-u/users/alipay/agentmanager",
-                // data: this.$qs.stringify(obj),
-                // data:obj,
                 params: obj
-            })
-                .then(x => {
-                    console.log(x);
-                    if (x.data.code == 200) {
-                        this.areaManager();
-                        mui.alert(x.data.msg,"提示","好的",function() {},"div");
-                    } else if (x.data.code == "PAYEE_USER_INFO_ERROR" ||  x.data.code == "PAYEE_ACC_OCUPIED" ) {
-                        mui.toast(x.data.msg, { duration: 2000, type: "div" });
-                        this.input_name_box = true;
-                    } else{
-                        mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
-                        
-                    }
-                    this.CanBePresented = true;
-                    openloading(false);
-                })
-                .catch(error => {
-                    console.log(error);
-                    mui.toast("系统错误，请稍后再试。", {
-                        duration: 2000,
-                        type: "div"
-                    });
-                    openloading(false);
-                    this.CanBePresented = true;
-                    this.input_name_box = false;
+            }).then(x => {
+                console.log(x);
+                if (x.data.code == 200) {
+                    this.areaManager();
+                    mui.alert(x.data.msg,"提示","好的",function() {},"div");
+                } else if (x.data.code == "PAYEE_USER_INFO_ERROR" ||  x.data.code == "PAYEE_ACC_OCUPIED" ) {
+                    mui.toast(x.data.msg, { duration: 2000, type: "div" });
+                    this.input_name_box = true;
+                } else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
+                    
+                }
+                this.CanBePresented = true;
+                openloading(false);
+            }).catch(error => {
+                console.log(error);
+                mui.toast("系统错误，请稍后再试。", {
+                    duration: 2000,
+                    type: "div"
                 });
+                openloading(false);
+                this.CanBePresented = true;
+                this.input_name_box = false;
+            });
         },
         //打开关闭支付密码输入窗口
         change_payment(x) {
             if (x) {
                 if (!this.radio_type_2) {
-                    mui.toast("请先同意协议。", {
-                        duration: 2000,
-                        type: "div"
-                    });
+                    mui.toast("请先同意协议。", { duration: 2000, type: "div" });
                     return;
                 } else if (!this.Account_obj.account) {
-                    mui.toast("请设置收款账号", {
-                        duration: 2000,
-                        type: "div"
-                    });
+                    mui.toast("请设置收款账号", { duration: 2000, type: "div" });
                     return;
                 } else if (this.amount == 0 && x) {
                     mui.toast("无提现金额", { duration: 2000, type: "div" });
@@ -503,10 +467,7 @@ export default {
                     mui.toast("请输入整数！", { duration: 2000, type: "div" });
                     return;
                 } else if (!this.CanBePresented) {
-                    mui.toast("提现正在处理中，请稍等。", {
-                        duration: 2000,
-                        type: "div"
-                    });
+                    mui.toast("提现正在处理中，请稍等。", { duration: 2000, type: "div" });
                     return;
                 }
                 this.payment = x;
@@ -520,66 +481,40 @@ export default {
         },
         //获取代理商信息
         areaManager() {
-            this.$axios({
-                method: "get",
-                url:"/api-u/areaManager/findme?userid=" + this.userInfo.username
-            }).then(x => {
-                console.log("获取代理商信息", x);
+            this.$axios.get("/api-u/areaManager/findme?userid=" + this.userInfo.username).then(x=>{
                 if (x.data.data != "" && x.data.data != null && x.data.data != "null") {
                     this.areaManager_obj = x.data.data;
                     this.amount = this.areaManager_obj.sutotal;
                     this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
-                } else {
-                    // this.isareaManager=true;
                 }
-            }).catch(error => {
-                console.log("获取代理商信息错误", error);
-            });
+            }).catch(err=>{
+
+            })
         },
         // 获取自推
-        // /users/subformanager
         subformanager(x) {
             x.loading = true;
-            this.$axios({
-                method: "get",
-                url:
-                    "/api-u/users/subformanager?userid=" +
-                    this.userInfo.username +
-                    "&type=" +
-                    x.type +
-                    "&start=" +
-                    x.page_index * x.page_size +
-                    "&length=" +
-                    x.page_size
-            }).then(res => {
-                    console.log('获取列表',x.type, res);
-                    if (res.data.code == 200) {
-                        x.total = res.data.data.total;
-                        x.list = x.list.concat(res.data.data.data);
-                        x.loading = false;
-                    } else {
-                        x.loading = false;
-                    }
-                })
-                .catch(error => {
+            this.$axios.get("/api-u/users/subformanager?userid="+this.userInfo.username+"&type="+x.type+"&start="+x.page_index*x.page_size+"&length="+x.page_size).then(x=>{
+                if (res.data.code == 200) {
+                    x.total = res.data.data.total;
+                    x.list = x.list.concat(res.data.data.data);
                     x.loading = false;
-                });
+                } else {
+                    x.loading = false;
+                }
+            }).catch(err=>{
+                 x.loading = false;
+            })
         },
         //获取支付宝账号
         findAccount() {
-            this.$axios({
-                method: "get",
-                url: "/api-u/users/findAccount?userid=" + this.userInfo.username
+            this.$axios.get("/api-u/users/findAccount?userid=" + this.userInfo.username).then(x=>{
+                if (x.data.data != null) {
+                    this.Account_obj = x.data.data;
+                }
+            }).catch(err=>{
+                console.log(error);
             })
-                .then(x => {
-                    console.log("获取支付宝账号", x);
-                    if (x.data.data != null) {
-                        this.Account_obj = x.data.data;
-                    }
-                })
-                .catch(error => {
-                    console.log(error);
-                });
         }
     },
     beforeCreate: function() {
@@ -603,6 +538,8 @@ export default {
         //获取支付账号
         this.findAccount();
 
+        //获取代理商 商家分润资产
+        this.get_daiLiShang_fenrun_zichan();
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {

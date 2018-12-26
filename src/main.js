@@ -1,6 +1,9 @@
 import Vue from "vue";
 import App from "./App.vue";
 
+import VCharts from 'v-charts'
+Vue.use(VCharts)
+
 // import VueHtml5Editor from 'vue-html5-editor'
 // Vue.use(VueHtml5Editor,{});
 
@@ -40,7 +43,6 @@ Vue.config.productionTip = false;
 //封装后的请求接口
 import request from '@/api/request.js'
 Vue.prototype.$request = request;
-
 
 new Vue({
     router,
