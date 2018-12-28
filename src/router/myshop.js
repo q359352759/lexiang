@@ -7,18 +7,19 @@ const ApplicationDistribution = () => import ("@/views/myshop/distribution/Appli
 const RedPacketRecords = () => import ("@/views/myshop/Marketing/RedPackets/RedPacketRecords.vue"); //申请 开通分销功能
 
 // 评论
-const commentList = () => import ("@/views/myshop/comment/commentList.vue"); //我的店铺 评论列表
+const 评论列表 = () => import ("@/views/myshop/评论/评论列表.vue"); //我的店铺 评论列表
 
 //会员
 const MemberList=()=>import('@/views/myshop/Member/MemberList')     //店铺会员 
 
 //提现
-const WithdrawMoney= resolve => { require.ensure([], () => {resolve( require('@/views/myshop/WithdrawMoney.vue') )}) }
+const 提现= resolve => { require.ensure([], () => {resolve( require('@/views/myshop/提现.vue') )}) }
+const 提现记录= resolve => { require.ensure([], () => {resolve( require('@/views/myshop/提现记录.vue') )}) }
 
 //销售
-const xiaoshou=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/xiaoshou/xiaoshou.vue') )}) }  
-const orderDetails=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/xiaoshou/orderDetails.vue') )}) }  //订单详情
-const baobiao=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/xiaoshou/baobiao.vue') )}) }  //报表
+const 销售=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/销售/销售.vue') )}) }  
+const 订单详情=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/销售/订单详情.vue') )}) }  //订单详情
+const 报表=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/销售/报表.vue') )}) }  //报表
 
 import dianyuan from '@/router/dianyuan.js'
 //myshop       开头
@@ -27,7 +28,11 @@ const myshops=[
     {
         path:'/myshop/WithdrawMoney',
         name:'',
-        component:WithdrawMoney
+        component:提现
+    },{
+        path:'/myshop/tixianjilu',
+        name:'',
+        component:提现记录
     },
     // /myshop/distribution     分销
     {
@@ -43,7 +48,7 @@ const myshops=[
     },{
         path:'/myshop/comment/commentList',
         name:'',
-        component:commentList
+        component:评论列表
     },{
         path:'/myshop/Member/MemberList',
         name:'',
@@ -53,16 +58,16 @@ const myshops=[
     {
         path:'/myshop/xiaoshou/xiaoshou',
         name:'',
-        component:xiaoshou
+        component:销售
     },
     {
         path:'/myshop/xiaoshou/orderDetails',
         name:'',
-        component:orderDetails
+        component:订单详情
     },{
         path:'/myshop/xiaoshou/baobiao',
         name:'',
-        component:baobiao
+        component:报表
     }
 
 ]

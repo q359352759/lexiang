@@ -139,6 +139,7 @@
 			<div @click="go_out()" class="go_out">
                 <btn value="退出登录" />
             </div>
+            <!-- <button @click="更换主题色()">更换主题色</button> -->
 
             <!-- <button @click="test()">测试</button>
             {{weixin}} -->
@@ -240,11 +241,14 @@ export default {
             return this.$store.state.myshop
         }
     },
-    methods: {
+    methods:{
         ...mapActions({
             updated_user:'user/updated_user',
             get_user:'user/get_user'
         }),
+        更换主题色(){
+            console.log('跟换主题色')
+        },
         //订单
         order(){
             this.$router.push('/orders/orderList')

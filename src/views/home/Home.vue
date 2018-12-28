@@ -37,7 +37,7 @@
                 <div class="swiper-wrapper">
                     <!-- <div class="swiper-slide"><img src="@/assets/image/1.png" alt=""></div> -->
                     <div class="swiper-slide" v-for="(x, index) in img_list" :key="index">
-                        <img :src="'image/'+x" alt="">
+                        <img :src="x" alt="">
                     </div>
                 </div>
                 <!-- Add Pagination -->
@@ -494,6 +494,7 @@ export default {
                     type:x.type,
                     startTime:'',           //生日使用有效期
                     endTime:'',
+                    amount:x.amount ? x.amount : 0 
                 }
             this.add_red(obj)
         },
@@ -739,7 +740,7 @@ export default {
     mounted: function() {
 
         var this_1=this;
-        this.img_list = ["home_1.jpg", "home_2.jpg", "home_3.jpg","home_4.jpg"];
+        this.img_list = ["image/home_1.jpg", "image/home_2.jpg", "image/home_3.jpg"];
         
 
         if(this.userInfo){

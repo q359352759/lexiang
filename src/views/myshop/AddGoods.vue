@@ -10,26 +10,23 @@
             <div class="box_1">
                 <ul class="mui-table-view ">
                     <li class="mui-table-view-cell item_box">
-                        <span>商品名：</span>
+                        <span class="text_1">商品名：</span>
                         <input type="text" value="" v-model="add_obj.name">
                     </li>
                     <li class="mui-table-view-cell item_box" @click="selset_unit()">
-                        <!-- <a class="mui-navigate-right item_box"> -->
-                            <span>单位：</span>
-                            <!-- <div>份</div> -->
-                            <input class="mui-text-center"  type="text" v-model="add_obj.unit" readonly> 
-                            <div></div>
-                        <!-- </a> -->
+                        <span class="text_1">单位：</span>
+                        <input class="mui-text-center"  type="text" v-model="add_obj.unit" readonly> 
+                        <div class="text_3"></div>
                     </li>
                     <li class="mui-table-view-cell item_box">
-                        <span>市场价：</span>
+                        <span class="text_1">市场价：</span>
                         <input type="text" class="mui-text-center"  v-model="add_obj.marketPrice">
-                        <div>元</div>
+                        <div class="text_3">元</div>
                     </li>
                     <li class="mui-table-view-cell item_box">
                         <span>售价：</span>
                         <input type="text" class="mui-text-center" v-model.number="add_obj.sellingPrice" @input="input_change('sellingPrice')">
-                        <div>元</div>
+                        <div class="text_3">元</div>
                     </li>
                     <li class="mui-table-view-cell item_box">
                         <span class="title_2">可抵扣：</span>
@@ -48,6 +45,23 @@
                 </ul>
             </div>
 
+            <div class="box_1">
+                <ul class="mui-table-view ">
+                    <li class="mui-table-view-cell item_box item_1">
+                        <div @click="是否专享=!是否专享" class="radio_1" :class="{'active':是否专享}">
+                            <i class="icon iconfont icon-xuanze"></i>
+                        </div>
+                        <span @click="选择专享=true">{{专享商品.type==0 ? '新人专享' : '生日专享'}}</span>
+                        <span class="icon_1" @click="选择专享=true">
+                            <i class="mui-icon mui-icon-arrowdown"></i>
+                        </span>
+                        <span class="zhanwei"></span>
+                        <span>专享抵扣：</span>
+                        <input type="text" @blur="专享抵扣改变()" class="mui-text-center input_1" v-model.number="专享商品.deduction">
+                        <span>元</span>
+                    </li>
+                </ul>
+            </div>
 
             <ul class="box_3">
                 <li class="title_1">
@@ -117,11 +131,22 @@
                 </div>
             </div>
         </div>
-        <div @click="add()" class="box_4">{{Submission_type ? '保存' : '确认发布'}}</div>
+
+        <div @click="add()" class="box_4">
+            {{Submission_type ? '保存并上架' : '确认发布'}}
+        </div>
 
         <!-- <Album v-show="Album_show" v-on:setShow="setShow"/> -->
         <Album v-show="Album_show" :seetype="seetype" :type="seetype" v-on:setlist="reslist"/>
         
+        <div class="选择专享类型" v-show="选择专享">
+            <div class="msk" @click="选择专享=false"></div>
+            <ul>
+                <li @click="选择专享类型(0)">新人专享</li>
+                <li @click="选择专享类型(1)">生日专享</li>
+            </ul>
+        </div>
+
     </div>
 </template>
 
@@ -129,6 +154,7 @@
 import { openloading,isAndroid } from "@/assets/js/currency";
 import Album from '@/components/Album.vue';
 import $ from 'jquery'
+import { mapActions } from 'vuex';
 export default {
     name:'',
     components: {
@@ -184,7 +210,17 @@ export default {
             img_list:[],
             editor:'',
             Submission_type:'',
-            um:''
+            um:'',
+            选择专享:false,
+            是否专享:false,
+            专享商品:{
+                shopid:'',      //店铺id
+                commodityId:'',     //商品id
+                type:0,         //0新人 1生日
+                typeName:'',    //
+                deduction:'',   //抵扣金额
+                percentage:'',  //计算出来的百分比
+            },
         }
     },
     computed:{
@@ -207,6 +243,14 @@ export default {
         }
     },
     methods:{
+        ...mapActions({
+            获取店铺:"setMyshop",
+            添加商品:'shangPing/添加商品',
+            修改商品:"shangPing/修改商品",
+            添加专享:'shangPing/添加专享',
+            修改专享:'shangPing/修改专享',
+            删除专享:'shangPing/删除专享'
+        }),
         //点击添加视频
         add_shiping(){
             window.scroll(0,0);
@@ -333,6 +377,9 @@ export default {
         back(){
             this.$router.push('/commodity')
         },
+        专享抵扣改变(){
+            this.专享商品.deduction=Math.round((this.专享商品.deduction)*100)/100
+        },
         //点击确定
         add(){
             var this_1=this;
@@ -363,6 +410,15 @@ export default {
             }else if(this.img_list.length==0){
                 mui.toast('请设置商品图片。', { duration: 2000, type: "div" });
                 return
+            }else if(this.是否专享 && !this.专享商品.deduction){
+                mui.toast('请输入专享抵扣。', { duration: 2000, type: "div" });
+                return
+            }else if(this.是否专享 && this.专享商品.deduction<this.add_obj.deduction){
+                mui.toast('专享抵扣不能小于商品抵扣。', { duration: 2000, type: "div" });
+                return
+            }else if(this.是否专享 && this.专享商品.deduction>this.add_obj.sellingPrice*0.9){
+                mui.toast('抵扣金额不能大于商品金额的90%即'+this.add_obj.sellingPrice*0.9+'元。', { duration: "long",type: "div" });
+                return
             }
             // this.add_obj.img=[];
             var img_list=[];
@@ -372,52 +428,139 @@ export default {
             this.add_obj.shopid=this.myshop.shopid
             this.add_obj.arrImg=img_list;
             this.add_obj.remark=this.$refs.content_box.innerHTML;
-            console.log(this.add_obj);
+            this.add_obj.state=1;
 
+            if(this.是否专享){
+                this.专享商品.commodityId=this.add_obj.id;
+                this.专享商品.typeName=this.专享商品.type==0 ? '新人专享' : '生日专享';
+                this.专享商品.shopid=this.myshop.shopid;
+                this.专享商品.percentage=Math.fround(this.专享商品.deduction/this.add_obj.sellingPrice*100);
+            }
             // return
-
             if(this.Submission_type==''){
-                openloading(true)
-                this.$axios({
-                    method:'post',
-                    url:'/api-s/shops/commodity/add',
-                    data:this.add_obj
-                }).then(x=>{
-                    openloading(false)
-                    if(x.data.code==200){
-                        mui.toast('添加成功。', { duration: 2000, type: "div" });
-                        this.$router.push('/commodity');
-                    }else{
-                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
-                    }
-                    console.log(x)
-                }).catch(err=>{
-                    openloading(false)
-                    mui.toast('系统错误，请稍后再试。', { duration: 2000, type: "div" });
-                    console.log(err);
-                })
+                //添加商品
+                if(!this.是否专享){
+                    openloading(true)
+                    this.添加商品(this.add_obj).then(x=>{
+                        openloading(false)
+                        if(x.data.code==200){
+                            mui.toast('设置成功', { duration: "long",type: "div" });
+                            history.back();
+                        }else{
+                            mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                        }
+                    }).catch(err=>{
+                        mui.toast('系统错误稍后再试。', { duration: "long",type: "div" });
+                        openloading(false)
+                    })
+                }else{
+                    this.添加商品返回值();
+                }
             }else{
                 // console.log('修改',this.add_obj)
-                openloading(true)
-                this.$axios({
-                    method:'post',
-                    url:'/api-s/shops/commodity/update',
-                    data:[this.add_obj]
-                }).then(x=>{
-                    openloading(false)
-                    if(x.data.code==200){
-                        mui.toast('修改成功。', { duration: 2000, type: "div" });
-                        this.$router.push('/commodity');
+                if(this.是否专享){
+                    if(this.专享商品.id){
+                        this.修改商品和修改专享();
                     }else{
-                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                        this.修改商品和添加专享();
                     }
-                    console.log(x)
-                }).catch(err=>{
-                    openloading(false)
-                    mui.toast('系统错误，请稍后再试。', { duration: 2000, type: "div" });
-                    console.log(err);
-                })
+                }else if(!this.是否专享 && this.专享商品.id){
+                    this.修改商品和删除专享();
+                }else{
+                    openloading(true)
+                    this.修改商品([this.add_obj]).then(x=>{
+                        openloading(false)
+                        if(x.data.code==200){
+                            mui.toast('设置成功', { duration: "long",type: "div" });
+                            history.back();
+                        }else{
+                            mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                        }
+                    }).catch(err=>{
+                        mui.toast('系统错误稍后再试。', { duration: "long",type: "div" });
+                        openloading(false)
+                    })
+                }
             }
+        },
+        async 添加商品返回值(){
+            openloading(true);
+            var res= await this.添加商品(this.add_obj)
+            if(res.data.code==200){
+                this.专享商品.commodityId=res.data.data;
+                this.添加专享(this.专享商品).then(x=>{
+                    if(x.data.code==200){
+                        mui.toast('添加成功', { duration: "long",type: "div" });
+                        history.back();
+                    }else{
+                        var str="<div>商品添加成功，设置专享失败</div>";
+                            str+=x.data.msg ? x.data.msg : x.data.message;
+                        mui.alert(str, "提示",'我知道了', function() {},"div");
+                    }
+                    openloading(false);
+                }).catch(err=>{
+                    mui.toast('系统错误，稍后再试。', { duration: "long",type: "div" });
+                    openloading(false);
+                })
+            }else if(res.data.msg || res.data.message){
+                openloading(false);
+                mui.alert(res.data.msg ? res.data.msg : res.data.message, "提示",'我知道了', function() {},"div");
+            }else{
+                openloading(false);
+                mui.toast('系统错误，稍后再试。', { duration: "long",type: "div" });
+            }
+        },
+        修改商品和修改专享(){
+            openloading(true);
+            Promise.all([this.修改商品([this.add_obj]),this.修改专享(this.专享商品)]).then(x=>{
+                openloading(false);
+                if(x[0].data.code==200 && x[1].data.code==200){
+                    mui.toast('设置成功', { duration: "long",type: "div" });
+                    history.back();
+                }else{
+                    var str="";
+                        str+=x[0].data.msg ? x[0].data.msg : x[0].data.message;
+                        str+=x[1].data.msg ? x[1].data.msg : x[1].data.message;
+                    mui.alert(str, "提示",'我知道了', function() {},"div");
+                }
+            }).catch(err=>{
+                openloading(false);
+                mui.toast('系统错误，稍后再试。', { duration: "long",type: "div" });
+            })
+        },
+        async 修改商品和添加专享(){
+            openloading(true);
+            await this.修改商品([this.add_obj]);
+            this.添加专享(this.专享商品).then(x=>{
+                if(x.data.code==200){
+                    mui.toast('设置成功', { duration: "long",type: "div" });
+                    history.back();
+                }else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                }
+                openloading(false);
+            }).catch(err=>{
+                openloading(false);
+                mui.toast('系统错误，稍后再试。', { duration: "long",type: "div" });
+            })
+        },
+        修改商品和删除专享(){
+            openloading(true);
+            Promise.all([this.修改商品([this.add_obj]),this.删除专享(this.专享商品)]).then(x=>{
+                if(x[0].data.code==200 && x[1].data.code==200){
+                    mui.toast('设置成功', { duration: "long",type: "div" });
+                    history.back();
+                }else{
+                    var str="";
+                        str+=x[0].data.msg ? x[0].data.msg : x[0].data.message;
+                        str+=x[1].data.msg ? x[1].data.msg : x[1].data.message;
+                    mui.alert(str, "提示",'我知道了', function() {},"div");
+                }
+                openloading(false);
+            }).catch(err=>{
+                openloading(false);
+                mui.toast('系统错误，稍后再试。', { duration: "long",type: "div" });
+            })
         },
         //选择单位
         selset_unit(){
@@ -491,8 +634,6 @@ export default {
             this.Album_show=true;
             this.$store.state.Select_picture.list=this.img_list;
             this.$router.push('/AddGoods?Album_show=true');
-            // this.$store.state.Select_picture.type='huanjing';
-            // this.$router.push('/Album?seetype=3&size=4');
         },
         //删除图片
         delete_img(index){
@@ -501,6 +642,29 @@ export default {
             if(this.$store.state.Select_picture.type=='huanjing'){
                 this.$store.state.Select_picture.list.splice(index,1)
             }
+        },
+        选择专享类型(type){
+            this.专享商品.type=type;
+            this.选择专享=false;
+            this.是否专享=true;
+        },
+        获取专享商品(){
+            this.loading=true;
+            this.$axios('/api-s/shops/findExclusiveByCommodityId/'+this.add_obj.id).then(x=>{
+                console.log('获取专享商品',x);
+                // 0 ? '新人专享': '生日专享';
+                if(x.data.code==200){
+                    if(x.data.data.length>0){
+                        this.专享商品=x.data.data[0];
+                        this.是否专享=true;
+                    }
+                }else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                }
+            }).catch(err=>{
+                console.log('获取专享失败');
+                mui.toast('系统错误，稍后再试。', { duration: "long",type: "div" });
+            })
         }
     },
     beforeCreate: function() {
@@ -514,10 +678,7 @@ export default {
     },
     mounted: function() {
         var this_1 = this;
-        
-        //获取店铺信息
-        this.$store.commit('setMyshop');
-
+                
         //店铺类型
         this.Picker1 = new mui.PopPicker({
             layer: 1
@@ -545,12 +706,14 @@ export default {
             var query=this.$route.query;
             if(query.type){
                 this.Submission_type=query.type;
-                var commodity=JSON.parse(sessionStorage.commodity)
+                var commodity=JSON.parse(sessionStorage.commodity);
+                this.add_obj=commodity;
+                this.获取专享商品();
             }else{
                 this.Submission_type='';
                 var commodity={}
+                this.add_obj=commodity;
             }
-            this.add_obj=commodity;
             this.img_list=commodity.img ? commodity.img.split(',') : [];
             //计算比例
             if(!this.add_obj.percentage){
@@ -567,13 +730,9 @@ export default {
                 this.html=div.html();
             }
                 
-        var str='';
-        console.log(str.length)
     },
     activated() {
         console.log('再次进入页面');
-
-        
     },
     deactivated(){
 
@@ -626,6 +785,9 @@ export default {
     margin: 3px 0px 3px 0px;
     color: rgba(80, 80, 80, 1);
     font-size: 14px;
+    .item_1{
+        padding-right: 37PX;
+    }
     .item_box{
         position: relative;
         display: flex;
@@ -647,11 +809,11 @@ export default {
             font-size: 10px;
             text-align: center;
         }
-        >span:nth-child(1){
+        .text_1{
             flex-shrink: 0;
             width: 90px;
         }
-        >span.title_2:nth-child(1){
+        .title_2{
             width: 60px;
         }
         input{
@@ -670,10 +832,19 @@ export default {
             margin: 0px 4px;
             flex-shrink: 1;
         }
-        >div{
+        .text_3{
             width: 90px;
             flex-shrink: 0;
             text-align: right;
+        }
+        .icon_1 i{
+            font-size: 16px;
+        }
+        .zhanwei{
+            flex-grow: 1;
+        }
+        .radio_1{
+            margin: 0px 16px 0px 0px;
         }
         .twtreid,
         .commissionType{
@@ -767,7 +938,6 @@ export default {
     line-height: 0.44rem;
     color: #ffffff;
     text-align: center;
-    z-index: 1000;
 }
 
 .contenteditable_box{
@@ -888,6 +1058,33 @@ export default {
         color: #ffffff;
     }
 }
+.选择专享类型{
+    position:fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 10;
+    .msk{
+        background: rgba(0,0,0,0.3);
+        height: 100%;
+    }
+    ul{
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        bottom: 0px;
+        background: #ffffff;
+        text-align: center;
+        color: rgba(80, 80, 80, 1);
+        font-size: 14px;
+        padding: 0px 0px 55px 0px;
+        li{
+            padding: 15px 0px 0px;
+        }
+    }
+}
+
 </style>
 <style lang="scss">
 .contenteditable_box{

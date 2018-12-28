@@ -1,16 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
 </head>
-<body style=" background: rgb(238, 255, 255);">
-    <input  type="color" id="onchange">
+<body>
+	
+	<script>
+        function test(){
+            return new Promise((resolve, reject) => {
+                console.log('错误')
+                reject('错误1')
+            });
+        }
+        function test_1(){
+            return new Promise((resolve, reject) => {
+                console.log('正确')
+                resolve('正确')
+            });
+        }
+        function all(){
+            Promise.all().then(x=>{
+
+            }).catch(err=>{
+
+            })
+        }
+        async function F(){
+            // await Promise.reject('Error test1').catch(function(e){
+            //     console.log(e)
+            // })
+            try {
+                var a=await test();
+                var b=await test_1();
+                console.log(a,b)
+                // console.log(a)
+            } catch (error) {
+                console.log(123)
+            }
+                
+            
+        }
+        var f=F(); // Error:test1
+        // b();
+	</script>
 </body>
-<script type="text/javascript">
-    document.getElementById('onchange').onchange = function(){
-        document.getElementById('onchange').click();
-        document.body.style.background = this.value;
-    };
-</script>
 </html>

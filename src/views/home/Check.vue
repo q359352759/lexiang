@@ -249,20 +249,32 @@ export default {
                 console.log(this.youwu_hongbao,this.money_zong_dikou)
                     if(this.youwu_hongbao && this.money_zong_dikou && this.money_zong_dikou!=0){     //使用了红包
                         if(this.dikou_type==1){
-                            shopRedEnvelope.push(this.shengri_hongbao[0])
+                            var hongbao=Object.assign({},this.shengri_hongbao[0]);
+                                hongbao.paymentAmount=this.money_zong_dikou
+                                shopRedEnvelope.push(hongbao)
                         }else if(this.dikou_type==2){
-                            shopRedEnvelope.push(this.qingdian_hongbao[0])
+                            var hongbao=Object.assign({},this.qingdian_hongbao[0]);
+                                hongbao.paymentAmount=this.money_zong_dikou
+                            shopRedEnvelope.push(hongbao)
                         }else if(this.dikou_type==4){
-                            shopRedEnvelope.push(this.jieri_hongbao[0])
+                            var hongbao=Object.assign({},this.jieri_hongbao[0]);
+                                hongbao.paymentAmount=this.money_zong_dikou
+                            shopRedEnvelope.push(hongbao)
                         }else if(this.dikou_type==6){
                             if(this.xinren_dikou<this.xingren_pingtai){
                                 //使用了平台红包
                                 if(this.xinren_hongbao.length>0){
-                                    shopRedEnvelope.push(this.xinren_hongbao[0])
+                                    var hongbao=Object.assign({},this.xinren_hongbao[0]);
+                                        hongbao.paymentAmount=this.xinren_dikou;
+                                    shopRedEnvelope.push(hongbao)
                                 }
-                                shopRedEnvelope.push(this.invitedsutotal)
+                                    var hongbao_1=Object.assign({},this.invitedsutotal);
+                                        hongbao_1.paymentAmount=Math.round((this.money_zong_dikou-this.xinren_dikou)*100)/100
+                                shopRedEnvelope.push(hongbao_1);
                             }else{
-                                shopRedEnvelope.push(this.xinren_hongbao[0])
+                                var hongbao=Object.assign({},this.xinren_hongbao[0]);
+                                    hongbao.paymentAmount=this.money_zong_dikou;
+                                    shopRedEnvelope.push(hongbao)
                             }
                         }
                     }
@@ -281,7 +293,6 @@ export default {
                         amount:amount,           //金额
                         submitCommodityList:submitCommodity  //商品实体类       
                     };
-                console.log(obj);
                 openloading(true)
                 this.$request('/api-s/shops/createOrders',obj,'post').then(x=>{
                     console.log('添加订单',x);
@@ -386,8 +397,9 @@ export default {
             var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
             var dikou=0
             if(this[key].length==0 || !this.money || !number_test.test(this.money)){
-                return dikou
+                return dikou;
             }
+            //百分比抵扣
             if(this[key][0].redDeductionType==0){
                 dikou=this.money*this[key][0].redPercentage/100
             }else{
@@ -396,6 +408,14 @@ export default {
                     dikou=this[key][0].redDeduction
                 }
             }
+            var amount=0
+            // amount
+            if(this[key][0].type==0){
+                amount=this[key][0].amount
+            }else{
+                amount=this[key][0].redAmount
+            }
+                dikou=amount<dikou ? amount : dikou;
             return dikou;
         },
         setmoney(){
@@ -479,7 +499,7 @@ export default {
                 //节日红包
                 this.jieri_hongbao=this.hongbao.list.filter(x=>x.type==2);
                 //店铺新人红包
-                this.xinren_hongbao=this.hongbao.list.filter(x=>x.type==0);
+                this.xinren_hongbao=this.hongbao.list.filter(x=>x.type==0 && x.amount>0);
 
                 if(this.shengri_hongbao.length>0){
                     this.dikou_type=1   //店铺生日红包

@@ -172,8 +172,8 @@
                 <li v-if="synopsis && synopsis.remark" v-html="synopsis.remark"></li>
             </ul>
 
-            <div class="swper_box" v-if="swperdome" >
-                <div class="mask" @tap="close_swper()"></div>
+            <div class="swper_box" v-if="swperdome"  @tap="close_swper()">
+                <div class="mask"></div>
                 <div>
                     <swperdome :imglist="img_list" :index="swper_index"/>
                 </div>
@@ -284,6 +284,7 @@ export default {
                 type:5,
                 startTime:'',           //生日使用有效期
                 endTime:'',
+                amount:0,       //红包金额 type=0 的时候需要
             },
             Exclusive:{         //专享商品
                 loading:true,
@@ -504,7 +505,7 @@ export default {
         add_red(){
             this.add_hongbao_obj.userid=this.userInfo.username;
             this.add_hongbao_obj.envelopeId=this.redenvelope_5.id;
-
+            this.add_hongbao_obj.amount=this.redenvelope_5.amount ? this.redenvelope_5.amount : 0;
             console.log(this.add_hongbao_obj);
             openloading(true);
             this.$axios({

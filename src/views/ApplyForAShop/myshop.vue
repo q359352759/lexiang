@@ -202,7 +202,7 @@ export default {
             referrer:'myshops/referrer'
         }),
         ketixian(){
-            if(this.zichan.balance){
+            if(this.zichan && this.zichan.balance){
                 return Math.floor(this.zichan.balance*100)/100
             }else{
                 return 0;

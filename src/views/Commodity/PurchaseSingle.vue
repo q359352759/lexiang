@@ -338,7 +338,7 @@ export default {
             var number_1=this.number-this.shangPing_hongbao_dikou.number;
             //计算剩余可抵扣金额
             var shengyu = number_1*this.shangPing.deduction
-            var dikou = shengyu<this.dianpu_hongbao[0].redAmount ? shengyu : this.dianpu_hongbao[0].redAmount
+            var dikou = shengyu<this.dianpu_hongbao[0].amount ? shengyu : this.dianpu_hongbao[0].amount
                 dikou=Math.floor(dikou*100)/100
             return dikou;
         },
@@ -490,7 +490,8 @@ export default {
                 this.shengri_hongbao=this.hongbao.list.filter(x=>(x.type==5 && x.startTime<=getDateStr(0) && x.endTime>=getDateStr(0)));
                 this.qingdian_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',4);
                 this.jieri_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',2);
-                this.dianpu_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',0);
+                // this.dianpu_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',0);
+                this.dianpu_hongbao=this.hongbao.list.filter(x=>x.type==0 && x.amount>0);
                 if(this.shengri_hongbao.length!=0){
                     console.log(1)
                     this.dikou=1

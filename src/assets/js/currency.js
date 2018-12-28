@@ -32,23 +32,23 @@ function Get_URL_parameters(name) {
 //             );
 //     return fmt;
 // }
-// 时间格式化 yyyy.MM.dd hh:mm
-function dateFtt(val, format) {
-    const REGEX = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/;
 
+//转时间错
+function chGMT(gmtDate){  
+    var mydate = new Date(gmtDate);  
+        mydate.setHours(mydate.getHours() + 8);
+    return mydate;
+}
+// 时间格式化 yyyy.MM.dd hh:mm add_8 是否添加8个小时
+function dateFtt(val, format , add_8){
+    const REGEX = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/;
     if (val) {
-        /**
-         * @instructions 如果不是时间戳格式，且含有字符 '-' 则将 '-' 替换成 '/' && 删除小数点及后面的数字
-         * @reason 将 '-' 替换成 '/' && 删除小数点及后面的数字 的原因是safari浏览器仅支持 '/' 隔开的时间格式
-         */
         if (val.toString().indexOf("-") > 0) {
-            val = val
-                .replace(/T/g, " ")
-                .replace(/\.[\d]{3}Z/, "")
-                .replace(/(-)/g, "/"); // 将 '-' 替换成 '/'
+            val = val.replace(/T/g, " ").replace(/\.[\d]{3}Z/, "").replace(/(-)/g, "/"); // 将 '-' 替换成 '/'
             val = val.slice(0, val.indexOf(".")); // 删除小数点及后面的数字
         }
-        let date = new Date(val);
+        let date = chGMT(val);
+        // let date = new Date(val);
         date.setHours(date.getHours() + 8);
         const [whole, yy, MM, dd, hh, mm, ss] = date.toISOString().match(REGEX);
         const year = new Date().getFullYear();

@@ -4,12 +4,10 @@
             <h1 class="mui-title">登录</h1>
         </header> -->
         <div class="mui-content">
-            <div class="bg">
+            <div class="login_header">
                 <div>
-                    <div>
-                        <img src="image/bg_1.png" alt="" srcset="">
-                        <img src="image/WechatIMG311.png" alt="" >
-                    </div>
+                    <img src="image/bg_1.png" alt="" srcset="">
+                    <img src="image/WechatIMG311.png" alt="" >
                 </div>
             </div>
             <!-- <div class="logo_img">
@@ -143,11 +141,13 @@ export default {
                                     } catch (error) {}
                                     localStorage.userInfo = JSON.stringify(userInfo);
                                     var backUrl=sessionStorage.backUrl ? sessionStorage.backUrl : '';
-                                    if(!backUrl){
-                                        this.$router.push("/my");
-                                    }else{
-                                        this.$router.push(backUrl)
-                                    }
+                                    setTimeout(()=>{
+                                        if(!backUrl){
+                                            this.$router.push("/my");
+                                        }else{
+                                            this.$router.push(backUrl)
+                                        }
+                                    },1000)
                                 }
                                 openloading(false);
                             }).catch(error => {
@@ -198,7 +198,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 #login {
     height: 100%;
@@ -224,54 +224,33 @@ export default {
     color: #ffffff;
 }
 
-#login .bg{
-    // position: absolute;
-    // top: 0px;
-    // bottom: 0px;
-    // left: 0px;
+#login .login_header{
     width: 100%;
-    height: 3.9rem;
-    display: flex;
-    flex-direction: column;
+    // height: 390px;
+    height: 320px;
+    position: relative;
+    text-align: center;
     overflow: hidden;
-    >div:nth-child(1){
-        flex-grow: 1;
-        >div{
-            position: relative;
-        }
+    >div{
         position: relative;
-        text-align:center;
-        img:nth-child(1){
-            width: 2.67rem;
-        }
-        img:nth-child(2){
-            width: 0.6rem;
-            height: 0.6rem;
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            right: 0px;
-            bottom: 0px;
-            margin: auto;
-            border-radius: 10px;
-        }
     }
-    >div:nth-child(2){
-        width: 100%;
-        bottom: 0px;
+    img:nth-child(1){
+        width: 2.67rem;
+    }
+    img:nth-child(2){
+        width: 0.6rem;
+        height: 0.6rem;
+        position: absolute;
+        top: 0px;
         left: 0px;
-        font-size: 0px;
-        img{
-            width: 100%;
-        }
-    }
+        right: 0px;
+        bottom: 0px;
+        margin: auto;
+        border-radius: 10px;
+    }    
 }
 
 #login .box_3{
-    // position: absolute;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
     font-size: 0px;
     margin: -0.84rem 0px 0px;
     img{
@@ -300,7 +279,6 @@ export default {
 #login form{
     position: relative;
     z-index: 2;
-    margin:  -0.68rem 0px 0px;
     // position: absolute;
     // width: 100%;
     // // top: 300px;

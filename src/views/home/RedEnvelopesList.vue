@@ -286,6 +286,7 @@ export default {
                     envelopeId:x.id,  
                     state:'0',              //状态(使用等等)  0 刚领取
                     type:x.type,
+                    amount:x.amount ? x.amount : 0,
                     startTime:x.type==5 ? this.startTime : '',           //生日使用有效期
                     endTime:x.type==5 ? this.endTime : '',
                 }

@@ -80,7 +80,6 @@ export default {
                         }
                         openloading(false)
                     }).catch(err=>{
-
                         mui.toast('系统错误，稍后再试。', { duration: "long",type: "div" });
                         openloading(false)
                     })

@@ -281,7 +281,7 @@ export default {
             var pingtai=this.invitedsutotal ? this.invitedsutotal.sutotal : 0;
             var dianpu_pingtai=0
             if(this.xinren_hongbao.length>0){
-                dianpu=this.xinren_hongbao[0].redAmount
+                dianpu=this.xinren_hongbao[0].amount
             }
             if(dianpu>kedikou){
                 this.dianpu_pingtai=1;              //20
@@ -400,13 +400,18 @@ export default {
         hongbao_shiyong(){
             var number=0
                 number=number+this.shangpin_dikou.length;
+                if(this.zong_dikou==0){
+                    return number;
+                }
                 if(this.dikou_type!=6){
                     number++
                 }else{
-                    if(this.xinren_hongbao.length>0 && this.invitedsutotal.sutotal && this.invitedsutotal.sutotal>0){
-                        number=number+(this.dikou_type==1 ? 1 : 2);
+                    if(this.xinren_hongbao.length>0 && (!this.invitedsutotal.sutotal || this.invitedsutotal.sutotal<0) ){
+                        number=number+1
+                    }else if(this.xinren_hongbao.length>0 && this.invitedsutotal.sutotal && this.invitedsutotal.sutotal>0){
+                        number=number+(this.dianpu_pingtai==1 ? 1 : 2);
                     }else if(this.xinren_hongbao.length==0 && this.shangping_list.length>0 && this.invitedsutotal.sutotal && this.invitedsutotal.sutotal>0){
-                        number=number+(this.dikou_type==1 ? 1 : 1);
+                        number=number+(this.dianpu_pingtai==1 ? 1 : 1);
                     }
                 }
             return number
@@ -504,7 +509,7 @@ export default {
                 //节日红包
                 this.jieri_hongbao=this.hongbao.list.filter(x=>x.type==2)
                 //店铺新人红包
-                this.xinren_hongbao=this.hongbao.list.filter(x=>x.type==0);
+                this.xinren_hongbao=this.hongbao.list.filter(x=>x.type==0 && x.amount>0);
 
                 if(this.shengri_hongbao.length>0){
                     this.dikou_type=1   //店铺生日红包
@@ -515,12 +520,6 @@ export default {
                 }else{
                     this.dikou_type=6   //店铺+平台红包
                 }
-
-                // this.shangPing_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,this.id,1);
-                // this.shengri_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',5);
-                // this.qingdian_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',4);
-                // this.jieri_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',2);
-                // this.dianpu_hongbao=this.$store.getters["hongbao/filter_hongbao"](this.hongbao.list,'',0);
                 // 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
 
                 // 1、店铺生日红包

@@ -101,7 +101,7 @@
                             </li>
                             <li>
                                 <div class="title_1">
-                                    <span class="money">{{item.redAmount}}元</span>
+                                    <span class="money">{{item.redType==0 ? item.amount : item.redAmount}}元</span>
                                     <span class="type">{{item.redHeadline}}</span>
                                 </div>
                                 <div class="title_2">
@@ -130,9 +130,10 @@
                                     <div v-if="item.state==0 && item.endTime<date" class="type_2">失效</div>
                                 </div>
 
-                                <!-- 长期有效类型的 -->
+                                <!-- 长期有效 新人红包 -->
                                 <div v-if="item.redType==0">
-                                    <div v-if="item.state==0" class="type_1">有效</div>
+                                    <div v-if="item.state==0 && item.amount!=0" class="type_1">有效</div>
+                                    <div v-if="item.state==0 && item.amount==0" class="type_2">已用完</div>
                                     <div v-if="item.state==1" class="type_2">已使用</div>
                                     <span v-if="item.state==1" class="time_1">{{item.updateTime | filter_time}}</span>
                                 </div>

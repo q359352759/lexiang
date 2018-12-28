@@ -525,12 +525,9 @@ export default {
                         // mui.toast(x.data.msg, { duration: 2000, type: "div" });
                         mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
                         this.input_name_box = true;
-                    } else if (x.data.code) {
-                        // mui.toast(x.data.message, {duration: 2000,type: "div"});
-                        mui.alert(x.data.message, "提示",'我知道了', function() {},"div");
                     } else {
                         // mui.toast("系统错误，请稍后再试。", {duration: 2000,type: "div"});
-                        mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
+                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                     }
                     openloading(false);
                     this.CanBePresented = true;

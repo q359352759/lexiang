@@ -56,6 +56,7 @@
 <script>
 import { openloading } from "@/assets/js/currency";
 import loading from '@/components/loading.vue'
+import { mapActions, mapGetters } from 'vuex';
 export default {
     name:'',
     components: {
@@ -81,7 +82,11 @@ export default {
         }
     },
     methods:{
-        //
+        ...mapActions({
+            删除商品:'shangPing/删除商品',
+            修改商品:'shangPing/修改商品',
+            删除专享:'shangPing/删除专享'
+        }),
         back(){
             this.$router.push('/myshop');
         },
@@ -90,77 +95,108 @@ export default {
             this.$store.state.in_index=0
             this.$router.push('/AddGoods');
         },
+        //跳转修改
         go_addGoods(x){
-            console.log(x);
             sessionStorage.commodity=JSON.stringify(x);
             this.$store.state.in_index=0
             this.$router.push('/AddGoods?type=update')
-            // this.$router.push({path: '/AddGoods?type=update',meta:{keepAlive: false}});
         },
         //删除
-        delete_1(x,index){
-            console.log(x);
-            mui.confirm('确定删除此商品吗？','提示',['我在想想','确定'],(value)=>{
-                if(value.index==1){
-                    openloading(true);
-                    this.$axios({
-                        method:'get',
-                        url:'/api-s/shops/commodity/'+x.id
-                    }).then(x=>{
-                        console.log(x);
-                        openloading(false);
-                        if(x.data.code==200){
-                            this.commodity_list.splice(index,1);
-                        }else{
-                            mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
+        delete_1(item,index){
+            if(item.EXID){
+                var 提示=item.EXTYPE==0 ? '该商品是“新人专享”商品，删除商品会同时会删除对应的专享商品，是否删除？' : '该商品是“生日专享”商品，删除商品会同时会删除对应的专享商品，是否删除？';
+                    mui.confirm(提示,'提示',['取消','删除'],(value)=>{
+                        if(value.index==1){
+                            openloading(true);
+                            Promise.all([this.删除商品(item),this.删除专享(item.EXID)]).then(x=>{
+                                if(x[0].data.code==200 && x[0].data.code==200){
+                                    this.commodity_list.splice(index,1);
+                                }else{
+                                    var str="";
+                                        if(x[0].data.code!=200){
+                                            str+=x[0].data.msg ? x[0].data.msg : x[0].data.message;
+                                        }
+                                        if(x[1].data.code!=200){
+                                            str+=x[1].data.msg ? x[1].data.msg : x[1].data.message;
+                                        }
+                                    mui.alert(str, "提示",'我知道了', function() {},"div");
+                                }
+                                openloading(false);
+                            }).catch(err=>{
+                                openloading(false);
+                                mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" });                            
+                            })
                         }
-                    }).catch(err=>{
-                        openloading(false);
-                        console.log(err);
-                        mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" });
-                    })
-                }
-            },'div');
-        },
-        //修改商品接口
-        updata_state(x){
-            openloading(true);
-            var obj=new Object();
-            for(var key in x){
-                obj[key]=x[key]
+                    },'div');
+            }else{
+                mui.confirm('确定删除此商品吗？','提示',['取消','删除'],(value)=>{
+                    if(value.index==1){
+                        openloading(true);
+                        this.删除商品(item).then(x=>{
+                            openloading(false);
+                            if(x.data.code==200){
+                                this.commodity_list.splice(index,1);
+                            }else{
+                                mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                            }
+                        }).catch(err=>{
+                            openloading(false);
+                            mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" });
+                        })
+                    }
+                },'div');
             }
+        },
+        //修改商品接口 上架下架
+        updata_state(x){
+            
+            var obj=Object.assign({},x);            
             obj.state=obj.state==0 ? 1 : 0;
             obj.arrImg=x.img.split(',');
-
-            this.$axios({
-                method:'post',
-                url:'/api-s/shops/commodity/update',
-                data:[obj]
-            }).then(res=>{
-                if(res.data.code==200){
-                    x.state=x.state==0 ? 1 : 0;
-                    mui.toast('设置成功。', { duration: 2000, type: "div" });
-                }else{
-                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
-                }
-                console.log(res);
-                openloading(false)
-            }).catch(err=>{
-                mui.toast('系统错误。', { duration: 2000, type: "div" });
-                console.lgo(err);
-                openloading(false);
-            })
-        },
-        commodity_update(obj){
-            this.$axios({
-                method:'post',
-                url:'/api-s/shops/commodity/update',
-                data:obj
-            }).then(x=>{
-                console.log(x);
-            }).catch(err=>{
-                console.lgo(err);
-            })
+            if(x.EXID){
+                var 提示=x.EXTYPE==0 ? '该商品是“新人专享”商品，下架商品会同时会删除对应的专享商品，是否下架？' : '该商品是“生日专享”商品，下架商品会同时会删除对应的专享商品，是否下架？';
+                mui.confirm(提示,'提示',['取消','下架'],(value)=>{
+                        if(value.index==1){
+                            openloading(true);
+                            Promise.all([this.修改商品([obj]),this.删除专享(x.EXID)]).then(res=>{
+                                if(res[0].data.code==200 && res[0].data.code==200){
+                                    x.state=x.state==0 ? 1 : 0;
+                                }else{
+                                    var str="";
+                                        if(res[0].data.code!=200){
+                                            str+=res[0].data.msg ? res[0].data.msg : res[0].data.message;
+                                        }
+                                        if(res[1].data.code!=200){
+                                            str+=res[1].data.msg ? res[1].data.msg : res[1].data.message;
+                                        }
+                                    mui.alert(str, "提示",'我知道了', function() {},"div");
+                                }
+                                openloading(false);
+                            }).catch(err=>{
+                                openloading(false);
+                                mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" });                            
+                            })
+                        }
+                    },'div');
+            }else{
+                openloading(true);
+                this.$axios({
+                    method:'post',
+                    url:'/api-s/shops/commodity/update',
+                    data:[obj]
+                }).then(res=>{
+                    if(res.data.code==200){
+                        x.state=x.state==0 ? 1 : 0;
+                        mui.toast('设置成功。', { duration: 2000, type: "div" });
+                    }else{
+                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                    }
+                    openloading(false)
+                }).catch(err=>{
+                    mui.toast('系统错误。', { duration: 2000, type: "div" });
+                    openloading(false);
+                })
+            }
         },
         //滚动条
         scroll(e){
@@ -207,23 +243,18 @@ export default {
             this.query.start=this.page_index*this.query.length;
             this.query.shopid=this.myshop.shopid;
             this.loading=true;
-            // openloading(true)
             this.$axios({
                 method:'get',
                 url:'/api-s/shops/commodity/findAll',
                 params:this.query
             }).then(x=>{
-                console.log('获取商品列表',x);
                 this.loading=false;
-                // openloading(false);
                 if(x.data.code==200){
                     this.commodity_list=this.commodity_list.concat(x.data.data.data);
                     this.total=x.data.data.total;
                 }
             }).catch(err=>{
                 this.loading=false;
-                console.log('获取商品列表失败',err)
-                // openloading(false);
             })
         }
     },

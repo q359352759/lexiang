@@ -157,56 +157,23 @@
                 // console.log(11);
                 if (x == 1) {
                     this.userPicker.setData([
-                        {
-                            value: "1",
-                            text: "代理人"
-                        },
-                        {
-                            value: "2",
-                            text: "代理商"
-                        }
+                        {value: "1",text: "代理人"},
+                        {value: "2",text: "代理商"}
                     ]);
                 } else if (x == 2) {
                     this.userPicker.setData([
-                        {
-                            value: null,
-                            text: "全部"
-                        },
-                        {
-                            value: "0",
-                            text: "待审核"
-                        },
-                        {
-                            value: "1",
-                            text: "通过"
-                        },
-                        {
-                            value: "2",
-                            text: "拒绝"
-                        }
+                        {value: null,text: "全部"},
+                        {value: "0",text: "待审核"},
+                        {value: "1",text: "通过"},
+                        {value: "2",text: "拒绝"}
                     ]);
                 } else if (x == 3) {
                     this.userPicker.setData([
-                        {
-                            value: "",
-                            text: "默认排序"
-                        },
-                        {
-                            value: "1",
-                            text: "时间升序"
-                        },
-                        {
-                            value: "2",
-                            text: "时间降序"
-                        },
-                        {
-                            value: "3",
-                            text: "金额升序"
-                        },
-                        {
-                            value: "4",
-                            text: "金额降序"
-                        }
+                        {value: "",text: "默认排序"},
+                        {value: "1",text: "时间升序"},
+                        {value: "2",text: "时间降序"},
+                        {value: "3",text: "金额升序"},
+                        {value: "4",text: "金额降序"}
                     ]);
                 }
                 this.userPicker.show(items => {
@@ -230,11 +197,7 @@
                 var h = e.target.offsetHeight; //容器高度
                 var sh = e.target.scrollHeight; //滚动条总高
                 var t = e.target.scrollTop; //滚动条到顶部距离
-                if (
-                    h + t >= sh - 10 &&
-                    !this.loading &&
-                    this.list.length < this.list_total
-                ) {
+                if (h + t >= sh - 10 && !this.loading && this.list.length < this.list_total) {
                     this.page_index++;
                     this.get_waitpay();
                 }
@@ -256,35 +219,33 @@
                 this.query.start = (this.page_index - 1) * this.query.length;
                 openloading(true);
                 this.loading = true;
+                var url='';
+                if(this.get_type==0){
+                    url="/api-u/agent/waitpay"
+                }else if(this.get_type==1){
+                    url="/api-u/agent/manager/waitpay"
+                }
                 this.$axios({
                     method: "get",
-                    url:this.get_type == 0 ? "/api-u/agent/waitpay" : "/api-u/agent/manager/waitpay",
+                    url:url,
                     // data:this.query
                     params: this.query
-                })
-                    .then(x => {
-                        if (x.data.code == 200) {
-                            this.list = this.list.concat(x.data.data.data);
-                            this.list_total = x.data.data.total;
-                        } else {
-                            mui.alert(
-                                x.data.msg ? x.data.msg : x.data.messag,
-                                "提示",
-                                "我知道了",
-                                function () { },
-                                "div"
-                            );
-                        }
-                        console.log("获取提现记录", x);
-                        openloading(false);
-                        this.loading = false;
-                    })
-                    .catch(error => {
-                        openloading(false);
-                        this.loading = false;
-                        console.log(error);
-                        mui.toast("获取提现记录失败。", { duration: 2000, type: "div" });
-                    });
+                }).then(x => {
+                    if (x.data.code == 200) {
+                        this.list = this.list.concat(x.data.data.data);
+                        this.list_total = x.data.data.total;
+                    } else {
+                        mui.alert(x.data.msg ? x.data.msg : x.data.messag,"提示","我知道了",function () { },"div");
+                    }
+                    console.log("获取提现记录", x);
+                    openloading(false);
+                    this.loading = false;
+                }).catch(error => {
+                    openloading(false);
+                    this.loading = false;
+                    console.log(error);
+                    mui.toast("获取提现记录失败。", { duration: 2000, type: "div" });
+                });
             }
         },
         beforeCreate: function () {
@@ -304,22 +265,14 @@
             this.dataPicker = new mui.DtPicker(options);
             console.log(this.$route.query);
             this.get_type = this.$route.query.type;
-            if (
-                localStorage.userInfo &&
-                localStorage.userInfo != "" &&
-                localStorage.userInfo != null &&
-                localStorage.userInfo != undefined &&
-                localStorage.userInfo != "undefined"
-            ) {
+            try {
                 this.userInfo = JSON.parse(localStorage.userInfo);
-                this.query.userid = this.userInfo.username;
-            } else {
-                mui.toast("获取用户信息失败，请稍后再试。", {
-                    duration: 2000,
-                    type: "div"
-                });
-                return;
+            } catch (error) {
+                this.$router.push('/login');
             }
+            this.query.userid = this.userInfo.username;
+
+
 
             //查询记录
             this.get_waitpay();

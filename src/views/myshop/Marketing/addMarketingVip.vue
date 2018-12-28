@@ -152,7 +152,7 @@ export default {
             }
             this.obj.shopid=this.myshop.shopid;
             this.obj.commodityId=this.commodity.id;
-            this.obj.typeName=this.obj.type==0 ? '新人专享': '新人专享';
+            this.obj.typeName=this.obj.type==0 ? '新人专享': '生日专享';
             console.log(this.obj);
             this.$axios({
                 method:'post',

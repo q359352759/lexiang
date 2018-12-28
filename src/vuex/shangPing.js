@@ -121,10 +121,60 @@ export default {
                     })
                 })
         },
-        // store.dispatch('actionA').then(() => {
-        //     // ...
-        //   })
-
+        添加商品({},商品){
+            return new Promise((resolve, reject) => {
+                axios.post('/api-s/shops/commodity/add',商品).then(x=>{
+                    resolve(x);
+                }).catch(err=>{
+                    reject(err);
+                })
+            });
+        },
+        修改商品({},商品列表){
+            return new Promise((resolve, reject) => {
+                axios.post('/api-s/shops/commodity/update',商品列表).then(x=>{
+                    resolve(x);
+                }).catch(err=>{
+                    reject(err);
+                })    
+            });
+        },
+        删除商品({},商品){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-s/shops/commodity/'+商品.id).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err);
+                })
+            });
+        },
+        添加专享({},专享){
+            return new Promise((resolve, reject) => {
+                axios.post('/api-s/shops/addShopExclusive',专享).then(x=>{
+                    resolve(x);
+                }).catch(err=>{
+                    reject(err);
+                })
+            });
+        },
+        修改专享({},专享){
+            return new Promise((resolve, reject) => {
+                axios.post('/api-s/shops/updateShopExclusive',专享).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err);
+                })
+            });
+        },
+        删除专享({},id){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-s/shops/deleteShopExclusive/'+id).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err)
+                })
+            });
+        }
     },
     modules: {
         
