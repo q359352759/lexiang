@@ -11,14 +11,14 @@
                 </ul>
             </div>
             <div class="mui-col-xs-9 right" ref="right" @scroll="scroll($event)">
-                <!-- <ul class="mui-row box_2">
-                   <li class="mui-col-xs-4" v-for="(item, index) in 6" :key="index">
-                       <div class="img_box">
+                <!--<ul class="mui-row box_2">
+                    <li class="mui-col-xs-4" v-for="(item, index) in 6" :key="index">
+                        <div class="img_box">
                            <img src="image/acb82200c21cf541e9cb20d916d835ba.jpg" alt="" srcset="">
                            <div class="text_1">商圈</div>
-                       </div>
-                   </li>
-                </ul> -->
+                        </div>
+                    </li>
+                </ul>-->
 
                 <div class="box_3" v-for="(item, index) in type_list" :key="index">
                     <div class="title">

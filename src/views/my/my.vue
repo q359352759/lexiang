@@ -139,6 +139,8 @@
 			<div @click="go_out()" class="go_out">
                 <btn value="退出登录" />
             </div>
+
+            <button @click="$router.push('/shenqingkaidian')">申请开店</button>
             <!-- <button @click="更换主题色()">更换主题色</button> -->
 
             <!-- <button @click="test()">测试</button>
@@ -185,8 +187,10 @@
                     </div>
                 </div>
                 <div class="erweima_box">
-                    <img v-show="erweima_base64" class="head_img" :src="erweima_base64" alt="">
-                    <img style="border-radius:100%;" v-show="!erweima_base64" class="head_img" src="image/lxlogo_180.png" alt="">
+                    <div class="head_img">
+                        <img v-show="erweima_base64" class="" :src="erweima_base64" alt="">
+                        <img style="border-radius:100%;" v-show="!erweima_base64" class="" src="image/lxlogo_180.png" alt="">
+                    </div>
                     <div ref="qrcode">
                         <!-- <img src="image/7a1f5483e159cad31c9f3712accc6c9b.jpg" alt=""> -->
                     </div>
@@ -261,6 +265,7 @@ export default {
         //生成二维码
         shengchengerweima(){
             var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
+            console.log(url)
             var el=this.$refs.qrcode
                 el.innerHTML='';
             let qrcode = new QRCode(el, {  
@@ -631,6 +636,7 @@ export default {
 
 .QRCode_box{
     position: absolute;
+    bottom: 0px;
     left: -100%;
     .content_1{
         position: relative;
@@ -664,7 +670,7 @@ export default {
         .erweima_box{
             width: 200px;
             height: 200px;
-            margin: 28px auto 0px;
+            margin: 15px auto 0px;
             position: relative;
             div{
                 width: 100%;
@@ -678,8 +684,8 @@ export default {
             }
             .head_img{
                 position: absolute;
-                width: 50px;
-                height: 50px;
+                width: 44px;
+                height: 44px;
                 border-radius: 10px;
                 top: 0px;
                 left: 0px;
@@ -687,6 +693,14 @@ export default {
                 bottom: 0px;
                 margin: auto;
                 z-index: 1;
+                background: #ffffff;
+                padding: 2px;
+                img{
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 10px;
+                    border: 1px solid #cccccc;
+                }
             }
         }
         .tishi{

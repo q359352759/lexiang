@@ -27,7 +27,7 @@
                 <div class="text_1">
                     <div v-if="hongbao.type!=1">
                         <span v-if="hongbao.deductionType==1">每满{{hongbao.expire}}减{{hongbao.deduction}}元</span>
-                        <span v-if="hongbao.deductionType==0">可抵扣{{hongbao.percentage}}</span>
+                        <span v-if="hongbao.deductionType==0">可抵扣{{hongbao.percentage}}%</span>
                     </div>
                     <div v-if="hongbao.type==1">
                         <span>{{hongbao.startTime | filter_time}}-{{hongbao.endTime | filter_time}}</span>
@@ -37,6 +37,19 @@
                 </div>
             </div>
         </div>
+        
+        <div class="未登录提示框" v-show="未登录提示框">
+            <div class="遮罩" @click="未登录提示框=false"></div>
+            <div class="内容">
+                <div class="头部">提示</div>
+                <div class="文本">需要登录或注册才能领取,是否现在去登录或注册？</div>
+                <ul class="按钮组">
+                    <li @click="去注册()">注册</li>
+                    <li @click="去登录()">登录</li>
+                </ul>
+            </div>
+        </div>
+
     </div>
 </template>
 
@@ -64,7 +77,8 @@ export default {
     data () {
         return {
             userInfo:'',
-            shangping:{}        //商品 用户商品红包
+            未登录提示框:false,
+            shangping:{},        //商品 用户商品红包
         }
     },
     filters:{
@@ -93,15 +107,22 @@ export default {
 
             })
         },
+        去注册(){
+            this.$router.push('/BeInvited');
+        },
+        去登录(){
+            this.$router.push('/login');
+        },
         //领取红包
         lignqu(){
             if(!this.userInfo){
                 // mui.toast('请先登录。',{ duration: "long",type: "div" });
-                mui.confirm('需要登录才能领取，是否现在去登录。','提示',['取消','是的'],(value)=>{
-                    if(value.index==1){
-                        this.$router.push('/login');
-                    }
-                })
+                // mui.confirm('需要注册和登录才能领取，是否现在去登录。','提示',['注册','取消','是的'],(value)=>{
+                //     if(value.index==1){
+                //         this.$router.push('/login');
+                //     }
+                // })
+                this.未登录提示框=true;
                 return;
             }else{
                 var obj={
@@ -261,6 +282,64 @@ export default {
         .text_1{
             font-size: 10px;
             padding: 3px 0px;
+        }
+    }
+}
+
+.未登录提示框{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    .遮罩{
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+    }
+    .内容{
+        position: relative;
+        z-index: 1;
+        width: 270px;
+        background: rgba(255, 255, 255, 0.95);
+        text-align: center;
+        border-radius:13px;
+        .头部{
+            font-size:18px;
+            padding: 10px 0px 0px;
+            font-weight:500;
+        }
+        .文本{
+            padding: 5px 15px 15px;
+            font-size: 14px;
+            margin: 5px 0 0;
+        }
+        .按钮组{
+            display: flex;
+            height: 44px;
+            line-height: 44px;
+            border-top: 1px solid rgba(0,0,0,.2);
+            position: relative;
+            >li{
+                width: 50%;
+                color: #007aff;
+            }
+        }
+        .按钮组::after{
+            position: absolute;
+            width: 1px;
+            height: 100%;
+            content: "";
+            background: rgba(0,0,0,.2);
+            top: 0px;
+            left: 50%;
         }
     }
 }

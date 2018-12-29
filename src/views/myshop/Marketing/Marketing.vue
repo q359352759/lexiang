@@ -19,7 +19,7 @@
                         <img src="image/huangguan.png" alt="">
                     </div>
                     <div class="text">专享营销</div>
-                    <div  class="text">共0款商品</div>
+                    <div  class="text">共{{专享列表.total ? 专享列表.total : 0}}款商品</div>
                     <div  class="text">已拓客：0人</div>
                 </li>
                 <li>
@@ -33,7 +33,7 @@
             </ul>
 
             <ul class="box_2">
-                <li>
+                <!-- <li>
                     <div class="img_box">
                         <img src="image/hongbao_1.png" alt="">
                     </div>
@@ -60,7 +60,7 @@
                         </div>
                     </div>
                     <div class="right_1"><i class="mui-icon mui-icon-forward"></i></div>
-                </li>
+                </li> -->
                 <loading :nodata="true"/>
             </ul>
         </div>
@@ -70,15 +70,27 @@
 <script>
 import loading from '@/components/loading.vue';
 import {openloading} from '@/assets/js/currency.js';
+import { mapActions, mapGetters } from 'vuex';
 export default {
     name:'',
     components:{
         loading
     },
     data(){
-        return{}
+        return{
+            专享列表:{}
+        }
+    },
+    computed: {
+        ...mapGetters({
+            我的店铺:'get_myshop'
+        })
     },
     methods:{
+        ...mapActions({
+            查询我的店铺:'setMyshop',
+            查询店铺专享:'shangPing/查询店铺专享',
+        }),
         //跳转红包界面
         RedEnvelopes(){
             this.$router.push('/RedEnvelopes')
@@ -86,9 +98,27 @@ export default {
         //跳转专享营销
         MarketingVip(){
             this.$router.push('/MarketingVip')
+        },
+        async 店铺初始化(){
+            await this.查询我的店铺();
+            this.查询店铺专享(this.我的店铺.shopid).then(x=>{
+                if(x.data.code==200){
+                    this.专享列表=x.data.data
+                }
+            })
         }
     },
     mounted() {
+        if(this.我的店铺 && this.我的店铺.shopid){
+            console.log(this.我的店铺);
+            this.查询店铺专享(this.我的店铺.shopid).then(x=>{
+                if(x.data.code==200){
+                    this.专享列表=x.data.data
+                }
+            }).catch(err=>{})
+        }else{
+            this.店铺初始化();            
+        }
     },
 }
 </script>

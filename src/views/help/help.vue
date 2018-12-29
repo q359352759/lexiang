@@ -54,6 +54,7 @@
 					</a>
 				</li>
 			</ul>
+
         </div>
     </div>
 </template>
@@ -107,6 +108,13 @@ export default {
         }
     },
     methods:{
+        // by_car(){
+        // 		console.log(validateForm)
+        // 		if(this.citys==this.options){
+        // 			this.citys=null
+        			
+        // 		}
+        // 	},
         //跳转问题详情
         HelpDetails(x){
             this.$router.push('/HelpDetails?id='+x.id)

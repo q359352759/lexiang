@@ -1,14 +1,11 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
+import createPersistedState from 'vuex-persistedstate'
+
 import axios from "axios";
 axios.defaults.baseURL = baseURL;
 axios.defaults.timeout =  60000;
-// axios.defaults.baseURL = "http://192.168.1.11:8080";
-// import $ from "jquery"
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-// axios.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded';
-// axios.defaults.headers.common['Authorization'] = 'AUTH_TOKEN AUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKEN';
 
 axios.interceptors.response.use(
     function (response) {
@@ -21,8 +18,6 @@ axios.interceptors.response.use(
         return Promise.reject(error.response); // 返回接口返回的错误信息
     }
 );
-import qs from "qs";
-import router from "./router";
 
 import shangPing from "./vuex/shangPing";       //商品相关接口
 import hongbao from "./vuex/hongbao";           //红包相关接口
@@ -30,6 +25,8 @@ import shop from "@/vuex/shop.js";
 import orders from '@/vuex/orders.js';          //订单
 import user from "@/vuex/user.js";
 import myshops from '@/vuex/myshops.js'
+import 实名认证 from '@/vuex/实名认证.js';
+import 申请开店 from '@/vuex/申请开店.js'
 
 import request from '@/api/request';
 import agent from '@/vuex/agent.js'
@@ -37,9 +34,21 @@ Vue.use(Vuex);
 // 对名字进行解码
 import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
 
-export default ()=>{
-// var vuex = new Vuex.Store({
-    return new Vuex.Store({
+// export default ()=>{
+export default new Vuex.Store({
+        plugins: [createPersistedState()],
+    // return new Vuex.Store({
+        
+        // plugins: [
+            // createPersistedState({
+            //   storage: {
+            //     getItem: key => Cookies.get(key),
+            //     // Please see https://github.com/js-cookie/js-cookie#json, on how to handle JSON.
+            //     setItem: (key, value) => Cookies.set(key, value, { expires: 3, secure: true }),
+            //     removeItem: key => Cookies.remove(key)
+            //   }
+            // })
+        // ],
         state: {
             weixin_ready:false,     //微信准备就绪
             clientX: 100, //远点导航X
@@ -107,6 +116,12 @@ export default ()=>{
             redid:'',       //红包id
         },
         getters: {
+            geographical_position(state){
+                return state.geographical_position
+            },
+            apply_for_a_shop(state){
+                return state.apply_for_a_shop
+            },
             test1(state){
                 // this.$store.getters.doneTodos  这种写法和下面的写法不一样
                 return state.todos.find(todo => todo.done)
@@ -334,15 +349,17 @@ export default ()=>{
             get_area({state}){
                 axios({
                     method: "get",
-                    url: "/api-u/area/findAll",
+                    url: "http://api.redmall.vip:10002/api-u/area/findAll",
                     params: {
                         start: 0,
                         length: 30000
                     }
                 }).then(x => {
                     console.log("获取地区", x);
-                    state.area = x.data.data;
-                    localStorage.area = JSON.stringify(x.data.data);
+                    if(x.data.total){
+                        state.area = x.data.data;
+                        localStorage.area = JSON.stringify(x.data.data);
+                    }
                 });
             }
             // 调用 store.dispatch('get_area')
@@ -354,9 +371,13 @@ export default ()=>{
             orders:orders,
             user:user,
             agent:agent,
-            myshops:myshops
+            myshops:myshops,
+            实名认证:实名认证,
+            申请开店:申请开店
         },
-    });
-}
+        
+    })
+// })
+
 
 

@@ -21,10 +21,47 @@ const 销售=resolve=>{ require.ensure([], () => {resolve( require('@/views/mysh
 const 订单详情=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/销售/订单详情.vue') )}) }  //订单详情
 const 报表=resolve=>{ require.ensure([], () => {resolve( require('@/views/myshop/销售/报表.vue') )}) }  //报表
 
+//申请开店专用
+const 申请开店=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/申请开店.vue') )}) }
+const 百度地图=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/百度地图.vue') )}) }  
+const 营业时间=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/营业时间.vue') )}) }
+const 法人认证=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/法人认证.vue') )}) }  
+const 营业执照=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/营业执照.vue') )}) }  
+const 新人红包=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/新人红包.vue') )}) }  
+
+
+
 import dianyuan from '@/router/dianyuan.js'
 //myshop       开头
 const myshops=[
     ...dianyuan,
+    {
+        path:'/shenqingkaidian',
+        name:'',
+        component:申请开店
+    },{
+        path:'/shenqingkaidian/baiduditu',
+        name:'',
+        component:百度地图
+    },{
+        path:'/shenqingkaidian/yingyeshijian',
+        name:'',
+        component:营业时间
+    },{
+        path:'/shenqingkaidian/farenrenzheng',
+        name:'',
+        component:法人认证
+    },{
+        path:'/shenqingkaidian/yingyezhizhao',
+        name:'',
+        component:营业执照
+    },{
+        path:'/shenqingkaidian/xinrendianpu',
+        name:'',
+        component:新人红包
+    },
+
+
     {
         path:'/myshop/WithdrawMoney',
         name:'',

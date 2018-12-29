@@ -34,6 +34,7 @@
 
 <script>
 import { openloading } from "@/assets/js/currency.js";
+import { mapMutations } from 'vuex';
 export default {
     name: "",
     data() {
@@ -44,15 +45,16 @@ export default {
         };
     },
     computed: {
-        // apply_for_a_shop(){
-        //     return "";
-        // }
+        
     },
     methods: {
+        ...mapMutations({
+            更新店铺key:'申请开店/更新店铺key'
+        }),
         quding() {
-            this.$store.state.geographical_position.latitude = this.latitude;
-            this.$store.state.geographical_position.longitude = this.longitude;
-            this.$store.state.geographical_position.address = this.address;
+            this.更新店铺key(['address',this.address]);
+            this.更新店铺key(['x',this.longitude]);
+            this.更新店铺key(['y',this.latitude]);
             history.back();
         }
     },

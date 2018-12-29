@@ -5,15 +5,23 @@ import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
 export default {
     namespaced:true,
     state:{
+        test:""
 
     },
     getters:{
-        
+        test(state){
+            return state.test;
+        }
     },
     mutations:{
-        
+        test(state){
+            state.test=state.test+'a';
+        }
     },
     actions: {
+        test({state,commit}){
+            commit('test')
+        },
         async updated_user(){
             return new Promise((resolve, reject) => {
                 var weixininfo=''

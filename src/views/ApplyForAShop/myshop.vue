@@ -128,6 +128,10 @@
                 </ul>    
             </div>
             
+            <div class="进入店铺">
+                <btn @click.native="进入店铺()" value="进入店铺"/>
+            </div>
+            
 
             <!-- 生成带图片的容器 -->
             <div ref="printMe" class="qrcode_box">
@@ -177,11 +181,13 @@ import QRCode from 'qrcodejs2';
 import {openloading} from '@/assets/js/currency.js';
 import $ from "jquery"
 import { mapActions, mapGetters } from 'vuex';
-import tuijianren from '@/components/myshop/tuijianren.vue'
+import tuijianren from '@/components/myshop/tuijianren.vue';
+import btn from '@/components/button.vue';
 export default {
     name:'',
     components:{
-        tuijianren
+        tuijianren,
+        btn
     },
     data(){
         return{
@@ -216,6 +222,10 @@ export default {
             findshopTurnoverByShopid:'myshops/zichan/findshopTurnoverByShopid',
             set_referrer_show:'myshops/set_referrer_show'       //推荐人显示框
         }),
+        进入店铺(){
+            sessionStorage.removeItem("backUrl");
+            this.$router.push('/BusinessDetails?shopid='+this.myshop.shopid)
+        },
         close_1(){
             this.qrcode_show=false;
         },
@@ -623,5 +633,9 @@ export default {
     .tixian{
         color: #1c94d8;
     }
+}
+
+.进入店铺{
+    margin:27px 0px;
 }
 </style>

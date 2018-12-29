@@ -75,7 +75,7 @@ export default {
         go_login(){
             this.$router.push('/login')
         },
-         //获取手机验证码
+        //获取手机验证码
         get_codes() {
             var phone_test = /^1\d{10}$/;
             if (this.time != 0) {
@@ -115,6 +115,7 @@ export default {
                 mui.toast("请填写密码。", {duration: 2000, type: "div" });
                 return
             }
+            openloading(true);
             this.$axios({
                 method: "post",
                 url:"/api-u/users-anon/register?phone="+this.phone+"&key=" +localStorage.keys +"&code=" +this.code,
@@ -130,7 +131,7 @@ export default {
                     mui.toast("注册成功", {duration: 2000, type: "div" });
                     this.$router.push("/login");
                 } else{
-                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }
                 openloading(false);
             }).catch(err => {
@@ -156,7 +157,6 @@ export default {
     mounted(){
         console.log(window.innerHeight)
         this.height=window.innerHeight+'px'
-        // console.log(localStorage.yaoqing);
         //获取邀请信息
         if(localStorage.yaoqing){
             var yaoqing = localStorage.yaoqing;

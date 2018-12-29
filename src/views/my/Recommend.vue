@@ -61,10 +61,15 @@
         <div class="生成容器" ref="生成容器">
             <div class="标题">
                 <div class="标题1">
-                    扫码领取<span>20</span>元红包
+                    <span v-if="userInfo && !实名信息">{{userInfo.nickname}}</span>
+                    <span v-if="实名信息">{{实名信息.name}}</span>
+                    <span>邀你领取</span>
+                    <span class="钱">20</span>
+                    <span>元红包</span>
                 </div>
                 <div class="半圆"></div>
             </div>
+            <div class="提示">长按图片，点击“识别图中二维码”</div>
             <div class="图片容器">
                 <div class="二维码容器" ref="二维码容器">
                     <!-- <img src="image/43.png" alt="" srcset=""> -->
@@ -99,6 +104,7 @@ import {openloading} from '@/assets/js/currency.js';
 
 import {dateFtt} from '@/assets/js/currency.js';
 import loading from '@/components/loading.vue';
+import { mapActions, mapGetters } from 'vuex';
 export default {
     name:'',
     components:{
@@ -128,7 +134,9 @@ export default {
         }
     },
     computed:{
-        
+        ...mapGetters({
+            实名信息:'实名认证/实名信息'
+        })
     },
     filters:{
         fliter_phone(phone) {
@@ -144,6 +152,9 @@ export default {
         }
     },
     methods:{
+        ...mapActions({
+            获取认证:'实名认证/获取认证'
+        }),
         //被邀请界面
         BeInvited(){
             this.$router.push('/BeInvited');
@@ -179,7 +190,6 @@ export default {
                     mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
                 })
             }
-            
         },
         //生成二维码
         生成二维码(){
@@ -269,7 +279,7 @@ export default {
             this.userInfo=JSON.parse(localStorage.userInfo)
         } catch (error) {}
         
-        console.log(this.$route.query)
+        // console.log(this.$route.query)
         if(!this.userInfo){
             var query=this.$route.query;
             if(query.pid && query.invitationtype){
@@ -289,8 +299,10 @@ export default {
             this.get_user_invited_sutotal();
             //用户平台(邀请注册)记录
             this.get_invitedrecord();
-        }   
-        
+            //获取实名认证信息
+            this.获取认证(this.userInfo.username);
+
+        }
     }
 }
 </script>
@@ -362,14 +374,14 @@ export default {
 
 .生成容器{
     width: 245px;
-	background-color: rgba(241, 138, 138, 1);
+	background-color: #e96969;
     position: fixed;
     bottom: 0px;
     left: -100%;
     text-align: center;
     overflow: hidden;
     .半圆{
-        background: #f55e5e;
+        background: #db4141;
         position: absolute;
         width: 200%;
         height: 500px;
@@ -377,9 +389,17 @@ export default {
         left: -50%;
         border-radius: 100%;
     }
+    .提示{
+        color: rgba(255, 255, 255, 1);
+    	font-size: 10px;
+        margin: 4px 0px 8px;
+    }
     .标题{
         .标题1{
             position: relative;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             z-index: 1;
         }
         padding: 10px 0px 26px;
@@ -387,8 +407,7 @@ export default {
     	font-size: 14px;
         position: relative;
         z-index: 1;
-        margin: 0px 0px 15px;
-        span{
+        .钱{
             font-weight: bold;
             font-size: 36px;
         }
@@ -415,7 +434,11 @@ export default {
             margin: auto;
             width: 44px;
             height: 44px;
+            border:2px solid #ffffff;
+            background: #ffffff;
+            border-radius: 8px;
             img{
+                border: 1px solid #cccccc;
                 width: 100%;
                 height: 100%;
                 border-radius: 8px;
@@ -433,6 +456,8 @@ export default {
     position: fixed;
     width: 100%;
     height: 100%;
+    top: 0px;
+    left: 0px;
     z-index: 10;
     background: rgba(0,0,0,0.3);
     display: flex;

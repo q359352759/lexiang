@@ -148,6 +148,15 @@ export default {
                 })
             });
         },
+        查询店铺专享({},shopid){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-s/shops/findAllExclusive?start=0&length=1000&shopid='+shopid).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err)
+                })
+            });
+        },
         添加专享({},专享){
             return new Promise((resolve, reject) => {
                 axios.post('/api-s/shops/addShopExclusive',专享).then(x=>{

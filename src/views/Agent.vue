@@ -16,7 +16,7 @@
                 <div class="text">
                     <div>
                         <span>{{agentUser.realName}}</span>
-                        <span @tap="erweima()"><i class="icon iconfont icon-31erweima"></i></span>                        
+                        <span @click="erweima()"><i class="icon iconfont icon-31erweima"></i></span>                        
                     </div>
                     <div>
                         {{areaList[0] ? areaList[0].name : ''}}{{areaList[1] ? '/'+areaList[1].name : ''}}{{areaList[2] ? '/'+areaList[2].name : ''}}
@@ -280,44 +280,44 @@
                 </ul>
             </form>
 
-            <div class="QRCode" v-show="qrcode_show" @tap="qrcode_show=false">
-                <div class="mask"></div>
-                <div class="content_1">
-                    
-                    <div class="close_1">
-                        <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
-                        <div></div>
-                    </div>
-                    <img :src="qrcode" alt="" srcset="">
-                </div>
-            </div>
+            
 
         </div>
 
-        <!-- 生成带图片的容器 -->
-        <div ref="printMe" class="qrcode_box">
-            <div class="header_1">
-                <div class="img_box">
-                    <img v-if="erweima_base64" :src="erweima_base64" alt="" srcset="">
-                    <img v-if="!erweima_base64" src="image/WechatIMG311.png" alt="">
+        <div class="生成容器" ref="生成容器">
+            <div class="标题">
+                <div class="标题1">
+                    <span v-if="userInfo && !实名信息">{{userInfo.nickname}}</span>
+                    <span v-if="实名信息">{{实名信息.name}}</span>
+                    <span>邀你领取</span>
+                    <span class="钱">20</span>
+                    <span>元红包</span>
                 </div>
-                <div class="text_1">
-                    <div>{{agentUser.realName}}</div>
-                    <div> <i class="icon iconfont icon-shouji"></i>{{agentUser.phone}}</div>
+                <div class="半圆"></div>
+            </div>
+            <div class="提示">长按图片，点击“识别图中二维码”</div>
+            <div class="图片容器">
+                <div class="二维码容器" ref="二维码容器">
+                    <!-- <img src="image/43.png" alt="" srcset=""> -->
+                </div>
+                <div class="头像">
+                    <img v-if="头像base64" :src="头像base64" alt="" srcset="">
+                    <img v-if="!头像base64" src="image/WechatIMG311.png" alt="" srcset="">
                 </div>
             </div>
-            <div class="erweima">
-                <!-- <img :src="myshop.signboard" alt="" srcset=""> -->
-                <img v-if="erweima_base64" :src="erweima_base64" alt="">
-                <img v-if="!erweima_base64" src="image/WechatIMG311.png" alt="">
-                <div ref="qrcode">
-                    <!-- <img src="" alt="" srcset=""> -->
+            <div class="文本1">红包乐购，全城促销信息发布平台</div>
+        </div>
+
+        <div class="分享显示框" v-show="是否分享">
+            <div class="内容">
+                <div class="关闭" @click="是否分享=false">
+                    <i class="icon iconfont icon-quxiao"></i>
                 </div>
+                <div class="图片容器">
+                    <img :src="截图地址" alt="" srcset="">
+                </div>
+                <div class="文本">长按二维码，点击“发送给朋友”</div>
             </div>
-            <ul class="footer_1">
-                <li>识别二维码领取20元新人红包！</li>
-                <li></li>
-            </ul>
         </div>
 
     </div>
@@ -372,6 +372,11 @@ export default {
             qrcode:null,
             qrcode_show:false,
             erweima_base64:'',
+
+            
+            是否分享:false,
+            头像base64:'',
+            截图地址:""
         };
     },
     filters: {
@@ -385,6 +390,7 @@ export default {
             fenrun_huiyuan: 'agent/ShopBonus/get_list2',
             fenrun_type:'agent/ShopBonus/get_type',
             dailiren_fenrun_zichan:'agent/ShopBonus/dailiren_fenrun_zichan',    //代理人分润资产
+            实名信息:'实名认证/实名信息'
         })
         
     },
@@ -394,6 +400,7 @@ export default {
             get_fenrui:'agent/ShopBonus/get_list',
             fenrun_fenye:'agent/ShopBonus/xiayiye',
             dailiren_fenrun:'agent/ShopBonus/dailiren_fenrun',  //代理商分润
+            获取认证:'实名认证/获取认证'
         }),
         //提现服务协议
         WithdrawalAgreement(){
@@ -412,51 +419,69 @@ export default {
                 background: '#fff',
                 foreground: '#fff',
             })
-            setTimeout(()=>{
-                this.print();
-            },500)
+            
         },
         //生产二维码
         erweima(){
             console.log('生成二维码');
-            if(this.qrcode){
-                this.qrcode_show=true;
+            if(this.截图地址){
+                this.是否分享=true;
             }else{
                 openloading(true);
-                //图片地址转图片
-                if(!this.userInfo.headImgUrl){
-                    console.log(1)
-                    this.shengchengerweima()
-                }else{
-                    this.$axios.post('/api-u/users/imgtobase64',this.$qs.stringify({url:this.userInfo.headImgUrl})).then(x=>{
-                        if(x.data.code==200){
-                            this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
-                            this.shengchengerweima();
-                        }else{
-                            openloading(false);
-                            mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });   
-                        }
-                    }).catch(err=>{
-                        openloading(false);
-                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
-                    })
-                }
+                Promise.all([this.生成二维码(),this.生成头像()]).then(x=>{
+                    this.截图();
+                }).catch(err=>{
+                    openloading(false);
+                    console.log(err);
+                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                })
             }
         },
-        print(){
-            const el = this.$refs.printMe;
+        生成二维码(){
+            return new Promise((resolve, reject) => {
+                var url=window.location.origin+window.location.pathname+'#/BeInvited?pid='+this.userInfo.username+'&invitationtype=1';
+                console.log(url)
+                var el=this.$refs.二维码容器
+                    el.innerHTML='';
+                let qrcode = new QRCode(el, {  
+                        width: 200,  
+                        height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                        text: url, // 二维码内容  
+                        // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                        background: '#fff',
+                        foreground: '#fff',
+                    })
+                setTimeout(()=>{
+                    el.querySelector('img').style.width="100%";
+                    resolve()
+                },300)
+            });
+        },
+        生成头像(){
+            return new Promise((resolve, reject) => {
+                this.$axios.post('/api-u/users/imgtobase64',this.$qs.stringify({url:this.userInfo.headImgUrl})).then(x=>{
+                    if(x.data.code==200){
+                        this.头像base64='data:image/jpeg;base64,'+x.data.data;
+                        resolve()
+                    }else{
+                        reject()
+                    }
+                }).catch(err=>{
+                    reject()
+                })
+            });
+        },
+        截图(){
+            const el = this.$refs.生成容器;
             const options = {
                 useCORS: true,
                 logging: false
             }
             html2canvas(el,options).then(canvas => {
-                this.qrcode=canvas.toDataURL();
-                this.qrcode_show=true;
+                this.截图地址=canvas.toDataURL();
+                this.是否分享=true;
                 openloading(false);
             });
-        },
-        close_1(){
-            this.qrcode_show=false;
         },
         //申请区域代理
         RegionalAgencyAgreement(){
@@ -512,36 +537,33 @@ export default {
                 method: "get",
                 url: "/api-u/users/alipay",
                 // data: this.$qs.stringify(obj),
-                // data:obj,
                 params: obj
-            })
-                .then(x => {
-                    console.log(x);
-                    if (x.data.code == 200) {
-                        // this.getagentUser();
-                        this.$store.dispatch("actions_agentUser")
-                        mui.alert(x.data.msg, "提示", "好的", function() {}, "div");
-                    } else if ( x.data.code == "PAYEE_USER_INFO_ERROR" || x.data.code == "PAYEE_ACC_OCUPIED" ) {
-                        // mui.toast(x.data.msg, { duration: 2000, type: "div" });
-                        mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
-                        this.input_name_box = true;
-                    } else {
-                        // mui.toast("系统错误，请稍后再试。", {duration: 2000,type: "div"});
-                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
-                    }
-                    openloading(false);
-                    this.CanBePresented = true;
-                })
-                .catch(error => {
-                    console.log(error);
-                    mui.toast("系统错误，请稍后再试。", {
-                        duration: 2000,
-                        type: "div"
-                    });
-                    openloading(false);
-                    this.CanBePresented = true;
-                    this.input_name_box = false;
+            }).then(x => {
+                console.log(x);
+                if (x.data.code == 200) {
+                    // this.getagentUser();
+                    this.$store.dispatch("actions_agentUser")
+                    mui.alert(x.data.msg, "提示", "好的", function() {}, "div");
+                } else if ( x.data.code == "PAYEE_USER_INFO_ERROR" || x.data.code == "PAYEE_ACC_OCUPIED" ) {
+                    // mui.toast(x.data.msg, { duration: 2000, type: "div" });
+                    mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
+                    this.input_name_box = true;
+                } else {
+                    // mui.toast("系统错误，请稍后再试。", {duration: 2000,type: "div"});
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                }
+                openloading(false);
+                this.CanBePresented = true;
+            }).catch(error => {
+                console.log(error);
+                mui.toast("系统错误，请稍后再试。", {
+                    duration: 2000,
+                    type: "div"
                 });
+                openloading(false);
+                this.CanBePresented = true;
+                this.input_name_box = false;
+            });
         },
         //支付密码
         passwad_change() {
@@ -623,25 +645,6 @@ export default {
         go(x) {
             this.$router.push(x);
         },
-        //获取代理人信息
-        // getagentUser() {
-        //     this.$axios({
-        //         method: "get",
-        //         url: "/api-u/agentUser/me?userid=" + this.userInfo.username
-        //     }).then(x => {
-        //         if (x.data.code != 200) {
-        //             // this.agentUser = false;
-        //             this.$router.push("/agent/ApplicationNotes");
-        //         } else {
-        //             this.agentUser = x.data.data;
-        //             this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
-        //             this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
-        //         }
-        //     }).catch(error => {
-        //         this.agentUser = false;
-        //         this.$router.push("/agent/ApplicationNotes");
-        //     });
-        // },
         //查看下级带来的收益
         subsidies() {
             this.butie.loading = true;
@@ -717,12 +720,14 @@ export default {
         //获取店铺分润 会员
         this.get_fenrui(this.fenrun_huiyuan);
         //代理商分润资产
-        this.dailiren_fenrun()
+        this.dailiren_fenrun();
+        //获取实名认证信息
+        this.获取认证(this.userInfo.username);
     }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 #Agent {
     height: 100%;
@@ -1484,75 +1489,140 @@ export default {
         
     }
 }
-</style>
 
-<style lang="scss">
-#Agent .qrcode_box{
-    width: 273px;
-    background:#ffffff;
+
+.生成容器{
+    width: 245px;
+	background-color: #e96969;
     position: fixed;
-    padding: 20px 25px;
+    bottom: 0px;
     left: -100%;
-    // top:50px;
-    .header_1{
-        display: flex;
-        .img_box{
-            width: 42px;
-            height: 42px;
-            margin:0px 10px 0px 0px;
-            flex-shrink: 0;
+    text-align: center;
+    overflow: hidden;
+    .半圆{
+        background: #db4141;
+        position: absolute;
+        width: 200%;
+        height: 500px;
+        bottom: 0px;
+        left: -50%;
+        border-radius: 100%;
+    }
+    .提示{
+        color: rgba(255, 255, 255, 1);
+    	font-size: 10px;
+        margin: 4px 0px 8px;
+    }
+    .标题{
+        .标题1{
+            position: relative;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            z-index: 1;
+        }
+        padding: 10px 0px 26px;
+        color: rgba(255, 255, 255, 1);
+    	font-size: 14px;
+        position: relative;
+        z-index: 1;
+        .钱{
+            font-weight: bold;
+            font-size: 36px;
+        }
+    }
+    .图片容器{
+        margin: 0px auto 0px;
+        width: 178px;
+    	height: 178px;
+        position: relative;
+        .二维码容器{
+            width: 100%;
+            height: 100%;
             img{
                 width: 100%;
                 height: 100%;
-                border-radius: 100%;
             }
         }
-        .text_1{
-            width: 0;
-            flex-grow: 1;
-            color: rgba(80, 80, 80, 1);
-            line-height: 20px;
-            >div:nth-child(1){
-                font-size: 14px;
-            }
-            >div:nth-child(2){
-                font-size: 12px;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-        }
-    }
-    .erweima{
-        margin: 20px auto 8px;
-        width: 200px;
-        height: 200px;
-        position: relative;
-        >img{
+        .头像{
             position: absolute;
-            width: 50px;
-            height: 50px;
             top: 0px;
             bottom: 0px;
             left: 0px;
             right: 0px;
             margin: auto;
-            border-radius: 10px;
-        }
-        >div{
+            width: 44px;
+            height: 44px;
+            border:2px solid #ffffff;
+            background: #ffffff;
+            border-radius: 8px;
             img{
+                border: 1px solid #cccccc;
                 width: 100%;
                 height: 100%;
+                border-radius: 8px;
             }
         }
     }
-    .footer_1{
-        color: rgba(80, 80, 80, 1);
+    .文本1{
+        color: rgba(229, 229, 229, 1);
     	font-size: 12px;
-        text-align: center;
+        padding: 9px 0px;
     }
 }
 
-
+.分享显示框{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 10;
+    background: rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .内容{
+        width: 245px;
+        position: relative;
+        .关闭{
+            width: 36px;
+        	height: 36px;
+            background: #ffffff;
+            color: #999999;
+            text-align: center;
+            line-height: 36px;
+            position: absolute;
+            right: 0px;
+            top: -50px;
+            border-radius: 100%;
+            ::after{
+                position: absolute;
+                left: 0px;
+                right: 0px;
+                bottom: -14px;
+                margin: auto;
+                height: 14px;
+                width: 1px;
+                content: "";
+                background: #ffffff;
+            }
+        }
+        .图片容器{
+            img{
+                width: 100%;
+            }
+        }
+        .文本{
+            height: 35px;
+            line-height: 35px;
+            color: rgba(56, 56, 56, 1);
+            background-color: rgba(255, 255, 255, 1);
+            font-size: 14px;
+            border-radius: 35px;
+            margin: 11px 0px;
+            text-align: center;
+        }
+    }
+}
 </style>
-

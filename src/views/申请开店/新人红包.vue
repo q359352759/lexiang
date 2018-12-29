@@ -12,13 +12,15 @@
             <div></div>
             <ul class="mui-table-view box_1">
 				<li class="mui-table-view-cell item" >
-                    <span class="title_1">红包类型：</span>
-                    <span>店铺新人红包</span>
+					<!-- <a class="mui-navigate-right"> -->
+                        <span class="title_1">红包类型：</span>
+                        <span>店铺新人红包</span>
+					<!-- </a> -->
 				</li>
                 <li class="mui-table-view-cell item" >
                     <span class="title_1">红包标题：</span>
                     <div class="input_1">
-                        <input type="text" placeholder="请输入红包标题" v-model="Red_envelopes.headline">
+                        <input type="text" placeholder="请输入红包标题" :value="新人红包.headline" @input="updateVuex($event,'headline')">
                     </div>
 				</li>
 				<li class="mui-table-view-cell item" >
@@ -28,7 +30,7 @@
                 <li class="mui-table-view-cell item" >
                     <span class="title_1">红包金额：</span>
                     <div class="input_1">
-                        <input type="text" placeholder="请输入红包金额" v-model="Red_envelopes.amount">
+                        <input type="text" placeholder="请输入红包金额" :value="新人红包.amount" @input="updateVuex($event,'amount')">
                     </div>
                     <span @tap="wenhao()" class="wenhao"><i class="icon iconfont icon-wenhao"></i></span>
                     <span>元</span>
@@ -36,12 +38,12 @@
 			</ul>
             <ul class="mui-table-view box_1">
                 <li class="mui-table-view-cell item" >
-                    <div @click="change_radio_2(0)" class="radio_1" :class="{'active':Red_envelopes.deductionType==0}">
+                    <div @click="更新红包key(['deductionType',0])" class="radio_1" :class="{'active':新人红包.deductionType==0}">
                         <i class="icon iconfont icon-xuanze"></i>
                     </div>
                     <span>可抵扣支付金额的</span>
                     <div class="input_2">
-                        <input type="text" v-model="Red_envelopes.percentage" />
+                        <input type="text" :value="新人红包.percentage" @input="updateVuex($event,'percentage')"/>
                     </div>
                     <span>%</span>
 				</li>
@@ -49,16 +51,16 @@
 
             <ul class="mui-table-view box_1">
                 <li class="mui-table-view-cell item" >
-                    <div @click="change_radio_2(1)" class="radio_1" :class="{'active':Red_envelopes.deductionType==1}">
+                    <div @click="更新红包key(['deductionType',1])" class="radio_1" :class="{'active':新人红包.deductionType==1}">
                         <i class="icon iconfont icon-xuanze"></i>
                     </div>
                     <span>每满</span>
                     <div class="input_2">
-                        <input type="text" v-model="Red_envelopes.expire">
+                        <input type="text" :value="新人红包.expire" @input="updateVuex($event,'expire')">
                     </div>
                     <span>元，可抵扣</span>
                     <div class="input_2">
-                        <input type="text" v-model="Red_envelopes.deduction">
+                        <input type="text" :value="新人红包.deduction" @input="updateVuex($event,'deduction')">
                     </div>
                     <div>元</div>
 				</li>
@@ -79,7 +81,7 @@
 
          <!-- 红包通用说明 -->
         <hongBaoShuoMing  v-show="hongBaoShuoMing_show"/>
-            
+        
     </div>
 </template>
 
@@ -87,6 +89,7 @@
 
 // 红包通用说明
 import hongBaoShuoMing from '@/components/hongBaoShuoMing.vue'
+import { mapGetters, mapMutations } from 'vuex';
 export default {
     name:'',
     components:{
@@ -125,11 +128,21 @@ export default {
         }
     },
     computed:{
+        ...mapGetters({
+            新人红包:'申请开店/新人红包',
+        }),
         myshop(){
             return this.$store.state.myshop
         }
     },
     methods:{
+        ...mapMutations({
+            更新红包key:'申请开店/更新红包key',
+            红包是否能提交:'申请开店/红包是否能提交'
+        }),
+        updateVuex(e,key){
+            this.更新红包key([key,e.target.value])
+        },
         change_radio_2(x){
             this.Red_envelopes.deductionType=x;
         },
@@ -155,48 +168,59 @@ export default {
         Sure(){
             var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
             var zhengshu_test=/^[1-9]+[0-9]*]*$/;   //整数
-            if(!this.Red_envelopes.headline){
+            this.红包是否能提交(false);
+            if(!this.新人红包.headline){
                 mui.toast("请填写红包标题。", { duration: 2000, type: "div" });
                 return
-            }else if(!this.Red_envelopes.amount){
+            }else if(!this.新人红包.amount){
                 mui.toast("请填写红包金额。", { duration: 2000, type: "div" });
                 return
-            }else if(this.Red_envelopes.amount<10){
+            }else if(this.新人红包.amount<10){
                 mui.toast("红包金额不能小于10元。", { duration: 2000, type: "div" });
                 return
-            }else if(!number_test.test(this.Red_envelopes.amount) || this.Red_envelopes.amount<0){
+            }else if(!number_test.test(this.新人红包.amount) || this.新人红包.amount<0){
                 mui.toast("红包金额有误。", { duration: 2000, type: "div" });
                 return
-            }else if(!zhengshu_test.test(this.Red_envelopes.amount)){
+            }else if(!zhengshu_test.test(this.新人红包.amount)){
                 mui.toast("红包金额不能有小数。", { duration: 2000, type: "div" });
                 return
-            }else if(this.Red_envelopes.deductionType==0){
-                if(!this.Red_envelopes.percentage || !number_test.test(this.Red_envelopes.percentage)){
+            }else if(this.新人红包.deductionType==0){
+                if(!this.新人红包.percentage || !number_test.test(this.新人红包.percentage)){
                     mui.toast("可抵扣比例填写有误。", { duration: 2000, type: "div" });
                     return
                 }
-            }else if(this.Red_envelopes.deductionType==1){
-                if(!this.Red_envelopes.expire || !number_test.test(this.Red_envelopes.expire) || !this.Red_envelopes.deduction || !number_test.test(this.Red_envelopes.deduction)){
+            }else if(this.新人红包.deductionType==1){
+                if(!this.新人红包.expire || !number_test.test(this.新人红包.expire) || !this.新人红包.deduction || !number_test.test(this.新人红包.deduction)){
                     mui.toast("满减金额填写有误。", { duration: 2000, type: "div" });
                     return;
                 }
             }
-            // this.Red_envelopes.shopid=this.myshop.shopid ? this.myshop.shopid : '';
-            sessionStorage.Red_envelopes_0=JSON.stringify(this.Red_envelopes);
-            console.log(this.Red_envelopes);
+             this.红包是否能提交(true);
             history.back();
+            // this.$axios({
+            //     method:'post',
+            //     url:'/api-s/shops/redenvelope/add',
+            //     data:this.Red_envelopes,
+            // }).then(x=>{
+            //     console.log(x)
+            // }).catch(err=>{
+            //     console.log(err)
+            // })
         }
     },
     beforeCreate: function() {
+        
         //查询我的店铺
         this.$store.commit('setMyshop');
         // console.group('------beforeCreate创建前状态------');
     },
     created: function() {        
-        console.log(sessionStorage.Red_envelopes_0);
-        try {
-             this.Red_envelopes=JSON.parse(sessionStorage.Red_envelopes_0);
-        } catch (error) {}
+        // console.log(sessionStorage.Red_envelopes_0);
+        // try {
+        //      this.Red_envelopes=JSON.parse(sessionStorage.Red_envelopes_0);
+        // } catch (error) {
+            
+        // }
         // console.group('------created创建完毕状态------');
     },
     beforeMount: function() {
@@ -276,6 +300,7 @@ export default {
             height: 25px;
             background-color: rgba(229, 229, 229, 1);
             input{
+                text-align: center;
                 height: 100%;
                 background: none;
             }

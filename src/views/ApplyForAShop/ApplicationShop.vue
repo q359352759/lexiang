@@ -127,38 +127,6 @@
                     </table>
                 </li>
             </ul>
-            <!-- <ul class="box_4">
-                <li class="title_1">
-                    <span>店铺红包：</span>
-                    <span class="tishi">(顾客首次扫码赠送红包，每客赠送一次)</span>
-                </li>
-                <li class="table_box">
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    20：
-                                    <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_obj.WIFI}">
-                                        <i class="icon iconfont icon-xuanze"></i>
-                                    </div>
-                                </td>
-                                <td>
-                                    30：
-                                    <div @click="change_radio_2()" class="radio_1">
-                                        <i class="icon iconfont icon-xuanze"></i>
-                                    </div>
-                                </td>
-                                <td>
-                                    自定义：
-                                    <div @click="change_radio_2()" class="radio_1">
-                                        <i class="icon iconfont icon-xuanze"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </li>
-            </ul> -->
             <ul class="mui-table-view box_6">
                 <li class="mui-table-view-cell item" >
 					<a class="mui-navigate-right" @tap="ShopRedEnvelopes()">
@@ -171,7 +139,11 @@
             <div class="box_5">
                 <span>推荐人：</span>
                 <input type="text" v-model="shop_obj.referrerPhone" placeholder="请输入推荐人电话">
+                <span class="mui-text-right">张孝祥</span>
             </div>
+
+            <div class="推荐人错误">推荐人无效：该推荐人不属于本区域，请填写本区域的推荐人！</div>
+
             <div class="Agreement">
                 <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_Agreement}">
                     <i class="icon iconfont icon-xuanze"></i>
@@ -182,6 +154,8 @@
 
             <!-- <button @click="add()" class="btn_1">提 交</button> -->
             <btn @click.native="add()" value="提交"/>
+            <button @click="推荐人检测">推荐人检测</button>
+
             <!-- <button @click="weixinmaptest()">跳转微信地图测试</button>
             <button @click="add()">申请通过后的店铺</button> -->
         </div>
@@ -525,6 +499,7 @@ export default {
                 mui.toast("请设置店铺新人红包。", { duration: 2000, type: "div" });
                 return
             }
+            
             if(this.shop_obj.referrerPhone){
                 var phone_test = /^1\d{10}$/;
                 if(!phone_test.test(this.shop_obj.referrerPhone)){
@@ -888,8 +863,11 @@ export default {
 
         try {
             this.Red_envelopes=JSON.parse(sessionStorage.Red_envelopes_0);     
-        } catch (error) {
-        }
+        } catch (error) {};
+
+        
+
+
     },
     beforeUpdate: function() {
         // console.group('beforeUpdate 更新前状态===============》');
@@ -930,10 +908,14 @@ export default {
 };
 </script>
 
-
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 
+.推荐人错误{
+    padding: 12px 15px  ;
+	color: rgba(217, 57, 59, 1);
+	font-size: 12px;
+}
 #ApplicationShop {
     height: 100%;
     .mui-content{

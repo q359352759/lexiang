@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
   name: "",
   data() {
@@ -37,13 +39,11 @@ export default {
     };
   },
   methods: {
+    ...mapMutations({
+            更新店铺key:'申请开店/更新店铺key'
+    }),
     SelectionTime(x) {
       this.active = x;
-      // if(x==1){
-      //     this.active=(this.active==0 || this.active==2) ? 1 : 0
-      // }else{
-      //     this.active=(this.active==0 || this.active==1) ? 2 : 0
-      // }
       if (x == 0) return;
       this.timePicker.show(res => {
         console.log(res.value);
@@ -55,8 +55,10 @@ export default {
       });
     },
     queding() {
-      this.$store.state.apply_for_a_shop.creationTime = this.startTime;
-      this.$store.state.apply_for_a_shop.endTime = this.entTime;
+      this.更新店铺key(['openTime', this.startTime])
+      this.更新店铺key(['closeTime', this.entTime])
+      // this.$store.state.apply_for_a_shop.creationTime = this.startTime;
+      // this.$store.state.apply_for_a_shop.endTime = this.entTime;
       // this.$store.push()
       history.back();
     }

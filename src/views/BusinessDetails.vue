@@ -342,7 +342,7 @@ export default {
         },
         //
         back_1(){
-            //二维码进入
+            //二维码进入 获取其他非主页进入
             var backUrl=sessionStorage.backUrl
             if(this.isfenxiang || backUrl){
                 this.$router.push('/home')
@@ -834,7 +834,9 @@ export default {
         this.isfenxiang=this.$route.query.fenxiang ? true : false;
         this.hongbaoid=this.$route.query.hongbaoid ? this.$route.query.hongbaoid : ''; 
 
-        sessionStorage.backUrl=window.location.hash.substring(1)
+        if(this.isfenxiang){
+            sessionStorage.backUrl=window.location.hash.substring(1)
+        }
 
         try {
             this.userInfo=JSON.parse(localStorage.userInfo);
@@ -1398,7 +1400,7 @@ export default {
         text-align: center;
         span {
             display: inline-block;
-            line-height: 44px;
+            line-height: 36px;
             position: relative;
             font-size: 0.14rem;
             color: #848484;
