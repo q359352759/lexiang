@@ -8,7 +8,7 @@ export default {
         店铺:{
             //============
             userid:'',      //用户Id
-            name:'店铺名称123',        //店铺名
+            name:'',        //店铺名
             shopType:'',    //店铺类型
             phone:'',       //联系电话
             areaCode:'',    //区域code
@@ -65,7 +65,11 @@ export default {
             expire:'',          //满多少
             deduction:'',       //减多少
         },
-        红包ok:true,
+        红包ok:false,
+        推荐人:'',
+        用户推荐人:'',
+        区域代理商:'',
+        重新提交:false
     },
     getters:{
         店铺(state){
@@ -76,12 +80,26 @@ export default {
         },
         红包ok(state){
             return state.红包ok
+        },
+        推荐人(state){
+            return state.推荐人;
+        },
+        用户推荐人(state){
+            return state.用户推荐人
+        },
+        区域代理商(state){
+            return state.区域代理商
+        },
+        重新提交(state){
+            return state.重新提交
         }
     },
     mutations:{
+        设置重新提交(state,type){
+            state.重新提交=type
+        },
         更新店铺key(state,[key,val]){
             state.店铺[key]=val;
-            console.log(key,val);
         },
         删除环境图片(state,index){
             state.店铺.arrEnvironmentalImg.splice(index,1)
@@ -90,17 +108,87 @@ export default {
             state.店铺.arrEnvironmentalImg.push(base64)
         },
         设置店铺服务(state,id){
-            state.店铺.arrServiceType.push(id)
+            var obj=state.店铺.arrServiceType.find(x=>x==id);
+            if(!obj){
+                state.店铺.arrServiceType.push(id)
+            }else{
+                var newlist=state.店铺.arrServiceType.filter(x=>x!=id);
+                console.log(newlist)
+                state.店铺.arrServiceType=newlist;
+            }
         },
-
         更新红包key(state,[key,val]){
             state.新人红包[key]=val;
         },
         红包是否能提交(state,type){
             state.红包ok=type
+        },
+        保存推荐人信息(state,obj){
+            state.推荐人=obj;
+        },
+        保存用户推荐人(state,obj){
+            state.用户推荐人=obj;
+        },
+        保存代理商信息(state,obj){
+            console.log(obj);
+            state.区域代理商=obj;
+            if(!state.推荐人 && !state.用户推荐人 && obj){
+                var newobj=Object.assign({},obj);
+                    newobj.realName=obj.name
+                state.保存推荐人信息=obj;
+            }
+        },
+        重新绑定店铺信息(state,obj){
+            state.店铺=obj;
+            state.重新提交=true;
+        },
+        重新绑定红包(state,obj){
+            state.新人红包=obj;
+            state.红包ok=true;
         }
     },
     actions: {
+        重新绑定店铺信息({commit},obj){
+            return new Promise((resolve, reject) => {
+                commit('重新绑定店铺信息',obj);
+                resolve();
+            });
+        },
+        重新绑定红包({commit},obj){
+            return new Promise((resolve, reject) => {
+                commit('重新绑定红包',obj);
+                resolve()
+            });
+        },
+        更新店铺key({commit},list){
+            commit('更新店铺key',list)
+        },
+        保存推荐人信息({commit},obj){
+            commit('保存推荐人信息',obj);
+        },
+        保存用户推荐人({commit},obj){
+            commit('保存用户推荐人',obj)
+        },
+        查询代理人({},username){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-u/agentUser/me?userid='+username).then(x=>{
+                    resolve(x);
+                }).catch(err=>{
+                    reject(err);
+                })
+            });
+        },
+        根据区域查询代理商({commit},code){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-u/areaManager/findByAreaCode?areaCode='+code).then(x=>{
+                    commit('保存代理商信息',x.data.data);
+                    resolve(x);
+                }).catch(err=>{
+                    reject(reject)
+                })
+            });
+        }
+        
         
     },
     modules: {

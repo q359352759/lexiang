@@ -69,7 +69,7 @@
             
             <div class="mask" v-show="get_myshop">
                 <span>
-                    正在获取店铺数据...
+                    {{text}}...
                 </span>
             </div>
         </div>
@@ -83,6 +83,7 @@ export default {
     data(){
         return{
             get_myshop:true,
+            text:'正在获取数据'
         }
     },
     computed:{
@@ -93,7 +94,7 @@ export default {
     methods:{
         ApplicationShop(){
             sessionStorage.removeItem('Red_envelopes_0');
-            this.$router.push('/ApplicationShop');
+            this.$router.push('/shenqingkaidian');
         },
         init(){
             if(!this.myshop || !this.myshop.id){
@@ -102,7 +103,7 @@ export default {
             }else if(this.myshop.shopid && this.myshop.state!=1){
                 console.log('有店铺没通过');
                 this.get_myshop=false;
-                this.$router.push('/ApplicationShop')
+                this.$router.push('/shenqingkaidian')
             }else if(this.myshop.shopid && this.myshop.state==1){
                 console.log('有店铺');
                 // this.get_myshop=false
@@ -118,7 +119,8 @@ export default {
                 console.log(this.myshop);
                 this.init();
             }).catch(err=>{
-                console.log('获取店铺信息失败')
+                console.log('获取店铺信息失败');
+                this.text='网路错误，稍后再试。'
             })
         }else{
             this.init()

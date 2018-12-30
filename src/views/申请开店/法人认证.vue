@@ -364,6 +364,7 @@ export default {
         },
         // 开始提交
         add() {
+            this.更新店铺key(['iaiName','']);
             var this_1 = this;
             if (!this.zhengmian_ok || !this.fanmian_ok) {
                 mui.toast("请先上传完整的证件照。", { duration: 2000, type: "div" });
@@ -374,7 +375,6 @@ export default {
             }
             // this.add_loading = true;
 
-            
             this.更新店铺key(['sex',this.Positive_obj.sex=="男" ? 0 : 1]);
             this.更新店铺key(['nation',this.Positive_obj.nation]);
             this.更新店铺key(['birthday',this.Positive_obj.birthday]);

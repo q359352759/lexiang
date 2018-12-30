@@ -37,7 +37,9 @@
                 </div>
             </form>
     
-    
+        </div>
+        <div class="获取数据中" v-show="!获取完成">
+            <div>{{text}}</div>
         </div>
     </div>
 </template>
@@ -52,12 +54,15 @@ export default {
     },
     data () {
         return {
-            phone:''
+            phone:'',
+            text:'获取数据中',
+            获取完成:false
         }
     },
     methods: {
         ...mapActions({
-            get_agentUser_phone:'agent/get_agentUser_phone'
+            get_agentUser_phone:'agent/get_agentUser_phone',
+            actions_agentUser:'actions_agentUser'
         }),
         tijiao(){
             var phone_test=/^[1][0-9]{10}/;
@@ -81,7 +86,19 @@ export default {
         }
     },
     mounted() {
-        
+        this.actions_agentUser().then(x=>{
+            console.log('获取代理商信息',x);
+            if(x.data.code==200){
+                this.$router.push('/Agent');
+            }else if(x.data.code){
+                this.获取完成=true;
+            }else{
+                this.text="网络错误，稍后再试。"
+            }
+        }).catch(err=>{
+            this.text="网络错误，稍后再试。"
+            console.log(err);
+        })
     },
 }
 </script>
@@ -129,6 +146,17 @@ export default {
     padding: 15px 0px;
 }
 
+.获取数据中{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 </style>
 
 

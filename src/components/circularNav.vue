@@ -74,7 +74,7 @@ export default {
             if(!this.$store.state.myshop){
                 this.$router.push("/ShopInstructions");
             }else if(this.$store.state.myshop.state==0 || this.$store.state.myshop.state==2){
-                this.$router.push("/ApplicationShop");
+                this.$router.push("/shenqingkaidian");
             }else if(this.$store.state.myshop.state==1){
                 this.$router.push('/myshop')
             }else{

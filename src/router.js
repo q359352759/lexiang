@@ -137,6 +137,7 @@ const xuyuan = () => import ("@/views/xieyi/xuyuan.vue"); //预选区域代理�
 const dailijiaofei = () => import ("@/views/xieyi/dailijiaofei.vue"); //预选区域代理说明
 const WithdrawalAgreement = () => import ("@/views/xieyi/WithdrawalAgreement.vue"); //提现协议
 const renzhengxieyi = () => import ("@/views/xieyi/renzhengxieyi.vue"); //实名认证协议
+const 隐私政策 = resolve => { require.ensure([], () => { resolve(require("@/views/xieyi/隐私政策.vue")); }); }; //隐私政策
 
 
 // require.ensure(dependencies: String[], callback: function(require), chunkName: String)
@@ -185,6 +186,11 @@ export default new Router({
                 circularNav: circularNav
             }
         },{
+            path:'/xieyi/yinsizhengce',
+            name:"",
+            component:隐私政策
+        },
+        {
             path:'/Check',
             name:'',
             component:Check

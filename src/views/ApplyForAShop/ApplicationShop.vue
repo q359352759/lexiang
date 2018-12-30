@@ -351,7 +351,6 @@ export default {
             this.$store.state.apply_for_a_shop.nation=this.myshop.nation;
             this.$store.state.apply_for_a_shop.birthday=this.myshop.birthday;
             this.$store.state.apply_for_a_shop.iaiAddress=this.myshop.iaiAddress;
-            this.$store.state.apply_for_a_shop.idNumber=this.myshop.idNumber
             //法人认证
             this.$store.state.apply_for_a_shop.idNumber=this.myshop.idNumber;
             this.$store.state.apply_for_a_shop.issueArea=this.myshop.issueArea;

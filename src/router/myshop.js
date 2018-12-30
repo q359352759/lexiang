@@ -28,6 +28,7 @@ const 营业时间=resolve=>{ require.ensure([], () => {resolve( require('@/view
 const 法人认证=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/法人认证.vue') )}) }  
 const 营业执照=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/营业执照.vue') )}) }  
 const 新人红包=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/新人红包.vue') )}) }  
+const 店铺预览=resolve=>{ require.ensure([], () => {resolve( require('@/views/申请开店/店铺预览.vue') )}) }  
 
 
 
@@ -59,6 +60,10 @@ const myshops=[
         path:'/shenqingkaidian/xinrendianpu',
         name:'',
         component:新人红包
+    },{
+        path:'/shenqingkaidian/dianpuyulan',
+        name:'',
+        component:店铺预览
     },
 
 

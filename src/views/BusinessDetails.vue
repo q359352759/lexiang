@@ -101,6 +101,12 @@
 
             <!--专享-->
             <ul class="box_4" v-if="type_1==0">
+                <div v-show="!是否有新人专享" class="没有新人专享">
+                    <img src="image/15461558573731.png" alt="" srcset="">
+                </div>
+                <div v-show="!是否有生日专享" class="没有生日专享">
+                    <img src="image/20181230154528.png" alt="" srcset="">
+                </div>
                 <li v-for="(item, index) in Exclusive.list" :key="index" @tap="CommodityDetails_1(item)">
                     <div class="img_box">
                         <img v-if="item.comImg && item.comImg.split(',').length>0" :src="item.comImg.split(',')[0]" alt="" srcset="">
@@ -133,10 +139,11 @@
                     </div>
                 </li>
             </ul>
-            <loading v-if="type_1==0" :loadingtype="Exclusive.loading" :end="!Exclusive.loading && Exclusive.list.length!=0" :nodata="!Exclusive.loading && Exclusive.list.length==0" :text="'该店铺未发布专享商品'"/>
+            <loading v-if="type_1==0" :loadingtype="Exclusive.loading" :end="!Exclusive.loading && Exclusive.list.length!=0" />
 
 
             <ul class="box_5"  v-if="type_1==1">
+                
                 <li v-for="(item, index) in commodity.list" :key="index" @click="CommodityDetails(item)">
                     <div>
                         <div class="img_box">
@@ -296,6 +303,8 @@ export default {
             erweima_base64:'',
             xingren_hongbao:{},
             // isfenxiang:false
+            是否有新人专享:false,
+            是否有生日专享:false
         };
     },
     computed:{
@@ -326,7 +335,6 @@ export default {
         }
     },
     filters:{
-        //
         filter_juli(data){
             return data.replace('米','m').replace('公里','km')
         }
@@ -1421,6 +1429,13 @@ export default {
 }
 
 #BusinessDetails .box_4 {
+    .没有新人专享,
+    .没有生日专享{
+        margin: 5px ;
+        img{
+            width: 100%;
+        }
+    }
     padding: 3px 5px;
     > li {
         overflow: hidden;

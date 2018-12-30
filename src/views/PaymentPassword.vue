@@ -12,17 +12,17 @@
                         <input type="text" required placeholder="手机号码">
                     </li> -->
                     <li>
-                        <i class="icon iconfont icon-icon-mima"></i>
+                        <i class="icon iconfont icon-san"></i>
                         <input type="text" v-model="code" required placeholder="验证码">
                         <span @click="Verification()" class="Verification">{{time==0 ? '获取验证码' : time+'s'}} </span>
                     </li>
                     <li>
-                        <i class="icon iconfont icon-icon-mima"></i>
+                        <i class="icon iconfont icon-san"></i>
                         <input type="password" v-model="payPassword" required placeholder="请输入6位数字">
                         <!-- <span class="tishi">（6-16位数字字母组成）</span> -->
                     </li>
                     <li>
-                        <i class="icon iconfont icon-icon-mima"></i>
+                        <i class="icon iconfont icon-san"></i>
                         <input type="password" v-model="payPassword1" required placeholder="确认密码">
                     </li>
                 </ul>

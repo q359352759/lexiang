@@ -128,7 +128,7 @@ export default {
                 if(!this.radio_type_2){
                     mui.toast("请先同意协议。", { duration: 2000, type: "div" });
                     return;
-                }else if (!this.Account_obj.account) {
+                }else if (!this.Account_obj || !this.Account_obj.account) {
                     mui.toast("请设置收款账号", {duration: 2000,type: "div"});
                     return;
                 } else if (!this.ketixian || this.ketixian == 0 ) {

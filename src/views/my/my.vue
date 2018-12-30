@@ -140,7 +140,7 @@
                 <btn value="退出登录" />
             </div>
 
-            <button @click="$router.push('/shenqingkaidian')">申请开店</button>
+            <!-- <button @click="$router.push('/shenqingkaidian')">申请开店</button> -->
             <!-- <button @click="更换主题色()">更换主题色</button> -->
 
             <!-- <button @click="test()">测试</button>
@@ -347,7 +347,7 @@ export default {
             if(!this.myshop){
                 this.$router.push("/ShopInstructions");
             }else if(this.myshop.state==0 || this.myshop.state==2){
-                this.$router.push("/ApplicationShop");
+                this.$router.push("/shenqingkaidian");
             }else{
                 this.$router.push('/myshop')
             }
@@ -359,8 +359,10 @@ export default {
             localStorage.removeItem("userInfo");
             localStorage.removeItem('id');
             localStorage.removeItem('homeDialog');
+            localStorage.removeItem('vuex');
             sessionStorage.removeItem('backUrl');
             this.$router.push("/login");
+            location.reload()
         },
         //修改登录密码
         LoginPassword() {

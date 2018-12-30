@@ -114,10 +114,12 @@ export default {
         },
         //确定
         Sure() {
+            //执照号码
+            var test_zhizhao = /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/;
             if (!this.店铺.businessLicense) {
                 mui.toast("请选择营业执照！", { duration: 2000, type: "div" });
                 return;
-            }else if(!this.店铺.blnumber){
+            }else if(!this.店铺.blnumber || !test_zhizhao.test(this.店铺.blnumber)){
                 mui.toast("请填写执照号码！", { duration: 2000, type: "div" });
                 return;
             }

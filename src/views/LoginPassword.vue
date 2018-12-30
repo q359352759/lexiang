@@ -8,17 +8,17 @@
             <form class="box_1" @submit.prevent="submit()">
                 <ul>
                     <li>
-                        <i class="icon iconfont icon-mima"></i>
+                        <i class="icon iconfont icon-san"></i>
                         <input type="text" v-model="code" required placeholder="验证码">
                         <span @tap='get_codes()' class="Verification">{{time==0 ? '获取验证码' : time+'s'}}</span>
                     </li>
                     <li>
-                        <i class="icon iconfont icon-mima"></i>
+                        <i class="icon iconfont icon-san"></i>
                         <input v-model="password" type="password" required placeholder="新密码">
                         <span v-if="password==''" class="tishi">（6-16位数字字母组成）</span>
                     </li>
                     <li>
-                        <i class="icon iconfont icon-mima"></i>
+                        <i class="icon iconfont icon-san"></i>
                         <input v-model="password1" type="password" required placeholder="确认密码">
                     </li>
                 </ul>

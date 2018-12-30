@@ -66,8 +66,8 @@
                         </a>
                     </li>
                     <li class="mui-table-view-cell ">
-                        <a class="mui-navigate-right item_box">
-                            <span>隐私协议</span>
+                        <a class="mui-navigate-right item_box" @click="$router.push('/xieyi/yinsizhengce')">
+                            <span>隐私政策</span>
                         </a>
                     </li>
                     <li class="mui-table-view-cell ">

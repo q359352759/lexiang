@@ -102,10 +102,10 @@ export default {
                 id:'',
                 shopid:'',
                 type:'0',        //0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
-                name:'新人红包',        //名称
+                name:'新人红包',            //名称
                 headline:'店铺新人红包',    //标题
-                amount:'',      //金额
-                quantity:'',     //数量
+                amount:'',                 //金额
+                quantity:'',               //数量
                 startTime:'',   //开始时间
                 endTime:'',     //截止时间
                 // ================
@@ -133,7 +133,8 @@ export default {
         }),
         myshop(){
             return this.$store.state.myshop
-        }
+        },
+        
     },
     methods:{
         ...mapMutations({
@@ -185,7 +186,7 @@ export default {
                 mui.toast("红包金额不能有小数。", { duration: 2000, type: "div" });
                 return
             }else if(this.新人红包.deductionType==0){
-                if(!this.新人红包.percentage || !number_test.test(this.新人红包.percentage)){
+                if(!this.新人红包.percentage || !number_test.test(this.新人红包.percentage) || this.新人红包.percentage>100){
                     mui.toast("可抵扣比例填写有误。", { duration: 2000, type: "div" });
                     return
                 }
@@ -195,7 +196,7 @@ export default {
                     return;
                 }
             }
-             this.红包是否能提交(true);
+            this.红包是否能提交(true);
             history.back();
             // this.$axios({
             //     method:'post',

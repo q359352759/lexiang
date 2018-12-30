@@ -196,7 +196,6 @@
   }
 }
 #RegistrationAgreement .mui-bar {
-  background: rgba(39, 172, 110, 1);
   a {
     color: #ffffff;
   }
