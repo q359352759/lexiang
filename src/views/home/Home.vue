@@ -152,8 +152,18 @@
                             </div>
                         </div>
                         <div class="text_2">
-                            <span class="xianjia">￥{{item.sellingPrice}}</span>
-                            <s class="yuanjia">{{item.marketPrice}}</s>
+                            <div>
+                                <span class="xianjia">￥{{item.sellingPrice}}</span>
+                                <s class="yuanjia">{{item.marketPrice}}</s>
+                            </div>
+                            <div>
+                                <span class="zhuanxiang mui-pull-right" v-if="item.EXTYPE==0">
+                                    新人专享省{{Math.round((item.EXDEDUCTION-item.deduction)*100)/100}}元
+                                </span>
+                                <span class="zhuanxiang mui-pull-right" v-if="item.EXTYPE==1">
+                                    生日专享省{{Math.round((item.EXDEDUCTION-item.deduction)*100)/100}}元
+                                </span>
+                            </div>                            
                         </div>
                     </div>
                 </li>
@@ -284,13 +294,10 @@ export default {
             qrcode:'',//二维码
             qrcode_show:false,
             erweima_base64:'',      //base64用于嵌入二维码中
+            type_list:[]        //店铺类型
         };
     },
     computed:{
-        //店铺类型
-        type_list(){
-            return this.$store.state.shops_tree_list
-        },
         shop_list(){
             var this_1=this
             var list=this.shop.list;
@@ -742,11 +749,14 @@ export default {
         var this_1=this;
         this.img_list = ["image/home_1.jpg", "image/home_2.jpg", "image/home_3.jpg"];
         
+        try {
+            this.type_list=JSON.parse(localStorage.shops_tree_list);
+        } catch (error) {}
 
         if(this.userInfo){
             this.$store.commit('setfindByUserid');
         }
-
+        
         var query=this.$route.query;
         if(query.saoyisao && !sessionStorage.saoyisao){
             console.log('扫一扫');
@@ -1204,6 +1214,7 @@ export default {
         padding: 0px 0.06rem;
         .xiaoshou{
             >span:nth-child(1){
+                margin: 0px 3px 0px 0px;
                 display: inline-block;
                 width: 0.12rem;
                 height: 0.12rem;
@@ -1225,13 +1236,21 @@ export default {
                 font-size: 0.1rem;
             }
             span{
+                margin: 0px 0px 0px 3px;
                 font-size: 0.1rem;
                 color: #fc4c4c;
             }
         }
     }
     .text_2{
-        padding: 0px 0.06rem;    
+        padding: 0px 0.06rem 4px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        >div:nth-child(1){
+            display: flex;
+            align-items: flex-end;
+        }
         .xianjia{
             color: #d43030;
             font-size: 0.12rem;
@@ -1241,6 +1260,15 @@ export default {
             font-size: 0.1rem;
             color: #a6a6a6;
             margin: 0px 0px 0px 0.05rem;
+        }
+        .zhuanxiang{
+            border: 1px solid #e33c64;
+            font-size: 8px;
+            height: 13px;
+            color: #e33c64;
+            line-height: 11px;
+            padding: 0px 2px;
+            border-radius: 2px;
         }
     }
 }

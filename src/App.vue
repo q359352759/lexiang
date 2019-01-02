@@ -27,6 +27,7 @@
         <!-- <div @click="change_radio_2()" class="radio_1" :class="{'active':radio_type_2}">
             <i class="icon iconfont icon-xuanze"></i>
         </div> -->
+        <!-- window.scroll(0,0); -->
 
     </div>
 </template>

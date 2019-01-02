@@ -134,7 +134,6 @@ export default {
                                     // mui.alert('密码错误', "提示",'我知道了', function() {},"div");
                                     return;
                                 } else {
-                                    // console.log("获取个人信息", x);
                                     let userInfo=x.data.data;
                                     try {
                                         userInfo.nickname=b64DecodeUnicode(userInfo.nickname)

@@ -129,6 +129,12 @@ export default {
         // history.back();
         this.$emit('setTime',false);
     },
+    //获取指定年月天数
+    getDaysInOneMonth(year, month){ 
+        month = parseInt(month, 10); 
+        var d= new Date(year, month, 0); 
+        return d.getDate(); 
+    },
     //确定
     Sure() {
         var obj = {
@@ -145,10 +151,17 @@ export default {
             if(obj.type==1 && obj.end_day){
                 var time=obj.year+'-'+obj.month+'-'+obj.day;
                 var time_1=obj.end_year+'-'+obj.end_month+'-'+obj.end_day
-                if(time<time_1){
+                if(time>time_1){
                     mui.toast('时间选择有误。', {duration: "long", type: "div" });
                     return;
                 }
+            }
+            if(obj.type==0){
+                // console.log('获取指定年月天数',this.getDaysInOneMonth(this.year,this.month));
+                obj.day=1;
+                obj.end_year=this.year;
+                obj.end_month=this.month;
+                obj.end_day=this.getDaysInOneMonth(this.year,this.month)
             }
             this.$emit('setTime',obj);
         }

@@ -238,6 +238,7 @@ export default {
                 mui.toast("请同意业务代理合作协议!", {duration: 2000, type:"div"});
                 return;
             }
+            openloading(true)
             this.$axios({
                 method: "get",
                 url: "/api-u/agentUser/selectOne?phone=" + this.referrerPhone
@@ -245,24 +246,43 @@ export default {
                 if(x.data.code==200 && x.data.data!= null && x.data.data!= "null"){
                     this.add(); //添加
                 }else{
+                    openloading(false)
                     mui.toast("没有此推荐人。", { duration: 2000, type: "div" });
                 }
             }).catch(error => {
+                openloading(false)
                 mui.toast("系统错误，请稍后再试。", { duration: 2000, type: "div" });
             });
         },
         //注册
         add() {
             var this_1 = this;
+            var areaCode = "";
+            if (this.city[2].value) {
+                areaCode = this.city[2].value;
+            } else if (this.city[1].value) {
+                areaCode = this.city[1].value;
+            } else if (this.city[0].value) {
+                areaCode = this.city[0].value;
+            }
+            var obj = {
+                    referrerPhone: this.referrerPhone, //推荐人电话号码
+                    areaCode: areaCode, //区域code
+                    realName: this.realName, //真实姓名
+                    userid: this.userInfo.username,
+                    phone: this.userInfo.phone,
+                    openid:this.weixinobj.openid
+                };
             //先支付
             this.$axios({
                 method: "post",
-                // url: '/api-v/pay/getSandboxSignKey',
                 url: "/api-u/users/weixinpay/order",
-                data: this.$qs.stringify({
-                    openid: this.weixinobj.openid
-                })
+                // data: this.$qs.stringify({
+                //     openid: this.weixinobj.openid
+                // })
+                data: this.$qs.stringify(obj)
             }).then(x => {
+                openloading(false)
                 // this.addguanggaoji();     //添加广告机
                 // this_1.registered();      //正式环境放在支付成功后面
                 console.log(x);
@@ -276,10 +296,26 @@ export default {
                     success: function(res) {
                         // 支付成功后的回调函数
                         console.log(res);
-                        this_1.registered();
+                        openloading(true)
+                        setTimeout(()=>{
+                            this_1.actions_agentUser().then(x=>{
+                                console.log("获取用户代理人信息", x);
+                                if (x.data.code == 200) {
+                                    this_1.add_angentActivation();
+                                } else {
+                                    openloading(false);
+                                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                                }
+                            }).catch(err=>{
+                                openloading(false);
+                                mui.alert('系统繁忙，稍后再试。', "提示",'我知道了', function() {},"div");
+                            })
+                        },1000)
                     }
                 });
             }).catch(err => {
+                openloading(false)
+                 mui.toast("系统错误，请稍后再试。", { duration: 2000, type: "div" });
                 console.log(err);
             });
         },
@@ -313,7 +349,7 @@ export default {
                     mui.alert(x.data.message ? x.data.message : x.data.msg, "提示",'我知道了', function() {},"div");
                 } else {
                     // this.addguanggaoji();
-                    this.add_angentActivation()
+                    this.add_angentActivation();
                 }
             }).catch(err => {
                 mui.toast("系统错误请稍后再试！", {duration: 2000,type: "div"});

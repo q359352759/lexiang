@@ -2,7 +2,8 @@ import axios from '@/api/axios.js'
 
 import ShopBonus from '@/vuex/agent/ShopBonus.js'
 //代理商
-import RegionalAgent from '@/vuex/agent/RegionalAgent.js'   
+import RegionalAgent from '@/vuex/agent/RegionalAgent.js';
+import 分润 from '@/vuex/agent/分润.js'
 export default {
     namespaced:true,
     state:{
@@ -29,6 +30,7 @@ export default {
     },
     modules: {
         ShopBonus:ShopBonus,
-        RegionalAgent:RegionalAgent
+        RegionalAgent:RegionalAgent,
+        分润:分润
     }
 }

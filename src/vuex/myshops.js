@@ -2,7 +2,8 @@ import axios from '@/api/axios.js'
 
 import qs from "qs";
 
-import zichan from '@/vuex/myshop/zichan.js'
+import zichan from '@/vuex/myshop/zichan.js';
+import 销售 from '@/vuex/myshop/销售.js'
 export default {
     namespaced:true,
     state:{
@@ -25,6 +26,7 @@ export default {
         }
     },
     modules: {
-        zichan:zichan
+        zichan:zichan,
+        销售:销售
     }
 }

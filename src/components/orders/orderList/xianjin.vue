@@ -7,7 +7,7 @@
             </li>
             <li class="shop">
                 <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
-                <span>店铺名称</span>
+                <span>{{dingdan.shopName}}</span>
                 <i class="icon_right mui-icon mui-icon-arrowright"></i>
             </li>
         </ul>
@@ -18,8 +18,9 @@
             <li class="text_1">
                 <!-- 共计{{shangping.shopOrderCommoditys.length}}个商品，合计{{shangping.paymentAmount+shangping.deduction}}元，优惠{{shangping.deduction}}元。 -->
             </li>
-            <li class="btn_1 quxiao">取消</li>
-            <li @click="zhifu()" class="btn_1 zhifu">支付</li>
+            <li class="btn_1 quxiao" v-if="dingdan.state==0">取消</li>
+            <li @click="zhifu()" class="btn_1 zhifu" v-if="dingdan.state==0">支付</li>
+            <li class="btn_1 zhifu" v-if="dingdan.state==1">评价</li>
         </ul>
     </div>
 </template>

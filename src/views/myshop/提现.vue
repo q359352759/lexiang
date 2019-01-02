@@ -39,7 +39,8 @@
                         </span>
                     </span>
                 </div>
-                <button class="btn_1" @click="change_payment(true)">提交</button>
+                <!-- <button class="btn_1" @click="change_payment(true)">提交</button> -->
+                <btn value="提交" @click.native="change_payment(true)"/>
             </div>
             
             <!-- 密码输入框 -->
@@ -50,18 +51,31 @@
                     <div class="close_1" @click="change_payment(false)"><i class="mui-icon mui-icon-closeempty"></i></div>
                     <div class="title">支付密码</div>
                     <div class="input_box">
-                        <input type="tel" id="accout_password" maxlength="6" v-model="accout_password" @input="passwad_change()" pattern="\d*">
-                        <ul>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
+                        <input type="tel" ref="accoutpassword" id="accout_password" :class="{'active':accout_password.length>=6}" maxlength="6" v-model="accout_password" @input="passwad_change()" pattern="\d*">
+                        <ul @click="$refs.accoutpassword.focus()">
+                            <li>
+                                <span v-show="accout_password.length>0"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>1"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>2"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>3"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>4"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>5"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
                         </ul>
                         <div class="subsidy"></div>
                     </div>
                     <button @click="Put_forward()" class="btn_2">确定</button>
+
                 </div>
             </div>
             <!-- 提现名称 -->
@@ -87,19 +101,22 @@
 
 import { mapGetters,mapActions } from 'vuex';
 import {openloading} from '@/assets/js/currency.js';
-
+import btn from '@/components/button.vue'
 export default {
     name:'',
+    components: {
+        btn
+    },
     data(){
         return{
-            Account_obj:{}, //收款账号
-            amount:'',      //金额
+            Account_obj:{},         //收款账号
+            amount:'',              //金额
             radio_type_2:true,
             userInfo:'',    
-            payment: false,     //支付弹出框
-            accout_password:'', //支付密码
-            name:'',            //支付名
-            tixianzhong:false,  //提现中。。。
+            payment: false,         //支付弹出框
+            accout_password:'',     //支付密码
+            name:'',                //支付名
+            tixianzhong:false,      //提现中。。。
             input_name_box:false,   //输入提现名字
         }
     },
@@ -109,7 +126,7 @@ export default {
             zichan:'myshops/zichan/g_zichan'
         }),
         ketixian(){
-            if(this.zichan.balance){
+            if(this.zichan && this.zichan.balance){
                 return Math.floor(this.zichan.balance*100)/100
             }else{
                 return 0;
@@ -141,9 +158,9 @@ export default {
                 this.payment = x;
                 this.accout_password = "";
                 this.name = "";
-                setTimeout(function() {
-                    document.getElementById("accout_password").focus();
-                }, 500);
+                setTimeout(()=>{
+                    this.$refs.accoutpassword.focus()
+                }, 1000);
             }else{
                  this.payment=x
             }
@@ -180,21 +197,22 @@ export default {
             openloading(true); 
             console.log(obj)  
             this.$axios.post('/api-s/shops/basicsPay',obj).then(x=>{
+                window.scroll(0,0);
                 if (x.data.code == 200) {
-                        console.log(1)
-                        this.findshopTurnoverByShopid().then(x=>{
-                            openloading(false);
-                        })
-                        mui.alert(x.data.msg, "提示", "好的", function() {}, "div");
-                        this.tixianzhong = true;
-                    } else if ( x.data.code == "PAYEE_USER_INFO_ERROR" || x.data.code == "PAYEE_ACC_OCUPIED" ) {
-                        mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
-                        this.input_name_box = true;
+                    console.log(1)
+                    this.findshopTurnoverByShopid().then(x=>{
                         openloading(false);
-                    } else {
-                        openloading(false);
-                        mui.alert(x.data.msg ?  x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
-                    }
+                    })
+                    mui.alert(x.data.msg, "提示", "好的", function() {}, "div");
+                    this.tixianzhong = true;
+                } else if ( x.data.code == "PAYEE_USER_INFO_ERROR" || x.data.code == "PAYEE_ACC_OCUPIED" ) {
+                    mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
+                    this.input_name_box = true;
+                    openloading(false);
+                } else {
+                    openloading(false);
+                    mui.alert(x.data.msg ?  x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                }
             }).catch(err=>{
                 mui.alert('系统错误稍后再试。', "提示",'我知道了', function() {},"div");
                 this.tixianzhong = true;
@@ -213,11 +231,14 @@ export default {
         },
         //获取支付宝账号
         findAccount() {
+            openloading(true)
             this.$axios.get("/api-u/users/findAccount?userid=" + this.userInfo.username).then(x=>{
                 if (x.data.code==200) {
                     this.Account_obj = x.data.data;
                 }
+                 openloading(false)
             }).catch(err=>{
+                 openloading(false)
                 console.log(error);
             })
         },
@@ -404,19 +425,29 @@ export default {
             height: 39px;
             margin: 0px auto;
             position: relative;
+            input.active{
+                caret-color: rgba(255,255,255,0)
+            }
+            input::first-line {
+                color: red;
+            }
             input {
+                position: fixed;
+                left: -100%;
                 padding: 0px;
                 margin: 0px;
-                height: 100%;
-                letter-spacing: 31px;
-                padding: 0px 0px 0px 15px;
-                position: relative;
+                height: 0px;
+                letter-spacing: 34.5px;
+                padding: 0px 0px 0px 17px;
+                // position: relative;
                 z-index: 1;
                 border: none;
                 background: none;
                 width: 130%;
+                opacity: 0;
             }
             > ul {
+                z-index: 1;
                 position: absolute;
                 top: 0px;
                 left: 0px;
@@ -424,6 +455,9 @@ export default {
                 height: 100%;
                 display: flex;
                 border-right: 1px solid #cccccc;
+                text-align: center;
+                line-height: 37px;
+                font-size: 12px;
                 li {
                     border-left: 1px solid #cccccc;
                     border-top: 1px solid #cccccc;

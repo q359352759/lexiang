@@ -62,7 +62,7 @@
                     <div class="img_box">
                         <i class="icon iconfont icon-fenrun"></i>
                     </div>
-                    <div class="title">店铺分润</div>
+                    <div class="title">促销分润</div>
                     <div class="money">{{dailiren_fenrun_zichan.aggregateAmount ? dailiren_fenrun_zichan.aggregateAmount : 0}}</div>
                 </li>
                 <li :class="{'active':type_1==5}" @click="change_type(5)">
@@ -240,7 +240,10 @@
                             </span>
                         </span>
                     </div>
-                    <button class="btn_1" @click="change_payment(true)">提交</button>
+                    <!-- <button class="btn_1" @click="change_payment(true)">提交</button> -->
+                    <btn value="提交" @click.native="change_payment(true)"/>
+                    <button @click="获取测试()">点击获取数据测试</button>
+
                     <!-- <button class="btn_1" @click="alipay()">支付宝测试</button> -->
                 </div>
             </div>
@@ -252,14 +255,26 @@
                     <div class="close_1" @click="change_payment(false)"><i class="mui-icon mui-icon-closeempty"></i></div>
                     <div class="title">支付密码</div>
                     <div class="input_box">
-                        <input type="tel" id="accout_password" maxlength="6" v-model="accout_password" @input="passwad_change()" pattern="\d*">
-                        <ul>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
-                            <li></li>
+                        <input type="password" ref="accoutpassword" id="accout_password" maxlength="6" :class="{'active':accout_password.length>=6}" v-model="accout_password" @input="passwad_change()" pattern="\d*">
+                        <ul @click="$refs.accoutpassword.focus()">
+                            <li>
+                                <span v-show="accout_password.length>0"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>1"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>2"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>3"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>4"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
+                            <li>
+                                <span v-show="accout_password.length>5"><i class="icon iconfont icon-xinghao"></i></span>
+                            </li>
                         </ul>
                         <div class="subsidy"></div>
                     </div>
@@ -279,8 +294,6 @@
                     </li>
                 </ul>
             </form>
-
-            
 
         </div>
 
@@ -320,6 +333,7 @@
             </div>
         </div>
 
+        
     </div>
 </template>
 
@@ -330,7 +344,7 @@ import QRCode from 'qrcodejs2'
 import loading from "@/components/loading.vue";
 import { dateFtt, openloading } from "@/assets/js/currency";
 import { mapActions, mapGetters } from 'vuex';
-
+import btn from '@/components/button.vue';
 // 店铺分润
 // import ShopBonus from '@/components/agent/ShopBonus.vue'
 const ShopBonus = resolve => { require.ensure([], () => { resolve(require("@/components/agent/ShopBonus.vue")); }); }; //关于我们
@@ -340,7 +354,8 @@ export default {
     name: "Agent",
     components: {
         loading,
-        ShopBonus
+        ShopBonus,
+        btn
     },
     data() {
         return {
@@ -400,7 +415,8 @@ export default {
             get_fenrui:'agent/ShopBonus/get_list',
             fenrun_fenye:'agent/ShopBonus/xiayiye',
             dailiren_fenrun:'agent/ShopBonus/dailiren_fenrun',  //代理商分润
-            获取认证:'实名认证/获取认证'
+            获取认证:'实名认证/获取认证',
+            获取分润:'agent/分润/获取分润'
         }),
         //提现服务协议
         WithdrawalAgreement(){
@@ -542,6 +558,7 @@ export default {
                 console.log(x);
                 if (x.data.code == 200) {
                     // this.getagentUser();
+                    window.scroll(0,0);
                     this.$store.dispatch("actions_agentUser")
                     mui.alert(x.data.msg, "提示", "好的", function() {}, "div");
                 } else if ( x.data.code == "PAYEE_USER_INFO_ERROR" || x.data.code == "PAYEE_ACC_OCUPIED" ) {
@@ -632,8 +649,9 @@ export default {
                 this.payment = x;
                 this.accout_password = "";
                 this.name = "";
-                setTimeout(function() {
-                    document.getElementById("accout_password").focus();
+                setTimeout(()=>{
+                    this.$refs.accoutpassword.focus()
+                    // document.getElementById("accout_password").focus();
                 }, 500);
             } else {
                 this.payment = x;
@@ -682,6 +700,14 @@ export default {
             }).catch(err=>{
                 console.log("获取代理商信息错误", err);
             })
+        },
+        获取测试(){
+            console.log(this.agentUser.areaCode)
+            this.获取分润([this.agentUser.areaCode]).then(x=>{
+                    console.log(x)
+                }).catch(err=>{
+                    console.log(err)
+                })
         }
     },
     mounted: function() {
@@ -701,6 +727,8 @@ export default {
                 this.agentUser = x.data.data;
                 this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
                 this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
+                
+                // http://192.168.1.16:10002/api-s/shops/findAmountSum?areaCode=659006
             }
         }).catch(err=>{
             // this.agentUser = false;
@@ -729,6 +757,22 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
+#Agent .支付密码输入框{
+    ul{
+        width: 243px;
+        margin: 0px auto;
+        display: flex;
+        border-top: 1px solid #cccccc;
+        border-right: 1px solid #cccccc;
+        border-bottom: 1px solid #cccccc;
+        >li{
+            height: 39px;
+            width: calc(100% / 6);
+            border-left: 1px solid #cccccc;
+        }
+    }
+}
+
 #Agent {
     height: 100%;
     .mui-content {
@@ -1288,18 +1332,21 @@ export default {
             margin: 0px auto;
             position: relative;
             input {
+                position: fixed;
+                left: -100%;
                 padding: 0px;
                 margin: 0px;
                 height: 100%;
-                letter-spacing: 31px;
-                padding: 0px 0px 0px 15px;
-                position: relative;
+                letter-spacing: 34.5px;
+                padding: 0px 0px 0px 17px;
                 z-index: 1;
                 border: none;
                 background: none;
                 width: 130%;
+                opacity: 0;
             }
             > ul {
+                z-index: 1;
                 position: absolute;
                 top: 0px;
                 left: 0px;
@@ -1307,6 +1354,9 @@ export default {
                 height: 100%;
                 display: flex;
                 border-right: 1px solid #cccccc;
+                text-align: center;
+                line-height: 37px;
+                font-size: 12px;
                 li {
                     border-left: 1px solid #cccccc;
                     border-top: 1px solid #cccccc;

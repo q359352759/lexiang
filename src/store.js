@@ -337,10 +337,9 @@ export default new Vuex.Store({
                     }
                     request('/api-s/shops/finByUserid/'+userInfo.username,'','get').then(x=>{
                         this.state.myshop=x.data.data
-                        resolve()
+                        resolve(x)
                     }).catch(error=>{
-                        console.log(error);
-                        reject()
+                        reject(error)
                     })
                     // resolve(1)
                 })

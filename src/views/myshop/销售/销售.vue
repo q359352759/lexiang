@@ -101,7 +101,9 @@ export default {
                     start:0,
                     length:20,
                     shopid:'',
-                    state:1
+                    state:1,
+                    startTime:'',
+                    endTime:''
                 }
             }
         }
@@ -137,7 +139,22 @@ export default {
         },
         //改变时间
         get_time(x){
-            console.log(x)
+            console.log(x);
+            this.obj.page_index=0;
+            this.obj.total=0;
+            this.obj.list=[];
+            if(x.type==0){
+                this.obj.query.startTime=x.year+'-'+x.month+'-'+x.day;
+                this.obj.query.endTime=x.end_year+'-'+x.end_month+'-'+x.end_day;
+            }else{
+                this.obj.query.startTime=x.year+'-'+x.month+'-'+x.day;
+                if(x.end_year){
+                    this.obj.query.endTime=x.end_year+'-'+x.end_month+'-'+x.end_day;
+                }else{
+                    this.obj.query.endTime='';
+                }
+            }
+            this.findAllShopOrders();
         },
         scroll(e){
             var h = e.target.offsetHeight; //容器高度
@@ -147,23 +164,8 @@ export default {
             if (h + t >= sh - 10 && !this.obj.loading && this.obj.total>this.obj.list.length){
                 this.obj.page_index++;
                 this.findAllShopOrders()
-                // this.butie.page_index++;
-                //查看下级带来的收益
-                // this.subsidies();
             }
         },
-        //获取列表
-        // fetchData: async function () {
-        //     const response = await orderList(this.obj);
-        //     const list_1=await fn1();
-        //     return new Promise((resolve, reject) => {
-        //         var obj={
-        //                 list:response,
-        //                 list1:list_1
-        //             }
-        //         resolve(obj)
-        //     });
-        // },
         findAllShopOrders(){
             this.obj.loading=true;
             this.obj.query.start=this.obj.query.length*this.obj.page_index;

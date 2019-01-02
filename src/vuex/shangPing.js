@@ -183,6 +183,15 @@ export default {
                     reject(err)
                 })
             });
+        },
+        商品查询专享({},商品id){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-s/shops/findExclusiveByCommodityId/'+商品id).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err)
+                })
+            });
         }
     },
     modules: {

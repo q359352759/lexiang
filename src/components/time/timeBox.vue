@@ -3,7 +3,7 @@
         <ul class="Time" @click="GeneralTime_show=true">
             <li class="time">
                 <span v-show="!time">请选择时间</span>
-                <span v-if="time && time.type==0">{{time.year+'-'+time.month+'-'+time.day}}</span>
+                <span v-if="time && time.type==0">{{time.year+'-'+time.month}}</span>
                 <span v-if="time && time.type==1">{{time.month+'-'+time.day}}</span>
                 <span v-if="time && time.type==1">~{{time.end_month ? time.end_month+'-'+time.end_day : ''}}</span>
             </li>

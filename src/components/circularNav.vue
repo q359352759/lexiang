@@ -125,7 +125,7 @@ export default {
         touchend(x) {
             // console.log(window.innerHeight);
             // console.log(this.$store.state.clientX);
-            x.target.style.opacity=1
+            x.target.style.opacity=0.7
             var ww = window.innerWidth;
             var wh = window.innerHeight;
             if (this.$store.state.clientX - 25 > ww / 2) {

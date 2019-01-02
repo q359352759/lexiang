@@ -18,13 +18,19 @@
                             </div>
                         </a>
                     </li>
-                    <li class="mui-table-view-cell " >
+                    <li class="mui-table-view-cell " @click="是否修改昵称=true" v-show="!是否修改昵称">
                         <a class="mui-navigate-right item_box">
                             <span>昵称</span>
                             <span>
                                 {{userInfo.nickname}}
                             </span>
                         </a>
+                    </li>
+                    <li class="mui-table-view-cell 修改昵称" v-show="是否修改昵称">
+                        <span>昵称</span>
+                        <input type="text" placeholder="请输入新昵称，最多10个字符" v-model="新昵称">
+                        <div @click="修改昵称()" class="确定">确定</div>
+                        <div  @click="是否修改昵称=false" class="取消">取消</div>
                     </li>
                     <li class="mui-table-view-cell ">
                         <a class="mui-navigate-right item_box">
@@ -88,17 +94,21 @@
 </template>
 
 <script>
+import { openloading } from "@/assets/js/currency.js";
 import HeadPortrait from '@/components/setUp/HeadPortrait.vue';
+import { mapActions } from 'vuex';
 export default {
     name:'',
     components: {
-        HeadPortrait
+        HeadPortrait,
     },
     data(){
         return{
             userInfo:'',
             HeadPortrait_show:false,
-            isnew:false
+            isnew:false,
+            是否修改昵称:false,
+            新昵称:''
         }
     },
     filters:{
@@ -112,6 +122,40 @@ export default {
         }
     },
     methods:{
+        ...mapActions({
+            获取个人信息:'user/get_user'
+        }),
+        修改昵称(){
+            console.log(123);
+            if(!this.新昵称){
+                mui.toast('请输入昵称。', {duration: "long", type: "div" });
+                return
+            }else if(this.新昵称.length>10){
+                mui.toast('昵称最长12位。', {duration: "long", type: "div" });
+                return
+            }
+            var obj=Object.assign({},this.userInfo);
+                obj.nickname=this.新昵称;
+            openloading(true);
+            this.$axios.post('/api-u/users/update/headImgUrl',this.$qs.stringify(obj)).then(x=>{                
+                this.是否修改昵称=false;
+                if(x.data.code==200){
+                    this.获取个人信息().then(res=>{
+                        openloading(false);
+                        mui.toast('设置成功！', {duration: "long", type: "div" });
+                        this.userInfo=JSON.parse(localStorage.userInfo);
+                    })
+                }else{
+                    openloading(false);
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");           
+                }
+                
+            }).catch(err=>{
+                console.log(err)
+                openloading(false);
+                mui.alert('系统错误，稍后再试。', "提示",'我知道了', function() {},"div");           
+            })
+        },
         //修改头像
         xiugaitouxiang(){
             this.HeadPortrait_show=true;
@@ -183,6 +227,47 @@ export default {
 <style lang="scss" scoped>
 .box_1 {
     margin: 0px 0px 5px 0px;
+    .修改昵称{
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        height: 38px;
+        span{
+            min-width: 48px;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        input{
+            padding: 0px;
+            margin: 0px;
+            height: 100%;
+            font-size: 12px;
+            border: none;
+        }
+        input::-webkit-input-placeholder {
+            color: #a6a6a6;
+        }
+        .确定,
+        .取消{
+            width: 40px;
+        	height: 26px;
+            border-radius: 26px;
+            text-align: center;
+            line-height: 24px;
+            margin: 0px 0px 0px 9px;
+            flex-shrink: 0;
+        }
+        .确定{
+            border: 1px solid #007aff;
+            color: #007aff;
+        }
+        .取消{
+            border: 1px solid #a6a6a6;
+            color: #a6a6a6;
+        }
+    }
     .item_box{
         display: flex;
         justify-content: space-between;

@@ -303,14 +303,30 @@ export default {
             erweima_base64:'',
             xingren_hongbao:{},
             // isfenxiang:false
-            是否有新人专享:false,
-            是否有生日专享:false
         };
     },
     computed:{
         ...mapGetters({
             state_isfenxiang:'shop/isfenxiang',
         }),
+        是否有新人专享(){
+            var list=this.Exclusive.list ? this.Exclusive.list : [];
+            var newlist=list.filter(x=>x.type==0);
+            if(newlist.length>0){
+                return true;
+            }else{
+                return false
+            }
+        },
+        是否有生日专享(){
+            var list=this.Exclusive.list ? this.Exclusive.list : [];
+            var newlist=list.filter(x=>x.type==1);
+            if(newlist.length>0){
+                return true;
+            }else{
+                return false
+            }
+        },
         //实名认证信息
         findByUserid(){    
             return this.$store.state.findByUserid;
@@ -1039,10 +1055,6 @@ export default {
 @import "@/assets/css/config.scss";
 #BusinessDetails {
     height: 100%;
-    .mui-content {
-
-        // background: #F6F6F6;
-    }
 }
 #BusinessDetails .mui-bar {
     background: $header_background;

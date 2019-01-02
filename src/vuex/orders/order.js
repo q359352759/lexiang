@@ -212,7 +212,11 @@ export default {
                         success: function(res){
                             // 支付成功后的回调函数
                             console.log(res);
-                            dispatch('findShopOrdersById')
+                            mui.alert('支付成功！', "提示",'我知道了', function() {},"div");                 
+                            openloading(true);
+                            setTimeout(()=>{
+                                dispatch('findShopOrdersById');
+                            },1000)
                         }
                     });
                     resolve(x);

@@ -40,7 +40,7 @@
 
         <div class="Cropper_box" v-show="Cropper_show">
             <div class="cont_1">
-                <VueCropper ref="cropper" :img="option.img" :outputSize="option.size" :outputType="option.outputType" :info="true" :full="option.full" :canMove="option.canMove" :fixedBox="option.fixedBox" :canMoveBox="option.canMoveBox" :autoCrop="true" :autoCropWidth="option.autoCropWidth" :autoCropHeight="option.autoCropHeight"></VueCropper>
+                <VueCropper ref="cropper" :img="option.img" :centerBox="option.centerBox" :mode="option.mode" :outputSize="option.size" :outputType="option.outputType" :info="true" :full="option.full" :canMove="option.canMove" :fixedBox="option.fixedBox" :canMoveBox="option.canMoveBox" :autoCrop="true" :autoCropWidth="option.autoCropWidth" :autoCropHeight="option.autoCropHeight"></VueCropper>
             </div>
             <ul class="footer_1">
                 <li @click="close_1()">
@@ -105,7 +105,9 @@ export default {
                 autoCrop: true, //一开始就裁剪
                 outputType: "png", //png,jpeg,webp
                 autoCropWidth: 300,
-                autoCropHeight: 225
+                autoCropHeight: 225,
+                mode:'cover',       //contain , cover, 100px, 100% auto
+                centerBox:true,     //截图框是否被限制在图片里面
             },
             // type:3,
             radio_type_2:true,
@@ -119,6 +121,7 @@ export default {
             loading:true,
             capacity:0,          //容量
             Select_picture:[],
+            图片base64:''
         }
     },
     computed:{
@@ -193,7 +196,7 @@ export default {
         //确定裁剪
         confirm(){
             openloading(true);
-            this.loading=true
+            this.loading=true;
             this.Cropper_show = false;
             this.$refs.cropper.getCropData(data => {
                 this.img = data;
@@ -232,8 +235,30 @@ export default {
             })
         },
         //左转
-        rotateLeft() {
+        rotateLeft(){
+            // this.$refs.cropper.rotateLeft(30);
+            this.option.mode="cover"
             this.$refs.cropper.rotateLeft(30);
+            // var this_1=this;
+            // var img=new Image();
+            //     img.src=this.图片base64;
+            //     img.onload=()=>{
+            //         var 裁剪比例=300/225;      
+            //         var 图片比例=img.width/img.height;
+            //         console.log(裁剪比例,图片比例)
+            //         //计算宽度或者比例
+            //         if(裁剪比例<图片比例){  //
+            //             //宽高
+            //             this_1.option.mode="300px auto"
+            //         }else{
+            //             this_1.option.mode="auto 225px"
+            //         }
+            //         this_1.option.img = this.图片base64
+            //         setTimeout(()=>{
+            //             this.$refs.cropper.rotateLeft(30);
+            //         },3000)
+            //     }
+                
         },
         //右转
         rotateRight() {
@@ -331,8 +356,28 @@ export default {
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {
-                this_1.Cropper_show = true;
-                this_1.option.img = reader.result;
+                // this_1.Cropper_show = true;
+                // this_1.option.img = reader.result;
+                // autoCropWidth: 300,
+                // autoCropHeight: 225,
+                var img=new Image();
+                    img.src=reader.result;
+                    img.onload=function(){
+                        console.log(img.width)
+                        console.log(img.height)
+                        var 裁剪比例=300/225;      
+                        var 图片比例=img.width/img.height
+                        //计算宽度或者比例
+                        if(裁剪比例>图片比例){  //
+                            //宽高
+                            // this_1.option.mode="300px auto"
+                        }else{
+                            // this_1.option.mode="auto 225px"
+                        }
+                        this_1.图片base64=reader.result;
+                        this_1.option.img = reader.result;
+                        this_1.Cropper_show = true;
+                    }
                 openloading(false);
             };
         })
@@ -506,7 +551,7 @@ export default {
     left: 0px;
     width: 100%;
     height: 100%;
-    background: #e5e5e5;
+    background: #cdcdcd;
     z-index: 1061;
     .cont_1 {
         height: 100%;

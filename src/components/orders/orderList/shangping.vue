@@ -7,7 +7,7 @@
         </li>
         <li class="shop">
             <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
-            <span>店铺名称</span>
+            <span>{{shangping.shopName}}</span>
             <i class="icon_right mui-icon mui-icon-arrowright"></i>
         </li>
     </ul>

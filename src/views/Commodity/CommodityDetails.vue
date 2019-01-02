@@ -44,6 +44,8 @@
                     <div>
                         <i class="icon_1 icon iconfont icon-hongbao1"></i>
                         <span class="qian">可抵扣：{{commodity.deduction}}元</span>
+                        <span class="专享" v-if="专享 && 专享.type==0">新人专享省{{Math.round((专享.deduction-commodity.deduction)*100)/100}}元</span>
+                        <span class="专享" v-if="专享 && 专享.type==1">生日专享省{{Math.round((专享.deduction-commodity.deduction)*100)/100}}元</span>
                     </div>
                     <span class="btn_1" @tap="linghongbao()">领红包</span>
                     <!--  -->
@@ -171,6 +173,7 @@
 import html2canvas from 'html2canvas'
 import QRCode from 'qrcodejs2'
 import {openloading} from '@/assets/js/currency.js';
+import { mapActions } from 'vuex';
 export default {
     name:'',
     data(){
@@ -186,9 +189,13 @@ export default {
 
             qrcode:null,
             img_base64:'',
+            专享:'',
         }
     },
     methods: {
+        ...mapActions({
+            商品查询专享:'shangPing/商品查询专享'
+        }),
         //立即购买
         goumai(){
             this.$router.push('/commodity/PurchaseSingle?id='+this.id);
@@ -404,7 +411,16 @@ export default {
         this.id=this.$route.query.id;
         //查询单个商品
         this.get_commodity();
-
+        this.商品查询专享(this.id).then(x=>{
+            console.log('查询专享',x);
+            if(x.data.code==200){
+                if(x.data.data.length>0){
+                    this.专享=x.data.data[0]
+                }
+            }
+        }).catch(err=>{
+            console.log('查询专享失败',err)
+        })
         this.isshop=this.$route.query.isshop ? false : true;
         
         try {
@@ -434,7 +450,6 @@ export default {
         img_list() {
             this.$nextTick(function() {
                 console.log("数据渲染完成");
-                console.log(this.img_list);
                 if(this.img_list.length>1){
                     this.getswiper();
                 }
@@ -531,6 +546,16 @@ export default {
         .qian{
             color: rgba(166, 166, 166, 1);
         	font-size: 12px;
+        }
+        .专享{
+            margin: 0px 0px 0px 7px;
+            padding: 0px 3px;
+            border: 1px solid #e33c64;
+            border-radius: 2px;
+            height: 13px;
+            line-height: 11px;
+            font-size: 8px;
+            color: #e33c64;
         }
         .btn_1{
             width: 60px;
