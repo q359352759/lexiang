@@ -7,7 +7,7 @@
         </li>
         <li class="shop">
             <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
-            <span>{{shangping.shopName}}</span>
+            <span @click="$router.push('/BusinessDetails?shopid='+shangping.shopid)">{{shangping.shopName}}</span>
             <i class="icon_right mui-icon mui-icon-arrowright"></i>
         </li>
     </ul>

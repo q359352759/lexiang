@@ -84,16 +84,13 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
-        window.addEventListener("storage", e => {
-            if (e.key !== "vuex") return;
-
-            // exit if no change
-            if (e.newValue === JSON.stringify(this.$store.state)) return;
-
-            const persistedData = JSON.parse(e.newValue);
-
-            this.$store.commit("setAll", persistedData);
-        });
+        // window.addEventListener("storage", e => {
+        //     if (e.key !== "vuex") return;
+        //     // exit if no change
+        //     if (e.newValue === JSON.stringify(this.$store.state)) return;
+        //     const persistedData = JSON.parse(e.newValue);
+        //     this.$store.commit("setAll", persistedData);
+        // });
         
         var this_1=this
         // var path = this.$route.path;

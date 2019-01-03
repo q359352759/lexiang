@@ -87,17 +87,13 @@ export default {
     mounted() {
         this.$axios({
             method: "get",
-            url:
-                "/api-u/certification/findByUserid?userid=" +
-                this.userInfo.username
-        })
-            .then(x => {
-                console.log("获取认证信息", x);
-                this.Authentication = x.data;
-            })
-            .catch(error => {
-                console.log("获取认证信息错误", error);
-            });
+            url:"/api-u/certification/findByUserid?userid=" +this.userInfo.username
+        }).then(x => {
+            console.log("获取认证信息", x);
+            this.Authentication = x.data;
+        }).catch(error => {
+            console.log("获取认证信息错误", error);
+        });
     }
 };
 </script>

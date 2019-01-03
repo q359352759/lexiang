@@ -143,8 +143,8 @@ export default {
             }else if(!number_test.test(this.obj.deduction)){
                 mui.toast('请输入抵扣金额。', { duration: "long",type: "div" });
                 return;                
-            }else if(this.obj.deduction<this.commodity.deduction){
-                mui.toast('抵扣金额不能小于商品抵扣金额。', { duration: "long",type: "div" });
+            }else if(this.obj.deduction<=this.commodity.deduction){
+                mui.toast('抵扣金额需大于商品抵扣金额。', { duration: "long",type: "div" });
                 return;
             }else if(this.obj.deduction>this.commodity.sellingPrice*0.9){
                 mui.toast('抵扣金额不能大于商品金额的90%。', { duration: "long",type: "div" });

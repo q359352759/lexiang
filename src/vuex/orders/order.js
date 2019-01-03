@@ -14,16 +14,13 @@ export default {
         openid:'',
         dingdanxiangqing:{},        //订单详情 基本信息
         dikouxiangqing_show:false,  //抵扣详情显示框
+        显示支付成功:false
         // ...mapState({
         //     test:state=>state.orders.order.test
         // })
     },
     getters:{
-        // ...mapGetters({
-        //     test:'orders/order/test',   //过滤后的商品
-        // }),
         test(state){
-            // this.$store.getters.doneTodos  这种写法和下面的写法不一样
             return 'order_getters测试';
         },
         dikouxiangqing_show(state){
@@ -145,6 +142,9 @@ export default {
                 }
             return obj;
         },
+        显示支付成功(state){
+            return state.显示支付成功
+        }
     },
     mutations:{
         set_orderid_openid(state,obj){
@@ -154,6 +154,9 @@ export default {
         },
     },
     actions: {
+        设置支付成功弹出框({state},type){
+            state.显示支付成功=type;
+        },
         //设置弹出来是否显示
         get_dikouxiangqing_show({state},type){
             state.dikouxiangqing_show=type;
@@ -212,7 +215,8 @@ export default {
                         success: function(res){
                             // 支付成功后的回调函数
                             console.log(res);
-                            mui.alert('支付成功！', "提示",'我知道了', function() {},"div");                 
+                            // mui.alert('支付成功！', "提示",'我知道了', function() {},"div");       
+                            dispatch('设置支付成功弹出框',true);
                             openloading(true);
                             setTimeout(()=>{
                                 dispatch('findShopOrdersById');

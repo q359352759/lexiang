@@ -4,11 +4,11 @@
             <div class="close_1" @click="set_referrer_show(false)"><i class="icon iconfont icon-quxiao"></i></div>
             <b>我的VIP客服</b>
             <ul>
-                <li>姓名：</li>
-                <li>手机：</li>
+                <li>姓名：{{referrer.realName}}</li>
+                <li>手机：{{referrer.phone}}</li>
             </ul>
             <div class="tel_1">
-                <a href="tel:">拨打电话</a>
+                <a :href="'tel:'+referrer.phone">拨打电话</a>
             </div>
         </div>
     </div>

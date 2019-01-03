@@ -24,7 +24,7 @@
                         <div class="text_3">元</div>
                     </li>
                     <li class="mui-table-view-cell item_box">
-                        <span>售价：</span>
+                        <span class="text_1">售价：</span>
                         <input type="text" class="mui-text-center" v-model.number="add_obj.sellingPrice" @input="input_change('sellingPrice')">
                         <div class="text_3">元</div>
                     </li>
@@ -413,8 +413,8 @@ export default {
             }else if(this.是否专享 && !this.专享商品.deduction){
                 mui.toast('请输入专享抵扣。', { duration: 2000, type: "div" });
                 return
-            }else if(this.是否专享 && this.专享商品.deduction<this.add_obj.deduction){
-                mui.toast('专享抵扣不能小于商品抵扣。', { duration: 2000, type: "div" });
+            }else if(this.是否专享 && this.专享商品.deduction<=this.add_obj.deduction){
+                mui.toast('专享抵扣需大于商品抵扣。', { duration: 2000, type: "div" });
                 return
             }else if(this.是否专享 && this.专享商品.deduction>this.add_obj.sellingPrice*0.9){
                 mui.toast('抵扣金额不能大于商品金额的90%即'+this.add_obj.sellingPrice*0.9+'元。', { duration: "long",type: "div" });

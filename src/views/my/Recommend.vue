@@ -124,8 +124,8 @@ export default {
                 query:{
                     start:0,
                     length:10,
-                    inviterId:'',
-                    type:1
+                    userid:'',
+                    // type:1
                 }
             },
             是否分享:false,
@@ -255,7 +255,7 @@ export default {
         //用户平台(邀请注册)记录
         get_invitedrecord(){
             this.invitedrecord.query.start=this.invitedrecord.page_index*this.invitedrecord.query.length;
-            this.invitedrecord.query.inviterId=this.userInfo.username;
+            this.invitedrecord.query.userid=this.userInfo.username;
             this.$axios({
                 method:'get',
                 url:'/api-u/users/invitedrecord/findAll',

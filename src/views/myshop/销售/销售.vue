@@ -8,16 +8,16 @@
             <ul class="box_1">
                 <li class="title">
                     <div>今日销售额</div>
-                    <div class="money">￥-0</div>
+                    <div class="money">￥{{今日销售.data}}元</div>
                 </li>
                 <li class="flex">
                     <div>
                         <div>本月销售额</div>
-                        <div class="money">￥-0元</div>
+                        <div class="money">￥{{本月销售.data}}元</div>
                     </div>
                     <div>
                         <div>累计销售额</div>
-                        <div class="money">￥-0元</div>
+                        <div class="money">￥{{累计销售.data}}元</div>
                     </div>
                 </li>
                 <li class="baobiao" @click="$router.push('/myshop/xiaoshou/baobiao')">报表</li>
@@ -55,9 +55,8 @@
                 </li>
             </ul>   
 
-            <loading :loadingtype="obj.loading" :nodata="!obj.loading && obj.total==0" :end="!obj.loading && obj.total==obj.list.length && obj.total!=0" />
+            <loading :loadingtype="obj.loading" :nodata="!obj.loading && obj.total==0" :end="!obj.loading && obj.total<=obj.list.length && obj.total!=0" />
             
-
         </div>
     </div>
 </template>
@@ -69,8 +68,10 @@ import sort from "@/components/sort.vue";
 //时间
 import timeBox from "@/components/time/timeBox.vue";
 import { mapActions, mapGetters } from 'vuex';
-import { dateFtt } from "@/assets/js/currency.js";
-import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
+import { dateFtt ,getDateStr} from "@/assets/js/currency.js";
+import {b64DecodeUnicode } from '@/assets/js/base64jiema.js';
+import {getCurrentMonthFirst , getCurrentMonthLast} from '@/assets/js/time.js';
+
 import loading from '@/components/loading.vue'
 export default {
     name:'',
@@ -105,7 +106,7 @@ export default {
                     startTime:'',
                     endTime:''
                 }
-            }
+            },
         }
     },
     filters:{
@@ -122,12 +123,16 @@ export default {
     },
     computed: {
         ...mapGetters({
-            myshop:'get_myshop'
+            myshop:'get_myshop',
+            今日销售:'myshops/销售/今日销售',
+            本月销售:'myshops/销售/本月销售',
+            累计销售:'myshops/销售/累计销售'
         }),
     },
     methods: {
         ...mapActions({
-            setMyshop:'setMyshop'
+            setMyshop:'setMyshop',
+            查询销售统计:'myshops/销售/查询销售统计'
         }),
         //跳转订单详情
         orderDetails(item){
@@ -203,12 +208,14 @@ export default {
         //我的店铺初始化
         async shop_init(){
             await this.setMyshop();
-            this.findAllShopOrders()
-        }
+            this.findAllShopOrders();
+            this.查询销售统计(this.myshop.shopid)
+        },
     },
     mounted() {
         if(this.myshop && this.myshop.id){
             this.findAllShopOrders();
+            this.查询销售统计(this.myshop.shopid)
         }else{
             this.shop_init();   
         }

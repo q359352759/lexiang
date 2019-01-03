@@ -24,6 +24,9 @@
         </div>
         <!-- 抵扣详情 -->
         <dikouxiangqing v-if="dingdanxiangqing.orderType==0"/>
+        
+        <zhifuchenggong v-show="显示支付成功"/>
+        
     </div>
 </template>
 
@@ -42,6 +45,7 @@ import shangpingzhifu from '@/components/orders/order/shangpingzhifu.vue';
 //抵扣详情
 import dikouxiangqing from "@/components/orders/order/dikouxiangqing.vue";
 
+import zhifuchenggong from '@/components/orders/order/支付成功.vue'
 export default {
     name:"ordersOrder",
     components:{
@@ -50,7 +54,8 @@ export default {
         dingdanxiangqing,
         shangping,
         shangpingzhifu,
-        dikouxiangqing
+        dikouxiangqing,
+        zhifuchenggong
     },
     data(){
         return{
@@ -60,6 +65,7 @@ export default {
     computed:{
         ...mapGetters({
             dingdanxiangqing:'orders/order/dingdanxiangqing',   //订单基本信息
+            显示支付成功:'orders/order/显示支付成功'
         })
     },
     methods:{
@@ -80,7 +86,10 @@ export default {
         if(this.$route.params.zhifu){
             console.log('调用支付接口')
         }
-        this.weixin=JSON.parse(localStorage.weixin)
+
+        try {
+            this.weixin=JSON.parse(localStorage.weixin)
+        } catch (error) {}
         //调用支付接口
         var query={
                 ordreId:this.$route.query.ordreId,

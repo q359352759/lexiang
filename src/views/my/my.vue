@@ -129,6 +129,11 @@
 						<span >业务代理</span>
 					</a>
 				</li>
+                <li class="mui-table-view-cell">
+					<a class="mui-navigate-right" @click="跳转红购使者()">
+						<span >红购使者</span>
+					</a>
+				</li>
 				<li class="mui-table-view-cell " @click="Advertising()">
 					<a class="mui-navigate-right">
 						<span >广告套餐</span>
@@ -257,7 +262,9 @@ export default {
         order(){
             this.$router.push('/orders/orderList')
         },
-        
+        跳转红购使者(){
+            this.$router.push('/shizhe/shenqingshuoming')
+        },
         //跳转分享
         Recommend(){
             this.$router.push('/Recommend?pid='+this.userInfo.username+'&invitationtype=1')
@@ -539,6 +546,7 @@ export default {
 #my .box_3 .title_1 > li:nth-child(1) {
     flex-grow: 1;
     font-weight: bold;
+    color: #505050;
 }
 
 #my .box_3 .title_1 > li:nth-child(2),
@@ -549,7 +557,7 @@ export default {
 #my .box_3 {
     .list {
         display: flex;
-        padding: 0.15rem 0px;
+        padding: 0.12rem 0px;
         text-align: center;
         // border-bottom: 1px solid #c8c7cc;
         > li {

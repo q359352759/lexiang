@@ -158,10 +158,10 @@
                             </div>
                             <div>
                                 <span class="zhuanxiang mui-pull-right" v-if="item.EXTYPE==0">
-                                    新人专享省{{Math.round((item.EXDEDUCTION-item.deduction)*100)/100}}元
+                                    新人专享省{{Math.round((item.EXDEDUCTION)*100)/100}}元
                                 </span>
                                 <span class="zhuanxiang mui-pull-right" v-if="item.EXTYPE==1">
-                                    生日专享省{{Math.round((item.EXDEDUCTION-item.deduction)*100)/100}}元
+                                    生日专享省{{Math.round((item.EXDEDUCTION)*100)/100}}元
                                 </span>
                             </div>                            
                         </div>

@@ -133,7 +133,7 @@
                             <i class="icon iconfont icon-shengji"></i>
                             <span>
                                 <!-- {{item.deduction}}{{item.comDeduction}}——————————  -->
-                                {{Math.floor(item.deduction*100-item.comDeduction*100)/100}}元
+                                {{item.deduction}}元
                             </span>
                         </div>
                     </div>

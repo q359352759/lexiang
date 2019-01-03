@@ -10,7 +10,8 @@ const RedPacketRecords = () => import ("@/views/myshop/Marketing/RedPackets/RedP
 const 评论列表 = () => import ("@/views/myshop/评论/评论列表.vue"); //我的店铺 评论列表
 
 //会员
-const MemberList=()=>import('@/views/myshop/Member/MemberList')     //店铺会员 
+const MemberList=()=>import('@/views/myshop/Member/MemberList.vue')     //店铺会员 
+const 会员消费记录= resolve => { require.ensure([], () => {resolve( require('@/views/myshop/Member/会员消费记录.vue') )}) } //会员消费记录
 
 //提现
 const 提现= resolve => { require.ensure([], () => {resolve( require('@/views/myshop/提现.vue') )}) }
@@ -95,6 +96,10 @@ const myshops=[
         path:'/myshop/Member/MemberList',
         name:'',
         component:MemberList
+    },{
+        path:'/myshop/Member/xiaofeijilu',
+        name:"",
+        component:会员消费记录
     },
     // /myshop/xiaoshou/    销售
     {

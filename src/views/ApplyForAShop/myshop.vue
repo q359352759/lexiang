@@ -96,10 +96,10 @@
                         <a class="mui-navigate-right">
                             <div class="cont_1">
                                 <div class="mui-pull-right">
-                                本月：0元
+                                本月：{{本月销售.data}}元
                                 </div>
                                 <div>
-                                    今日营业额：0元
+                                    今日营业额：{{今日销售.data}}元
                                 </div>
                             </div>
                         </a>
@@ -170,7 +170,7 @@
 
         </div>
 
-        <tuijianren v-if="myshop.referrerPhone" v-show="referrer_show"/>
+        <tuijianren v-if="myshop.referrerPhone"  v-show="referrer_show"/>
     </div>
 </template>
 
@@ -178,11 +178,14 @@
 // html2canvas
 import html2canvas from 'html2canvas'
 import QRCode from 'qrcodejs2';
-import {openloading} from '@/assets/js/currency.js';
+import {openloading , getDateStr} from '@/assets/js/currency.js';
 import $ from "jquery"
 import { mapActions, mapGetters } from 'vuex';
 import tuijianren from '@/components/myshop/tuijianren.vue';
 import btn from '@/components/button.vue';
+
+import {getCurrentMonthFirst , getCurrentMonthLast} from '@/assets/js/time.js';
+
 export default {
     name:'',
     components:{
@@ -205,7 +208,9 @@ export default {
             myshop:'get_myshop',
             zichan:'myshops/zichan/g_zichan',
             referrer_show:'myshops/referrer_show',
-            referrer:'myshops/referrer'
+            referrer:'myshops/referrer',
+            今日销售:'myshops/销售/今日销售',
+            本月销售:'myshops/销售/本月销售',
         }),
         ketixian(){
             if(this.zichan && this.zichan.balance){
@@ -218,9 +223,12 @@ export default {
     methods: {
         ...mapActions({
             getMyshop:'getMyshop',
+            设置推荐人:'myshops/设置推荐人',
             set_zichan_shopid:'myshops/zichan/set_shopid',
             findshopTurnoverByShopid:'myshops/zichan/findshopTurnoverByShopid',
-            set_referrer_show:'myshops/set_referrer_show'       //推荐人显示框
+            set_referrer_show:'myshops/set_referrer_show',       //推荐人显示框
+            查询销售统计:'myshops/销售/查询销售统计',
+            get_agentUser_phone:'agent/get_agentUser_phone'
         }),
         进入店铺(){
             sessionStorage.removeItem("backUrl");
@@ -351,8 +359,16 @@ export default {
             this.findshopTurnoverByShopid().then(x=>{
                 openloading(false);
             });
+            // this.获取营业统计()
+            this.查询销售统计(this.myshop.shopid);
+            if(this.myshop.referrerPhone){
+                this.get_agentUser_phone(this.myshop.referrerPhone).then(x=>{
+                    if(x.data.code==200){
+                        this.设置推荐人(x.data.data)
+                    }
+                }).catch(err=>{})
+            }
         },
-
     },
     beforeCreate: function() {
         // console.group('------beforeCreate创建前状态------');
@@ -375,6 +391,15 @@ export default {
             this.findshopTurnoverByShopid().then(x=>{
                 openloading(false);
             });
+            this.查询销售统计(this.myshop.shopid);
+            //查询店铺推荐人
+            if(this.myshop.referrerPhone){
+                this.get_agentUser_phone(this.myshop.referrerPhone).then(x=>{
+                    if(x.data.code==200){
+                        this.设置推荐人(x.data.data)
+                    }
+                }).catch(err=>{})
+            }
         }else{
             // this.$store.commit('setMyshop');
             this.shopinit();

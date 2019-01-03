@@ -29,7 +29,8 @@ import 实名认证 from '@/vuex/实名认证.js';
 import 申请开店 from '@/vuex/申请开店.js'
 
 import request from '@/api/request';
-import agent from '@/vuex/agent.js'
+import agent from '@/vuex/agent.js';
+import 红购使者 from '@/vuex/红购使者.js';
 Vue.use(Vuex);
 // 对名字进行解码
 import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
@@ -51,7 +52,7 @@ export default new Vuex.Store({
         // ],
         state: {
             weixin_ready:false,     //微信准备就绪
-            clientX: 100, //远点导航X
+            clientX: '', //远点导航X
             clientY: 350, //远点导航Y
             isweixin: true,
             loginDate: {}, //login信息
@@ -372,7 +373,8 @@ export default new Vuex.Store({
             agent:agent,
             myshops:myshops,
             实名认证:实名认证,
-            申请开店:申请开店
+            申请开店:申请开店,
+            红购使者:红购使者
         },
         
     })

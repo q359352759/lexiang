@@ -164,6 +164,7 @@ import mys from '@/router/my.js';
 
 import agents from '@/router/agents.js'
 
+import 红购使者 from '@/router/红购使者.js'
 // console.log(myshops)
 // require('@/router/myshop.js'),
 
@@ -176,6 +177,7 @@ export default new Router({
         ...orders,
         ...mys,
         ...agents,
+        ...红购使者,
         { path: "/", name: "", component: login },
         { path: "/editortest", name: "", component: editortest },
         {

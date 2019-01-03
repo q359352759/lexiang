@@ -44,8 +44,8 @@
                     <div>
                         <i class="icon_1 icon iconfont icon-hongbao1"></i>
                         <span class="qian">可抵扣：{{commodity.deduction}}元</span>
-                        <span class="专享" v-if="专享 && 专享.type==0">新人专享省{{Math.round((专享.deduction-commodity.deduction)*100)/100}}元</span>
-                        <span class="专享" v-if="专享 && 专享.type==1">生日专享省{{Math.round((专享.deduction-commodity.deduction)*100)/100}}元</span>
+                        <span class="专享" v-if="专享 && 专享.type==0">新人专享省{{专享.deduction}}元</span>
+                        <span class="专享" v-if="专享 && 专享.type==1">生日专享省{{专享.deduction}}元</span>
                     </div>
                     <span class="btn_1" @tap="linghongbao()">领红包</span>
                     <!--  -->

@@ -21,6 +21,9 @@ export default {
     mutations:{
     },
     actions: {
+        设置推荐人({state},obj){
+            state.referrer=obj
+        },
         set_referrer_show({state},type){
             state.referrer_show=type
         }

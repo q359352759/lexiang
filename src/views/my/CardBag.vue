@@ -52,7 +52,7 @@
                 <ul class="Red_envelopes" v-if="type==1">
                     <li v-for="(item, index) in invitedrecord.list" :key="index">
                         <div class="header_1">
-                            <span class="time_1 mui-pull-right">2018.11.8 09:23:30</span>
+                            <span class="time_1 mui-pull-right">{{item.createtime | filter_time}}</span>
                             <span class="title_1">红包乐购官方</span>
                         </div>
                         <ul class="item">
@@ -62,10 +62,10 @@
                             <li>
                                 <div class="title_1">
                                     <span class="money">{{item.amount}}元</span>
-                                    <span class="type">{{item.name}}</span>
+                                    <span class="type"></span>
                                 </div>
                                 <div class="title_2">
-                                    {{item.type==1 ? '注册奖励' : '好友推荐奖励'}}
+                                    {{item.name}}
                                 </div>
                                 <div class="time_2">
                                     长期有效
@@ -85,7 +85,7 @@
                     </li>
                 </ul>
                 
-                <loading v-show="type==1" :loadtype="invitedrecord.loading"  :end="!invitedrecord.loading && invitedrecord.total==invitedrecord.list.length && invitedrecord.total!=0" :nodaa="!invitedrecord.loading && invitedrecord.total==0"/>
+                <loading v-show="type==1" :loadtype="invitedrecord.loading"  :end="!invitedrecord.loading && invitedrecord.total==invitedrecord.list.length && invitedrecord.total!=0" :nodata="!invitedrecord.loading && invitedrecord.total==0"/>
                
 
                 <!-- 店铺红包 -->
@@ -255,7 +255,7 @@ export default {
                     start:0,
                     length:10,
                     // type:1,
-                    inviterId:'',       //邀请人
+                    userid:'',       //邀请人
                 }
             }
         };
@@ -402,7 +402,7 @@ export default {
         get_invitedrecord(){
             this.invitedrecord.loading=true;
             this.invitedrecord.query.start=this.invitedrecord.page_index*this.invitedrecord.query.length;
-            this.invitedrecord.query.inviterId=this.userInfo.username;
+            this.invitedrecord.query.userid=this.userInfo.username;
             this.$request('/api-u/users/invitedrecord/findAll',this.invitedrecord.query,'get').then(x=>{
                 console.log('平台红包记录',x);
                 if(x.data.code==200){

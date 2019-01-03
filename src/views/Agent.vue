@@ -7,7 +7,7 @@
             <span v-if="!isareaManager" @tap="RegionalAgencyAgreement()" class="quyu">区域代理</span>
         </header>
 
-        <div class="mui-content" @scroll="content_scroll($event)">
+        <div class="mui-content mui-fullscreen" @scroll="content_scroll($event)">
             <div class="box_1">
                 <div class="img_box">
                     <img v-if="!userInfo.headImgUrl" src="@/assets/image/lxlogo_180.png" alt="" srcset="">
@@ -242,7 +242,7 @@
                     </div>
                     <!-- <button class="btn_1" @click="change_payment(true)">提交</button> -->
                     <btn value="提交" @click.native="change_payment(true)"/>
-                    <button @click="获取测试()">点击获取数据测试</button>
+                    <!-- <button @click="获取测试()">点击获取数据测试</button> -->
 
                     <!-- <button class="btn_1" @click="alipay()">支付宝测试</button> -->
                 </div>
@@ -774,9 +774,7 @@ export default {
 }
 
 #Agent {
-    height: 100%;
     .mui-content {
-        height: 100%;
         display: flex;
         flex-direction: column;
     }

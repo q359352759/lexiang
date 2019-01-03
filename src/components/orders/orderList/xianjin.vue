@@ -7,7 +7,7 @@
             </li>
             <li class="shop">
                 <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
-                <span>{{dingdan.shopName}}</span>
+                <span @click="$router.push('/BusinessDetails?shopid='+dingdan.shopid)">{{dingdan.shopName}}</span>
                 <i class="icon_right mui-icon mui-icon-arrowright"></i>
             </li>
         </ul>

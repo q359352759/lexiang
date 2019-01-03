@@ -1,5 +1,5 @@
 <template>
-    <div id="circularNav">
+    <div id="circularNav" ref="circularNav">
         <div class="mask" v-show="mask_show" @click="change_mask_show(false)"></div>
         <!-- <ul class="move" @mousedown="mousedown($event)" @mousemove="mousemove($event)" @mouseup="mouseup($event)"> -->
         <ul :class="class_name" :style="{'top':this.$store.state.clientY+'px','left':this.$store.state.clientX+'px'}">
@@ -153,7 +153,9 @@ export default {
     created: function() {
         this.$store.commit('setMyshop');
         var ww= window.innerWidth;
-        this.$store.state.clientX = ww - 55;
+        if(!this.$store.state.clientX || this.$store.state.clientX==''){
+            this.$store.state.clientX = ww - 55;
+        }
         // console.group('------created创建完毕状态------');
     },
     beforeMount: function() {
@@ -161,10 +163,11 @@ export default {
     },
     mounted: function() {
         //阻止这个页面下拉
-        setTimeout(function() {
-            document.getElementById("circularNav").addEventListener("touchmove", touchmove_1, { passive: false });
-        }, 500);
-        
+        // setTimeout(function() {
+        //     document.getElementById("circularNav").addEventListener("touchmove", touchmove_1, { passive: false });
+        // }, 500);
+        this.$refs.circularNav.addEventListener("touchmove", touchmove_1, { passive: false });
+
         //获取代理人信息
         this.$store.dispatch("actions_agentUser");
         //{ passive: false }
@@ -177,11 +180,9 @@ export default {
         // console.group('updated 更新完成状态===============》');
     },
     beforeDestroy: function() {
-        try {
-            document.getElementById("circularNav").removeEventListener("touchmove", touchmove_1, { passive: false });        
-        } catch (error) {
-            
-        }
+        // try {
+        //     document.getElementById("circularNav").removeEventListener("touchmove", touchmove_1, { passive: false });        
+        // } catch (error) {}
         // console.group('beforeDestroy 销毁前状态===============》');
     },
     destroyed: function() {
