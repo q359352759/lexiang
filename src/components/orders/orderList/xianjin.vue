@@ -18,7 +18,7 @@
             <li class="text_1">
                 <!-- 共计{{shangping.shopOrderCommoditys.length}}个商品，合计{{shangping.paymentAmount+shangping.deduction}}元，优惠{{shangping.deduction}}元。 -->
             </li>
-            <li class="btn_1 quxiao" v-if="dingdan.state==0">取消</li>
+            <li class="btn_1 quxiao" @click="取消()" v-if="dingdan.state==0">取消</li>
             <li @click="zhifu()" class="btn_1 zhifu" v-if="dingdan.state==0">支付</li>
             <li class="btn_1 zhifu" v-if="dingdan.state==1">评价</li>
         </ul>
@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
     name:'',
     props:{
@@ -42,11 +44,21 @@ export default {
         
     },
     methods: {
+        ...mapActions({
+            取消订单:'orders/orderList/取消订单'
+        }),
         //支付
         zhifu(){       
             console.log(123)     
             this.$router.push({name:'ordersOrder',query:{ordreId:this.dingdan.id},params:{zhifu:1}});
-        }
+        },
+        取消(){
+            mui.confirm('确定要取消订单？','提示',['再想想','是的'],val=>{
+                if(val.index==1){
+                    this.取消订单(this.dingdan.id);
+                }
+            },'div')
+        },
     },
     mounted() {
         

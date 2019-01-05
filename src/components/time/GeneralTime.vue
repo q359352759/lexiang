@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class="GeneralTime">
         <header class="mui-bar mui-bar-nav">
-            <span class="quxiao mui-pull-left" @click="back()">取消</span>
+            <a @click="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">日期选择</h1>
             <span class="quding mui-pull-right" @click="Sure()">确定</span>
         </header>
@@ -329,9 +329,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mui-bar{
+  z-index: 11;
+}
 .mui-content {
   background: #ffffff;
   position: fixed;
+  z-index: 1;
 }
 .quxiao,
 .quding {

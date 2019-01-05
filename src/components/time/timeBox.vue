@@ -35,6 +35,9 @@ export default {
                 this.time=x;
                 this.$emit('setTime',x);
             }
+        },
+        xuanzheshijian(){
+            this.GeneralTime_show=true;
         }
     }
 }

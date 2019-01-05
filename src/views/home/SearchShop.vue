@@ -83,7 +83,7 @@
                     <div>
                         <h1  @click="BusinessDetails(item)">{{item.name}}</h1>
                         <h2>
-                            <span @click="weixinmaptest(item)" class="mui-pull-right"><i class="icon iconfont icon-location"></i>{{item.juli | filter_juli}}</span>
+                            <span @click="weixinmaptest(item)" class="mui-pull-right"><i class="icon iconfont icon-location"></i>{{item.distance ? item.distance.toFixed(1) : 0}}km</span>
                             <div @click="BusinessDetails(item)">{{item.address}}</div>
                         </h2>
                         <h3 @click="BusinessDetails(item)">
@@ -155,10 +155,10 @@ export default {
                     length:10,
                     state:1,
                     name:'',
-                    coordinateX:'', //位置
-                    coordinateY:'',
+                    upx:'', //位置
+                    upy:'',
                     screen_type:'',  //1 距离 2 人气 3 评价 
-                    sort_order:'',   //1 倒叙 2顺序
+                    orderType:'ASC',   //1 倒叙 2顺序
                 }
             },
             commodity:{
@@ -171,8 +171,8 @@ export default {
                     length:6,
                     state:1,
                     name:'',
-                    coordinateX:'', //位置
-                    coordinateY:'',
+                    upx:'', //位置
+                    upy:'',
                     screen_type:'',  //1 距离 2 人气 3 评价 
                     sort_order:'',   //1 倒叙 2顺序
                 }
@@ -277,11 +277,11 @@ export default {
         get_shops(){
             var this_1=this;
             this.shop.jquery.name=this.search_text;
-            this.shop.jquery.coordinateX=this.$store.state.my_position.x;
-            this.shop.jquery.coordinateY=this.$store.state.my_position.y;
+            this.shop.jquery.upx=this.$store.state.my_position.x;
+            this.shop.jquery.upy=this.$store.state.my_position.y;
             this.shop.jquery.start=this.shop.page_index*this.shop.jquery.length;
-            if(this.screen_type==2 || this.select_type==3){
-                this.shop.jquery.screen_type=1;
+            if(this.screen_type==2 || this.screen_type==3){
+                this.shop.jquery.orderType= this.screen_type==2 ? 'ASC' : 'DESC'; 
                 this.shop.jquery.sort_order=this.screen_type==2 ? 1 : 2;
             }else if(this.screen_type==0 || this.screen_type==1){
                 this.shop.jquery.screen_type=2;
@@ -301,7 +301,7 @@ export default {
                 var list=x.data.data.data;
                 for(var i=0;i<list.length;i++){
                     list[i].juli='';
-                    this_1.juli(list[i])
+                    // this_1.juli(list[i])
                 }
                 this.shop.list=this.shop.list.concat(list);
                 this.shop.total=x.data.data.total;
@@ -315,8 +315,8 @@ export default {
         get_commodity(){
             var this_1=this;
             this.commodity.jquery.name=this.search_text;
-            this.commodity.jquery.coordinateX=this.$store.state.my_position.x;
-            this.commodity.jquery.coordinateY=this.$store.state.my_position.y;
+            this.commodity.jquery.upx=this.$store.state.my_position.x;
+            this.commodity.jquery.upy=this.$store.state.my_position.y;
             this.commodity.jquery.start=this.commodity.page_index*this.commodity.jquery.length;
             if(this.screen_type==2 || this.select_type==3){
                 this.commodity.jquery.screen_type=1;

@@ -85,7 +85,7 @@
                         </div>
                         <div class="text_1" v-if="x.deductionType==0">
                             <span class="mui-pull-right juli" @tap="weixinmaptest(x)">
-                                <i class="icon iconfont icon-location"></i>{{x.juli | filter_juli}}
+                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1) : 0}}km
                             </span>
                             <div @tap="BusinessDetails1(x)">
                                 抵扣{{x.percentage}}%
@@ -93,7 +93,7 @@
                         </div>
                         <div class="text_1" v-if="x.deductionType==1">
                             <span class="mui-pull-right juli" @tap="weixinmaptest(x)">
-                                <i class="icon iconfont icon-location"></i>{{x.juli | filter_juli}}
+                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1) : 0}}km
                             </span>
                             <div @tap="BusinessDetails1(x)">
                                 满{{x.expire}},抵扣{{x.deduction}}
@@ -179,7 +179,7 @@
                     <div>
                         <h1  @click="BusinessDetails(item)">{{item.name}}</h1>
                         <h2>
-                            <span @click="weixinmaptest(item)" class="mui-pull-right"><i class="icon iconfont icon-location"></i>{{item.juli | filter_juli}}</span>
+                            <span @click="weixinmaptest(item)" class="mui-pull-right"><i class="icon iconfont icon-location"></i>{{item.distance ? item.distance.toFixed(1) : 0}}km</span>
                             <div @click="BusinessDetails(item)">{{item.address}}</div>
                         </h2>
                         <h3 @click="BusinessDetails(item)">
@@ -287,7 +287,10 @@ export default {
                 query:{
                     start:0,
                     length:10,
-                    type:'1'        //随便传的不是类型
+                    type:'1',        //随便传的不是类型
+                    upx:'',
+                    upy:'',
+                    orderType:'ASC'
                 }
             },
             userInfo:"",
@@ -633,7 +636,10 @@ export default {
             var obj={
                     start:this.shop.page_index*this.shop.length,
                     length:this.shop.length,
-                    state:this.shop.state
+                    state:this.shop.state,
+                    upx:this.$store.state.my_position.x,
+                    upy:this.$store.state.my_position.y,
+                    orderType:'ASC',
                 };
             this.shop.loading=true;
             this.$axios({
@@ -645,7 +651,7 @@ export default {
                 var list=x.data.data.data;
                 for(var i=0;i<list.length;i++){
                     list[i].juli='';
-                    this_1.juli(list[i])
+                    // this_1.juli(list[i])
                 }
                 this.shop.list=this.shop.list.concat(list);
                 this.shop.total=x.data.data.total;
@@ -685,6 +691,8 @@ export default {
             var this_1=this;
             this.redenvelope.loading=true;
             this.redenvelope.query.start=this.redenvelope.page_index*this.redenvelope.query.length
+            this.redenvelope.query.upx=this.$store.state.my_position.x;
+            this.redenvelope.query.upy=this.$store.state.my_position.y
             this.$axios({
                 method:'get',
                 url:'/api-s/shops/redenvelope/findData',
@@ -703,7 +711,7 @@ export default {
                     }else if(amount>9999){
                         list[i].font_size='10px'
                     }
-                    this_1.juli(list[i])
+                    // this_1.juli(list[i])
                 }
                 this.redenvelope.list=this.redenvelope.list.concat(list);
                 this.redenvelope.total=x.data.data.total;

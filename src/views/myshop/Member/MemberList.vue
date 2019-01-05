@@ -31,7 +31,7 @@
             </ul>
             <div class="内容区" @scroll="滚动($event)">
                 <ul class="列表" >
-                    <li v-for="(item, index) in 顾客.list" :key="index" @click="$router.push('/myshop/Member/xiaofeijilu?')">
+                    <li v-for="(item, index) in 顾客.list" :key="index" @click="$router.push('/myshop/Member/xiaofeijilu?userid='+item.userid)">
                         <div>{{item.createTime | filter_time}}</div>
                         <div>{{item.USERNAME | filter_name}}</div>
                         <div class="蓝色">{{item.REALNAME | filter_name}}</div>
@@ -155,7 +155,7 @@ export default {
         async shopinit(){
             openloading(true)
             await this.getMyshop();
-            openloading(false)
+            openloading(false);
             this.获取顾客();
             this.获取今日新增();
             this.获取本月新增();         

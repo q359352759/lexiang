@@ -13,8 +13,12 @@ function getCurrentMonthFirst(){
     return date.getFullYear() + '-' + month + '-' + day;
 }
 //获取当前月的最后一天
-function getCurrentMonthLast(){
-    var date=new Date();
+function getCurrentMonthLast(time){
+    if(time){
+        var date=new Date(time);
+    }else{
+        var date=new Date();
+    }
     var currentMonth=date.getMonth();
     var nextMonth=++currentMonth;
     var nextMonthFirstDay=new Date(date.getFullYear(),nextMonth,1);
@@ -31,7 +35,35 @@ function getCurrentMonthLast(){
     return date.getFullYear() + '-' + month + '-' + day;
 }
 
+/*获取一个月的天数 */
+function getCountDays(time) {
+    if(time){
+        var curDate = new Date(time);
+    }else{
+        var curDate = new Date();
+    }
+    var curMonth = curDate.getMonth();
+        curDate.setMonth(curMonth + 1);
+        curDate.setDate(0);
+        return curDate.getDate();
+}
+
+//计算两个时间差
+function  getDaysByDateString(dateString1,dateString2){
+    var  startDate=Date.parse(dateString1.replace('/-/g','/'));
+    try {
+        var  endDate=Date.parse(dateString2.replace('/-/g','/'));
+    } catch (error) {
+        var  endDate=Date.parse(new Date());
+    }
+    var diffDate=(endDate-startDate)+1*24*60*60*1000;  
+    var days=diffDate/(1*24*60*60*1000);  
+    //alert(diffDate/(1*24*60*60*1000));  
+    return  days;  
+}
 export{
     getCurrentMonthFirst,
-    getCurrentMonthLast
+    getCurrentMonthLast,
+    getCountDays,
+    getDaysByDateString
 }

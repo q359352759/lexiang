@@ -1,4 +1,6 @@
 import axios from '@/api/axios.js'
+
+import { openloading } from "@/assets/js/currency.js";
 // import qs from "qs";
 export default {
     namespaced:true,
@@ -114,6 +116,29 @@ export default {
                     obj.loading=false;
                 }).catch(err=>{
                     console.log(err);
+                })
+            });
+        },
+        取消订单({state},id){
+            openloading(true)
+            return new Promise((resolve, reject) => {
+                axios.get('/api-s/shops/deleteShopOrders/'+id).then(x=>{
+                    console.log(x);
+                    openloading(false);
+                    if(x.data.code==200){
+                        state.list_all.list=state.list_all.list.filter(x=>x.id!=id);
+                        state.list_0.list=state.list_0.list.filter(x=>x.id!=id);
+                        state.list_2.list=state.list_2.list.filter(x=>x.id!=id);
+                        mui.toast('取消成功。', {duration: "long", type: "div" });
+                    }else{
+                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                    }
+                    resolve()
+                }).catch(err=>{
+                    console.log(err)
+                    mui.toast('系统错误稍后再说。', {duration: "long", type: "div" });
+                    openloading(false)
+                    reject()
                 })
             });
         }

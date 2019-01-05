@@ -2,8 +2,10 @@
     <div>
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">销售</h1>
+            <h1 class="mui-title">销售1</h1>
         </header>
+        <!-- 时间选择器 -->
+        <timeBox @setTime="get_time" ref='mychild'/>
         <div class="mui-content mui-fullscreen" @scroll="scroll($event)">
             <ul class="box_1">
                 <li class="title">
@@ -25,7 +27,19 @@
 
             <div class="box_2">
                 <div><sort :type="sort.type" :sortType="sort.sortType" :list="sort.list" @setSort="get_sort"/></div>
-                <div><timeBox @setTime="get_time"/></div>
+                <div>
+                    <ul class="选择时间" @click="选择时间()">
+                        <li class="time">
+                            <span v-show="!time">请选择时间</span>
+                            <span v-if="time && time.type==0">{{time.year+'-'+time.month}}</span>
+                            <span v-if="time && time.type==1">{{time.month+'-'+time.day}}</span>
+                            <span v-if="time && time.type==1">~{{time.end_month ? time.end_month+'-'+time.end_day : ''}}</span>
+                        </li>
+                        <li class="icon_box">
+                            <i class="icon iconfont icon-calendar"></i>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <div ref="content"></div>
@@ -83,13 +97,14 @@ export default {
     data () {
         return {
             fixed:false,
+            time:'',    //选择的时间
             //传递的参数
             sort:{
                 type:1,         //时间类型
                 sortType:1,
                 list:[
                     {'name':'时间',type:1},
-                    {'name':'业绩',type:2},
+                    {'name':'金额',type:2},
                     // {'name':'其他',type:3},
                 ]
             },
@@ -104,7 +119,9 @@ export default {
                     shopid:'',
                     state:1,
                     startTime:'',
-                    endTime:''
+                    endTime:'',
+                    order:'orderscreateTime',   //时间 orderscreateTime 金额 ordersturnover
+                    orderType:'DESC'    //ASC DESC
                 }
             },
         }
@@ -134,17 +151,26 @@ export default {
             setMyshop:'setMyshop',
             查询销售统计:'myshops/销售/查询销售统计'
         }),
+        选择时间(){
+            this.$refs.mychild.xuanzheshijian();
+        },
         //跳转订单详情
         orderDetails(item){
             this.$router.push('/myshop/xiaoshou/orderDetails?id='+item.id);
         },
         //接收排序参数
         get_sort(x){
-            console.log(x)
+            console.log(x);
+            this.obj.list=[];
+            this.obj.page_index=0;
+            this.obj.query.order=x.type==1 ? 'orderscreateTime' : 'ordersturnover';
+            this.obj.query.orderType=x.sort_type==1 ? 'DESC' : "ASC";
+            this.findAllShopOrders()
         },
         //改变时间
         get_time(x){
             console.log(x);
+            this.time=x;
             this.obj.page_index=0;
             this.obj.total=0;
             this.obj.list=[];
@@ -228,7 +254,29 @@ export default {
 <style lang="scss" scoped>
 
 @import '@/assets/css/config.scss';
+.定位测试{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 20;
+}
 
+.选择时间{
+    border:1px solid #f6f6f6;
+    min-width: 120px;
+	height: 26px;
+    padding: 0px 5px;
+    .time{
+        color: rgba(80, 80, 80, 1);
+        font-size: 12px;
+        flex-grow: 1;
+    }
+    .icon_box{
+        height: 17px;
+    }
+    display: flex;
+    align-items: center;
+}
 .box_1{
     margin: 10px 10px 5px;
     background: #ffffff;

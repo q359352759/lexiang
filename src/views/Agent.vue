@@ -360,7 +360,7 @@ export default {
     data() {
         return {
             fixed:false,    //判断是否定位到顶部
-            type_1: 5,
+            type_1: 4,
             list_1: [1, 2, 3, 4, 5, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             // list_1:[1]
             radio_type_2: true,
@@ -405,7 +405,10 @@ export default {
             fenrun_huiyuan: 'agent/ShopBonus/get_list2',
             fenrun_type:'agent/ShopBonus/get_type',
             dailiren_fenrun_zichan:'agent/ShopBonus/dailiren_fenrun_zichan',    //代理人分润资产
-            实名信息:'实名认证/实名信息'
+            实名信息:'实名认证/实名信息',
+            商家会员类型:'agent/ShopBonus/get_type',
+            商家:'agent/ShopBonus/商家',
+            会员:'agent/ShopBonus/会员',
         })
         
     },
@@ -416,7 +419,11 @@ export default {
             fenrun_fenye:'agent/ShopBonus/xiayiye',
             dailiren_fenrun:'agent/ShopBonus/dailiren_fenrun',  //代理商分润
             获取认证:'实名认证/获取认证',
-            获取分润:'agent/分润/获取分润'
+            获取分润:'agent/分润/获取分润',
+            获取商家分润列表:'agent/ShopBonus/获取商家分润列表',
+            获取会员分润列表:'agent/ShopBonus/获取会员分润列表',
+            商家下一页:'agent/ShopBonus/商家下一页',
+            会员下一页:'agent/ShopBonus/会员下一页',
         }),
         //提现服务协议
         WithdrawalAgreement(){
@@ -613,7 +620,12 @@ export default {
                 this.fixed=e.target.scrollTop>=this.$refs.content.offsetTop
             }else if(this.type_1==4){
                 this.fixed=e.target.scrollTop>=this.$refs.content.offsetTop;
-                this.fenrun_fenye(this.fenrun_type)
+                if(h + t >= sh - 10 && this.商家会员类型==0 && !this.商家.logging && this.商家.total>this.商家.list.length){
+                    this.商家下一页()
+                }else if(h + t >= sh - 10 && this.商家会员类型==1 && !this.会员.logging && this.会员.total>this.会员.list.length){
+                    this.会员下一页();
+                }
+                // this.fenrun_fenye(this.fenrun_type)
             }else if(this.type_1==5){
                 this.fixed=e.target.scrollTop>=this.$refs.content.offsetTop
             }
@@ -744,9 +756,11 @@ export default {
 
         this.ShopBonus_init();
         //获取店铺分润 商家
-        this.get_fenrui(this.fenrun_shangjia)
-        //获取店铺分润 会员
-        this.get_fenrui(this.fenrun_huiyuan);
+        // this.get_fenrui(this.fenrun_shangjia)
+        // //获取店铺分润 会员
+        // this.get_fenrui(this.fenrun_huiyuan);
+        this.获取会员分润列表()
+        this.获取商家分润列表()
         //代理商分润资产
         this.dailiren_fenrun();
         //获取实名认证信息
