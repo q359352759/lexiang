@@ -33,14 +33,14 @@
                 <li>可用：{{capacity}}M</li>
                 <li>
                     <span>已选择{{Select_picture.length}}张</span>
-                    <button @click="Sure()">确定</button>
+                    <button @click="Sure()">确 定</button>
                 </li>
             </ul>
         </div>
 
         <div class="Cropper_box" v-show="Cropper_show">
             <div class="cont_1">
-                <VueCropper ref="cropper" :img="option.img" :centerBox="option.centerBox" :mode="option.mode" :outputSize="option.size" :outputType="option.outputType" :info="true" :full="option.full" :canMove="option.canMove" :fixedBox="option.fixedBox" :canMoveBox="option.canMoveBox" :autoCrop="true" :autoCropWidth="option.autoCropWidth" :autoCropHeight="option.autoCropHeight"></VueCropper>
+                <VueCropper ref="cropper" :mode="option.mode" :outputSize="option.outputSize" :centerBox="option.centerBox" :viewMode="1" :img="option.img"  :outputType="option.outputType" :info="true" :canMove="option.canMove" :fixedBox="option.fixedBox" :canMoveBox="option.canMoveBox" :autoCrop="true" :autoCropWidth="option.autoCropWidth" :autoCropHeight="option.autoCropHeight"></VueCropper>            
             </div>
             <ul class="footer_1">
                 <li @click="close_1()">
@@ -62,6 +62,8 @@
             <input type="file" accept="image/*" name="" id="">
         </div>
         
+        <canvas ref="myCanvas" class="myCanvas" ></canvas>
+
     </div>
 </template>
 
@@ -91,23 +93,26 @@ export default {
     },
     data(){
         return{
+            画布base64:'',
+            画布img:'',
+            degree:0,       //旋转角度
             //==============裁剪框配置
             Cropper_show: false, //显示裁剪框
             option: {
                 img: "",
-                size: 1,
-                full: false,
-                outputType: "png",
-                canMove: true,
-                fixedBox: true, //裁剪框固定大小不动 true 固定
-                original: false,
-                canMoveBox: false,
-                autoCrop: true, //一开始就裁剪
-                outputType: "png", //png,jpeg,webp
-                autoCropWidth: 300,
-                autoCropHeight: 225,
-                mode:'cover',       //contain , cover, 100px, 100% auto
-                centerBox:true,     //截图框是否被限制在图片里面
+                outputSize: 1,                //outputSize
+                outputType: "png",      //png,jpeg,webp
+                canMove: true,          //上传图片是否可以移动
+                fixedBox: true,         //裁剪框固定大小不动 true 固定
+                canMoveBox: false,      //截图框能否拖动
+                autoCrop: true,         //是否默认生成截图框
+                fixedNumber:[30,22],    //截图框的宽高比例
+                autoCropWidth:300,
+                autoCropHeight:220,
+                fixed:true,	            //是否开启截图框宽高固定比例 默认true
+                centerBox:true,         //截图框是否被限制在图片里面
+                canScale:true,          //图片是否允许滚轮缩放
+                mode:'auto 220px',           //contain , cover, 100px, 100% auto
             },
             // type:3,
             radio_type_2:true,
@@ -121,7 +126,6 @@ export default {
             loading:true,
             capacity:0,          //容量
             Select_picture:[],
-            图片base64:''
         }
     },
     computed:{
@@ -234,35 +238,79 @@ export default {
                 console.log('添加失败',err);
             })
         },
+        //设置画布
+        set_myCanvas(){
+            console.log('设置画布');
+            var this_1=this;
+            var ww=window.outerWidth;
+            var c=this.$refs.myCanvas;
+            var cxt=c.getContext("2d");
+                // this.cxt=c.getContext("2d");
+                cxt.clearRect(0,0,c.width,c.height)     //清除画布
+            this.画布img=new Image();
+            this.画布img.src=this.画布base64;
+            this.画布img.onload=()=>{
+                console.log( 0 , 0 , c.width , this_1.画布img.height*c.width/this_1.画布img.width)
+                this_1.degree=0;
+                c.height=this_1.画布img.height*c.width/this_1.画布img.width;
+                cxt.drawImage( this_1.画布img , 0 , 0 , c.width , c.height);
+                var imgData=c.toDataURL();
+                this_1.Cropper_show = true;
+                if(30/22>c.width/c.height){
+                    this_1.option.mode='300px auto'
+                }else{
+                    this_1.option.mode='auto 225px'
+                }
+                this_1.option.img = imgData;
+                openloading(false);
+            }
+        },
+        旋转画布(type){
+            openloading(true);
+            var this_1=this;
+            this.degree += type ? 90 : -90;
+            var degree= this.degree %= 360;
+            var c=this.$refs.myCanvas
+            var cxt=c.getContext("2d");
+            var 新高度=this.画布img.height*c.width/this.画布img.width;
+                if(degree/90%2==0 || degree/90%2==-0){
+                    //旋转了180度
+                    c.height=this.画布img.height*c.width/this.画布img.width;
+                }else{
+                    c.height=c.width/this.画布img.height*this.画布img.width;
+                }
+            cxt.save();
+            cxt.clearRect(0, 0, c.width, c.height);
+            cxt.translate(c.width / 2, c.height / 2);
+            cxt.rotate(degree / 180 * Math.PI);
+            if(degree/90%2==0 || degree/90%2==-0){
+                cxt.translate(-c.width / 2, -c.height / 2);
+                cxt.drawImage( this.画布img , 0 , 0 , c.width , c.height);
+            }else{
+                cxt.translate( -c.height / 2,-c.width / 2);
+                cxt.drawImage( this.画布img , 0 , 0 , c.height , c.width);
+            }
+            cxt.restore();
+            var imgData=c.toDataURL();
+            this_1.option.img = imgData;
+            if(30/22>c.width/c.height){
+                this_1.option.mode='300px auto'
+            }else{
+                this_1.option.mode='auto 225px'
+            }
+            setTimeout(()=>{
+                openloading(false);
+            },500)
+        },
         //左转
         rotateLeft(){
-            // this.$refs.cropper.rotateLeft(30);
-            this.option.mode="cover"
-            this.$refs.cropper.rotateLeft(30);
-            // var this_1=this;
-            // var img=new Image();
-            //     img.src=this.图片base64;
-            //     img.onload=()=>{
-            //         var 裁剪比例=300/225;      
-            //         var 图片比例=img.width/img.height;
-            //         console.log(裁剪比例,图片比例)
-            //         //计算宽度或者比例
-            //         if(裁剪比例<图片比例){  //
-            //             //宽高
-            //             this_1.option.mode="300px auto"
-            //         }else{
-            //             this_1.option.mode="auto 225px"
-            //         }
-            //         this_1.option.img = this.图片base64
-            //         setTimeout(()=>{
-            //             this.$refs.cropper.rotateLeft(30);
-            //         },3000)
-            //     }
-                
+            // this.$refs.cropper.rotateLeft();
+            this.旋转画布(false)
         },
         //右转
         rotateRight() {
-            this.$refs.cropper.rotateRight();
+            this.旋转画布(true);
+            // this.$refs.cropper.rotateRight();
         },
         //选择类型
         selset_type(x){
@@ -356,27 +404,11 @@ export default {
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {
-                // this_1.Cropper_show = true;
-                // this_1.option.img = reader.result;
-                // autoCropWidth: 300,
-                // autoCropHeight: 225,
                 var img=new Image();
                     img.src=reader.result;
                     img.onload=function(){
-                        console.log(img.width)
-                        console.log(img.height)
-                        var 裁剪比例=300/225;      
-                        var 图片比例=img.width/img.height
-                        //计算宽度或者比例
-                        if(裁剪比例>图片比例){  //
-                            //宽高
-                            // this_1.option.mode="300px auto"
-                        }else{
-                            // this_1.option.mode="auto 225px"
-                        }
-                        this_1.图片base64=reader.result;
-                        this_1.option.img = reader.result;
-                        this_1.Cropper_show = true;
+                        this_1.画布base64=reader.result;
+                        this_1.set_myCanvas()
                     }
                 openloading(false);
             };
@@ -423,6 +455,12 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
+
+.myCanvas{
+    border: 1px solid red;
+    position: fixed;
+    left: -110%;
+}
 .mui-bar{
     z-index: 1060;
 }

@@ -15,10 +15,10 @@
             <li v-for="(item, index) in 商家.list" :key="index">
                 <div class="name" @click="BonusDetail(item)">{{item.shopName}}</div>
                 <div>
-                    <div>{{item.createTime | filter_time('yyyy.MM.dd')}}</div>
-                    <div>{{item.createTime | filter_time('hh:mm:ss')}}</div>
+                    <div>{{item.finalCreateTime | filter_time('yyyy.MM.dd')}}</div>
+                    <div>{{item.finalCreateTime | filter_time('hh:mm:ss')}}</div>
                 </div>
-                <div>{{item.SUMA}}</div>
+                <div>{{item.SUMA ? item.SUMA : 0}}</div>
             </li>
         </ul>
         <loading v-show="type==0" :loadingtype="商家.loading" :end="!商家.loading && 商家.total!=0 && 商家.total==商家.list.length" :nodata="!商家.loading && 商家.total==0"/>
@@ -31,12 +31,13 @@
                 <div>累计分润</div>
             </li>
             <li v-for="(item, index) in 会员.list" :key="index">
-                <div class="name" @click="BonusDetail(item)">{{item.nickname | filteer_name}}</div>
+                <div class="name" @click="BonusDetail(item)" v-if="item.nickname">{{item.nickname | filteer_name}}</div>
+                <div @click="BonusDetail(item)" v-if="!item.nickname">{{item.userPhone}}</div>
                 <div>
-                    <div>{{item.createTime | filter_time('yyyy.MM.dd')}}</div>
-                    <div>{{item.createTime | filter_time('hh:mm:ss')}}</div>
+                    <div>{{item.finalCreateTime | filter_time('yyyy.MM.dd')}}</div>
+                    <div>{{item.finalCreateTime | filter_time('hh:mm:ss')}}</div>
                 </div>
-                <div>{{item.SUMA}}</div>
+                <div>{{item.suma ? item.suma : 0}}</div>
             </li>
         </ul>
         <loading v-show="type==1" :loadingtype="会员.loading" :end="!会员.loading && 会员.total!=0 && 会员.total==会员.list.length" :nodata="!会员.loading && 会员.total==0"/>
@@ -46,7 +47,7 @@
             <li>总分润：0元</li>
         </ul>
         <ul class="footer_1" v-show="type==1">
-            <li>会员：{{会员.total}}家</li>
+            <li>会员：{{会员.total}}个</li>
             <li>总分润：{{dailiren_fenrun_zichan.aggregateAmount ? dailiren_fenrun_zichan.aggregateAmount : 0}}元</li>
         </ul>
     </div>

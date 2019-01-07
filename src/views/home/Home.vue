@@ -85,7 +85,7 @@
                         </div>
                         <div class="text_1" v-if="x.deductionType==0">
                             <span class="mui-pull-right juli" @tap="weixinmaptest(x)">
-                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1) : 0}}km
+                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1)+'km' : '1km以内'}}
                             </span>
                             <div @tap="BusinessDetails1(x)">
                                 抵扣{{x.percentage}}%
@@ -93,7 +93,7 @@
                         </div>
                         <div class="text_1" v-if="x.deductionType==1">
                             <span class="mui-pull-right juli" @tap="weixinmaptest(x)">
-                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1) : 0}}km
+                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1)+'km' : '1km以内'}}
                             </span>
                             <div @tap="BusinessDetails1(x)">
                                 满{{x.expire}},抵扣{{x.deduction}}
@@ -179,7 +179,7 @@
                     <div>
                         <h1  @click="BusinessDetails(item)">{{item.name}}</h1>
                         <h2>
-                            <span @click="weixinmaptest(item)" class="mui-pull-right"><i class="icon iconfont icon-location"></i>{{item.distance ? item.distance.toFixed(1) : 0}}km</span>
+                            <span @click="weixinmaptest(item)" class="mui-pull-right"><i class="icon iconfont icon-location"></i>{{item.distance ? item.distance.toFixed(1)+'km' : '1km以内'}}</span>
                             <div @click="BusinessDetails(item)">{{item.address}}</div>
                         </h2>
                         <h3 @click="BusinessDetails(item)">

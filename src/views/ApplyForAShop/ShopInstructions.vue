@@ -120,11 +120,11 @@ export default {
                 if(x.data.code){
                     this.init();
                 }else{
-                    this.text='网路错误，稍后再试'
+                    this.text='网络错误，稍后再试'
                 }
             }).catch(err=>{
                 console.log('获取店铺信息失败');
-                this.text='网路错误，稍后再试'
+                this.text='网络错误，稍后再试'
             })
         }else{
             this.init()

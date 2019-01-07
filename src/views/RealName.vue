@@ -96,8 +96,7 @@
         <div class="Cropper_box" :class="{'zhengmian':Positive,'fanmian':!Positive}" v-show="Cropper_show">
             <div class="cont_1">
                 <!-- :centerBox="true" -->
-                <VueCropper ref="cropper" :viewMode="1" :img="option.img" :outputSize="option.size" :outputType="option.outputType" :info="true" :full="option.full" :canMove="option.canMove" :fixedBox="option.fixedBox" :canMoveBox="option.canMoveBox" :autoCrop="true" :autoCropWidth="350" :autoCropHeight="220"></VueCropper>
-                <!-- <VueCropper ref="cropper" :img="option.img" :centerBox="option.centerBox" :info="true" :autoCrop="option.autoCrop" :fixed="option.fixed" :canMoveBox="option.canMoveBox" :fixedBox="option.fixedBox" :fixedNumber="option.fixedNumber"></VueCropper> -->
+                <VueCropper ref="cropper" :mode="option.mode" :outputSize="option.outputSize" :centerBox="option.centerBox" :viewMode="1" :img="option.img"  :outputType="option.outputType" :info="true" :canMove="option.canMove" :fixedBox="option.fixedBox" :canMoveBox="option.canMoveBox" :autoCrop="true" :autoCropWidth="option.autoCropWidth" :autoCropHeight="option.autoCropHeight"></VueCropper>
             </div>
             <ul class="footer_1">
                 <li @click="close_1()">
@@ -119,6 +118,7 @@
         <div id="zhengmianInput">
             <input type="file" @change="input_change($event)" accept="image/*" name="" id="">
         </div>
+        <!-- <button @click="旋转画布()">旋转画布</button> -->
         <canvas ref="myCanvas" class="myCanvas" ></canvas>
     </div>
 </template>
@@ -133,6 +133,10 @@ export default {
     },
     data() {
         return {
+            画布base64:'',
+            画布img:'',
+            degree:0,       //旋转角度
+            //===============
             radio_type_2:true,
             img_beishu:'',
             userinfo: "", //用户信息
@@ -152,21 +156,19 @@ export default {
             img_height:'',      //保存图片的高度
             option: {
                 img: "",
-                size: 1,
-                full: false,
-                outputType: "png",
-                canMove: true,
-                fixedBox: true,     //裁剪框固定大小不动 true 固定
-                original: false,
+                outputSize: 1,                //outputSize
+                outputType: "png",      //png,jpeg,webp
+                canMove: true,          //上传图片是否可以移动
+                fixedBox: true,         //裁剪框固定大小不动 true 固定
                 canMoveBox: false,      //截图框能否拖动
-                autoCrop: true,     //一开始就裁剪
-                // outputType: "jpeg" //png,jpeg,webp
-                //===============
-                fixedNumber:[35,22],  //截图框的宽高比例
-                fixed:true,	        //是否开启截图框宽高固定比例 默认true
-                centerBox:true,     //截图框是否被限制在图片里面
-                high:true,
-                canScale:true,      //图片是否允许滚轮缩放
+                autoCrop: true,         //是否默认生成截图框
+                fixedNumber:[35,22],    //截图框的宽高比例
+                autoCropWidth:350,
+                autoCropHeight:220,
+                fixed:true,	            //是否开启截图框宽高固定比例 默认true
+                centerBox:true,         //截图框是否被限制在图片里面
+                canScale:true,          //图片是否允许滚轮缩放
+                mode:'auto 220px',           //contain , cover, 100px, 100% auto
             },
             Positive_obj: {
                 //正面信息
@@ -202,27 +204,18 @@ export default {
     methods: {
         //左转
         rotateLeft() {
-            this.$refs.cropper.rotateLeft();
+            // this.$refs.cropper.rotateLeft();
             // this.$refs.cropper.changeScale(-1);
+            this.旋转画布(false)
         },
         //右转
         rotateRight() {
-            // this.$refs.cropper.rotateRight();
-
-            //假如宽度为 700 高度未200
-            var beishu=(220-(375/this.img_width)*this.img_height)/5
-            console.log(beishu);
-            this.$refs.cropper.changeScale(this.img_beishu);
-
-            // console.log(220/this.img_height);
-            // console.log(220/this.img_height*5);
-            // this.$refs.cropper.changeScale(this.img_height/220);
-            // this.$refs.cropper.changeScale(this.img_width/350);
-            // this.$refs.cropper.changeScale((220-this.img_height)/(this.img_width/350));
+            // this.$refs.cropper.rotateRight()
+            this.旋转画布(true)
         },
         //确认裁剪
         confirm() {
-            console.log(this.option.size)
+            console.log(this.option.outputSize)
             this.Cropper_show = false;
             this.$refs.cropper.getCropData(data => {
                 if (this.Positive) {
@@ -243,15 +236,9 @@ export default {
         },
         //获取百度 token
         get_token() {
-            this.$axios({
-                method: "get",
-                url: "/api-u/baidu/identify"
-            }).then(x => {
-                    console.log(x);
-                    this.access_token = x.data;
-            }).catch(err => {
-                console.log(err);
-            });
+            this.$axios.get('/api-u/baidu/identify').then(x=>{
+                this.access_token = x.data;
+            })
         },
         //点击正面
         zhengmian(x) {
@@ -264,33 +251,24 @@ export default {
             // console.log(file);
             var size=file.size/1024;
             if(size>1024){
-                this.option.size=size/1024
+                this.option.outputSize=size/1024
             }else{
-                this.option.size=1
+                this.option.outputSize=1
             }
             // console.log(file,size);
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend=()=>{
-                that.Cropper_show = true;
-                that.option.img = reader.result;
-                // that.set_myCanvas(reader.result).then(x=>{
-                //     console.log(x);
-                //     if(x=='ok'){
-                //         that.option.img = reader.result;
-                //         this.fangda();
-                //     }else{
-                //         that.option.img =x;
-                //         this.fangda();
-                //     }
-                // })
+                // that.Cropper_show = true;
+                // that.option.img = reader.result;
+                that.画布base64=reader.result;
+                that.set_myCanvas()
             };
         },
         //计算放大比例
         fangda(){
             console.log(this.img_width);
             console.log(this.img_height);
-           
         },
         //获取身份信息
         idcard(type) {
@@ -397,51 +375,72 @@ export default {
             });
         },
         //设置画布
-        set_myCanvas(url){
+        set_myCanvas(){
+            console.log('设置画布');
+            var this_1=this;
             var ww=window.outerWidth;
+            var c=this.$refs.myCanvas;
+            var cxt=c.getContext("2d");
+                // this.cxt=c.getContext("2d");
+                cxt.clearRect(0,0,c.width,c.height)     //清除画布
+            this.画布img=new Image();
+            this.画布img.src=this.画布base64;
+            this.画布img.onload=()=>{
+                console.log( 0 , 0 , c.width , this_1.画布img.height*c.width/this_1.画布img.width)
+                this_1.degree=0;
+                c.height=this_1.画布img.height*c.width/this_1.画布img.width;
+                cxt.drawImage( this_1.画布img , 0 , 0 , c.width , c.height);
+                var imgData=c.toDataURL();
+                this_1.Cropper_show = true;
+                if(35/22>c.width/c.height){
+                    this_1.option.mode='350px auto'
+                }else{
+                    this_1.option.mode='auto 220px'
+                }
+                this_1.option.img = imgData;
+            }
+        },
+        旋转画布(type){
+            openloading(true);
+            var this_1=this;
+            this.degree += type ? 90 : -90;
+            var degree= this.degree %= 360;
             var c=this.$refs.myCanvas
             var cxt=c.getContext("2d");
-                cxt.clearRect(0,0,c.width,c.height)
-            var img=new Image();
-                img.src=url;
-            return new Promise((resolve, reject) => {
-                img.onload=()=>{
-                    //判断宽高是否小于裁剪框
-                    if(img.width<ww || img.height<220){
-                        var baifenbi=img.width/img.height
-                        var caijian_baifenbi=350/220
-                        //按高度扩大
-                        // if(baifenbi<caijian_baifenbi){
-                            img.height=img.height*(ww/img.width)
-                            img.width=ww;
-                            c.height=img.height;
-                            c.width=img.width
-                            this.img_width=img.width;
-                            this.img_height=img.height;
-                            cxt.drawImage(img,0,0,img.width,img.height);
-                            var imgData=c.toDataURL();
-                            resolve(imgData);
-                        // }else{
-                        //     //按宽度扩大
-                        //     img.width=img.width*(440/img.height);
-                        //     img.height=440          //假如放大了2倍
-                        //     c.height=img.height;
-                        //     c.width=img.width;
-                        //     console.log(c.height);
-                        //     console.log(c.width);
-                        //     this.img_width=img.width;
-                        //     this.img_height=img.height;
-                        //     cxt.drawImage(img,0,0,img.width,img.height);
-                        //     var imgData=c.toDataURL();
-                        //     resolve(imgData);
-                        // }
-                    }else{
-                        this.img_width=img.width;
-                        this.img_height=img.height;
-                        resolve('ok');
-                    }
+            var 新高度=this.画布img.height*c.width/this.画布img.width;
+                if(degree/90%2==0 || degree/90%2==-0){
+                    //旋转了180度
+                    c.height=this.画布img.height*c.width/this.画布img.width;
+                }else{
+                    c.height=c.width/this.画布img.height*this.画布img.width;
                 }
-            });
+            cxt.save();
+            cxt.clearRect(0, 0, c.width, c.height);
+            cxt.translate(c.width / 2, c.height / 2);
+            cxt.rotate(degree / 180 * Math.PI);
+            if(degree/90%2==0 || degree/90%2==-0){
+                cxt.translate(-c.width / 2, -c.height / 2);
+                cxt.drawImage( this.画布img , 0 , 0 , c.width , c.height);
+            }else{
+                cxt.translate( -c.height / 2,-c.width / 2);
+                cxt.drawImage( this.画布img , 0 , 0 , c.height , c.width);
+            }
+            cxt.restore();
+            if(35/22>c.width/c.height){
+                this_1.option.mode='auto 220px'
+            }else{
+                this_1.option.mode='350px auto'
+            }
+            var imgData=c.toDataURL();
+                this_1.option.img = imgData;
+                if(35/22>c.width/c.height){
+                    this_1.option.mode='350px auto'
+                }else{
+                    this_1.option.mode='auto 220px'
+                }
+            setTimeout(()=>{
+                openloading(false);
+            },500)
         }
     },
     beforeCreate: function() {
@@ -460,9 +459,14 @@ export default {
         this.$store.commit("setagentUser");
         //获取百度  token
         this.get_token();
-         var ww=window.outerWidth;
+        var ww=window.outerWidth;
         this.$refs.myCanvas.width=ww;
-        // this.set_myCanvas(this.img_test)
+
+        console.log(90/90%2)
+        console.log(-90/90%2)
+        console.log(180/90%2)
+        console.log(-180/90%2)
+
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {
@@ -501,6 +505,7 @@ export default {
 #RealName .myCanvas{
     border: 1px solid red;
     position: fixed;
+    left: -100%;
 }
 
 #RealName #zhengmianInput {

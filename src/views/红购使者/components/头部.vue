@@ -1,10 +1,13 @@
 <template>
     <div class="容器">
         <ul class="头部">
-            <li class="头像"><img src="image/WechatIMG311.png" alt=""></li>
+            <li class="头像">
+                <img v-show="!userInfo.headImgUrl" src="image/WechatIMG311.png" alt="">
+                <img v-show="userInfo.headImgUrl" :src="userInfo.headImgUrl" alt="">
+            </li>
             <li class="内容">
                 <div class="name">
-                    <span>张忠祥</span>
+                    <span>{{userInfo.nickname}}</span>
                     <i class="icon iconfont icon-31erweima"></i>
                 </div>
                 <div class="地区">四川省/成都市/武侯区四川省地址地址地址地址地址地址地址地址地址地址地址地址地址地址地址地址</div>
@@ -18,9 +21,12 @@ export default {
     name:'',
     data () {
         return {
-            
+            userInfo:''
         }
-    }
+    },
+    mounted() {
+        this.userInfo=JSON.parse(localStorage.userInfo);    
+    },
 }
 </script>
 

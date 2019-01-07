@@ -41,7 +41,8 @@ export default {
                 start:0,
                 length:20,
                 getShareProfitUser:'',
-                state:1            
+                state:1,
+                phone:''  
             }
         },
         会员:{
@@ -122,7 +123,8 @@ export default {
                     start:0,
                     length:20,
                     getShareProfitUser:userInfo.username,
-                    state:1      
+                    state:1,
+                    phone:userInfo.phone
                 }
             }
             state.会员={

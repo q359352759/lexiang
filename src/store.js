@@ -3,6 +3,10 @@ import Vuex from "vuex";
 
 import createPersistedState from 'vuex-persistedstate'
 
+// 判断环境 vuex提示生产环境中不使用
+const debug = process.env.NODE_ENV !== 'production'
+
+
 import axios from "axios";
 axios.defaults.baseURL = baseURL;
 axios.defaults.timeout =  60000;
@@ -38,17 +42,16 @@ import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
 // export default ()=>{
 export default new Vuex.Store({
         plugins: [createPersistedState()],
-    // return new Vuex.Store({
-        
-        // plugins: [
-            // createPersistedState({
-            //   storage: {
-            //     getItem: key => Cookies.get(key),
-            //     // Please see https://github.com/js-cookie/js-cookie#json, on how to handle JSON.
-            //     setItem: (key, value) => Cookies.set(key, value, { expires: 3, secure: true }),
-            //     removeItem: key => Cookies.remove(key)
-            //   }
-            // })
+        // plugins: [       //储存部分
+        //     createPersistedState({
+        //         reducer(val) {
+        //             console.log(val);
+        //             return {
+        //                 // 红购使者:val.红购使者,
+        //                 申请开店:val.申请开店
+        //             }
+        //         }
+        //     })
         // ],
         state: {
             weixin_ready:false,     //微信准备就绪

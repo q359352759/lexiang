@@ -42,7 +42,7 @@
 
         <div class="Cropper_box" v-show="Cropper_show">
             <div class="cont_1">
-                <VueCropper ref="cropper" :img="option.img" :outputSize="option.size" :outputType="option.outputType" :info="true" :full="option.full" :canMove="option.canMove" :fixedBox="option.fixedBox" :canMoveBox="option.canMoveBox" :autoCrop="true" :autoCropWidth="option.autoCropWidth" :autoCropHeight="option.autoCropHeight"></VueCropper>
+                <VueCropper ref="cropper" :mode="option.mode" :outputSize="option.outputSize" :centerBox="option.centerBox" :viewMode="1" :img="option.img"  :outputType="option.outputType" :info="true" :canMove="option.canMove" :fixedBox="option.fixedBox" :canMoveBox="option.canMoveBox" :autoCrop="true" :autoCropWidth="option.autoCropWidth" :autoCropHeight="option.autoCropHeight"></VueCropper>
             </div>
             <ul class="footer_1">
                 <li @click="close_1()">
@@ -63,6 +63,8 @@
         <div class="mui-hidden zhengmianInput">
             <input type="file" accept="image/*" name="" id="">
         </div>
+
+        <canvas ref="myCanvas" class="myCanvas" ></canvas>
         
     </div>
 </template>
@@ -79,21 +81,26 @@ export default {
     },
     data(){
         return{
+            画布base64:'',
+            画布img:'',
+            degree:0,       //旋转角度
             //==============裁剪框配置
             Cropper_show: false, //显示裁剪框
             option: {
                 img: "",
-                size: 1,
-                full: false,
-                outputType: "png",
-                canMove: true,
-                fixedBox: true,         //裁剪框固定大小不动 true 固定
-                original: false,
-                canMoveBox: false,
-                autoCrop: true,         //一开始就裁剪
+                outputSize: 1,                //outputSize
                 outputType: "png",      //png,jpeg,webp
-                autoCropWidth: 300,
-                autoCropHeight: 225
+                canMove: true,          //上传图片是否可以移动
+                fixedBox: true,         //裁剪框固定大小不动 true 固定
+                canMoveBox: false,      //截图框能否拖动
+                autoCrop: true,         //是否默认生成截图框
+                // fixedNumber:[30,22],    //截图框的宽高比例
+                autoCropWidth:300,
+                autoCropHeight:225,
+                fixed:true,	            //是否开启截图框宽高固定比例 默认true
+                centerBox:true,         //截图框是否被限制在图片里面
+                canScale:true,          //图片是否允许滚轮缩放
+                mode:'auto 225px',           //contain , cover, 100px, 100% auto
             },
             type:3,
             radio_type_2:true,
@@ -161,10 +168,6 @@ export default {
                 }
             },'div')
         },
-        //确定
-        Sure(){
-           
-        },
         //选择
         select_img(x){
             this.$set(x,'active',!x.active);
@@ -196,9 +199,83 @@ export default {
             $('.zhengmianInput').html('<input type="file" accept="image/*" name="" id="">')
             $('.zhengmianInput').children().click()
         },
+        //设置画布
+        set_myCanvas(){
+            console.log('设置画布');
+            var this_1=this;
+            var ww=window.outerWidth;
+            var c=this.$refs.myCanvas;
+            var cxt=c.getContext("2d");
+                // this.cxt=c.getContext("2d");
+                cxt.clearRect(0,0,c.width,c.height)     //清除画布
+            this.画布img=new Image();
+            this.画布img.src=this.画布base64;
+            this.画布img.onload=()=>{
+                console.log( 0 , 0 , c.width , this_1.画布img.height*c.width/this_1.画布img.width)
+                this_1.degree=0;
+                c.height=this_1.画布img.height*c.width/this_1.画布img.width;
+                cxt.drawImage( this_1.画布img , 0 , 0 , c.width , c.height);
+                var imgData=c.toDataURL();
+                this_1.Cropper_show = true;
+                if(30/22>c.width/c.height){
+                    this_1.option.mode='300px auto'
+                }else{
+                    this_1.option.mode='auto 225px'
+                }
+                this_1.option.img = imgData;
+                openloading(false);
+            }
+        },
+        旋转画布(type){
+            openloading(true);
+            var this_1=this;
+            this.degree += type ? 90 : -90;
+            var degree= this.degree %= 360;
+            var c=this.$refs.myCanvas
+            var cxt=c.getContext("2d");
+            var 新高度=this.画布img.height*c.width/this.画布img.width;
+                if(degree/90%2==0 || degree/90%2==-0){
+                    //旋转了180度
+                    c.height=this.画布img.height*c.width/this.画布img.width;
+                }else{
+                    c.height=c.width/this.画布img.height*this.画布img.width;
+                }
+            cxt.save();
+            cxt.clearRect(0, 0, c.width, c.height);
+            cxt.translate(c.width / 2, c.height / 2);
+            cxt.rotate(degree / 180 * Math.PI);
+            if(degree/90%2==0 || degree/90%2==-0){
+                cxt.translate(-c.width / 2, -c.height / 2);
+                cxt.drawImage( this.画布img , 0 , 0 , c.width , c.height);
+            }else{
+                cxt.translate( -c.height / 2,-c.width / 2);
+                cxt.drawImage( this.画布img , 0 , 0 , c.height , c.width);
+            }
+            cxt.restore();
+            var imgData=c.toDataURL();
+            this_1.option.img = imgData;
+            if(30/22>c.width/c.height){
+                this_1.option.mode='300px auto'
+            }else{
+                this_1.option.mode='auto 225px'
+            }
+            setTimeout(()=>{
+                openloading(false);
+            },500)
+        },
         //关闭裁剪弹出框
         close_1() {
             this.Cropper_show = false;
+        },
+        //左转
+        rotateLeft() {
+            // this.$refs.cropper.rotateLeft();
+            this.旋转画布(false)
+        },
+        //右转
+        rotateRight() {
+            this.旋转画布(true);
+            // this.$refs.cropper.rotateRight();
         },
         //确定裁剪
         confirm(){
@@ -206,13 +283,9 @@ export default {
             this.loading=true
             this.Cropper_show = false;
             this.$refs.cropper.getCropData(data => {
-                // if (this.cropper_type == 1) {
                     this.img = data;
                     this.add_phone();
                     this.get_capacity();
-                // } else {
-                //     this.img_list.push(data);
-                // }
             });
         },
         //添加图片
@@ -241,14 +314,6 @@ export default {
                 this.loading=false;
                 console.log('添加失败',err);
             })
-        },
-        //左转
-        rotateLeft() {
-            this.$refs.cropper.rotateLeft(30);
-        },
-        //右转
-        rotateRight() {
-            this.$refs.cropper.rotateRight();
         },
         //选择类型
         selset_type(x){
@@ -346,16 +411,18 @@ export default {
             var file = $(this)[0].files[0];
             var size=file.size/1024;
             if(size>1024){
-                this_1.option.size=size/1024
+                this_1.option.outputSize=size/1024
             }else{
-                this_1.option.size=1
+                this_1.option.outputSize=1
             }
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend = function() {
-                this_1.Cropper_show = true;
-                this_1.option.img = reader.result;
-                openloading(false);
+                // this_1.Cropper_show = true;
+                // this_1.option.img = reader.result;
+                // openloading(false);
+                this_1.画布base64=reader.result;
+                this_1.set_myCanvas()
             };
         })
 
@@ -395,6 +462,11 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
+.myCanvas{
+    border: 1px solid red;
+    position: fixed;
+    left: -110%;
+}
 .mui-content{
     display: flex;
     flex-direction: column;
