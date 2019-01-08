@@ -133,7 +133,10 @@
         </div>
 
         <div @click="add()" class="box_4">
-            {{Submission_type ? '保存并上架' : '确认发布'}}
+            <div v-if="Submission_type">
+                {{add_obj.state==1 ? "保存" : "保存并上架"}}
+            </div>
+            <div v-if="!Submission_type">确认发布</div>
         </div>
 
         <!-- <Album v-show="Album_show" v-on:setShow="setShow"/> -->

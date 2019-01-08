@@ -5,16 +5,16 @@
             <!-- <a @tap="back()" class="mui-icon mui-icon-left-nav mui-pull-left"></a> -->
             <h1 class="mui-title"></h1>
             
-            <span class="fenxiang mui-pull-right">
+            <!-- <span class="fenxiang mui-pull-right">
                 <i class="icon iconfont icon-fenxiang2"></i>
-            </span>
+            </span> -->
             <span @click="erweima_show()" class="erweima mui-pull-right">
                 <i class="icon iconfont icon-31erweima"></i>
             </span>
         </header>
         <div class="mui-content mui-fullscreen">
             
-            <div class="swiper-container box_1">
+            <div class="swiper-container box_1" ref="swiperContainer">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide" v-for="(x, index) in img_list" :key="index">
                         <img :src="x" alt="">
@@ -194,7 +194,8 @@ export default {
     },
     methods: {
         ...mapActions({
-            商品查询专享:'shangPing/商品查询专享'
+            商品查询专享:'shangPing/商品查询专享',
+            修改商品:"shangPing/修改商品",
         }),
         //立即购买
         goumai(){
@@ -238,7 +239,7 @@ export default {
                     mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }
             }).catch(err=>{
-                console.log(err)
+                mui.toast('系统错误,稍后再试。',{ duration: 1000,type: "div" });
             })
         },
         //删除收藏
@@ -283,7 +284,7 @@ export default {
         },
         //轮播图片
         getswiper() {
-            var swiper = new Swiper("#CommodityDetails .swiper-container", {
+            var swiper = new Swiper(this.$refs.swiperContainer, {
                 loop: true,
                 autoplay: true,
                 observer:true,
@@ -304,7 +305,7 @@ export default {
                 console.log(x);
                 this.commodity=x.data.data;
                 this.img_list = x.data.data.img ? x.data.data.img.split(',') : [];
-                this.get_shop()
+                this.get_shop();
             }).catch(err=>{
                 console.log(err);
             })
@@ -397,6 +398,15 @@ export default {
                 console.log(err);
             })
         },
+        添加访问记录(){
+            var obj={
+                    commodityid:this.id,
+                    userid:this.userInfo.username    
+                }
+            this.$axios.post('/api-s/shops/addCommodityPopularity',obj).then(x=>{
+                console.log('添加人气',x)
+            }).catch(err=>{})
+        }
     },
     beforeCreate() {
         // console.group('------beforeCreate创建前状态------');
@@ -429,7 +439,8 @@ export default {
 
         //查询收藏
         if(this.userInfo){
-            this.get_findDataUserFavorite()
+            this.get_findDataUserFavorite();
+            this.添加访问记录()
         }
 
         // console.group('------mounted 挂载结束状态------');

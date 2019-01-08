@@ -35,7 +35,7 @@
                                 </h1>
                                 <h2 @click="go_addGoods(x)">价格：{{x.sellingPrice}}元</h2>
                                 <h3 @click="go_addGoods(x)">
-                                    <span class="mui-pull-right">累计销售：0份</span>
+                                    <span class="mui-pull-right">累计销售：{{x.sales}}份</span>
                                     <div>可抵扣{{x.deduction}}元
                                         <span v-if="x.commission">，佣金{{x.commission}}元</span>
                                     </div>

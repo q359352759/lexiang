@@ -31,7 +31,7 @@
             <span @tap="SearchShop()" class="sousuo mui-pull-right"><i class="icon iconfont icon-chazhao"></i></span>
         </header> -->
 
-        <div class="mui-content mui-fullscreen" @scroll="content_scroll($event)" > 
+        <div class="mui-content mui-fullscreen" ref="muiContent" @scroll="content_scroll($event)" > 
             
             <div class="swiper-container">
                 <div class="swiper-wrapper">
@@ -44,8 +44,13 @@
                 <div class="swiper-pagination"></div>
             </div>
 
-            <div class="banyuan">
+            <!-- <div class="banyuan">
                 <div></div>
+            </div> -->
+            <div class="半圆">
+                <div>
+                    <banyuan/>
+                </div>
             </div>
 
             <ul class="box_2">
@@ -66,11 +71,13 @@
             <div ref="box_4"></div>
             <ul class="box_3" :class="{'active':box_3_actvie}">
                 <li @click="change_type_1(1)" :class="{'active':type_1==1}">红包</li>
+                <li @click="change_type_1(4)" :class="{'active':type_1==4}">专享</li>
                 <li @click="change_type_1(2)" :class="{'active':type_1==2}">优购</li>
                 <li @click="change_type_1(3)" :class="{'active':type_1==3}">商家</li>
             </ul>
             <ul class="box_3" v-show="box_3_actvie">
                 <li @click="change_type_1(1)" :class="{'active':type_1==1}">红包</li>
+                <li @click="change_type_1(4)" :class="{'active':type_1==4}">专享</li>
                 <li @click="change_type_1(2)" :class="{'active':type_1==2}">优购</li>
                 <li @click="change_type_1(3)" :class="{'active':type_1==3}">商家</li>
             </ul>
@@ -84,19 +91,19 @@
                             {{x.address}}
                         </div>
                         <div class="text_1" v-if="x.deductionType==0">
-                            <span class="mui-pull-right juli" @tap="weixinmaptest(x)">
-                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1)+'km' : '1km以内'}}
-                            </span>
-                            <div @tap="BusinessDetails1(x)">
+                            <div class="dikou" @tap="BusinessDetails1(x)">
                                 抵扣{{x.percentage}}%
+                            </div>
+                            <div class="juli" @tap="weixinmaptest(x)">
+                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1)+'km' : '1km以内'}}
                             </div>
                         </div>
                         <div class="text_1" v-if="x.deductionType==1">
-                            <span class="mui-pull-right juli" @tap="weixinmaptest(x)">
-                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1)+'km' : '1km以内'}}
-                            </span>
-                            <div @tap="BusinessDetails1(x)">
+                            <div class="dikou" @tap="BusinessDetails1(x)">
                                 满{{x.expire}},抵扣{{x.deduction}}
+                            </div>
+                            <div class="juli" @tap="weixinmaptest(x)">
+                                <i class="icon iconfont icon-location"></i>{{x.distance ? x.distance.toFixed(1)+'km' : '1km以内'}}
                             </div>
                         </div>
                     </li>
@@ -110,28 +117,19 @@
                             <div>
                                 <span :style="{'font-size':x.font_size}" ref="font-size">{{x.amount}}</span>
                             </div>
-                            <!-- <span v-if="x.type!=4">{{x.amount}}</span> -->
-                            <!-- <span v-if="x.type==4" class="dikou">抵扣</span> -->
                         </div>
                     </li>
                     <li @tap="RedEnvelopesList(x)">
-                        <div>
-                            <div>
-                                <div>已领取</div>
-                                <div v-if="x.quantityMax">
-                                    <span>{{x.quantity ? Math.floor(x.quantity/x.quantityMax*100) : 0}}%</span>
-                                </div>
-                                <div v-if="!x.quantityMax">{{x.quantity ? (Math.floor(x.quantity/300*100)>98 ? 98 : Math.floor(x.quantity/300*100)) : 0}}%</div>
-                            </div>
-                            <div></div>
-                        </div>
-                        <div>领取</div>
+                        <hongbaobili :max="x.quantityMax" :lingqu="x.quantity"/>
+                        <div class="btn">领取</div>
                     </li>
                 </ul>
             </div>
             <loading v-if="type_1==1" :loadingtype="redenvelope.loading" :nodata="!redenvelope.loading && redenvelope.total==0" :end="!redenvelope.loading && redenvelope.total!=0 && redenvelope.list.length>=redenvelope.total"/>
             
-
+            <div class="专享栏" v-if="type_1==4">
+                <zhuanxiangshangp />
+            </div>
             
             <!-- 商品 -->
             <ul class="box_5" v-if="type_1==2">
@@ -242,11 +240,18 @@ import { openloading, bd_decrypt,GetDistance } from "@/assets/js/currency";
 import loading from "@/components/loading.vue";
 //弹出框
 import homeDialog from '@/components/homeDialog.vue';
+import zhuanxiangshangp from './home/专享商品.vue';
+import hongbaobili from './home/红包比例.vue';
+import banyuan from './home/半圆.vue';
+
 export default {
     name: "home",
     components: {
         loading,
-        homeDialog
+        homeDialog,
+        zhuanxiangshangp,
+        hongbaobili,
+        banyuan
     },
     data() {
         return {
@@ -297,7 +302,8 @@ export default {
             qrcode:'',//二维码
             qrcode_show:false,
             erweima_base64:'',      //base64用于嵌入二维码中
-            type_list:[]        //店铺类型
+            type_list:[],        //店铺类型
+            滚动条位置:0,
         };
     },
     computed:{
@@ -338,14 +344,20 @@ export default {
         //扫一扫
         saoyisao(){
             if(this.$store.state.weixin_ready){
-                openloading(false)
-                wx.scanQRCode({
-                    needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-                    scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
-                    success: function (res) {
-                        var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-                    }
-                });
+                try {
+                    openloading(false)
+                    wx.scanQRCode({
+                        needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                        scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                        success: function (res) {
+                            var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                        }
+                    });
+                } catch (error) {
+                    setTimeout(()=>{
+                        this.saoyisao();
+                    },1000)
+                }
             }else{
                 openloading(true);
                 setTimeout(()=>{
@@ -366,37 +378,50 @@ export default {
                 this.qrcode_show=true;
             }else{
                 openloading(true);
-                this.$axios({
-                    method:'post',
-                    url:'/api-u/users/imgtobase64',
-                    data:this.$qs.stringify({
-                        url:this.userInfo.headImgUrl
-                    })
-                }).then(x=>{
-                    if(x.data.code==200){
-                        this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
-                        var el=this.$refs.qrcode
-                            el.innerHTML='';
-                        let qrcode = new QRCode(el, {  
-                                width: 200,  
-                                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                                text: url, // 二维码内容  
-                                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
-                                background: '#fff',
-                                foreground: '#fff',
-                            })
-                        setTimeout(()=>{
-                            this.print();
-                        },500)
-                    }else{
+                if(this.userInfo.headImgUrl){
+                    this.$axios({
+                        method:'post',
+                        url:'/api-u/users/imgtobase64',
+                        data:this.$qs.stringify({
+                            url:this.userInfo.headImgUrl
+                        })
+                    }).then(x=>{
+                        if(x.data.code==200){
+                            this.erweima_base64='data:image/jpeg;base64,'+x.data.data;
+                            var el=this.$refs.qrcode
+                                el.innerHTML='';
+                            let qrcode = new QRCode(el, {  
+                                    width: 200,  
+                                    height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                                    text: url, // 二维码内容  
+                                    // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                                    background: '#fff',
+                                    foreground: '#fff',
+                                })
+                            setTimeout(()=>{
+                                this.print();
+                            },500)
+                        }else{
+                            openloading(false);
+                            mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
+                        }
+                    }).catch(err=>{
                         openloading(false);
-                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });                    
-                    }
-                }).catch(err=>{
-                    openloading(false);
-                    mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
-                    console.log(err);
-                })
+                        mui.toast('生成二维码失败，稍后再试。', { duration: "long",type: "div" });
+                    })
+                }else{
+                    var el=this.$refs.qrcode
+                        el.innerHTML='';
+                    let qrcode = new QRCode(el, {
+                            width: 200,  
+                            height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                            text: url, // 二维码内容  
+                            // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）  
+                            background: '#fff',
+                            foreground: '#fff',
+                        })
+                    this.print();
+                }
             }
         },
         print(){
@@ -541,6 +566,7 @@ export default {
             var h = e.target.offsetHeight; //容器高度
             var sh = e.target.scrollHeight; //滚动条总高
             var t = e.target.scrollTop; //滚动条到顶部距离
+            this.滚动条位置=t;
             // event.currentTarget.offsetTop
             // console.log('box_4',this.$refs.box_4.offsetTop,e.target.scrollTop)
             // console.log(e)
@@ -614,6 +640,8 @@ export default {
                 start:this.commodity.page_index*this.commodity.length,
                 length:this.commodity.length,
                 state:this.commodity.state,
+                order:'popularity', //sales 销量 popularity 人气，
+                orderType:'DESC' //DESC
             }
             this.commodity.loading=true;
             this.$axios({
@@ -833,6 +861,10 @@ export default {
         // });
         // console.group('------mounted 挂载结束状态------');
     },
+    activated(){
+        //再次进入页面
+        this.$refs.muiContent.scrollTo(0,this.滚动条位置, true);
+    },
     beforeUpdate: function() {
         // console.group('beforeUpdate 更新前状态===============》');
     },
@@ -863,6 +895,17 @@ export default {
     .mui-content {
         padding: 44px 0px 0px 0px;
         // height: 100%;
+    }
+}
+#home .半圆{
+    position: relative;
+    >div{
+        position: absolute;
+        z-index: 1;
+        width: 100%;
+        height: 7px;
+        left: 0px;
+        bottom: 0px;
     }
 }
 #home .mui-bar {
@@ -1015,14 +1058,15 @@ export default {
 }
 
 #home .box_3 {
-    margin: 0px 0px 10px;
     display: flex;
     background: #ffffff;
     text-align: center;
-    padding: 0px 0.44rem 5px 0.44rem;
-    color: #696969;
+    justify-content: center;
+    color: rgba(128, 128, 128, 1);
+	font-size: 14px;
     > li {
-        width: calc(100% / 3);
+        width: 53px;
+        margin: 0px 10px;
         height: 35px;
         line-height: 35px;
     }
@@ -1042,12 +1086,13 @@ export default {
     margin: 0.07rem 0px;
     background: #ffffff;
     display: flex;
-    > li:nth-child(1) {
+    >li:nth-child(1){
         display: flex;
-        flex-wrap: wrap;
-        flex-grow: 1;
-        padding: 10px 20px 0px 20px;
+        padding: 8px 20px 8px 20px;
         width: 0;
+        flex-direction: column;
+        justify-content: space-between;
+        flex-grow: 1;
         .title_1 {
             width: 100%;
             font-size: 0.14rem;
@@ -1075,11 +1120,12 @@ export default {
             width: 100%;
             color: #00baad;
             font-size: 0.12rem;
+            display: flex;
+            justify-content: center;
+            .dikou{
+                flex-grow: 1;
+            }
             .juli{
-                // i{
-                //     font-size: 0.1rem;
-                // }
-                margin: 3px 0px 0px;
                 color: rgba(166, 166, 166, 1);
             }
         }
@@ -1147,8 +1193,8 @@ export default {
         }
     }
     > li:nth-child(4) {
-        padding: 0.1rem;
-        > div:nth-child(1) {
+        padding: 5px 10px;
+        .比例{
             width: 0.45rem;
             height: 0.45rem;
             border: 2px #FF5733 solid;
@@ -1173,7 +1219,7 @@ export default {
                 margin: auto;
             }
         }
-        > div:nth-child(2) {
+        .btn{
             width: 0.4rem;
         	height: 0.14rem;
             font-size: 0.1rem;
@@ -1328,6 +1374,9 @@ export default {
                 color: rgba(212, 48, 48, 1);
             	font-size: 0.12rem;
                 margin: 0px;
+                i{
+                    font-size: 16px;
+                }
             }
         }
         

@@ -71,12 +71,12 @@
             <div class="box_3">
                 <ul class="mui-table-view">
                     <li class="mui-table-view-cell">
-                        <a class="mui-navigate-right">
+                        <a class="mui-navigate-right" @click="$router.push('/myshop/Member/MemberList')">
                             <div class="cont_1">
                                 <div class="mui-pull-right">
-                                    共计：0人
+                                    共计：{{顾客.total}}人
                                 </div>
-                                <div>今日新增会员：0人</div>
+                                <div>今日新增会员：{{今日新增}}人</div>
                             </div>
                         </a>
                     </li>
@@ -93,7 +93,7 @@
                         </a>
                     </li>
                     <li class="mui-table-view-cell">
-                        <a class="mui-navigate-right">
+                        <a class="mui-navigate-right" @click="$router.push('/myshop/xiaoshou/xiaoshou')">
                             <div class="cont_1">
                                 <div class="mui-pull-right">
                                 本月：{{本月销售.data}}元
@@ -198,6 +198,20 @@ export default {
             qrcode_show:false,
             erweima_base64:'',
             xingren_hongbao:{},
+            今日新增:0,
+            顾客:{              //主要用于统计人数
+                query:{
+                    start:0,
+                    length:1,
+                    shopid:'',
+                    order:'createTime',      //PAYMENTAMOUNT 消费 createTime 时间
+                    orderType:'DESC',   //ASC DESC 
+                },
+                list:[],
+                total:0,
+                loading:false,
+                paget_index:0
+            },
         }
     },
     computed:{
@@ -230,6 +244,25 @@ export default {
             查询销售统计:'myshops/销售/查询销售统计',
             get_agentUser_phone:'agent/get_agentUser_phone'
         }),
+        获取今日新增会员(){
+            this.$axios.get('/api-s/shops/countTodayshopCustomer/'+this.myshop.shopid).then(x=>{
+                console.log('获取今日新增',x);
+                if(x.data.code==200){
+                    this.今日新增=x.data.data;
+                }
+            }).catch(err=>{})
+        },
+        获取顾客(){
+            this.顾客.query.start=this.顾客.query.length*this.顾客.paget_index;
+            this.顾客.query.shopid=this.myshop.shopid;
+            this.$axios.get('/api-s/shops/findShopCustomerAll',{params:this.顾客.query}).then(x=>{
+                console.log('获取店铺顾客',x);
+                if(x.data.code==200){
+                    this.顾客.list=this.顾客.list.concat(x.data.data.data);
+                    this.顾客.total=x.data.data.total
+                }
+            }).catch(err=>{})
+        },
         进入店铺(){
             sessionStorage.removeItem("backUrl");
             this.$router.push('/BusinessDetails?shopid='+this.myshop.shopid)
@@ -361,6 +394,8 @@ export default {
             });
             // this.获取营业统计()
             this.查询销售统计(this.myshop.shopid);
+            this.获取今日新增会员();
+            this.获取顾客()
             if(this.myshop.referrerPhone){
                 this.get_agentUser_phone(this.myshop.referrerPhone).then(x=>{
                     if(x.data.code==200){
@@ -392,6 +427,8 @@ export default {
                 openloading(false);
             });
             this.查询销售统计(this.myshop.shopid);
+            this.获取今日新增会员();
+            this.获取顾客()
             //查询店铺推荐人
             if(this.myshop.referrerPhone){
                 this.get_agentUser_phone(this.myshop.referrerPhone).then(x=>{

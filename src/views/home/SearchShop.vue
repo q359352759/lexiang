@@ -16,9 +16,10 @@
             <div class="box_1" :class="{'active':search_box}">
                 <div class="mask" @click="search_close()"></div>
                 <ul class="box_3">
-                    <li :class="{'active':type==0}" @click="select_type(0)">商家</li>
-                    <li :class="{'active':type==1}" @click="select_type(1)">商品</li>
-                    <li :class="{'active':type==2}" @click="select_type(2)">商城</li>
+                    <li :class="{'active':type==0}" @click="选择类型(0)">商家</li>
+                    <li :class="{'active':type==3}" @click="选择类型(3)">专享</li>
+                    <li :class="{'active':type==1}" @click="选择类型(1)">商品</li>
+                    <li :class="{'active':type==2}" @click="选择类型(2)">商城</li>
                 </ul>
                 <div class="title_1">热门</div>
                 <ul class="list border_bottom">
@@ -42,9 +43,10 @@
             </div>
 
             <ul class="box_3">
-                <li :class="{'active':type==0}" @click="select_type(0)">商家</li>
-                <li :class="{'active':type==1}" @click="select_type(1)">商品</li>
-                <li :class="{'active':type==2}" @click="select_type(2)">商城</li>
+                <li :class="{'active':type==0}" @click="选择类型(0)">商家</li>
+                <li :class="{'active':type==3}" @click="选择类型(3)">专享</li>
+                <li :class="{'active':type==1}" @click="选择类型(1)">商品</li>
+                <li :class="{'active':type==2}" @click="选择类型(2)">商城</li>
             </ul>
 
             <ul class="box_2">
@@ -94,6 +96,9 @@
                 </li>
                 <loading v-if="type==0" :loadingtype="shop.loading" :nodata="!shop.loading && shop.total==0" :end="!shop.loading && shop.total!=0 && shop.list.length==shop.total"/>
             </ul>
+            <div class="专享商品" v-if="type==3">
+                <zhuanxiangshangpin />
+            </div>
             <!-- 商品 -->
             <ul class="box_5" v-if="type==1"  @scroll="content_scroll($event)">
                 <li v-for="(item, index) in commodity.list" :key="index" @click="CommodityDetails(item)">
@@ -121,6 +126,9 @@
                 <loading style="width:100%" v-if="type==1" :loadingtype="commodity.loading" :nodata="!commodity.loading && commodity.total==0" :end="!commodity.loading && commodity.total!=0 && commodity.list.length==commodity.total"/>
             </ul>
 
+            <div class="商城" v-if="type==2">
+                <loading :nodata="true"/>
+            </div>
 
 
         </div>
@@ -131,11 +139,12 @@
 <script>
 import { openloading, bd_decrypt,GetDistance } from "@/assets/js/currency";
 import loading from "@/components/loading.vue";
-
+import zhuanxiangshangpin from './SearchShop/专享商品.vue';
 export default {
     name:'',
     components: {
-        loading
+        loading,
+        zhuanxiangshangpin
     },
     data(){
         return{
@@ -157,8 +166,8 @@ export default {
                     name:'',
                     upx:'', //位置
                     upy:'',
-                    screen_type:'',  //1 距离 2 人气 3 评价 
-                    orderType:'ASC',   //1 倒叙 2顺序
+                    orderType:'ASC',   
+                    order:''
                 }
             },
             commodity:{
@@ -173,8 +182,8 @@ export default {
                     name:'',
                     upx:'', //位置
                     upy:'',
-                    screen_type:'',  //1 距离 2 人气 3 评价 
-                    sort_order:'',   //1 倒叙 2顺序
+                    orderType:'DESC',   //ASC DESC
+                    order:'popularity', //sales 销量 popularity 人气，
                 }
             }
         }
@@ -210,26 +219,13 @@ export default {
         select_text(x){
             this.search_text=x;
             this.search_box=false;
-            if(this.type==0){
-                this.shop.page_index=0
-                this.shop.list=[];
-                this.get_shops();
-            }else if(this.type==1){
-                this.commodity.page_index=0;
-                this.commodity.list=[]
-                this.get_commodity()
-            }
+            this.submit()
         },
         //滚动条
         content_scroll(e){
             var h = e.target.offsetHeight; //容器高度
             var sh = e.target.scrollHeight; //滚动条总高
             var t = e.target.scrollTop; //滚动条到顶部距离
-            // if(this.$refs.box_4.offsetTop-44<=e.target.scrollTop){
-            //     this.box_3_actvie=true;
-            // }else{
-            //     this.box_3_actvie=false;
-            // }
             if (h + t >= sh - 10) { 
                 if(this.type==0){
                     if(!this.shop.loading && this.shop.list.length<this.shop.total){
@@ -261,10 +257,12 @@ export default {
                 }
                 this.search_box=false;
                 if(this.type==0){
+                    this.select_type=2
                     this.shop.list=[];
                     this.shop.page_index=0
                     this.get_shops();
                 }else if(this.type==1){
+                    this.screen_type=0
                     this.commodity.list=[];
                     this.commodity.page_index=0
                     this.get_commodity();
@@ -281,14 +279,12 @@ export default {
             this.shop.jquery.upy=this.$store.state.my_position.y;
             this.shop.jquery.start=this.shop.page_index*this.shop.jquery.length;
             if(this.screen_type==2 || this.screen_type==3){
-                this.shop.jquery.orderType= this.screen_type==2 ? 'ASC' : 'DESC'; 
-                this.shop.jquery.sort_order=this.screen_type==2 ? 1 : 2;
+                this.screen_type==2 ? 1 : 2;
+                this.shop.jquery.orderType= this.screen_type==2 ? 'ASC' : 'DESC';
             }else if(this.screen_type==0 || this.screen_type==1){
-                this.shop.jquery.screen_type=2;
-                this.shop.jquery.sort_order=this.screen_type==0 ? 1 : 2;
+                this.screen_type==0 ? 1 : 2;
             }else if(this.screen_type==6 || this.screen_type==7){
-                this.shop.jquery.screen_type=3;
-                this.shop.jquery.sort_order=this.screen_type==6 ? 1 : 2;
+                this.screen_type==6 ? 1 : 2;
             }
             this.shop.loading=true;
             // this.shop.jquery.
@@ -319,14 +315,10 @@ export default {
             this.commodity.jquery.upy=this.$store.state.my_position.y;
             this.commodity.jquery.start=this.commodity.page_index*this.commodity.jquery.length;
             if(this.screen_type==2 || this.select_type==3){
-                this.commodity.jquery.screen_type=1;
-                this.commodity.jquery.sort_order=this.screen_type==2 ? 1 : 2;
             }else if(this.screen_type==0 || this.screen_type==1){
-                this.commodity.jquery.screen_type=2;
-                this.commodity.jquery.sort_order=this.screen_type==0 ? 1 : 2;
+                this.commodity.jquery.order='popularity';
+                this.commodity.jquery.orderType = this.screen_type==0 ? "DESC" : "ASC";
             }else if(this.screen_type==6 || this.screen_type==7){
-                this.commodity.jquery.screen_type=3;
-                this.commodity.jquery.sort_order=this.screen_type==6 ? 1 : 2;
             }
             this.commodity.loading=true;
             this.$axios({
@@ -372,24 +364,17 @@ export default {
         search_close(){
             if(this.search_text){
                 this.search_box=false;
+                this.submit()
             }
         },
         //点击商品或商家
-        select_type(x){
+        选择类型(x){
             this.type=x;
             if(!this.search_text){
                 return;
             }
             this.search_box=false;
-            if(this.type==0){
-                this.shop.list=[];
-                this.page_index=0
-                this.get_shops();
-            }else if(this.type==1){
-                this.commodity.list=[];
-                this.commodity.page_index=0
-                this.get_commodity();
-            }
+            this.submit()
         },
         //获取位置
         juli(item){
@@ -571,7 +556,7 @@ export default {
     border-bottom: 1px solid #efeff4;
     text-align: center;
     li{
-        width: 33.3%;
+        width: 25%;
         position: relative; 
     }
     li.active{

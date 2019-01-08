@@ -186,6 +186,9 @@ export default new Router({
             components: {
                 default: Home,
                 circularNav: circularNav
+            },
+            meta: {
+                keepAlive: true //缓存当前页面
             }
         },{
             path:'/xieyi/yinsizhengce',

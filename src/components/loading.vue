@@ -28,9 +28,10 @@ export default {
 
 <style scoped>
 .config_loading {
-  padding: 10px;
-  font-size: 0.14rem;
-  color: rgba(80, 80, 80, 1);
+    padding: 10px;
+    font-size: 0.14rem;
+    color: rgba(80, 80, 80, 1);
+
 }
 .config_load {
   padding: 10px;

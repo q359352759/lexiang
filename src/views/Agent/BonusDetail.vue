@@ -16,7 +16,7 @@
                     </li>
                 </ul>
             </div>
-            <div class="content_1">
+            <div class="content_1" @scroll="content_scroll($event)">
                 <ul class="box_1">
                     <li v-for="(item, index) in detail.list" :key="index">
                         <div>{{item.createTime | filter_time}}</div>
@@ -83,12 +83,22 @@ export default {
         get_init(){
             this.detail.query.start=this.detail.page_index*this.detail.query.length;
             this.detail.query.getShareProfitUser=this.userInfo.username;
+
             if(this.detail.query.type==1){
                 this.detail.query.shopid=this.id
             }else{
                 this.detail.query.userid=this.id
             }
             this.get_list(this.detail);
+        },
+        content_scroll(e){
+            var h = e.target.offsetHeight; //容器高度
+            var sh = e.target.scrollHeight; //滚动条总高
+            var t = e.target.scrollTop; //滚动条到顶部距离
+            if (h + t >= sh - 10 && !this.detail.loading && this.detail.list.length < this.detail.total){
+                this.detail.page_index++
+                this.get_list(this.detail)
+            }
         }
     },
     mounted () {

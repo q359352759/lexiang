@@ -84,6 +84,7 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function() {
+        this.$store.state.weixin_ready=false;
         // window.addEventListener("storage", e => {
         //     if (e.key !== "vuex") return;
         //     // exit if no change

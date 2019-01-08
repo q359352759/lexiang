@@ -12,8 +12,8 @@
                 <div>时间</div>
                 <div>累计分润</div>
             </li>
-            <li v-for="(item, index) in 商家.list" :key="index">
-                <div class="name" @click="BonusDetail(item)">{{item.shopName}}</div>
+            <li v-for="(item, index) in 商家.list" :key="index" @click="BonusDetail(item)">
+                <div class="name" >{{item.shopName}}</div>
                 <div>
                     <div>{{item.finalCreateTime | filter_time('yyyy.MM.dd')}}</div>
                     <div>{{item.finalCreateTime | filter_time('hh:mm:ss')}}</div>
@@ -30,9 +30,9 @@
                 <div>时间</div>
                 <div>累计分润</div>
             </li>
-            <li v-for="(item, index) in 会员.list" :key="index">
-                <div class="name" @click="BonusDetail(item)" v-if="item.nickname">{{item.nickname | filteer_name}}</div>
-                <div @click="BonusDetail(item)" v-if="!item.nickname">{{item.userPhone}}</div>
+            <li v-for="(item, index) in 会员.list" :key="index" @click="BonusDetail(item)">
+                <div class="name" v-if="item.nickname">{{item.nickname | filteer_name}}</div>
+                <div v-if="!item.nickname">{{item.userPhone}}</div>
                 <div>
                     <div>{{item.finalCreateTime | filter_time('yyyy.MM.dd')}}</div>
                     <div>{{item.finalCreateTime | filter_time('hh:mm:ss')}}</div>
@@ -103,9 +103,9 @@ export default {
         }),
         BonusDetail(item){
             if(item.type==1){
-                this.$router.push('/agent/BonusDetail?id='+item.shopid+'&type='+item.type);
+                this.$router.push('/agent/BonusDetail?id='+item.finalshopid+'&type='+item.type);
             }else{
-                this.$router.push('/agent/BonusDetail?id='+item.userid+'&type='+item.type);
+                this.$router.push('/agent/BonusDetail?id='+item.username+'&type='+item.type);
             }
         }
         // set_type()

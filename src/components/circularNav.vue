@@ -3,7 +3,7 @@
         <div class="mask" v-show="mask_show" @click="change_mask_show(false)"></div>
         <!-- <ul class="move" @mousedown="mousedown($event)" @mousemove="mousemove($event)" @mouseup="mouseup($event)"> -->
         <ul :class="class_name" :style="{'top':this.$store.state.clientY+'px','left':this.$store.state.clientX+'px'}">
-            <li @click="change_mask()" @touchmove="touchmove($event)" @touchend="touchend($event)">
+            <li ref="中心点" @click="change_mask($event)" @touchmove="touchmove($event)" @touchend="touchend($event)">
                 <img src="image/12121.png" alt="">
             </li>
             <li class="min_1 min_11" v-show="mask_show">
@@ -93,15 +93,18 @@ export default {
                 this.$router.push("/Agent"); //跳转代理人
             }
         },
-        change_mask() {
+        change_mask(e) {
             this.mask_show = !this.mask_show;
+            e.target.style.opacity=this.mask_show ? 1 : 0.7
         },
         change_mask_show(x) {
             this.mask_show = x;
+            this.$refs.中心点.style.opacity=0.7
         },
         go(x) {
             this.mask_show = false;
             this.$router.push(x);
+            this.$refs.中心点.style.opacity=0.7
         },
         //开始拖动
         touchmove(x){
@@ -190,12 +193,10 @@ export default {
     }
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 
-
 #circularNav .mask {
-    
     position: fixed;
     top: 0px;
     left: 0px;
@@ -212,12 +213,34 @@ export default {
     width: 50px;
     height: 50px;
     border-radius: 100%;
+    position: relative;
+    opacity: 0.7;
+}
+#circularNav ul > li:nth-child(1)::after{
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    margin: auto;
+    border: 1px solid #e97869;
+    content: '';
+    border-radius: 100%;
+    animation: circularNav_donghua 3s ease infinite;
+}
+@keyframes  circularNav_donghua{
+    from{
+        transform:scale(1);
+        opacity: 1;
+    }to {
+        transform:scale(1.3);
+        opacity: 0;
+    }
 }
 #circularNav ul > li:nth-child(1) img {
     width: 100%;
     height: 100%;
     border-radius: 100%;
-    opacity: 0.7;
 }
 #circularNav .min_1 {
     text-align: center;
