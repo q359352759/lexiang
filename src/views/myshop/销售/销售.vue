@@ -2,7 +2,7 @@
     <div>
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">销售1</h1>
+            <h1 class="mui-title">销售</h1>
         </header>
         <!-- 时间选择器 -->
         <timeBox @setTime="get_time" ref='mychild'/>
@@ -44,7 +44,7 @@
 
             <div ref="content"></div>
             <ul class="box_3" :class="{'active':fixed}">
-                <li class="header_1" >
+                <li class="header_1">
                     <div>时间</div>
                     <div>客户</div>
                     <div>订单</div>
