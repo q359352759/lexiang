@@ -10,7 +10,7 @@
             <ul class="box_1">
                 <li class="title">
                     <div>今日销售额</div>
-                    <div class="money">￥{{今日销售.data}}元</div>
+                    <div class="money">￥{{今日销售.data ? 今日销售.data : 0}}元</div>
                 </li>
                 <li class="flex">
                     <div>

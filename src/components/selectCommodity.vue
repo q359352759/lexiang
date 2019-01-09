@@ -18,7 +18,13 @@
                             <span>可抵扣{{x.deduction}}元，佣金{{x.commission ? x.commission : 0}}元</span>
                         </div>
                     </div>
-                    <div @tap="select(x)" class="xuanze">选择</div>
+                    <div @tap="select(x)" class="xuanze">
+                        <span v-if="leixing==''">选择</span>
+                        <span v-if="leixing=='发布商品红包' && !x.EXID">选择</span>
+                        <span v-if="leixing=='发布商品红包' && x.EXID">专享商品</span>
+                        <span v-if="leixing=='发布专享商品' && !x.EXID">选择</span>
+                        <span v-if="leixing=='发布专享商品' && x.EXID">专享商品</span>
+                    </div>
                 </li>
             </ul>
             <loading :loadingtype="loading" :nodata="!loading && total==0" :end="!loading && total!=0 && total==commodity_list.length"/>
@@ -28,10 +34,15 @@
 
 <script>
 import loading from '@/components/loading.vue'
+import { openloading } from "@/assets/js/currency";
 
 export default {
     name:'',
-    // props: ["list"],
+    props: {
+        leixing:{
+            default:'',     //发布商品红包 发布专享商品        
+        }
+    },
     components: {
         loading
     },
@@ -48,6 +59,7 @@ export default {
             commodity_list:[],
             total:0,
             loading:true,
+            商品红包:[]
         }
     },
     computed:{
@@ -58,8 +70,30 @@ export default {
     methods:{
         //选择商品
         select(x){
-            
-            this.$emit('setShow',x);
+            if(this.leixing==''){
+                this.$emit('setShow',x);
+            }else if(this.leixing=='发布商品红包'){
+                if(!x.EXID){
+                    this.$emit('setShow',x);
+                }else{
+                    mui.toast('专享商品无法设置红包。', {duration: "long", type: "div" });
+                }
+            }else if(this.leixing=='发布专享商品'){
+                if(x.EXID){
+                    mui.toast('该商品已是专享。', {duration: "long", type: "div" });
+                }else{
+                    if(!this.商品红包){
+                        mui.toast('商品红包查询失败，无法操作，稍后再试。', {duration: "long", type: "div"});
+                    }else{
+                        var obj=this.商品红包.find(x=>x.commodityId==x.id);
+                        if(obj){
+                            mui.toast('该商品已发布商品红包，无法设置专享。', {duration: "long", type: "div" });
+                        }else{
+                            this.$emit('setShow',x);
+                        }
+                    }
+                }
+            }
         },
         //滚动条
         scroll(e){
@@ -96,6 +130,28 @@ export default {
                 console.log('获取商品列表失败',err)
                 // openloading(false);
             })
+        },
+        查询商品红包(){
+            openloading(true);
+            var obj={
+                    shopid:this.myshop.shopid,
+                    start:0,
+                    length:1000,
+                    ccc:1,
+                    type:1,
+                }
+            this.$axios.get('/api-s/shops/redenvelope/findAll',{params:obj}).then(x=>{
+                console.log('根据商品查询红包',x)
+                if(x.data.code==200){
+                    this.商品红包=x.data.data.data
+                }else{
+                    this.商品红包='';
+                }
+                openloading(false);
+            }).catch(err=>{
+                this.商品红包='';
+                openloading(false);
+            })
         }
     },
     mounted: function() {
@@ -105,6 +161,7 @@ export default {
         //获取商品
         if(this.myshop.shopid){
             this.get_commodity();
+            this.查询商品红包()
         }
 
         // console.group('------mounted 挂载结束状态------');
@@ -113,6 +170,7 @@ export default {
         myshop(){
             if(this.get_index==0){
                 this.get_commodity();
+                this.查询商品红包()
             }
         }
     }

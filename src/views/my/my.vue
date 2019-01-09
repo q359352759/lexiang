@@ -150,7 +150,8 @@
 
             <!-- <button @click="test()">测试</button>
             {{weixin}} -->
-		</div>
+            
+        </div>
 
         <div class="QRCode" v-show="qrcode_show">
             <div class="mask"></div>
@@ -161,19 +162,6 @@
                     <div></div>
                 </div>
                 <img :src="qrcode" alt="" srcset="">
-                <!-- <div class="title_1">
-                    <div class="img_box">
-                        <img src="image/lxlogo_180.png" alt="" srcset="">
-                    </div>
-                    <div>
-                        <div class="userName">张忠祥</div>
-                        <div class="text">对酒当歌，人生几何。</div>
-                    </div>
-                </div>
-                <div class="erweima_box">
-                    <img src="image/7a1f5483e159cad31c9f3712accc6c9b.jpg" alt="">
-                </div>
-                <div class="tishi">扫描加好友</div> -->
             </div>
         </div>
 

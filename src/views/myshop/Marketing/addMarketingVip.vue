@@ -79,7 +79,7 @@
             <div @click="queding()" class="btn_1">确定</div>
         </div>
 
-        <selectCommodity v-show="ShopClassification_show" v-on:setShow="setShow"/>
+        <selectCommodity v-show="ShopClassification_show" v-on:setShow="setShow" leixing="发布专享商品"/>
     </div>
 </template>
 
@@ -103,7 +103,6 @@ export default {
                 percentage:'',
             },
             commodity:{     //商品
-
             }
         }
     },

@@ -45,7 +45,7 @@
                 </ul>
             </div>
 
-            <div class="box_1">
+            <div class="box_1" v-show="!商品红包">
                 <ul class="mui-table-view ">
                     <li class="mui-table-view-cell item_box item_1">
                         <div @click="是否专享=!是否专享" class="radio_1" :class="{'active':是否专享}">
@@ -224,6 +224,7 @@ export default {
                 deduction:'',   //抵扣金额
                 percentage:'',  //计算出来的百分比
             },
+            商品红包:''
         }
     },
     computed:{
@@ -668,6 +669,25 @@ export default {
                 console.log('获取专享失败');
                 mui.toast('系统错误，稍后再试。', { duration: "long",type: "div" });
             })
+        },
+        查询商品红包(){
+            var obj={
+                    shopid:this.add_obj.shopid,
+                    start:0,
+                    length:100,
+                    ccc:1,
+                    type:1,
+                }
+            this.$axios.get('/api-s/shops/redenvelope/findAll',{params:obj}).then(x=>{
+                console.log('根据商品查询红包',x)
+                if(x.data.code==200){
+                    var data=x.data.data.data;
+                    var 商品红包=data.find(x=>x.commodityId==this.add_obj.id);
+                    if(商品红包){
+                        this.商品红包=商品红包;
+                    }
+                }
+            }).catch(err=>{})
         }
     },
     beforeCreate: function() {
@@ -712,6 +732,7 @@ export default {
                 var commodity=JSON.parse(sessionStorage.commodity);
                 this.add_obj=commodity;
                 this.获取专享商品();
+                this.查询商品红包()
             }else{
                 this.Submission_type='';
                 var commodity={}

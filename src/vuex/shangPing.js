@@ -35,7 +35,6 @@ export default {
             axios({
                 method: "get",
                 url: "/api-s/shops/commodity/findAll",
-                // data:obj.query
                 params:obj.query
             }).then(x => {
                 console.log('获取商品',x)
@@ -94,6 +93,34 @@ export default {
         }
     },
     actions: {
+        获取商品(state,obj){
+            /**
+             * obj.list 返回的数据
+             * obj.query 查询条件
+             * 
+             **/
+            obj.loading=true
+            return new Promise((resolve, reject) => {
+                axios({
+                    method: "get",
+                    url: "/api-s/shops/commodity/findAll",
+                    params:obj.query
+                }).then(x => {
+                    if(x.data.code == 200){
+                        obj.list=obj.list.concat(x.data.data.data);
+                        obj.total=x.data.data.total;
+                    }else{
+                        mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
+                    }
+                    obj.loading=false;
+                    resolve()
+                }).catch(error => {
+                    obj.loading=false;
+                    mui.toast('获取商品失败', { duration: 2000, type: "div" });
+                    reject()
+                });
+            });
+        },
         // get_shangping_3 ({ dispatch, commit }) {
         get_shangping_3 ({ dispatch, commit },context) {
             return new Promise((resolve, reject) => {

@@ -237,7 +237,7 @@
             <div @tap="sub()" class="btn_1">确定</div>
             
             <!-- 商品 -->
-            <ShopClassification  v-on:setShow="setShow" v-show="ShopClassification_show"/>
+            <ShopClassification  v-on:setShow="setShow" v-show="ShopClassification_show"  leixing="发布商品红包"/>
             <!-- 红包通用说明 -->
             <hongBaoShuoMing  v-show="hongBaoShuoMing_show"/>
             

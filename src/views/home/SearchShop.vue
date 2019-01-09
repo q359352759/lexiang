@@ -296,7 +296,7 @@ export default {
                 console.log('查询店铺',x);
                 var list=x.data.data.data;
                 for(var i=0;i<list.length;i++){
-                    list[i].juli='';
+                    list[i].juli = '';
                     // this_1.juli(list[i])
                 }
                 this.shop.list=this.shop.list.concat(list);

@@ -117,8 +117,12 @@ export default {
             jieri_hongbao:[],       //节日红包
             qingdian_hongbao:[],    //庆典红包
             dianpu_hongbao:[],      //店铺红包
-            invitedsutotal:{}       //平台红包信息
-
+            invitedsutotal:{},       //平台红包信息
+            专享:{
+                可享受新人专享:false,
+                可享受生日专享:false
+            },
+            专享商品:''
             // 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
             // 店铺订单，红包抵扣顺序
             // 1、店铺生日红包
@@ -131,7 +135,7 @@ export default {
     },
     computed:{
         ...mapGetters({
-            shop:'shop/shop'
+            shop:'shop/shop',
         }),
         //判断是否有红包可用
         youwu_hongbao(){
@@ -278,7 +282,11 @@ export default {
             var shiji_shuliang=this.number<this.shangPing_hongbao.length ? this.number : this.shangPing_hongbao.length;
             //实际单个可抵扣金额
             if(this.shangPing_hongbao.length>0){
-                var money=this.shangPing.deduction<this.shangPing_hongbao[0].redAmount ? this.shangPing.deduction : this.shangPing_hongbao[0].redAmount;
+                if((this.专享.可享受新人专享 || this.专享.可享受生日专享) && this.专享商品){
+                    var money=this.专享商品.deduction<this.shangPing_hongbao[0].redAmount ? this.专享商品.deduction : this.shangPing_hongbao[0].redAmount;
+                }else{
+                    var money=this.shangPing.deduction<this.shangPing_hongbao[0].redAmount ? this.shangPing.deduction : this.shangPing_hongbao[0].redAmount;
+                }
             }else{
                 var money=0
             }
@@ -293,11 +301,16 @@ export default {
         shengri_dikou(){
             //不需要抵扣 或者没有红包
             if(this.number-this.shangPing_hongbao_dikou.number==0 || this.shengri_hongbao.length==0){
-                return 0
+                return 0;
             }
             var number_1=this.number-this.shangPing_hongbao_dikou.number;
             // 计算剩余可抵扣金额
-            var shengyu = number_1*this.shangPing.deduction
+            if((this.专享.可享受新人专享 || this.专享.可享受生日专享) && this.专享商品){
+                var shengyu = number_1*this.专享商品.deduction
+            }else{
+                var shengyu = number_1*this.shangPing.deduction
+            }
+           
             var dikou = shengyu<this.shengri_hongbao[0].redAmount ? shengyu : this.shengri_hongbao[0].redAmount;
                 dikou=Math.floor(dikou*100)/100
             return dikou;
@@ -310,7 +323,11 @@ export default {
             }
             var number_1=this.number-this.shangPing_hongbao_dikou.number;
             // 计算剩余可抵扣金额
-            var shengyu = number_1*this.shangPing.deduction
+            if((this.专享.可享受新人专享 || this.专享.可享受生日专享) && this.专享商品){
+                var shengyu = number_1*this.专享商品.deduction
+            }else{
+                var shengyu = number_1*this.shangPing.deduction
+            }
             var dikou = shengyu<this.qingdian_hongbao[0].redAmount ? shengyu : this.qingdian_hongbao[0].redAmount
                 dikou=Math.floor(dikou*100)/100
             return dikou;
@@ -323,7 +340,11 @@ export default {
             }
             var number_1=this.number-this.shangPing_hongbao_dikou.number;
             // 计算剩余可抵扣金额
-            var shengyu = number_1*this.shangPing.deduction
+            if((this.专享.可享受新人专享 || this.专享.可享受生日专享) && this.专享商品){
+                var shengyu = number_1*this.专享商品.deduction
+            }else{
+                var shengyu = number_1*this.shangPing.deduction
+            }
             var dikou = shengyu<this.jieri_hongbao[0].redAmount ? shengyu : this.jieri_hongbao[0].redAmount
                 dikou=Math.floor(dikou*100)/100
             return dikou;
@@ -337,7 +358,11 @@ export default {
             }
             var number_1=this.number-this.shangPing_hongbao_dikou.number;
             //计算剩余可抵扣金额
-            var shengyu = number_1*this.shangPing.deduction
+            if((this.专享.可享受新人专享 || this.专享.可享受生日专享) && this.专享商品){
+                var shengyu = number_1*this.专享商品.deduction
+            }else{
+                var shengyu = number_1*this.shangPing.deduction
+            }
             var dikou = shengyu<this.dianpu_hongbao[0].amount ? shengyu : this.dianpu_hongbao[0].amount
                 dikou=Math.floor(dikou*100)/100
             return dikou;
@@ -350,7 +375,11 @@ export default {
             }
             var number_1=this.number-this.shangPing_hongbao_dikou.number;
             //计算剩余可抵扣金额
-            var shengyu = number_1*this.shangPing.deduction
+            if((this.专享.可享受新人专享 || this.专享.可享受生日专享) && this.专享商品){
+                var shengyu = number_1*this.专享商品.deduction
+            }else{
+                var shengyu = number_1*this.shangPing.deduction
+            }
             var dikou = shengyu<this.invitedsutotal.sutotal ? shengyu : this.invitedsutotal.sutotal
                 dikou=Math.floor(dikou*100)/100
             return dikou;
@@ -364,7 +393,11 @@ export default {
                 }
             var number_1=this.number-this.shangPing_hongbao_dikou.number;
             //计算剩余可抵扣金额
-            var shengyu = number_1*this.shangPing.deduction
+            if((this.专享.可享受新人专享 || this.专享.可享受生日专享) && this.专享商品){
+                var shengyu = number_1*this.专享商品.deduction
+            }else{
+                var shengyu = number_1*this.shangPing.deduction
+            }
             obj.xingren_dikou=this.xingren_dikou;          //新人红包抵扣金额
             //是否还有剩余金额需要抵扣
             if(shengyu!=obj.xingren_dikou){
@@ -379,6 +412,9 @@ export default {
     methods:{
         ...mapActions({
             get_shop:'shop/get_shop',   //根据店铺Id查询店铺
+            是否享受新人专享:'买单/是否享受新人专享',
+            是否享受生日专享:'买单/是否享受生日专享',
+            商品查询专享:'shangPing/商品查询专享',
         }),
         //点开优惠详情
         set_dikou_shouw(){
@@ -531,6 +567,26 @@ export default {
         
         this.userInfo=JSON.parse(localStorage.userInfo);
         this.$store.commit('shangPing/get_shangping_1',obj);
+        
+        this.商品查询专享(this.id).then(x=>{
+            console.log('查询专享',x)
+            if(x.data.code==200 && x.data.data.length>0){
+                this.专享商品=x.data.data[0];
+                 // 0 新人 1 生日
+                var 查询专享={
+                    userid:this.userInfo.username,
+                    commodityid:this.id
+                }
+                if(this.专享商品.type==0){
+                    this.是否享受新人专享([this.专享,查询专享]);
+                }else if(this.专享商品.type==1){
+                    this.是否享受生日专享([this.专享,查询专享]);
+                }
+            }
+        }).catch(err=>{})
+        // this.是否享受新人专享([this.专享,查询专享]);
+        // this.是否享受生日专享([this.专享,查询专享]);
+        
             this.get_index=1
             //获取用户卡包信息
             this.get_CardPackge();

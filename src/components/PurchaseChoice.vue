@@ -22,11 +22,16 @@
                         </div>
                     </div>
                     <div class="zhuanshu">
-                        <!-- <img src="image/xingren.png" alt="" srcset="">
-                        <div>
+                        <img v-if="item.可享受新人专享" src="image/xingren.png" alt="" srcset="">
+                        <div v-if="item.可享受新人专享">
                             <i class="icon iconfont icon-shengji"></i>
-                            <span>0元</span>
-                        </div> -->
+                            <span>{{item.EXDEDUCTION}}元</span>
+                        </div>
+                        <img v-if="item.可享受生日专享" src="image/shengri1.png" alt="" srcset="">
+                        <div v-if="item.可享受生日专享">
+                            <i class="icon iconfont icon-shengji"></i>
+                            <span>{{item.EXDEDUCTION}}元</span>
+                        </div>
                     </div>
                     <div class="xuanzhe">
                         <span @click="jian(item)">-</span>
@@ -163,6 +168,7 @@
 <script>
 import loading from '@/components/loading.vue';
 import {getDateStr} from '@/assets/js/currency.js';
+import { mapActions } from 'vuex';
 export default {
     name:'',
     components:{
@@ -259,7 +265,11 @@ export default {
                         hongbao.shiyong=true;
                         item.shiyong=true;
                         item.hongbao=hongbao;
-                        item.dikou=item.deduction<hongbao.redAmount ? item.deduction : hongbao.redAmount
+                        if(item.可享受生日专享 || item.可享受新人专享){
+                            item.dikou=item.EXDEDUCTION<hongbao.redAmount ? item.EXDEDUCTION : hongbao.redAmount
+                        }else{
+                            item.dikou=item.EXDEDUCTION<hongbao.redAmount ? item.EXDEDUCTION : hongbao.redAmount
+                        }
                         list.push(item);
                     }
                 })
@@ -272,7 +282,11 @@ export default {
             var list=this.shangping_list.filter(x=>!x.shiyong)
             var kedikou=0;
                 list.forEach(item=>{
-                    kedikou=kedikou+item.deduction;
+                    if(item.可享受生日专享 || item.可享受新人专享){
+                        kedikou=kedikou+item.EXDEDUCTION;
+                    }else{
+                        kedikou=kedikou+item.deduction;
+                    }
                 })
                 console.log(kedikou);
 
@@ -306,7 +320,11 @@ export default {
 
             list.forEach(item=>{
                 if(honghao_kedikou>=0){
-                    var shiji_dikou=item.deduction>honghao_kedikou ? honghao_kedikou : item.deduction;
+                    if(item.可享受生日专享 || item.可享受新人专享){
+                        var shiji_dikou=item.EXDEDUCTION>honghao_kedikou ? honghao_kedikou : item.EXDEDUCTION;
+                    }else{
+                        var shiji_dikou=item.deduction>honghao_kedikou ? honghao_kedikou : item.deduction;
+                    }
                         shiji_dikou=Math.round(shiji_dikou*100)/100
                     item.dikou=shiji_dikou;
                     item.hongbao=this.dikou_type;
@@ -419,6 +437,11 @@ export default {
 
     },
     methods:{
+        ...mapActions({
+            是否享受新人专享:'买单/是否享受新人专享',
+            是否享受生日专享:'买单/是否享受生日专享',
+            获取商品:'shangPing/获取商品'
+        }),
         //点击红包详情
         change_select(x,type){
             this.select_show=x;
@@ -466,14 +489,35 @@ export default {
             }
         },
         //查询商品
-        get_shangping(){
+        async get_shangping(){
             this.shangping.query.start=this.shangping.page_index*this.shangping.query.length;
-            this.$store.commit('shangPing/get_shangping',this.shangping);
+            // await this.$store.commit('shangPing/get_shangping',this.shangping);
+            await this.获取商品(this.shangping);
+            console.log('获取商品',this.shangping.list);
+            this.shangping.list.forEach(item=>{
+                this.$set(item, '可享受新人专享', false);
+                this.$set(item, '可享受生日专享', false);
+                if(item.EXTYPE==0){
+                    var query={
+                            userid:this.userInfo.username,
+                            commodityid:item.id
+                        }
+                    this.是否享受新人专享([item,query])
+                }else if(item.EXTYPE==1){
+                    var query={
+                            userid:this.userInfo.username,
+                            commodityid:item.id
+                        }
+                    this.是否享受生日专享([item,query])                    
+                }
+            })
+            // 0 新人 1 生日
         },
         //滚动条
         scroll(e){
             var h = e.target.offsetHeight; //容器高度
             var sh = e.target.scrollHeight; //滚动条总高
+
             var t = e.target.scrollTop; //滚动条到顶部距离
             if (h + t >= sh - 10 && !this.shangping.loading && this.shangping.list.length<this.shangping.total){
                 this.shangping.page_index++;

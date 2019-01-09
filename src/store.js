@@ -35,6 +35,7 @@ import 申请开店 from '@/vuex/申请开店.js'
 import request from '@/api/request';
 import agent from '@/vuex/agent.js';
 import 红购使者 from '@/vuex/红购使者.js';
+import 买单 from '@/vuex/买单.js';
 Vue.use(Vuex);
 // 对名字进行解码
 import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
@@ -377,7 +378,8 @@ export default new Vuex.Store({
             myshops:myshops,
             实名认证:实名认证,
             申请开店:申请开店,
-            红购使者:红购使者
+            红购使者:红购使者,
+            买单:买单
         },
         
     })
