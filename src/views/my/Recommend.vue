@@ -9,7 +9,7 @@
         <div class="mui-content mui-fullscreen" @scroll="scroll($event)">
             <div class="box_1">
                 <img src="image/tuijian.png" alt="">
-                <h1>推荐好友双方各得到20元购物红包！</h1>
+                <h1>邀请好友领取50元购物红包！</h1>
                 <h2 @click="邀请好友()">邀请好友</h2>
                 <!-- <h2 @tap="yanqing1()">邀请好友2</h2> -->
             </div>
@@ -64,7 +64,7 @@
                     <span v-if="userInfo && !实名信息">{{userInfo.nickname}}</span>
                     <span v-if="实名信息">{{实名信息.name}}</span>
                     <span>邀你领取</span>
-                    <span class="钱">20</span>
+                    <span class="钱">50</span>
                     <span>元红包</span>
                 </div>
                 <div class="半圆"></div>

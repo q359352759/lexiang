@@ -25,9 +25,10 @@
                 <div v-show="item.state==0">可抵扣：-{{item.deduction}}元</div>
                 <div v-show="item.state!=0">红包抵扣：-{{item.dikou}}元</div>
             </div>
-            <!-- <div class="zhuanxiang">
-                <img src="image/xingren.png" alt="" srcset="">
-            </div> -->
+            <div class="zhuanxiang">
+                <img v-if="item.exclusive==1" src="image/xingren.png" alt="" srcset="">
+                <img v-if="item.exclusive==2" src="image/shengri1.png" alt="" srcset="">
+            </div>
         </li>
     </ul>
     <ul class="footer">
@@ -64,6 +65,9 @@ export default {
                 if(obj){
                     obj.number=obj.number+1;
                     obj.dikou=obj.dikou+item.realDeduction;
+                    if(item.exclusive){
+                        obj.exclusive=item.exclusive
+                    }
                 }else{
                     item.number=1
                     item.dikou=item.realDeduction;
@@ -80,7 +84,7 @@ export default {
         取消(){
             mui.confirm('确定要取消订单？','提示',['再想想','是的'],val=>{
                 if(val.index==1){
-                    this.取消订单(this.shangping.id);
+                    this.取消订单(this.shangping);
                 }
             },'div')
         },

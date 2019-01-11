@@ -17,7 +17,7 @@
             </ul>
 
             <ul class="box_2" v-if="type==0">
-                <!-- <li v-for="(item, index) in 3" :key="index">
+                <li v-for="(item, index) in 0" :key="index">
                     <div class="img_box">
                         <img v-if="index%3==0" src="image/5.jpg" alt="" srcset="">
                         <img v-if="index%3==1" src="image/6.jpg" alt="" srcset="">
@@ -52,7 +52,7 @@
                             </span>
                         </div>
                     </div>
-                </li> -->
+                </li>
                 
             </ul>
             <loading v-if="type==0" :nodata="true"/>

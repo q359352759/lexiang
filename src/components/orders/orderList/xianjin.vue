@@ -55,7 +55,7 @@ export default {
         取消(){
             mui.confirm('确定要取消订单？','提示',['再想想','是的'],val=>{
                 if(val.index==1){
-                    this.取消订单(this.dingdan.id);
+                    this.取消订单(this.dingdan);
                 }
             },'div')
         },

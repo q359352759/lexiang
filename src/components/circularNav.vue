@@ -88,9 +88,13 @@ export default {
             if (!this.$store.state.agentUser || this.$store.state.agentUser == null || this.$store.state.agentUser == "") {
                 // this.$router.push("/ApplicationAgent"); //跳转注册代理人页面
                 this.$router.push("/agent/ApplicationNotes"); //跳转注册代理人页面
-                
             } else {
-                this.$router.push("/Agent"); //跳转代理人
+                if(this.$store.state.agentUser.type==1){
+                    this.$router.push("/Agent"); //跳转代理人
+                }else{
+                    //跳转红购使者
+                    this.$router.push('/shizhe/honggoushizhe');
+                }
             }
         },
         change_mask(e) {

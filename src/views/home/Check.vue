@@ -315,6 +315,11 @@ export default {
                     var shangPingHongbao=item.hongbao;
                         shangPingHongbao.paymentAmount=item.dikou
                     item.shopRedEnvelope=[shangPingHongbao];
+                    if(item.dikou && item.dikou!=0){
+                        if(item.可享受新人专享 || item.可享受生日专享){
+                            item.exclusive = item.可享受新人专享 ? 1 : 2
+                        }
+                    }
                     let obj={
                             shopCommodity:item,                             //商品实体类
                             // shopRedEnvelope:[item.hongbao],              //红包实体类
@@ -358,6 +363,12 @@ export default {
                     }
 
                         item.shopRedEnvelope=item.dikou ? shopRedEnvelope : [];
+
+                        if(item.dikou && item.dikou!=0){
+                            if(item.可享受新人专享 || item.可享受生日专享){
+                                item.exclusive = item.可享受新人专享 ? 1 : 2
+                            }
+                        }
                         let obj={
                             shopCommodity:item,
                             // shopRedEnvelope:item.dikou ? shopRedEnvelope : [],

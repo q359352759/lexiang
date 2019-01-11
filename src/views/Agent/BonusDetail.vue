@@ -3,8 +3,7 @@
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">
-                <span v-if="detail.query.type==1 && detail.list.length>0">{{detail.list[0].shopName}}</span>
-                <span v-if="detail.query.type==2 && detail.list.length>0">{{detail.list[0].nickname | filteer_name}}</span>
+                {{显示名 | filteer_name}}
             </h1>
         </header>
         <div class="mui-content mui-row mui-fullscreen">
@@ -60,7 +59,8 @@ export default {
                     userid:'',
                     shopid:''
                 }
-            }
+            },
+            显示名:''
         }
     },
     filters: {
@@ -71,9 +71,10 @@ export default {
         // 名字转Base64
         filteer_name(name){
             try {
-                name=b64DecodeUnicode(name)
-            } catch (error) {}
-            return name
+                return name=b64DecodeUnicode(name)
+            } catch (error) {
+                return name
+            }
         }
     },
     methods: {
@@ -99,6 +100,16 @@ export default {
                 this.detail.page_index++
                 this.get_list(this.detail)
             }
+        },
+        查询用户(){
+            this.$axios.get("/api-u/users/" + this.id).then(x=>{
+                console.log(x);
+            })
+        },
+        查询商家(){
+            this.$axios.get('/api-s/shops/findByShopid/'+this.id).then(x=>{
+
+            })
         }
     },
     mounted () {
@@ -108,7 +119,9 @@ export default {
 
         this.detail.query.type=this.$route.query.type;
         this.id=this.$route.query.id;
-        this.get_init()
+        this.显示名=this.$route.query.name;
+        this.get_init();
+
 
         // this.findShareProfitTableById();
     }

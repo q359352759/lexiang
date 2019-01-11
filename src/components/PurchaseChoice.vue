@@ -266,9 +266,10 @@ export default {
                         item.shiyong=true;
                         item.hongbao=hongbao;
                         if(item.可享受生日专享 || item.可享受新人专享){
-                            item.dikou=item.EXDEDUCTION<hongbao.redAmount ? item.EXDEDUCTION : hongbao.redAmount
+                            item.dikou=item.EXDEDUCTION<hongbao.redAmount ? item.EXDEDUCTION : hongbao.redAmount;
+                            item.exclusive=item.可享受新人专享 ? 1 : 2; //1新人 2生日
                         }else{
-                            item.dikou=item.EXDEDUCTION<hongbao.redAmount ? item.EXDEDUCTION : hongbao.redAmount
+                            item.dikou=item.deduction<hongbao.redAmount ? item.deduction : hongbao.redAmount
                         }
                         list.push(item);
                     }

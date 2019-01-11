@@ -1,54 +1,60 @@
 <template>
     <div>
         <ul class="专享">
-            <li v-for="(item, index) in 0" :key="index" @tap="CommodityDetails_1(item)">
+            <li v-for="(item, index) in 专享.list" :key="index" @tap="$router.push('/commodity/CommodityDetails?id='+item.comId+'&isshop=1')">
                 <div class="img_box">
-                    <img src="image/bg_4.jpg" alt="" srcset="">
+                    <img v-if="item.comImg.split(',').length>0" :src="item.comImg.split(',')[0]" alt="" srcset="">
                 </div>
                 <div class="text_box">
                     <div>
-                        <div class="title_1">商品名</div>
+                        <div class="title_1">{{item.comName}}</div>
                         <div class="money">
-                            <span>￥-1</span>
-                            <s>0</s>
+                            <span>￥{{item.comSellingPrice}}</span>
+                            <s>{{item.comMarketPrice}}</s>
                         </div>
                     </div>
                     <div class="dikou">
                         <i class="icon iconfont icon-hongbao1"></i>
-                        <span>抵扣：0</span>
+                        <span>抵扣：{{item.comDeduction}}元</span>
                     </div>
                 </div>
                 <div class="fengexian"></div>
-                <div class="zhuanxiang" v-if="index!=2">
-                    <img v-if="index==0" src="image/xingren.png" alt="">
-                    <img v-if="index==1" src="image/shengri1.png" alt="">
+                <div class="zhuanxiang">
+                    <img v-if="item.type==0" src="image/xingren.png" alt="">
+                    <img v-if="item.type==1" src="image/shengri1.png" alt="">
                     <div>
                         <i class="icon iconfont icon-shengji"></i>
                         <span>
-                            0元
+                            {{item.deduction}}元
                         </span>
                     </div>
                 </div>
-                <div class="红包抵扣" v-if="index==2">
+                <!-- <div class="红包抵扣" v-if="index==2">
                     <div class="红包">
                         <hongbao money="99999"/>
                     </div>
                     <div class="文字">老顾客专享</div>
-                </div>
+                </div> -->
             </li>
         </ul>
-        <loading :nodata="true"/>
+        <loading :loadingtype="专享.loading" :nodata="!专享.loading && 专享.total==0" :end="!专享.loading && 专享.total!=0 && 专享.total==专享.list.length"/>
     </div>
 </template>
 
 <script>
 import hongbao from '@/components/hongbao.vue';
 import loading from '@/components/loading.vue';
+import { mapGetters } from 'vuex';
 export default {
     name:'',
     components:{
         hongbao,
         loading
+    },
+    computed: {
+        ...mapGetters({
+            专享:'home/专享',
+        })  
     },
     data () {
         return {

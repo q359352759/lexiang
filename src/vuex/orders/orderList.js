@@ -119,17 +119,20 @@ export default {
                 })
             });
         },
-        取消订单({state},id){
+        取消订单({state},obj){
             openloading(true)
             return new Promise((resolve, reject) => {
-                axios.get('/api-s/shops/deleteShopOrders/'+id).then(x=>{
+                var newobj=Object.assign({},obj)
+                newobj.state=2
+                // axios.get('/api-s/shops/deleteShopOrders/'+id).then(x=>{
+                axios.post('/api-s/shops/updateShopOrders',newobj).then(x=>{
                     console.log(x);
                     openloading(false);
                     if(x.data.code==200){
-                        state.list_all.list=state.list_all.list.filter(x=>x.id!=id);
-                        state.list_0.list=state.list_0.list.filter(x=>x.id!=id);
-                        state.list_2.list=state.list_2.list.filter(x=>x.id!=id);
                         mui.toast('取消成功。', {duration: "long", type: "div" });
+                        state.list_all.list=state.list_all.list.filter(x=>x.id!=obj.id);
+                        state.list_0.list=state.list_0.list.filter(x=>x.id!=obj.id);
+                        state.list_2.list=state.list_2.list.filter(x=>x.id!=obj.id);
                     }else{
                         mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                     }

@@ -303,7 +303,7 @@
                     <span v-if="userInfo && !实名信息">{{userInfo.nickname}}</span>
                     <span v-if="实名信息">{{实名信息.name}}</span>
                     <span>邀你领取</span>
-                    <span class="钱">20</span>
+                    <span class="钱">50</span>
                     <span>元红包</span>
                 </div>
                 <div class="半圆"></div>
@@ -442,7 +442,6 @@ export default {
                 background: '#fff',
                 foreground: '#fff',
             })
-            
         },
         //生产二维码
         erweima(){

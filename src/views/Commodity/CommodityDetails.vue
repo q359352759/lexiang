@@ -28,7 +28,10 @@
             </div>
 
             <ul class="box_2">
-                <li class="title">{{commodity.name}}</li>
+                <li class="title">
+                    <div class="商品名">{{commodity.name}}</div>
+                    <div class="人气">人气：{{commodity.popularity ? commodity.popularity : '0'}}</div>
+                </li>
                 <li class="Price">
                     <div>
                         <span class="sellingPrice">￥{{commodity.sellingPrice}}</span>
@@ -36,7 +39,7 @@
                     <div>
                         <span class="marketPrice"><s>{{commodity.marketPrice}}</s></span>
                         <span class="danwei">{{commodity.unit}}</span>
-                        <span class="sales mui-pull-right">已售:{{commodity.sales}}</span>
+                        <span class="sales mui-pull-right">已售：{{commodity.sales}}</span>
                         
                     </div>
                 </li>
@@ -509,9 +512,22 @@ export default {
     padding: 9px 12px 15px;
     background: #ffffff;
     .title{
-        color: rgba(80, 80, 80, 1);
-        font-size: 14px;
-        font-weight: bold;
+        display: flex;
+        white-space: nowrap;
+        justify-items: center;
+        .商品名{
+            color: rgba(80, 80, 80, 1);
+            font-size: 14px;
+            font-weight: bold;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex-grow: 1;
+        }
+        .人气{
+            color: #a6a6a6;
+            font-size: 12px;
+        }
+
     }
     .Price{
         display: flex;

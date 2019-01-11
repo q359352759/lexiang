@@ -11,14 +11,15 @@
                 <div>商家</div>
                 <div>时间</div>
                 <div>累计分润</div>
+                <div>推广</div>
             </li>
-            <li v-for="(item, index) in 商家.list" :key="index" @click="BonusDetail(item)">
-                <div class="name" >{{item.shopName}}</div>
-                <div>
+            <li v-for="(item, index) in 商家.list" :key="index" >
+                <div class="name" @click="BonusDetail(item,1)">{{item.shopName}}</div>
+                <div @click="BonusDetail(item,1)">
                     <div>{{item.finalCreateTime | filter_time('yyyy.MM.dd')}}</div>
-                    <div>{{item.finalCreateTime | filter_time('hh:mm:ss')}}</div>
                 </div>
-                <div>{{item.SUMA ? item.SUMA : 0}}</div>
+                <div @click="BonusDetail(item,1)">{{item.SUMA ? item.SUMA : 0}}</div>
+                <div class="name" @click="$router.push('/agent/dianPuTuiGuang?shopid='+item.finalshopid)">推广</div>
             </li>
         </ul>
         <loading v-show="type==0" :loadingtype="商家.loading" :end="!商家.loading && 商家.total!=0 && 商家.total==商家.list.length" :nodata="!商家.loading && 商家.total==0"/>
@@ -30,12 +31,11 @@
                 <div>时间</div>
                 <div>累计分润</div>
             </li>
-            <li v-for="(item, index) in 会员.list" :key="index" @click="BonusDetail(item)">
+            <li v-for="(item, index) in 会员.list" :key="index" @click="BonusDetail(item,2)">
                 <div class="name" v-if="item.nickname">{{item.nickname | filteer_name}}</div>
                 <div v-if="!item.nickname">{{item.userPhone}}</div>
                 <div>
                     <div>{{item.finalCreateTime | filter_time('yyyy.MM.dd')}}</div>
-                    <div>{{item.finalCreateTime | filter_time('hh:mm:ss')}}</div>
                 </div>
                 <div>{{item.suma ? item.suma : 0}}</div>
             </li>
@@ -101,11 +101,11 @@ export default {
         ...mapActions({
             set_type:'agent/ShopBonus/set_type'
         }),
-        BonusDetail(item){
-            if(item.type==1){
-                this.$router.push('/agent/BonusDetail?id='+item.finalshopid+'&type='+item.type);
+        BonusDetail(item,type){
+            if(type==1){
+                this.$router.push('/agent/BonusDetail?id='+item.finalshopid+'&type='+type+'&name='+item.shopName);
             }else{
-                this.$router.push('/agent/BonusDetail?id='+item.username+'&type='+item.type);
+                this.$router.push('/agent/BonusDetail?id='+item.username+'&type='+type+'&name='+(item.nickname ? item.nickname : item.userPhone) );
             }
         }
         // set_type()

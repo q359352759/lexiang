@@ -131,43 +131,10 @@
                 <zhuanxiangshangp />
             </div>
             
-            <!-- 商品 -->
-            <ul class="box_5" v-if="type_1==2">
-                <li v-for="(item, index) in commodity.list" :key="index" @click="CommodityDetails(item)">
-                    <div>
-                        <div class="img_box">
-                            <img v-if="item.img" :src="item.img.split(',')[0]" alt="" srcset="">
-                        </div>
-                        <h1>{{item.name}}</h1>
-                        <div class="text_1">
-                            <div class="xiaoshou">
-                                <span>销</span>
-                                <span>{{item.sales}}笔</span>
-                            </div>
-                            <div class="dikou">
-                                <i class="icon iconfont icon-hongbao1"></i>
-                                <span>抵扣:{{item.deduction}}元</span>
-                            </div>
-                        </div>
-                        <div class="text_2">
-                            <div>
-                                <span class="xianjia">￥{{item.sellingPrice}}</span>
-                                <s class="yuanjia">{{item.marketPrice}}</s>
-                            </div>
-                            <div>
-                                <span class="zhuanxiang mui-pull-right" v-if="item.EXTYPE==0">
-                                    新人专享省{{Math.round((item.EXDEDUCTION)*100)/100}}元
-                                </span>
-                                <span class="zhuanxiang mui-pull-right" v-if="item.EXTYPE==1">
-                                    生日专享省{{Math.round((item.EXDEDUCTION)*100)/100}}元
-                                </span>
-                            </div>                            
-                        </div>
-                    </div>
-                </li>
-            </ul>
-            <loading v-if="type_1==2" :loadingtype="commodity.loading" :nodata="!commodity.loading && commodity.total==0" :end="!commodity.loading && commodity.total!=0 && commodity.list.length==commodity.total"/>
-
+            <div class="优购栏" v-if="type_1==2">
+                <yougou />
+            </div>
+            
             <!-- 商家 -->
             <ul class="box_6" v-if="type_1==3">
                 <li v-for="(item, index) in shop.list" :key="index">
@@ -224,7 +191,7 @@
                         <!-- <img src="image/7a1f5483e159cad31c9f3712accc6c9b.jpg" alt=""> -->
                     </div>
                 </div>
-                <div class="tishi">扫码领取20元红包</div>
+                <div class="tishi">扫码领取50元红包</div>
             </div>
         </div>
         <homeDialog v-if="homeDialog_show" @setHomeDialog="getHomeDialog" />
@@ -242,7 +209,9 @@ import loading from "@/components/loading.vue";
 import homeDialog from '@/components/homeDialog.vue';
 import zhuanxiangshangp from './home/专享商品.vue';
 import hongbaobili from './home/红包比例.vue';
+import yougou from './home/优购.vue';
 import banyuan from './home/半圆.vue';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
     name: "home",
@@ -251,7 +220,8 @@ export default {
         homeDialog,
         zhuanxiangshangp,
         hongbaobili,
-        banyuan
+        banyuan,
+        yougou
     },
     data() {
         return {
@@ -262,15 +232,6 @@ export default {
             //     { url: "image/fenlei/1.jpg", name: "直购", path: "" },
             // ],
             type_1: 1,
-            commodity:{     //商品
-                start:0,
-                length:10,
-                state:1,    //已上架
-                total:0,
-                list:[],
-                loading:true,
-                page_index:0,
-            },
             shop:{      //商家
                 start:0,
                 length:10,
@@ -319,7 +280,8 @@ export default {
         //实名认证信息
         findByUserid(){    
             return this.$store.state.findByUserid;
-        }
+        },
+        
     },
     filters:{
         fliter_phone(phone) {
@@ -337,8 +299,13 @@ export default {
         }
     },
     methods: {
+        ...mapActions({
+            查询专享:'home/查询专享',
+            专享下一页:'home/专享下一页',
+            查询优购:'home/优购/查询优购',
+            优购下一页:'home/优购/优购下一页',
+        }),
         getHomeDialog(x){
-            console.log(x);
             this.homeDialog_show=false;
         },
         //扫一扫
@@ -557,10 +524,6 @@ export default {
         SearchShop(){
             this.$router.push('/SearchShop');
         },
-        //跳转商品详情
-        CommodityDetails(x){
-            this.$router.push('/commodity/CommodityDetails?id='+x.id+'&isshop=1');
-        },
         //滚动条
         content_scroll(e){
             var h = e.target.offsetHeight; //容器高度
@@ -582,15 +545,14 @@ export default {
                         this.get_redenvelope()
                     }
                 }else if(this.type_1==2){
-                    if(!this.commodity.loading && this.commodity.list.length<this.commodity.total){
-                        this.commodity.page_index++;
-                        this.get_commodity()
-                    }
+                    this.优购下一页();
                 }else if(this.type_1==3){
                     if(!this.shop.loading && this.shop.list.length<this.shop.total){
                         this.shop.page_index++;
                         this.get_shop();
                     }
+                }else if(this.type_1==4){
+                    this.专享下一页();
                 }
                 console.log("到底底部");
             }
@@ -612,7 +574,6 @@ export default {
         classification(){
             this.$router.push('/classification')
         },
-       
         //点击了分类
         ShopClassification(x) {
             this.$router.push('/ShopClassification?id='+x.id+'&name='+x.name);
@@ -633,30 +594,6 @@ export default {
                     el: ".swiper-pagination"
                 }
             });
-        },
-        //获取商品列表
-        get_commodity(){
-            var obj={
-                start:this.commodity.page_index*this.commodity.length,
-                length:this.commodity.length,
-                state:this.commodity.state,
-                order:'popularity', //sales 销量 popularity 人气，
-                orderType:'DESC' //DESC
-            }
-            this.commodity.loading=true;
-            this.$axios({
-                method:'get',
-                url:'/api-s/shops/commodity/findAll',
-                params:obj
-            }).then(x=>{
-                console.log('获取商品列表',x);
-                this.commodity.list=this.commodity.list.concat(x.data.data.data);
-                this.commodity.total=x.data.data.total;
-                this.commodity.loading=false;
-            }).catch(err=>{
-                console.log(err);
-                this.commodity.loading=false;
-            })
         },
         //查询店铺
         get_shop(){
@@ -688,31 +625,6 @@ export default {
                 console.log(err);
                 this.shop.loading=false;
             })
-        },
-        //获取位置
-        juli(item){
-            // setTimeout(()=>{
-                // x.juli=10
-            // },3000)
-            if(!this.$store.state.my_position.y){
-                return;
-            }
-            var obj={
-                destinations:this.$store.state.my_position.y+','+this.$store.state.my_position.x,         //起点
-                origins:item.y+','+item.x
-            }
-            this.$axios({
-                method:'get',
-                url:'/api-u/baidu/routematrix',
-                params:obj
-            }).then(x=>{
-                // console.log(x);
-                if(x.data.status==0 && x.data.result.length>0){
-                    item.juli=x.data.result[0].distance.text    //text 分为单位有米、公里两种
-                }
-            }).catch(err=>{
-                console.log(err)
-            }) 
         },
         //查询 首页显示的 红包
         get_redenvelope(){
@@ -774,7 +686,6 @@ export default {
                 this.homeDialog_show=true;
             }
         }
-
         // console.group('------created创建完毕状态------');
     },
     beforeMount: function() {
@@ -800,7 +711,6 @@ export default {
             sessionStorage.saoyisao=1
         }
         
-
         //获取当前位置
         if(!this.$store.state.my_position.x || this_1.$store.state.my_position.x==''){
             try {
@@ -828,14 +738,13 @@ export default {
             this_1.get_redenvelope();
         }
         
-        //获取商品
-        this.get_commodity();
-
+        //查询专享
+        this.查询专享();
+        this.查询优购();
+        
         // if(this.$store.state.shops_tree_list==0){
         //     this.$store.commit('setShopTree');
         // }
-
-
 
         // console.log(bd_decrypt(104.106786,30.551658))
         // console.log('距离',GetDistance('30.54597190965101','104.10019997537563','30.673811094216354','104.06147620271696'))
@@ -847,7 +756,6 @@ export default {
         // }).catch(err=>{
         //     console.log('百度查询结果',err)
         // })
-
 
         //获取当前位置的坐标
         // wx.getLocation({
@@ -1233,99 +1141,6 @@ export default {
     }
 }
 
-#home .box_5{
-    display:flex;
-    flex-wrap: wrap;
-    padding: 0px 5px;
-    >li{
-        width: 50%;
-        padding: 5px;
-        >div{
-            background: #ffffff;
-        }
-    }
-    .img_box{
-        width: 1.72rem;
-        height: 1.29rem;
-        img{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-    }
-    h1{
-        padding: 0px 0.06rem;
-        color: rgba(80, 80, 80, 1);
-        font-size: 0.12rem;
-        font-weight: 400;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .text_1{
-        display: flex;
-        justify-content: space-between;
-        padding: 0px 0.06rem;
-        .xiaoshou{
-            >span:nth-child(1){
-                margin: 0px 3px 0px 0px;
-                display: inline-block;
-                width: 0.12rem;
-                height: 0.12rem;
-                font-size: 0.08rem;
-                line-height: 0.12rem;
-                text-align: center;
-                border-radius: 100%;
-                background: #ff5733;
-                color: #ffffff;
-            }
-            >span:nth-child(2){
-                color: rgba(166, 166, 166, 1);
-                font-size: 0.1rem;
-            }
-        }
-        .dikou{
-            i{
-                color: #fc4c4c;
-                font-size: 0.1rem;
-            }
-            span{
-                margin: 0px 0px 0px 3px;
-                font-size: 0.1rem;
-                color: #fc4c4c;
-            }
-        }
-    }
-    .text_2{
-        padding: 0px 0.06rem 4px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        >div:nth-child(1){
-            display: flex;
-            align-items: flex-end;
-        }
-        .xianjia{
-            color: #d43030;
-            font-size: 0.12rem;
-            font-weight: bold;
-        }
-        .yuanjia{
-            font-size: 0.1rem;
-            color: #a6a6a6;
-            margin: 0px 0px 0px 0.05rem;
-        }
-        .zhuanxiang{
-            border: 1px solid #e33c64;
-            font-size: 8px;
-            height: 13px;
-            color: #e33c64;
-            line-height: 11px;
-            padding: 0px 2px;
-            border-radius: 2px;
-        }
-    }
-}
 
 #home .box_6{
     margin: 5px 0px 0px;

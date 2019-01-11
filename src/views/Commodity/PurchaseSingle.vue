@@ -24,7 +24,11 @@
             <ul class="box_2" @click="set_dikou_shouw()">
                 <li>需支付：</li>
                 <li class="money">￥{{shiji}}</li>
-                <li>已优惠：{{shiji_dikou}}元</li>
+                <li>
+                    <span v-if="专享.可享受新人专享">新人专享优惠：{{shiji_dikou}}元</span>
+                    <span v-if="专享.可享受生日专享">生日专享优惠：{{shiji_dikou}}元</span>
+                    <span v-if="!专享.可享受新人专享 && !专享.可享受生日专享">已优惠：{{shiji_dikou}}元</span>
+                </li>
                 <li><i class="mui-icon mui-icon-forward"></i></li>
             </ul>
             
@@ -174,7 +178,12 @@ export default {
             var pingtai_kedikou=(this.invitedsutotal && this.invitedsutotal.sutotal) ? this.invitedsutotal.sutotal : 0;
             for(let i=0;i<number;i++){
                 var obj=Object.assign({}, this_1.shangPing)
+                if(this.专享.可享受新人专享 || this.专享.可享受生日专享){
+                    obj.kedikou=this.专享商品.deduction;
+                    obj.exclusive= this.专享.可享受新人专享 ? 1 : 2   // 1新人 2生日
+                }else{
                     obj.kedikou=this_1.shangPing.deduction      //商品可抵扣
+                }
                     obj.hongbao=[]
                 if(shangPing_hongbao_number>0){
                     //如果商品红包存在并且没有抵扣完
@@ -436,9 +445,9 @@ export default {
                 
                 item.shopRedEnvelope=(item.shiji_dikou && item.shiji_dikou!=0) ?  item.hongbao : []
                 // shopRedEnvelope[0].paymentAmount=item.dikou
-                if(item.shiji_dikou){
-
-                }
+                    if(!item.shiji_dikou || item.shiji_dikou==0){
+                        item.exclusive='';
+                    }
                 var obj={
                         shopCommodity:item,
                         // shopRedEnvelope:item.hongbao,

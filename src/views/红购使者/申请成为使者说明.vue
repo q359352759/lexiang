@@ -12,18 +12,46 @@
                 <btn  @click.native="$router.push('/shizhe/shenqing')" value="立即申请"/>
             </div>
         </div>
+        <div class="加载中" v-show="loading">
+            <div>{{提示语}}</div>
+        </div>
     </div>
 </template>
 
 <script>
-import btn from '@/components/button.vue'
+import btn from '@/components/button.vue';
+import { mapActions } from "vuex";
 export default {
     name: "",
     components: {
         btn  
     },
     data() {
-        return {};
+        return {
+            提示语:'获取数据中',
+            loading:true
+        };
+    },
+    methods: {
+        ...mapActions({
+            获取代理人信息:'actions_agentUser'
+        })
+    },
+    mounted () {
+        this.获取代理人信息().then(x=>{
+            console.log(x)
+            if (x.data.code == 200) {
+                if(x.data.data.type==1){
+                    this.$router.push("/Agent");
+                }else{
+                    this.$router.push("/shizhe/honggoushizhe");
+                }
+            } else {
+                this.loading = false;
+            }
+        }).catch(err=>{
+            this.提示语="网络错误，稍后再试。"
+        })
     }
 };
 </script>
@@ -41,6 +69,15 @@ export default {
 }
 .按钮框{
     margin: 37px 0px 20px;
+}
+.加载中{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>
 

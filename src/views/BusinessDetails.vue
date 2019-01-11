@@ -143,7 +143,6 @@
 
 
             <ul class="box_5"  v-if="type_1==1">
-                
                 <li v-for="(item, index) in commodity.list" :key="index" @click="CommodityDetails(item)">
                     <div>
                         <div class="img_box">
@@ -219,6 +218,7 @@
                     <img :src="qrcode" alt="" srcset="">
                 </div>
             </div>
+
         </div>
 
         <!-- <xinrenhongbao v-if="xinrenhongbao_box && isfenxiang" :shop="shop" :hongbao="fenxiang_hongbao" @setshow="setxinrenhongbao_show"/> -->
@@ -696,7 +696,8 @@ export default {
                 console.log('根据Id查询店铺信息',x);
                 if(x.data.code==200){
                     this.shop=x.data.data;
-                    this.img_list=x.data.data.environmentalImg ? x.data.data.environmentalImg.split(',') : [];
+                    var img_list=x.data.data.environmentalImg ? x.data.data.environmentalImg.split(',') : [];
+                    this.img_list=[this.shop.signboard,...img_list]
                     this.get_juli();
                     try {
                         setTimeout(()=>{
@@ -704,7 +705,11 @@ export default {
                         },300)
                     } catch (error) {}
                     if(this.isfenxiang){
-                        localStorage.yaoqing='#/Recommend?pid='+this.shop.userid+'&invitationtype=2'
+                        if(this.$route.query.userid){
+                            localStorage.yaoqing='#/Recommend?pid='+this.$route.query.userid+'&invitationtype=2'
+                        }else{
+                            localStorage.yaoqing='#/Recommend?pid='+this.shop.userid+'&invitationtype=2'
+                        }
                     }
                 }
             }).catch(err=>{

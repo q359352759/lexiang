@@ -49,7 +49,7 @@
                                 <div v-if="item.type==0">有效期：长期有效</div>
                                 <div v-if="item.type==5">有效期：一年</div>
                             </div>
-                            <div class="fenxiang" @click="fenxiang(item)">
+                            <div class="fenxiang" @click="fenxiang(item)" v-if="item.type!=3">
                                 <i class="icon iconfont icon-fenxiang2"></i>
                             </div>
                         </li>

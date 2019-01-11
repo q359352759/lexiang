@@ -14,7 +14,8 @@
                     <div>红包抵扣：{{item.deduction}}元</div>
                 </div>
                 <div class="zhuanxiang">
-                    <!-- <img src="image/xingren.png" alt="" srcset=""> -->
+                    <img v-if="item.exclusive==1" src="image/xingren.png" alt="" srcset="">
+                    <img v-if="item.exclusive==2" src="image/shengri1.png" alt="" srcset="">
                 </div>
                 <div class="dikou"></div>
             </li>

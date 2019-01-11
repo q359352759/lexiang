@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ul class="账户" @click="Account()">
+        <ul class="账户" @click="$router.push('/Account')">
             <li>收款账户：{{收款账号.account}}</li>
             <li><i class="mui-icon mui-icon-arrowright"></i></li>
         </ul>
@@ -29,7 +29,8 @@
         </div>
         
         <div class="按钮">
-            <btn value="提现" @click.native="设置密码输入框(true)"/>
+            <!-- <btn value="提现" @click.native="设置密码输入框(true)"/> -->
+            <btn value="提现" @click.native="提现()"/>
         </div>
 
     </div>
@@ -46,7 +47,6 @@ export default {
     data () {
         return {
             同意协议:true,
-            账户:{},
             amount:0
         }
     },
@@ -58,7 +58,20 @@ export default {
     methods: {
         ...mapActions({
             设置密码输入框:'红购使者/红购使者/设置密码输入框',
-        })
+        }),
+        提现(){
+            if(!this.同意协议){
+                mui.toast("请先同意协议。", { duration: 2000, type: "div" });
+                return;
+            }else if (!this.收款账号.account) {
+                mui.toast("请设置收款账号", {duration: 2000,type: "div"});
+                return;
+            } else if (this.amount == 0) {
+                mui.toast("无提现金额", { duration: 2000, type: "div" });
+                return;
+            }
+            设置密码输入框(true)
+        }
     },
 }
 </script>

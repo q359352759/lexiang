@@ -188,7 +188,7 @@
                         <!-- <img src="image/7a1f5483e159cad31c9f3712accc6c9b.jpg" alt=""> -->
                     </div>
                 </div>
-                <div class="tishi">识别二维码领取20元新人红包！</div>
+                <div class="tishi">识别二维码领取50元新人红包！</div>
             </div>
         </div>
 
@@ -241,7 +241,8 @@ export default {
     methods:{
         ...mapActions({
             updated_user:'user/updated_user',
-            get_user:'user/get_user'
+            get_user:'user/get_user',
+            获取代理人信息:'actions_agentUser'
         }),
         更换主题色(){
             console.log('跟换主题色')
@@ -251,7 +252,15 @@ export default {
             this.$router.push('/orders/orderList')
         },
         跳转红购使者(){
-            this.$router.push('/shizhe/shenqingshuoming')
+            if (!this.$store.state.agentUser || this.$store.state.agentUser == null || this.$store.state.agentUser == "") {
+                this.$router.push('/shizhe/shenqingshuoming');
+            }else{
+                if(this.$store.state.agentUser.type==1){
+                    mui.toast("您一是代理人无需申请红购使者。", { duration: 2000, type: "div" });
+                }else{
+                    this.$router.push('/shizhe/honggoushizhe');
+                }
+            }
         },
         //跳转分享
         Recommend(){
@@ -327,9 +336,14 @@ export default {
         //业务代理
         ApplicationAgent(){
             if (!this.$store.state.agentUser || this.$store.state.agentUser == null || this.$store.state.agentUser == "") {
-                this.$router.push("/ApplicationAgent"); //跳转注册代理人页面
+                this.$router.push("/agent/ApplicationNotes"); //跳转注册代理人页面
             } else {
-                this.$router.push("/Agent"); //跳转代理人
+                if(this.$store.state.agentUser.type==1){
+                    this.$router.push("/Agent");            //跳转代理人
+                }else{
+                    
+                    this.$router.push("/agent/ApplicationNotes"); //跳转注册代理人页面
+                }
             }
         },
         go(x) {
@@ -407,11 +421,11 @@ export default {
                 })
             })
         }
-
-        // /www/mystack/sites/b.hzjifen.com/www
+        //获取代理人信息
+        this.获取代理人信息()
         //查询和你自己申请的店铺
         this.$store.commit('setMyshop');
-        // console.group('------mounted 挂载结束状态------');
+        // console.group('------mounted 挂载结束状态 ------');
     },
     beforeUpdate: function() {
         // console.group('beforeUpdate 更新前状态===============》');

@@ -71,7 +71,7 @@ export default {
             }else{
                 this.get_agentUser_phone(this.phone).then(x=>{
                     if(x.data.code==200){
-                        if(x.data.data){
+                        if(x.data.data ){
                             this.$router.push('/ApplicationAgent?phone='+this.phone);
                         }else{
                             mui.toast('此号码不是代理商', {duration: "long", type: "div" });                            
@@ -88,7 +88,7 @@ export default {
     mounted() {
         this.actions_agentUser().then(x=>{
             console.log('获取代理商信息',x);
-            if(x.data.code==200){
+            if(x.data.code==200 && x.data.data.type==1){
                 this.$router.push('/Agent');
             }else if(x.data.code){
                 this.获取完成=true;

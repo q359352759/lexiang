@@ -43,6 +43,9 @@ export default {
                                 obj.hongbao_list.push(hongbao)
                             })
                         obj.dikou=dikou;
+                        if(item.exclusive){
+                            obj.exclusive=item.exclusive
+                        }
                         // obj.kedikou=obj.kedikou+(item.realDeduction ? item.realDeduction : 0)
                     }else{
                         var newobj=Object.assign({}, item)

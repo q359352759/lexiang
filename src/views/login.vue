@@ -123,7 +123,6 @@ export default {
                         }).then(x => {
                             console.log("获取个人信息主要用户Id", x);
                             localStorage.id = x.data.data;
-
                             //获取用户信息                                
                             this.$axios({
                                 method: "get",
@@ -160,8 +159,7 @@ export default {
                             // router.push("/login");
                         });
                     }
-                })
-                .catch(err => {
+                }).catch(err => {
                     openloading(false);
                     console.log(err);
                     mui.toast("登录失败。", { duration: 2000, type: "div" });
@@ -180,6 +178,13 @@ export default {
     mounted: function() {
 
         this.set_isfenxiang(true);
+        //获取地区
+        if (localStorage.area && localStorage.area != "" && localStorage.area != undefined && localStorage.area != "undefined") {
+            this.$store.state.area = JSON.parse(localStorage.area);
+        }
+        
+        //获取地区
+        this.$store.dispatch('get_area');
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function() {

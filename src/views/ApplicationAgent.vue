@@ -379,7 +379,7 @@ export default {
         //获取代理人信息
         this.actions_agentUser().then(x=>{
             console.log("获取用户代理人信息", x);
-            if (x.data.code == 200) {
+            if (x.data.code == 200 && x.data.data.type==1) {
                 this.$router.push("/Agent");
             } else {
                 this.loading = false;
@@ -388,7 +388,6 @@ export default {
             this.loading = false;
         })
         
-
         //获取认证信息
         this.$axios({
             method: "get",

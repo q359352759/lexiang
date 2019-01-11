@@ -9,10 +9,10 @@
                 <ul class="mui-table-view">
                     <li class="mui-table-view-cell item">
                         <span class="标题">申请人：</span>
-                        <input type="text" placeholder="您的真实姓名" v-model="name" />
+                        <input type="text" placeholder="您的真实姓名" v-model="申请对象.realName" />
                     </li>
                     <li class="mui-table-view-cell" >
-                        <a class="mui-navigate-right item" @click="$router.push('/AlreadyRealName')">
+                        <a class="mui-navigate-right item" @click="实名认证()">
                             <span class="标题">实名认证：</span>
                             <span class="蓝色字体" v-if="userInfo.iaiState==1">已认证</span>
                             <span v-if="userInfo.iaiState!=1">未认证</span>
@@ -29,7 +29,7 @@
                 </ul>
             </div>
             <div class="按钮框">
-                <btn value="提交申请"/>
+                <btn value="提交申请" @click.native="申请()"/>
             </div>
         </div>
     </div>
@@ -61,10 +61,21 @@ export default {
             userInfo:'',
             name:'',
             cityPicker3:'',
-            cityData3:[]
+            cityData3:[],
+            referrerPhone: this.referrerPhone, //推荐人电话号码
+            申请对象:{
+                areaCode: '', //区域code
+                realName: '', //真实姓名
+                userid: '',
+                phone: '',
+                openid:''
+            }
         }
     },
     computed: {
+        weixinobj() {
+            return this.$store.state.weixinobj;
+        },
         filter_city(){
             var str='';
             this.cityData3.forEach(item => {
@@ -81,10 +92,48 @@ export default {
             });
             cityPicker3.setData(this.cityPicker3);
             cityPicker3.show(items=>{
+                console.log(items)
+                if(items[2].id){
+                    this.申请对象.areaCode=items[2].id
+                }else if(items[1].id){
+                    this.申请对象.areaCode=items[1].id
+                }else if(items[0].id){
+                    this.申请对象.areaCode=items[0].id
+                }
                 this.cityData3=items;
                 cityPicker3.dispose();
                 cityPicker3 = null;
             });
+        },
+        实名认证(){
+            if(this.userInfo.iaiState==0){
+                this.$router.push('/RealName');
+            }else{
+                this.$router.push('/AlreadyRealName')
+            }
+        },
+        申请(){
+            if(!this.申请对象.realName){
+                mui.toast("请输入姓名。", { duration: 2000, type: "div" });
+                return
+            }else if(!this.申请对象.areaCode){
+                mui.toast("请选择区域", { duration: 2000, type: "div" });
+                return
+            }
+            this.申请对象.userid=this.userInfo.username;
+            this.申请对象.phone=this.userInfo.phone;
+            this.申请对象.openid=this.weixinobj.openid;
+            this.$axios.post('/api-u/agentUser/addUnofficialAgent',this.申请对象).then(x=>{
+                console.log(x);
+                if(x.data.code==200){
+                    this.$router.push('/shezhi/honggoushizhe');
+                }else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                }
+            }).catch(err=>{
+                console.log(err);
+                mui.toast("网络错误，请稍后再试。", { duration: 2000, type: "div" });
+            })
         }
     },
     mounted () {
@@ -102,7 +151,7 @@ export default {
         this.$axios.get("/api-u/certification/findByUserid?userid=" +this.userInfo.username).then(x=>{
             console.log(x);
             if(x.data){
-                this.name=x.data.name
+                this.申请对象.realName=x.data.name
             }
         }).catch(err=>{})
 

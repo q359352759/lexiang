@@ -36,24 +36,24 @@ import request from '@/api/request';
 import agent from '@/vuex/agent.js';
 import 红购使者 from '@/vuex/红购使者.js';
 import 买单 from '@/vuex/买单.js';
+import home from '@/vuex/home.js';
 Vue.use(Vuex);
 // 对名字进行解码
 import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
 
 // export default ()=>{
 export default new Vuex.Store({
-        plugins: [createPersistedState()],
-        // plugins: [       //储存部分
-        //     createPersistedState({
-        //         reducer(val) {
-        //             console.log(val);
-        //             return {
-        //                 // 红购使者:val.红购使者,
-        //                 申请开店:val.申请开店
-        //             }
-        //         }
-        //     })
-        // ],
+        // plugins: [createPersistedState()],
+        plugins: [       //储存部分
+            createPersistedState({
+                reducer(val) {
+                    return {
+                        // 红购使者:val.红购使者,
+                        申请开店:val.申请开店
+                    }
+                }
+            })
+        ],
         state: {
             weixin_ready:false,     //微信准备就绪
             clientX: '', //远点导航X
@@ -185,7 +185,12 @@ export default new Vuex.Store({
             //获取代理人信息
             setagentUser(state) {
                 // console.log(this.state.userInfo)
-                var userInfo = JSON.parse(localStorage.userInfo);
+                try {
+                    var userInfo = JSON.parse(localStorage.userInfo);                
+                } catch (error) {
+                    state.agentUser=false;
+                    return
+                }
                 axios({
                     method: "get",
                     url: "/api-u/agentUser/me?userid=" + userInfo.username
@@ -316,8 +321,14 @@ export default new Vuex.Store({
             },
             actions_agentUser({ dispatch,state}) {
                 //获取代理人信息
-                var userInfo = JSON.parse(localStorage.userInfo);
                 return new Promise((resolve, reject) => {
+                    try {
+                        var userInfo = JSON.parse(localStorage.userInfo);          
+                    } catch (error) {
+                        state.agentUser = false;
+                        resolve(false)
+                        return
+                    }
                     axios.get("/api-u/agentUser/me?userid="+userInfo.username).then(x=>{
                         if(x.data.code==200){
                             state.agentUser = x.data.data;
@@ -379,7 +390,8 @@ export default new Vuex.Store({
             实名认证:实名认证,
             申请开店:申请开店,
             红购使者:红购使者,
-            买单:买单
+            买单:买单,
+            home:home
         },
         
     })

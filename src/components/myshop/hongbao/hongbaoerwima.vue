@@ -18,7 +18,7 @@
                     <span v-if="hongbao.type==3">签到红包</span>
                     <span v-if="hongbao.type==4">庆典红包</span>
                     <span v-if="hongbao.type==5">生日红包</span>
-                     <!-- 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包 -->
+                    <!-- 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包 -->
                 </div>
                 <div class="money">
                     <span>{{hongbao.amount}}</span>
@@ -84,6 +84,7 @@ export default {
             shangping:{},
             erweima_url:'', 
             base64:'',      //服务器返回的base64
+            userInfo:''
         }
     },
     computed: {
@@ -163,7 +164,7 @@ export default {
         //生成二维码
         shengcheng_erweima(){
             // console.log('生成二维码');
-            var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.shop.shopid+'&fenxiang=1&hongbaoid='+this.hongbao.id;
+            var url=window.location.origin+window.location.pathname+'#/BusinessDetails?shopid='+this.shop.shopid+'&fenxiang=1&hongbaoid='+this.hongbao.id+'&userid='+this.userInfo.username;
             console.log(url);
             var el=this.$refs.erweima
                 el.innerHTML='';
@@ -195,6 +196,7 @@ export default {
     },
     mounted () {
         // console.log('红包',this.hongbao);
+        this.userInfo=JSON.parse(localStorage.userInfo)
     },
     watch: {
         RongqiShow(){

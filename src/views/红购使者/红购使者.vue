@@ -1,7 +1,7 @@
 <template>
     <div>
         <header class="mui-bar mui-bar-nav">
-            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <a @click="$router.push('/my')" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">红购使者</h1>
         </header>
         <div class="mui-content mui-fullscreen">
@@ -47,7 +47,7 @@ export default {
     },
     data () {
         return {
-            
+            userInfo:''
         }
     },
     computed: {
@@ -55,15 +55,28 @@ export default {
             查看类型:'红购使者/红购使者/查看类型',
             显示密码输入框:'红购使者/红购使者/显示密码输入框',
             显示姓名输入框:'红购使者/红购使者/显示姓名输入框',
-        }),
+            代理人信息:'agent/代理人信息',
+        })
     },
     methods: {
         ...mapActions({
             获取账号:'红购使者/红购使者/获取账号',
-        })
+            获取代人信息:'agent/获取代人信息',
+
+            商家会员初始化:'agent/ShopBonus/ShopBonus_init',
+            获取商家分润列表:'agent/ShopBonus/获取商家分润列表',
+            获取会员分润列表:'agent/ShopBonus/获取会员分润列表',
+            商家下一页:'agent/ShopBonus/商家下一页',
+            会员下一页:'agent/ShopBonus/会员下一页',
+        }),
     },
     mounted () {
-        this.获取账号()
+        this.userInfo=JSON.parse(localStorage.userInfo);
+        this.获取账号();
+        this.获取代人信息();
+        this.商家会员初始化();
+        this.获取商家分润列表();
+        this.获取会员分润列表();
     }
 }
 </script>
