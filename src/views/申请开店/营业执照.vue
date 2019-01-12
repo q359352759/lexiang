@@ -66,7 +66,7 @@
         </div>
 
         <div id="zhengmianInput">
-            <input type="file" @change="input_change($event)" accept="image/*" name="" id="">
+            <input type="file" @change="input_change($event)" ref="zhengmianInput" accept="image/*" name="" id="">
         </div>
     </div>
 </template>
@@ -134,13 +134,15 @@ export default {
         //选择图片
         SelectionImage() {
             console.log(123);
-            document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
+            // document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
+            this.$refs.zhengmianInput.click()
         },
         input_change(e) {
             openloading(true);
             console.log(e);
             var that = this;
-            var file = e.target.files[0];
+            // var file = e.target.files[0];
+            var file = this.$refs.zhengmianInput.files[0];
             var size=file.size/1024;
             if(size>1024){
                 this.option.size=size/1024

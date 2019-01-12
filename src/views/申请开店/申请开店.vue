@@ -179,8 +179,8 @@
             </ul>
         </div>
 
-        <div id="zhengmianInput" class="mui-hidden">
-            <input type="file" @change="input_change($event)" accept="image/*" name="" id="">
+        <div class="选择文件input">
+            <input type="file" @change="input_change()" ref="zhengmianInput" accept="image/*" name="" id="">
         </div>
 
         
@@ -571,13 +571,15 @@ export default {
         Choice_img(x){
             if (x == 2 && this.img_list.length == 12) return;
             this.cropper_type = x;
-            document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
+            this.$refs.zhengmianInput.click()
+            // document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
         },
         input_change(e) {
             openloading(true);
-            console.log(e);
+            // console.log(e);
             var that = this;
-            var file = e.target.files[0];
+            // var file = e.target.files[0];
+            var file=this.$refs.zhengmianInput.files[0];
             var size=file.size/1024;
             if(size>1024){
                 this.option.size=size/1024
@@ -760,6 +762,10 @@ export default {
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 
+.选择文件input{
+    position: fixed;
+    left: -100%;
+}
 .推荐人错误{
     padding: 12px 15px  ;
 	color: rgba(217, 57, 59, 1);
