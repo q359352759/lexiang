@@ -179,13 +179,8 @@
             </ul>
         </div>
 
-<<<<<<< HEAD
         <div class="mui-hidden">
             <input type="file" ref="zhengmianInput" @change="input_change($event)" accept="image/*" name="" id="">
-=======
-        <div class="选择文件input">
-            <input type="file" @change="input_change()" ref="zhengmianInput" accept="image/*" name="" id="">
->>>>>>> 15cf46e3e88b761d1cd88edd68620e191ca77486
         </div>
 
         
@@ -583,13 +578,8 @@ export default {
         Choice_img(x){
             if (x == 2 && this.img_list.length == 12) return;
             this.cropper_type = x;
-<<<<<<< HEAD
             this.$refs.zhengmianInput.value =''
             this.$refs.zhengmianInput.click()
-=======
-            this.$refs.zhengmianInput.click()
-            // document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
->>>>>>> 15cf46e3e88b761d1cd88edd68620e191ca77486
         },
         input_change(e) {
             openloading(true);
