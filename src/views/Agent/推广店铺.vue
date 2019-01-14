@@ -68,7 +68,6 @@
                 </ul>
             </div>
 
-            <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
             <loading :loadingtype="红包.loading" :end="!红包.loading && 红包.list.length==红包.total && 红包.total!=0" :nodata="!红包.loading && 红包.total==0"/>
 
         </div>

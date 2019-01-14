@@ -85,7 +85,7 @@
                     <div>
                         <h1  @click="BusinessDetails(item)">{{item.name}}</h1>
                         <h2>
-                            <span @click="weixinmaptest(item)" class="mui-pull-right"><i class="icon iconfont icon-location"></i>{{item.distance ? item.distance.toFixed(1) : 0}}km</span>
+                            <span @click="weixinmaptest(item)" class="mui-pull-right"><i class="icon iconfont icon-location"></i>{{item.distance>0.5 ? item.distance.toFixed(1) : item.distance.toFixed(1)*1000+'m' }}km</span>
                             <div @click="BusinessDetails(item)">{{item.address}}</div>
                         </h2>
                         <h3 @click="BusinessDetails(item)">
@@ -140,6 +140,7 @@
 import { openloading, bd_decrypt,GetDistance } from "@/assets/js/currency";
 import loading from "@/components/loading.vue";
 import zhuanxiangshangpin from './SearchShop/专享商品.vue';
+import { mapActions } from 'vuex';
 export default {
     name:'',
     components: {
@@ -151,7 +152,7 @@ export default {
             screen_type:2,     //2 3 距离 0 1 人气 6 7 评价  
             search_text:'', //搜索内容
             search_box:true,
-            type:0,             // 0商家 1 商品 2商城
+            type:0,             // 0商家 1 商品 2商城 3专享
             search_history:[    //搜索历史
             ],
             shop:{                
@@ -167,7 +168,7 @@ export default {
                     upx:'', //位置
                     upy:'',
                     orderType:'ASC',   
-                    order:''
+                    order:'distance'    //sales 销量 popularity 人气 distance 距离
                 }
             },
             commodity:{
@@ -183,9 +184,10 @@ export default {
                     upx:'', //位置
                     upy:'',
                     orderType:'DESC',   //ASC DESC
-                    order:'popularity', //sales 销量 popularity 人气，
+                    order:'popularity', //sales 销量 popularity 人气 distance 距离
                 }
-            }
+            },
+
         }
     },
     filters:{
@@ -194,6 +196,11 @@ export default {
         }
     },
     methods: {
+        ...mapActions({
+            查询专享:'home/搜索/查询专享',
+            专享下一页:'home/搜索/专享下一页',
+            专享初始化:'home/搜索/专享初始化'
+        }),
         //跳转商家详情
         BusinessDetails(x) {
             this.$router.push("/BusinessDetails?shopid="+x.shopid);
@@ -237,6 +244,8 @@ export default {
                         this.commodity.page_index++;
                         this.get_commodity()
                     }
+                }else if(this.type==2){
+                    this.专享下一页();
                 }
                 console.log("到底底部");
             }
@@ -245,7 +254,6 @@ export default {
         chazhao(){
             this.submit()
         },
-        //
         submit(){
             if(this.search_text){
                 if(this.search_history.indexOf(this.search_text)==-1){
@@ -266,6 +274,10 @@ export default {
                     this.commodity.list=[];
                     this.commodity.page_index=0
                     this.get_commodity();
+                }else if(this.type==3){
+                    this.screen_type=0  //人气
+                    this.专享初始化([this.search_text,'popularity','DESC']);
+                    this.查询专享()
                 }
             }
         },
@@ -279,12 +291,12 @@ export default {
             this.shop.jquery.upy=this.$store.state.my_position.y;
             this.shop.jquery.start=this.shop.page_index*this.shop.jquery.length;
             if(this.screen_type==2 || this.screen_type==3){
-                this.screen_type==2 ? 1 : 2;
                 this.shop.jquery.orderType= this.screen_type==2 ? 'ASC' : 'DESC';
+                this.shop.jquery.order='distance'
             }else if(this.screen_type==0 || this.screen_type==1){
-                this.screen_type==0 ? 1 : 2;
+                this.shop.jquery.orderType= this.screen_type==0 ? 'ASC' : 'DESC';
+                this.shop.jquery.order='popularity'
             }else if(this.screen_type==6 || this.screen_type==7){
-                this.screen_type==6 ? 1 : 2;
             }
             this.shop.loading=true;
             // this.shop.jquery.
@@ -353,6 +365,18 @@ export default {
                 this.commodity.list=[];
                 this.commodity.page_index=0
                 this.get_commodity();
+            }else if(this.type==3){
+                var 排序类型='popularity';
+                var 排序方式="DESC";
+                if(this.screen_type==0 || this.screen_type==1){
+                    排序类型='popularity';
+                    排序方式=this.screen_type==0  ? "DESC" : 'ASD';
+                }else if(this.screen_type==2 || this.screen_type==3){
+                    排序类型='distance';
+                    排序方式=this.screen_type==0  ? "DESC" : 'ASD';
+                }
+                this.专享初始化([this.search_text,排序类型,排序方式]);
+                this.查询专享()
             }
         },
         //点击输入框

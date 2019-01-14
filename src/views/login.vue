@@ -69,7 +69,8 @@ export default {
     },
     methods: {
         ...mapActions({
-            set_isfenxiang:'shop/set_isfenxiang'
+            set_isfenxiang:'shop/set_isfenxiang',
+            设置openid:'user/设置openid'
         }),
         //跳转忘记密码
         ForgetPassword(){
@@ -139,6 +140,7 @@ export default {
                                     } catch (error) {}
                                     localStorage.userInfo = JSON.stringify(userInfo);
                                     var backUrl=sessionStorage.backUrl ? sessionStorage.backUrl : '';
+                                    this.设置openid();
                                     setTimeout(()=>{
                                         if(!backUrl){
                                             this.$router.push("/my");

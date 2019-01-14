@@ -10,10 +10,14 @@
 				font-size: 30px;
 			}
 		</style>
+    	<script src="js/jquery-3.3.1.min.js"></script>
+
 	</head>
 	<body>
 		<button onclick="test()">点击测试1</button>
 		<button onclick="test1()" type="button"> 跳转至支付宝</button>
+		
+		<button class="接口测试">点击接口测试</button>
 		<script type="text/javascript">
 			function test(){
 				console.log('测试')
@@ -31,7 +35,31 @@
 				console.log(url)
 				location.href=locationHref
 			}
-			alert(location.href)
+			// alert(location.href)
+
+			$('.接口测试').click(function(){
+				$.ajax({
+					type:'get',
+					url:'http://192.168.1.16:10002/api-s/shops/getAccessTokenCopya',
+					// url:'http://api.redmall.vip:10002/api-s/shops/getAccessTokenCopya',
+					// data:{
+					// 	token:x.access_token,
+					// 	openid:x.openid
+					// },
+					dataType:'json',
+					success:function(data){
+						var str=''
+						try {
+							str=JSON.stringify(data)
+						} catch (error) {
+							str=data;
+						}
+						alert(data);
+					}
+				})
+			})
+
+
 		</script>
 	</body>
 </html>

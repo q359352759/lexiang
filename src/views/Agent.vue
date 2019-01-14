@@ -738,7 +738,6 @@ export default {
                 this.agentUser = x.data.data;
                 this.amount = x.data.data.sutotal ? x.data.data.sutotal : 0;
                 this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
-                
                 // http://192.168.1.16:10002/api-s/shops/findAmountSum?areaCode=659006
             }
         }).catch(err=>{

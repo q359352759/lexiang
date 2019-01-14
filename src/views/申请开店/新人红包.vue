@@ -169,6 +169,11 @@ export default {
         Sure(){
             var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
             var zhengshu_test=/^[1-9]+[0-9]*]*$/;   //整数
+            
+            try {
+                this.新人红包.amount= this.新人红包.amount.replace(/\s+/g, "");
+            } catch (error) {}
+
             this.红包是否能提交(false);
             if(!this.新人红包.headline){
                 mui.toast("请填写红包标题。", { duration: 2000, type: "div" });
@@ -180,7 +185,7 @@ export default {
                 mui.toast("红包金额不能小于10元。", { duration: 2000, type: "div" });
                 return
             }else if(!number_test.test(this.新人红包.amount) || this.新人红包.amount<0){
-                mui.toast("红包金额有误。", { duration: 2000, type: "div" });
+                mui.toast("红包金额有误:"+this.新人红包.amount+'.', { duration: 2000, type: "div" });
                 return
             }else if(!zhengshu_test.test(this.新人红包.amount)){
                 mui.toast("红包金额不能有小数。", { duration: 2000, type: "div" });

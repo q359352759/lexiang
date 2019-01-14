@@ -203,7 +203,7 @@ export default {
         set_myCanvas(){
             console.log('设置画布');
             var this_1=this;
-            var ww=window.outerWidth;
+            var ww=document.body.clientWidth;
             var c=this.$refs.myCanvas;
             var cxt=c.getContext("2d");
                 // this.cxt=c.getContext("2d");

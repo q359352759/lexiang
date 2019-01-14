@@ -82,6 +82,19 @@ export default {
                 });
             });
         },
+        设置openid({}){
+            var userInfo=JSON.parse(localStorage.userInfo);
+            var weixin=JSON.parse(localStorage.weixin);
+            var obj={
+                    id:userInfo.id,
+                    openid:weixin.openid
+                }
+            axios.post('/api-u/users/update/openid',qs.stringify(obj)).then(x=>{
+                console.log('设置微信',x)
+            }).catch(err=>{
+                console.log('设置微信',err)
+            })
+        }
     },
     modules: {
         

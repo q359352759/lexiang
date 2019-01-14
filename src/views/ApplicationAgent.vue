@@ -12,7 +12,7 @@
                         <tr>
                             <td>申请人：</td>
                             <td>
-                                <input type="text" v-model="realName" maxlength="10" placeholder="您的真实名字" required>
+                                <input type="text" v-model="realName" maxlength="10" readonly>
                             </td>
                         </tr>
                         <!-- <tr>
@@ -256,6 +256,10 @@ export default {
         },
         //注册
         add() {
+            if(this.userInfo.iaiState==0){
+                mui.toast("请先实名认证。", { duration: 2000, type: "div" });
+                return
+            }
             var this_1 = this;
             var areaCode = "";
             if (this.city[2].value) {

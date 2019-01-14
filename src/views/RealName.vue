@@ -377,8 +377,9 @@ export default {
         //设置画布
         set_myCanvas(){
             console.log('设置画布');
+            // alert('设置画布')
             var this_1=this;
-            var ww=window.outerWidth;
+            var ww=document.body.clientWidth;
             var c=this.$refs.myCanvas;
             var cxt=c.getContext("2d");
                 // this.cxt=c.getContext("2d");
@@ -386,6 +387,7 @@ export default {
             this.画布img=new Image();
             this.画布img.src=this.画布base64;
             this.画布img.onload=()=>{
+                // alert('图片加载完成',this_1.画布img.height,this_1.画布img.width)
                 console.log( 0 , 0 , c.width , this_1.画布img.height*c.width/this_1.画布img.width)
                 this_1.degree=0;
                 c.height=this_1.画布img.height*c.width/this_1.画布img.width;
@@ -403,6 +405,7 @@ export default {
         旋转画布(type){
             openloading(true);
             var this_1=this;
+            //旋转角度 和 旋转方向
             this.degree += type ? 90 : -90;
             var degree= this.degree %= 360;
             var c=this.$refs.myCanvas
@@ -459,13 +462,9 @@ export default {
         this.$store.commit("setagentUser");
         //获取百度  token
         this.get_token();
-        var ww=window.outerWidth;
+        var ww=document.body.clientWidth;
         this.$refs.myCanvas.width=ww;
 
-        console.log(90/90%2)
-        console.log(-90/90%2)
-        console.log(180/90%2)
-        console.log(-180/90%2)
 
         // console.group('------mounted 挂载结束状态------');
     },
@@ -504,6 +503,7 @@ export default {
 
 #RealName .myCanvas{
     border: 1px solid red;
+    min-height: 10px;
     position: fixed;
     left: -100%;
 }

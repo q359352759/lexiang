@@ -9,7 +9,7 @@
                 <ul class="mui-table-view">
                     <li class="mui-table-view-cell item">
                         <span class="标题">申请人：</span>
-                        <input type="text" placeholder="您的真实姓名" v-model="申请对象.realName" />
+                        <input type="text" placeholder="您的真实姓名" v-model="申请对象.realName" readonly/>
                     </li>
                     <li class="mui-table-view-cell" >
                         <a class="mui-navigate-right item" @click="实名认证()">
@@ -113,8 +113,8 @@ export default {
             }
         },
         申请(){
-            if(!this.申请对象.realName){
-                mui.toast("请输入姓名。", { duration: 2000, type: "div" });
+            if(this.userInfo.iaiState==0){
+                mui.toast("请先实名认证。", { duration: 2000, type: "div" });
                 return
             }else if(!this.申请对象.areaCode){
                 mui.toast("请选择区域", { duration: 2000, type: "div" });
@@ -126,7 +126,7 @@ export default {
             this.$axios.post('/api-u/agentUser/addUnofficialAgent',this.申请对象).then(x=>{
                 console.log(x);
                 if(x.data.code==200){
-                    this.$router.push('/shezhi/honggoushizhe');
+                    this.$router.push('/shizhe/honggoushizhe');
                 }else{
                     mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
                 }

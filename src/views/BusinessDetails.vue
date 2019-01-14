@@ -102,10 +102,10 @@
             <!--专享-->
             <ul class="box_4" v-if="type_1==0">
                 <div v-show="!是否有新人专享" class="没有新人专享">
-                    <img src="image/15461558573731.png" alt="" srcset="">
+                    <img src="image/meiyoushengrizhuanxiang.png" alt="" srcset="">
                 </div>
                 <div v-show="!是否有生日专享" class="没有生日专享">
-                    <img src="image/20181230154528.png" alt="" srcset="">
+                    <img src="image/meiyouxinrenzhuanxiang.png" alt="" srcset="">
                 </div>
                 <li v-for="(item, index) in Exclusive.list" :key="index" @tap="CommodityDetails_1(item)">
                     <div class="img_box">
@@ -1448,7 +1448,6 @@ export default {
 #BusinessDetails .box_4 {
     .没有新人专享,
     .没有生日专享{
-        margin: 5px ;
         img{
             width: 100%;
         }

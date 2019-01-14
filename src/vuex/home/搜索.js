@@ -2,8 +2,6 @@
 import axios from '@/api/axios.js'
 import qs from "qs";
 
-import 优购 from './home/优购.js'
-import 搜索 from './home/搜索.js'
 export default {
     namespaced:true,
     state: {
@@ -15,7 +13,9 @@ export default {
             query:{
                 start:0,
                 length:10,
-                order:'popularity', //sales 销量 popularity 人气，
+                state:1,
+                comName:'',
+                order:'popularity', //sales 销量 popularity 人气 distance 距离
                 orderType:'DESC' //DESC
             }
         }
@@ -50,11 +50,17 @@ export default {
                 state.专享.page_index++;
                 dispatch('查询专享');
             }
+        },
+        专享初始化({state},[comName,order,orderType]){
+            state.专享.page_index=0;
+            state.专享.list=[];
+            state.专享.query.comName= comName;
+            state.专享.query.order=order            //sales 销量 popularity 人气， 
+            state.专享.query.orderType=orderType;   //DESC ASD
         }
     },
     modules: {
-        优购:优购,
-        搜索:搜索
+        
     }
 }
 

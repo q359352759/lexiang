@@ -7,7 +7,8 @@
             </li>
             <li class="内容">
                 <div class="name">
-                    <span>{{userInfo.nickname}}</span>
+                    <span v-if="userInfo && !实名信息">{{userInfo.nickname}}</span>
+                    <span v-if="实名信息">{{实名信息.name}}</span>
                     <i  @click="erweima()" class="icon iconfont icon-31erweima"></i>
                 </div>
                 <div class="地区">{{代理区域}}</div>

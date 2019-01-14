@@ -410,24 +410,28 @@ export default {
         sub(){
             var number_test= /^[0-9]+.?[0-9]*$/;    //可带小数
             var zhengshu_test=/^[1-9]+[0-9]*]*$/;   //整数
-            this.Red_envelopes.type=this.type
-            this.Red_envelopes.shopid=this.myshop.shopid
+            console.log(this.Red_envelopes.amount)
+            try {
+                this.Red_envelopes.amount= this.Red_envelopes.amount.replace(/\s+/g, "");            
+            } catch (error) {}
+            this.Red_envelopes.type=this.type;
+            this.Red_envelopes.shopid=this.myshop.shopid;
             if(this.type==0){              
                  this.Red_envelopes.state=1
                 if(!this.Red_envelopes.headline){
                     mui.toast("请填写红包标题。", { duration: 2000, type: "div" });
-                    return
+                    return;
                 }else if(!number_test.test(this.Red_envelopes.amount) || this.Red_envelopes.amount<0){
-                    mui.toast("红包金额有误。", { duration: 2000, type: "div" });
-                    return
+                        mui.toast("红包金额有误。", { duration: 2000, type: "div" });
+                    return;
                 }else if(!zhengshu_test.test(this.Red_envelopes.amount)){
                     mui.toast("红包金额不能有小数点。", { duration: 2000, type: "div" });
-                    return
+                    return;
                 }
                 if(this.Red_envelopes.deductionType==0){
                     if(!this.Red_envelopes.percentage || !number_test.test(this.Red_envelopes.percentage)){
                         mui.toast("可抵扣比例填写有误。", { duration: 2000, type: "div" });
-                        return
+                        return;
                     }
                 }else if(this.Red_envelopes.deductionType==1){
                     if(!this.Red_envelopes.expire || !number_test.test(this.Red_envelopes.expire) || !this.Red_envelopes.deduction || !number_test.test(this.Red_envelopes.deduction)){
@@ -435,12 +439,12 @@ export default {
                         return;
                     }
                 }
-                console.log('可以提交',this.Red_envelopes);
+                // console.log('可以提交',this.Red_envelopes);
                 this.Submission();
                 // this.get_redenvelope()
             }else if(this.type==1){
                 //商品红包
-                 this.Red_envelopes.state=1
+                this.Red_envelopes.state=1
                 if(!this.Red_envelopes.headline){
                     mui.toast("请填写红包标题。", { duration: 2000, type: "div" });
                     return
