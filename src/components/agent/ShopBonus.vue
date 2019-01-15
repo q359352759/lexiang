@@ -37,18 +37,18 @@
                 <div>
                     <div>{{item.finalCreateTime | filter_time('yyyy.MM.dd')}}</div>
                 </div>
-                <div>{{item.suma ? item.suma : 0}}</div>
+                <div>{{item.SUMA ? item.SUMA : 0}}</div>
             </li>
         </ul>
         <loading v-show="type==1" :loadingtype="会员.loading" :end="!会员.loading && 会员.total!=0 && 会员.total==会员.list.length" :nodata="!会员.loading && 会员.total==0"/>
 
         <ul class="footer_1" v-show="type==0">
             <li>商家：{{商家.total}}家</li>
-            <li>总分润：0元</li>
+            <li>总分润：-0元</li>
         </ul>
         <ul class="footer_1" v-show="type==1">
             <li>会员：{{会员.total}}个</li>
-            <li>总分润：{{dailiren_fenrun_zichan.aggregateAmount ? dailiren_fenrun_zichan.aggregateAmount : 0}}元</li>
+            <li>总分润：-0元</li>
         </ul>
     </div>
 </template>

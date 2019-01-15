@@ -211,8 +211,8 @@ export default {
             return new Promise((resolve, reject) => {
                 axios.get('/api-s/shops/findAgentsShareProfitByUseridAndUserType',{params:obj}).then(x=>{
                     console.log('获取代理商分润资产',x)
-                    if(x.data.code==200 && x.data.data.length>0){
-                        state.dailiren_fenrun_zichan=x.data.data[0];
+                    if(x.data.code==200){
+                        state.dailiren_fenrun_zichan=x.data.data;
                     }
                 }).catch(err=>{
                     console.log('获取代理商分润资产',err);

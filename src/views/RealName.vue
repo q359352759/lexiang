@@ -7,7 +7,7 @@
 
         <div class="mui-content">
             <div class="box_3">
-                请用手机竖着拍照
+                若照片方向不对，可在裁剪时进行旋转。
             </div>
             <ul class="box_1" v-show="!Uncertified">
                 <li class="zhengmian" @click="zhengmian(true)">
@@ -116,7 +116,7 @@
 
 
         <div id="zhengmianInput">
-            <input type="file" @change="input_change($event)" accept="image/*" name="" id="">
+            <input type="file" ref="zhengmianInput" @change="input_change($event)" accept="image/*" name="" id="">
         </div>
         <!-- <button @click="旋转画布()">旋转画布</button> -->
         <canvas ref="myCanvas" class="myCanvas" ></canvas>
@@ -124,7 +124,7 @@
 </template>
 
 <script>
-import { openloading } from "@/assets/js/currency";
+import { openloading , getDateStr } from "@/assets/js/currency";
 import { VueCropper } from "vue-cropper";
 export default {
     name: "RealName",
@@ -243,7 +243,9 @@ export default {
         //点击正面
         zhengmian(x) {
             this.Positive = x;
-            document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
+            this.$refs.zhengmianInput.value='';
+            this.$refs.zhengmianInput.click()
+            // document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
         },
         input_change(e) {
             var that = this;
@@ -255,12 +257,9 @@ export default {
             }else{
                 this.option.outputSize=1
             }
-            // console.log(file,size);
             var reader = new FileReader();
             reader.readAsDataURL(file); // 读出 base64
             reader.onloadend=()=>{
-                // that.Cropper_show = true;
-                // that.option.img = reader.result;
                 that.画布base64=reader.result;
                 that.set_myCanvas()
             };
@@ -330,11 +329,15 @@ export default {
         // 开始提交
         add() {
             var this_1 = this;
+            var 当前时间=getDateStr(0).replace(/-/g, '')
             if (!this.zhengmian_ok || !this.fanmian_ok) {
                 mui.toast("请先上传完整的证件照！", {duration: 2000, type: "div"});
                 return;
             }else if(!this.radio_type_2){
                 mui.toast("请同意实名认证协议。", {duration: 2000, type: "div"});
+                return
+            }else if(!this.The_other_side.Invalid || this.The_other_side.Invalid<当前时间){
+                mui.toast("证件有效期有误。", {duration: 2000, type: "div"});
                 return
             }
             this.add_loading = true;
@@ -364,7 +367,7 @@ export default {
                         history.back();
                     }, "div");
                 } else {
-                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");                    
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");                    
                 }
 
                 this.add_loading = false;
@@ -464,7 +467,6 @@ export default {
         this.get_token();
         var ww=document.body.clientWidth;
         this.$refs.myCanvas.width=ww;
-
 
         // console.group('------mounted 挂载结束状态------');
     },

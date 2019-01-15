@@ -839,14 +839,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
-<<<<<<< HEAD
 .myCanvas{
     border: 1px solid red;
     min-height: 10px;
-=======
-
-.选择文件input{
->>>>>>> 15cf46e3e88b761d1cd88edd68620e191ca77486
     position: fixed;
     left: -100%;
 }

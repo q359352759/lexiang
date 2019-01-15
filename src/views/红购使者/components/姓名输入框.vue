@@ -1,7 +1,7 @@
 <template>
     <form class="姓名输入框" @submit.prevent="提交()">
     <!-- <form class="input_name" @submit.prevent="Submission()" :class="{'active':input_name_box}"> -->
-        <div class="mask" @click="clese_1()"></div>
+        <div class="mask" @click="设置姓名输入框(false)"></div>
         <ul class="">
             <li>该手机号对应多个账号，请输入真实姓名。</li>
             <li>
@@ -30,9 +30,11 @@ export default {
     methods: {
         ...mapActions({
             设置姓名输入框:'红购使者/红购使者/设置姓名输入框',
+            开始提现:'红购使者/提现/开始提现'
         }),
         提交(){
             this.设置姓名输入框(false);
+            this.开始提现(['',this.姓名]);
         }
     },
 }

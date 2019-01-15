@@ -7,11 +7,12 @@
         <ul class="可提现">
             <li>提现金额： </li>
             <li>
-                <span>
+                <span class="金额">
                     <span>￥</span>
-                    <input readonly type="text" v-model="amount" @input="amount_change()" />
+                    <input readonly type="text" :value="代理人分润资产.balance" />
                 </span>
-                <span>费率：4%</span>
+                <span class="起步价">一元起提</span>
+                <span class="费率">费率：4%</span>
             </li>
         </ul>
         <div class="协议">
@@ -53,6 +54,7 @@ export default {
     computed: {
         ...mapGetters({
             收款账号:'红购使者/红购使者/收款账号',
+            代理人分润资产:'agent/ShopBonus/dailiren_fenrun_zichan',    //代理人分润资产
         })
     },
     methods: {
@@ -66,11 +68,11 @@ export default {
             }else if (!this.收款账号.account) {
                 mui.toast("请设置收款账号", {duration: 2000,type: "div"});
                 return;
-            } else if (this.amount == 0) {
+            } else if (!this.代理人分润资产.balance ||  this.代理人分润资产.balance<1) {
                 mui.toast("无提现金额", { duration: 2000, type: "div" });
                 return;
             }
-            设置密码输入框(true)
+            this.设置密码输入框(true)
         }
     },
 }
@@ -107,7 +109,7 @@ export default {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        > span:nth-child(1) {
+        .金额{
             font-size: 27px;
             line-height: initial;
             display: flex;
@@ -120,7 +122,12 @@ export default {
                 // border-bottom: 1px solid #cccccc;
             }
         }
-        > span:nth-child(2) {
+        .起步价{
+            white-space: nowrap;
+            color: rgba(166, 166, 166, 1);
+        	font-size: 10px;
+        }
+        .费率{
             font-size: 12px;
             padding: 0px 0px 0px 10px;
             border-left: 1px solid #505050;
@@ -128,7 +135,7 @@ export default {
             line-height: 14px;
             white-space: nowrap;
             color: #505050;
-            margin: 0px 0px 0px 20px;
+            margin: 0px 0px 0px 10px;
         }
     }
 }

@@ -84,33 +84,6 @@ export default {
                 }
             }
         },
-        // //获取类表
-        // get_list({state},obj){
-        //     obj.loading=true;
-        //     obj.query.start=obj.page_index*obj.query.length;
-        //     return new Promise((resolve, reject) => {
-        //         // /shops/findAllShareProfitTable
-        //         axios.get('/api-s/shops/findAllShareProfitTable',{params:obj.query}).then(x=>{
-        //             console.log('获取分润信息',x);
-        //             if(x.data.code==200){
-        //                 obj.list=obj.list.concat(x.data.data.data);
-        //                 obj.total=x.data.data.total;
-        //             }
-        //             obj.loading=false;
-        //             resolve(x);
-        //         }).catch(err=>{
-        //             reject(err)
-        //             obj.loading=false;
-        //         })
-        //     });
-        // },
-        // //下一页
-        // xiayiye({dispatch},obj){
-        //     if(obj.list.length<obj.total && !obj.loading){
-        //         obj.page_index++;
-        //         dispatch('get_list',obj);
-        //     }
-        // },
         //查询代理商 店铺分润
         daiLiShang_fenrun_zichan({state}){
             var userInfo=JSON.parse(localStorage.userInfo);

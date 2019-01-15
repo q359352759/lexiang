@@ -1,7 +1,7 @@
 <template>
     <div>
         <header class="mui-bar mui-bar-nav">
-            <a @click="$router.push('/my')" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <a @tap="$router.push('/my')" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">红购使者</h1>
         </header>
         <div class="mui-content mui-fullscreen">
@@ -19,6 +19,9 @@
 
             <xingmingshuru v-show="显示姓名输入框"/>
         </div>
+
+        <tixiantishi v-show="显示提现框" :ok="提现完成" :list="提现提示语" />
+
     </div>
 </template>
 
@@ -32,6 +35,8 @@ const ketixian = resolve => { require.ensure([], () => { resolve(require("./comp
 const mimashurukuang = resolve => { require.ensure([], () => { resolve(require("./components/密码输入框.vue")); }); };
 const xingmingshuru = resolve => { require.ensure([], () => { resolve(require("./components/姓名输入框.vue")); }); };
 
+import tixiantishi from './components/提现提示.vue';
+
 //这样就可以实现组件在异步加载的时候显示loading
 import { mapGetters, mapActions } from 'vuex';
 export default {
@@ -43,7 +48,8 @@ export default {
         huiyuanfenrun,
         ketixian,
         mimashurukuang,
-        xingmingshuru
+        xingmingshuru,
+        tixiantishi
     },
     data () {
         return {
@@ -55,6 +61,9 @@ export default {
             查看类型:'红购使者/红购使者/查看类型',
             显示密码输入框:'红购使者/红购使者/显示密码输入框',
             显示姓名输入框:'红购使者/红购使者/显示姓名输入框',
+            提现完成:'红购使者/提现/提现完成',
+            提现提示语:'红购使者/提现/提现提示语',
+            显示提现框:'红购使者/提现/显示提现框',
             代理人信息:'agent/代理人信息',
         })
     },
@@ -68,6 +77,7 @@ export default {
             获取会员分润列表:'agent/ShopBonus/获取会员分润列表',
             商家下一页:'agent/ShopBonus/商家下一页',
             会员下一页:'agent/ShopBonus/会员下一页',
+            代理人分润:'agent/ShopBonus/dailiren_fenrun',  //代理人分润
         }),
     },
     mounted () {
@@ -77,6 +87,7 @@ export default {
         this.商家会员初始化();
         this.获取商家分润列表();
         this.获取会员分润列表();
+        this.代理人分润()
     }
 }
 </script>

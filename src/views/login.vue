@@ -151,19 +151,17 @@ export default {
                                 }
                                 openloading(false);
                             }).catch(error => {
-                                mui.toast('获取个人信息失败.', {duration: "long", type: "div"});
+                                mui.toast('网络错误，稍后再试.', {duration: "long", type: "div"});
                                 openloading(false);
                             });
 
                         }).catch(error => {
-                            console.log("获取个人信息失败", error);
                             openloading(false);
                             // router.push("/login");
                         });
                     }
                 }).catch(err => {
                     openloading(false);
-                    console.log(err);
                     mui.toast("登录失败。", { duration: 2000, type: "div" });
                 });
         }

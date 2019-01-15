@@ -19,7 +19,7 @@
                 <i class="icon iconfont icon-ketixianjine"></i>
             </div>
             <div class="name">可提现</div>
-            <div class="money">{{代理人信息.sutotal ? 代理人信息.sutotal : 0}}</div>
+            <div class="money">{{代理人分润资产.balance ? 代理人分润资产.balance : 0}}</div>
         </li>
     </ul>
 </template>
@@ -37,7 +37,8 @@ export default {
     computed: {
         ...mapGetters({
             查看类型:'红购使者/红购使者/查看类型',
-            代理人信息:'agent/代理人信息'
+            代理人信息:'agent/代理人信息',
+            代理人分润资产:'agent/ShopBonus/dailiren_fenrun_zichan',    //代理人分润资产
         })
     },
     methods: {

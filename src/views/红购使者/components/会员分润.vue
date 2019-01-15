@@ -15,7 +15,7 @@
                     <div>{{item.finalCreateTime | filter_time('yyyy.MM.dd')}}</div>
                     <!-- <div>{{item.finalCreateTime | filter_time('hh:mm:ss')}}</div> -->
                 </div>
-                <div><div>{{item.suma ? item.suma : 0}}</div></div>
+                <div><div>{{item.SUMA ? item.SUMA : 0}}</div></div>
             </li>
         </ul>
         <loading :loadingtype="会员.loading" :end="!会员.loading && 会员.total!=0 && 会员.total==会员.list.length" :nodata="!会员.loading && 会员.total==0"/>

@@ -149,7 +149,12 @@
                         </h2>
                         <h3 @click="BusinessDetails(item)">
                             <span class="mui-pull-right"><i class="icon iconfont icon-hongbao1"></i></span>
-                            <span>好评：5分</span>
+                            <div>
+                                <span>好评：5分</span>
+                                <span class="人气">
+                                    <i class="icon iconfont icon-renqi"></i>{{item.popularity ? item.popularity : 0}}
+                                </span>
+                            </div>
                         </h3>
                     </div>
                 </li>
@@ -947,7 +952,7 @@ export default {
     flex-wrap: wrap;
     background: #ffffff;
     text-align: center;
-    font-size: 0.14rem;
+    font-size: 12px;
     padding: 0px 0px 10px;
     > li {
         width: calc(100% / 5);
@@ -1189,6 +1194,16 @@ export default {
                 color: rgba(212, 48, 48, 1);
             	font-size: 0.12rem;
                 margin: 0px;
+                >div{
+                    display: flex;
+                    align-items: center;
+                    .人气{
+                        margin: 0px 0px 0px 10px;
+                        i{
+                            font-size: 12px;
+                        }
+                    }
+                }
                 i{
                     font-size: 16px;
                 }

@@ -92,6 +92,10 @@ export default {
             .title_1{
                 color: rgba(80, 80, 80, 1);
             	font-size: 14px;
+                padding: 0px 5px 0px 0px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
             }
             .money{
                 span{

@@ -357,7 +357,8 @@ export default {
     },
     methods: {
         ...mapActions({
-            set_isfenxiang:'shop/set_isfenxiang'
+            set_isfenxiang:'shop/set_isfenxiang',
+            添加店铺人气:'shop/添加店铺人气'
         }),
         //显示新人红包弹出框
         setxinrenhongbao_show(x){
@@ -863,6 +864,7 @@ export default {
         this.isfenxiang=this.$route.query.fenxiang ? true : false;
         this.hongbaoid=this.$route.query.hongbaoid ? this.$route.query.hongbaoid : ''; 
 
+        this.添加店铺人气(this.shopid)
         if(this.isfenxiang){
             sessionStorage.backUrl=window.location.hash.substring(1)
         }

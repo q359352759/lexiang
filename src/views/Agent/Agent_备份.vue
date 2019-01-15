@@ -332,7 +332,7 @@
             </div>
         </div>
 
-        <tixiantishi v-show="显示提现框" :ok="提现完成" :list="提现提示语" />
+        <tixiantishi v-show="显示提现框"/>
         
     </div>
 </template>
@@ -392,16 +392,7 @@ export default {
             
             是否分享:false,
             头像base64:'',
-            截图地址:"",
-            //===============
-            提现完成:false,
-            提现提示语:[
-                // type 0 不能提现 1 加载中 2 成功 3 失败 4 待审核
-                {名称:'团队补贴',金额:0,type:0,提示:'一元起提'},   
-                {名称:'平台分佣',金额:0,type:0,提示:'一元起提'},
-                {名称:'店铺分佣',金额:0,type:0,提示:'一元起提'},
-                {名称:'促销分润',金额:0,type:0,提示:'一元起提'},
-            ]
+            截图地址:""
         };
     },
     filters: {
@@ -423,9 +414,7 @@ export default {
         }),
         //提现金额
         总可提现(){
-            var 总可提现=0;
-                总可提现+=this.agentUser.sutotal ? this.agentUser.sutotal : 0;
-                总可提现+=this.代理人分润资产.balance ? this.代理人分润资产.balance : 0
+            var 总可提现=this.agentUser.sutotal+this.代理人分润资产.balance
             return 总可提现
         }, 
     },
@@ -527,7 +516,8 @@ export default {
             this.开始提现();
         },
         平台补贴提现(){
-            var obj = {
+            return new Promise((resolve, reject) => {
+                var obj = {
                         account: this.Account_obj.account, //到账账号
                         amount: this.agentUser.sutotal, //金额
                         userid: this.userInfo.username,
@@ -535,37 +525,34 @@ export default {
                         id: this.userInfo.id,
                         name: this.name
                     };
-            return new Promise((resolve, reject) => {
-                if(!obj.amount || obj.amount<1){
-                    resolve(true);
-                    return
-                }
-                this.$axios.get('/api-u/users/alipay',{params:obj}).then(x=>{
-                    resolve(x)
-                }).catch(err=>{
-                    resolve(false);
-                })
-            });
-        },
-        店铺分润提现(){
-            var obj={
-                    agentid:this.userInfo.username,
-                    payPassword:this.accout_password,
-                    name:this.name,
-                    account:this.Account_obj.account, //到账账号
-                    type:1,     //1代理人 2 代理商
-                    amount:this.代理人分润资产.balance
-                }
-            return new Promise((resolve, reject) => {
-                if(!obj.amount || obj.amount<1){
-                    resolve(true)
-                    return
-                }
-                this.$axios.post('/api-s/shops/AgentsShareProfit',obj).then(x=>{
-                    resolve(x)
-                }).catch(err=>{
-                    resolve(false);
-                })
+                    this.$axios({
+                        method: "get",
+                        url: "/api-u/users/alipay",
+                        params: obj
+                    }).then(x => {
+                        if (x.data.code == 200) {
+                            window.scroll(0,0);
+                            this.$store.dispatch("actions_agentUser")
+                            mui.alert(x.data.msg, "提示", "好的", function() {}, "div");
+                        } else if ( x.data.code == "PAYEE_USER_INFO_ERROR" || x.data.code == "PAYEE_ACC_OCUPIED" ) {
+                            mui.alert(x.data.msg, "提示",'我知道了', function() {},"div");
+                            this.input_name_box = true;
+                        } else {
+                            mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                        }
+                        openloading(false);
+                        this.CanBePresented = true;
+                    }).catch(error => {
+                        console.log(error);
+                        mui.toast("系统错误，请稍后再试。", {
+                            duration: 2000,
+                            type: "div"
+                        });
+                        openloading(false);
+                        this.CanBePresented = true;
+                        this.input_name_box = false;
+                    });
+
             });
         },
         //提现
@@ -575,85 +562,16 @@ export default {
                 mui.toast("支付密码为6位数字。", {duration: 2000,type: "div"});
                 return;
             }
+
             this.payment = false;
-            this.CanBePresented = false;    //可以提现 或 提现中
-            this.input_name_box = false;    //名字输入框
-            this.提现完成=false
+            this.CanBePresented = false;
+            this.input_name_box = false;
+            openloading(true);
 
-            this.提现提示语=[
-                // type 0 不能提现 1 加载中 2 成功 3 失败 4 待审核
-                {名称:'团队补贴',金额:(this.agentUser.sutotal ? this.agentUser.sutotal : 0),type:0,提示:'一元起提'},
-                {名称:'平台分佣',金额:0,type:0,提示:'一元起提'},
-                {名称:'店铺分佣',金额:0,type:0,提示:'一元起提'},
-                {名称:'促销分润',金额:(this.代理人分润资产.balance ? this.代理人分润资产.balance : 0),type:0,提示:'一元起提'},
-            ]
-            if(!this.agentUser.sutotal || this.agentUser.sutotal<1){
-               this.提现提示语[0].type=0
-            }else{
-               this.提现提示语[0].type=1
-            }
-            if(!this.代理人分润资产.balance || this.代理人分润资产.balance<0){
-                this.提现提示语[3].type=0
-            }else{
-                this.提现提示语[3].type=1
-            }
+
             
-            this.设置显示提现框(true)
-            Promise.all([this.平台补贴提现(),this.店铺分润提现()]).then(res=>{
-                console.log(res);
-                var 是否需要输入名字=false;
-                var 提示语=''
-                if(!res[0]){    //团队补贴
-                    this.提现提示语[0].type=3;
-                    this.提现提示语[0].提示='网络错误';
-                }else if(this.提现提示语[0].type!=0){   //无金额可提现就不需要操作了
-                    if(res[0].data.code==200){
-                        this.提现提示语[0].type=2;
-                        this.提现提示语[0].提示='成功';
-                    }else if(res[0].data.code == "PAYEE_USER_INFO_ERROR" || res[0].data.code == "PAYEE_ACC_OCUPIED"){
-                        是否需要输入名字=true;
-                    }else{
-                        this.提现提示语[0].type=3;
-                        this.提现提示语[0].提示='失败';
-                        if(res[0].data.code){
-                            提示语=res[0].data.msg
-                        }
-                    }
-                }
-                if(!res[1]){    //代理人分润提现
-                    this.提现提示语[3].type=3;
-                    this.提现提示语[3].提示='网络错误';
-                }else if(this.提现提示语[3].type!=0){
-                    if(res[1].data.code==200){
-                        this.提现提示语[3].type=2;
-                        this.提现提示语[3].提示='成功';
-                    }else if(res[1].data.code == "PAYEE_USER_INFO_ERROR" || res[1].data.code == "PAYEE_ACC_OCUPIED"){
-                        是否需要输入名字=true;
-                    }else{
-                        this.提现提示语[3].type=3;
-                        this.提现提示语[3].提示='失败';
-                        if(res[1].data.code){
-                            提示语=res[1].data.msg
-                        }
-                    }
-                }
-                if(是否需要输入名字){
-                    this.设置显示提现框(false)
-                    this.input_name_box = true;
-                }else{
-                    this.提现完成=true;
-                    
-                    if(提示语){
-                        mui.alert(提示语, "提示", "好的", function() {}, "div");
-                    }
-
-                    //获取代理商信息
-                    this.areaManager();
-                    //代理商分润资产
-                    this.dailiren_fenrun();
-                }
-            })
-            // window.scroll(0,0);
+            
+            
         },
         //支付密码
         passwad_change() {
@@ -698,14 +616,16 @@ export default {
             }else if (!this.Account_obj.account) {
                 mui.toast("请设置收款账号", {duration: 2000,type: "div"});
                 return;
-            } else if (this.总可提现 <1) {
+            } else if (this.总可提现 == 0 && x) {
                 mui.toast("无提现金额", { duration: 2000, type: "div" });
                 return;
-            } 
-            // else if (!this.CanBePresented) {
-            //     mui.toast("提现处理中，请稍等。", { duration: 2000, type: "div"});
-            //     return;
-            // }
+            } else if (this.总可提现 % 1 != 0 && x) {
+                mui.toast("请输入整数！", { duration: 2000, type: "div" });
+                return;
+            } else if (!this.CanBePresented) {
+                mui.toast("提现处理中，请稍等。", { duration: 2000, type: "div"});
+                return;
+            }
             this.payment = true;
             this.accout_password = "";
             this.name = "";
@@ -742,18 +662,15 @@ export default {
         },
         //获取代理人信息
         areaManager() {
-            this.$store.dispatch("actions_agentUser").then(x=>{
-                console.log('获取代理人信息',x)
-                if (x.data.code != 200) {
-                    // this.agentUser = false;
-                    this.$router.push("/agent/ApplicationNotes");
+            this.$axios.get("/api-u/areaManager/findme?userid=" + this.userInfo.username).then(x=>{
+                if (x.data.data != "" && x.data.data != null && x.data.data != "null") {
+                    this.isareaManager = true;
                 } else {
-                    this.agentUser = x.data.data;
-                    this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
+                    this.isareaManager = false;
                 }
             }).catch(err=>{
-                this.$router.push("/agent/ApplicationNotes");
-            });
+                console.log("获取代理商信息错误", err);
+            })
         },
         获取测试(){
             console.log(this.agentUser.areaCode)
@@ -769,7 +686,19 @@ export default {
             this.userInfo = JSON.parse(localStorage.userInfo);
         } catch (error) {}
         
-        
+        //获取代理人信息
+        this.$store.dispatch("actions_agentUser").then(x=>{
+            console.log('获取代理人信息',x)
+            if (x.data.code != 200) {
+                // this.agentUser = false;
+                this.$router.push("/agent/ApplicationNotes");
+            } else {
+                this.agentUser = x.data.data;
+                this.areaList = this.$store.getters.filter_area(x.data.data.areaCode);
+            }
+        }).catch(err=>{
+            this.$router.push("/agent/ApplicationNotes");
+        });
         //查看下级带来的收益
         this.subsidies();
         //查询支付宝账号
@@ -779,7 +708,10 @@ export default {
         // console.group('------mounted 挂载结束状态------');
 
         this.ShopBonus_init();
-        
+        //获取店铺分润 商家
+        // this.get_fenrui(this.fenrun_shangjia)
+        // //获取店铺分润 会员
+        // this.get_fenrui(this.fenrun_huiyuan);
         this.获取会员分润列表()
         this.获取商家分润列表()
         //代理商分润资产

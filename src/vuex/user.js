@@ -84,7 +84,11 @@ export default {
         },
         设置openid({}){
             var userInfo=JSON.parse(localStorage.userInfo);
-            var weixin=JSON.parse(localStorage.weixin);
+            try {
+                var weixin=JSON.parse(localStorage.weixin);
+            } catch (error) {
+                return
+            }
             var obj={
                     id:userInfo.id,
                     openid:weixin.openid

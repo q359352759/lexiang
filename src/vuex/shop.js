@@ -43,6 +43,20 @@ export default {
                     reject(err);
                 })
             })
+        },
+        添加店铺人气({},shopid){
+            try {
+                var userInfo=JSON.parse(localStorage.userInfo)
+            } catch (error) {
+                return
+            }
+            var obj={
+                    shopid:shopid,
+                    userid:userInfo.username
+                }
+            axios.post('/api-s/shops/addShopBasicsPopularity',qs.stringify(obj)).then(x=>{
+                console.log('添加店铺人气',x)
+            })
         }
     },
     modules: {

@@ -54,6 +54,7 @@ export default {
             设置密码输入框:'红购使者/红购使者/设置密码输入框',
             设置密码输入焦点:'红购使者/红购使者/设置密码输入焦点',
             设置姓名输入框:'红购使者/红购使者/设置姓名输入框',
+            开始提现:'红购使者/提现/开始提现'
         }),
         输入支付密码() {
             if (this.支付密码.length > 6) {
@@ -64,9 +65,18 @@ export default {
             this.$refs.accoutpassword.focus();
         },
         确定(){
-            this.设置密码输入框(false);
-            this.设置姓名输入框(true);
-        }
+            var password_test = /^\d{6}$/; //6位数字验证
+            if (!password_test.test(this.支付密码)) {
+                mui.toast("支付密码为6位数字。", {duration: 2000,type: "div"});
+                return;
+            }
+            this.开始提现([this.支付密码]);
+            // this.设置密码输入框(false);
+            // this.设置姓名输入框(true);
+        },
+        // 开始提现(){
+
+        // }
     },
     watch: {
         mimajiaodian(newobj){
