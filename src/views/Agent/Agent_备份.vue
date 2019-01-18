@@ -544,8 +544,7 @@ export default {
                         this.CanBePresented = true;
                     }).catch(error => {
                         console.log(error);
-                        mui.toast("系统错误，请稍后再试。", {
-                            duration: 2000,
+                        mui.toast("系统错误，请稍后再试。", {duration: 2000,
                             type: "div"
                         });
                         openloading(false);

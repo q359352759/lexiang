@@ -108,6 +108,7 @@ export default {
                             "#/ForgetPassword",
                             "#/Recommend",      //分享页面
                             "#/BeInvited",      //分享注册页面
+                            '#/shizhe/tuiguang'
                         ]; //未登录可以访问的白名单
             var index=path.indexOf('?');
             if(index!=-1){

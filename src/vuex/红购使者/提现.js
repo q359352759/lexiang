@@ -64,16 +64,22 @@ export default {
             dispatch('设置显示提现框',true);
             dispatch('店铺分润提现',姓名).then(x=>{
                 console.log('提现返回值',x);
-                dispatch('agent/ShopBonus/dailiren_fenrun','',{root:true}); //获取分润
-                dispatch('agent/获取代人信息','',{root:true}); //代理人信息
+                dispatch('agent/ShopBonus/dailiren_fenrun','',{root:true});     //更新代理人分润
+                dispatch('agent/获取代人信息','',{root:true});                  //更新代理人信息
                 
                 state.提现完成=true
                 if(!x){
                     显示语[0].type=3;
                     显示语[0].提示='网络错误';
                 }else if(x.data.code==200){
-                    显示语[0].type=2;
-                    显示语[0].提示='成功';
+                    var str=x.data.msg;
+                        if(str.indexOf("审核")==-1){
+                            显示语[0].type=2;
+                            显示语[0].提示='成功';
+                        }else{
+                            显示语[0].type=4;
+                            显示语[0].提示='等待审核';
+                        }
                 }else if(x.data.code=='PAYEE_USER_INFO_ERROR' || x.data.code=='PAYEE_ACC_OCUPIED'){
                     //需要输入名字
                     state.显示提现框=false;
@@ -95,7 +101,8 @@ export default {
                     name:姓名 ? 姓名 : '',
                     account:收款账号.account,   //到账账号
                     type:1,                             //1代理人 2 代理商
-                    amount:代理人分润资产.balance
+                    amount:代理人分润资产.balance,
+                    identity:userInfo.username+'_'+new Date().getTime()
                 }
             return new Promise((resolve, reject) => {
                 if(!obj.amount || obj.amount<1){

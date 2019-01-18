@@ -200,6 +200,9 @@
             </div>
         </div>
         <homeDialog v-if="homeDialog_show" @setHomeDialog="getHomeDialog" />
+
+        <tuiguang/>
+        
     </div>
 </template>
 
@@ -216,6 +219,7 @@ import zhuanxiangshangp from './home/专享商品.vue';
 import hongbaobili from './home/红包比例.vue';
 import yougou from './home/优购.vue';
 import banyuan from './home/半圆.vue';
+import tuiguang from './home/推广红购使者.vue';
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
@@ -226,7 +230,8 @@ export default {
         zhuanxiangshangp,
         hongbaobili,
         banyuan,
-        yougou
+        yougou,
+        tuiguang
     },
     data() {
         return {
@@ -273,6 +278,9 @@ export default {
         };
     },
     computed:{
+       ...mapGetters({
+           代理人信息:'g_agentUser'
+        }),
         shop_list(){
             var this_1=this
             var list=this.shop.list;
@@ -286,7 +294,6 @@ export default {
         findByUserid(){    
             return this.$store.state.findByUserid;
         },
-        
     },
     filters:{
         fliter_phone(phone) {
@@ -309,6 +316,7 @@ export default {
             专享下一页:'home/专享下一页',
             查询优购:'home/优购/查询优购',
             优购下一页:'home/优购/优购下一页',
+            获取代理人信息:'actions_agentUser'
         }),
         getHomeDialog(x){
             this.homeDialog_show=false;
@@ -699,7 +707,7 @@ export default {
     mounted: function() {
 
         var this_1=this;
-        this.img_list = ["image/home_1.jpg", "image/home_2.jpg", "image/home_3.jpg"];
+        this.img_list = ["image/home_11.jpg", "image/home_12.jpg", "image/home_13.jpg",'image/home_14.jpg'];
         
         try {
             this.type_list=JSON.parse(localStorage.shops_tree_list);
@@ -707,6 +715,7 @@ export default {
 
         if(this.userInfo){
             this.$store.commit('setfindByUserid');
+            this.获取代理人信息();
         }
         
         var query=this.$route.query;

@@ -4,6 +4,7 @@ import qs from "qs";
 
 import 优购 from './home/优购.js'
 import 搜索 from './home/搜索.js'
+import 推广小图标 from './home/推广小图标.js'
 export default {
     namespaced:true,
     state: {
@@ -54,7 +55,8 @@ export default {
     },
     modules: {
         优购:优购,
-        搜索:搜索
+        搜索:搜索,
+        推广小图标:推广小图标
     }
 }
 

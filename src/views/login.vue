@@ -102,8 +102,6 @@ export default {
                     // {"access_token":"3ca33ff6-3192-40c6-bea6-aff30ea8af14","token_type":"bearer","refresh_token":"df4b6595-39f6-4cc7-8467-369975091bf7","expires_in":28799,"scope":"app"}
                     if (x.data.code && x.data.code!=200) {
                         openloading(false);
-                        //登录失败
-                        // error_description
                         if(x.data.error_description=="Bad credentials"){
                             mui.toast('密码错误', {duration: "long", type: "div" });
                         }else{
@@ -120,41 +118,50 @@ export default {
                         this.$axios({
                             method: "get",
                             url:"/api-u/users/current?access_token="+x.data.access_token
-                            // data: qs.stringify({})
                         }).then(x => {
                             console.log("获取个人信息主要用户Id", x);
-                            localStorage.id = x.data.data;
-                            //获取用户信息                                
-                            this.$axios({
-                                method: "get",
-                                url: "/api-u/users/" + x.data.data
-                            }).then(x => {
-                                if (x.data.code != 200) {
-                                    mui.toast('获取个人信息失败。', {duration: "long", type: "div"});
-                                    // mui.alert('密码错误', "提示",'我知道了', function() {},"div");
-                                    return;
-                                } else {
-                                    let userInfo=x.data.data;
-                                    try {
-                                        userInfo.nickname=b64DecodeUnicode(userInfo.nickname)
-                                    } catch (error) {}
-                                    localStorage.userInfo = JSON.stringify(userInfo);
-                                    var backUrl=sessionStorage.backUrl ? sessionStorage.backUrl : '';
-                                    this.设置openid();
-                                    setTimeout(()=>{
-                                        if(!backUrl){
-                                            this.$router.push("/my");
-                                        }else{
-                                            this.$router.push(backUrl)
-                                        }
-                                    },1000)
+                            localStorage.id = x.data.id;
+                            let userInfo=x.data;
+                                try {
+                                    userInfo.nickname=b64DecodeUnicode(userInfo.nickname)
+                                } catch (error) {}
+                            localStorage.userInfo = JSON.stringify(userInfo);
+                            var backUrl=sessionStorage.backUrl ? sessionStorage.backUrl : '';
+                            this.设置openid();
+                            setTimeout(()=>{
+                                if(!backUrl){
+                                    this.$router.push("/my");
+                                }else{
+                                    this.$router.push(backUrl)
                                 }
-                                openloading(false);
-                            }).catch(error => {
-                                mui.toast('网络错误，稍后再试.', {duration: "long", type: "div"});
-                                openloading(false);
-                            });
+                            },1000)
 
+                            //获取用户信息
+                            // this.$axios.get("/api-u/users/"+x.data.id).then(x=>{
+                            //     if (x.data.code != 200) {
+                            //         mui.toast('获取个人信息失败。', {duration: "long", type: "div"});
+                            //         return;
+                            //     } else {
+                            //         let userInfo=x.data.data;
+                            //         try {
+                            //             userInfo.nickname=b64DecodeUnicode(userInfo.nickname)
+                            //         } catch (error) {}
+                            //         localStorage.userInfo = JSON.stringify(userInfo);
+                            //         var backUrl=sessionStorage.backUrl ? sessionStorage.backUrl : '';
+                            //         this.设置openid();
+                            //         setTimeout(()=>{
+                            //             if(!backUrl){
+                            //                 this.$router.push("/my");
+                            //             }else{
+                            //                 this.$router.push(backUrl)
+                            //             }
+                            //         },1000)
+                            //     }
+                            //     openloading(false);
+                            // }).catch(err=>{
+                            //     mui.toast('网络错误，稍后再试.', {duration: "long", type: "div"});
+                            //     openloading(false);
+                            // })
                         }).catch(error => {
                             openloading(false);
                             // router.push("/login");

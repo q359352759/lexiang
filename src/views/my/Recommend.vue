@@ -11,6 +11,7 @@
                 <img src="image/tuijian.png" alt="">
                 <h1>邀请好友领取50元购物红包！</h1>
                 <h2 @click="邀请好友()">邀请好友</h2>
+                <!-- <btn value="邀请好友" :styles="{'background':'none','color':'#ffffff','border':'1px solid #ffffff'}"/> -->
                 <!-- <h2 @tap="yanqing1()">邀请好友2</h2> -->
             </div>
 
@@ -104,11 +105,13 @@ import {openloading} from '@/assets/js/currency.js';
 
 import {dateFtt} from '@/assets/js/currency.js';
 import loading from '@/components/loading.vue';
+import btn from '@/components/button.vue';
 import { mapActions, mapGetters } from 'vuex';
 export default {
     name:'',
     components:{
-        loading
+        loading,
+        btn
     },
     data(){
         return{
@@ -308,6 +311,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.mui-bar,
+.mui-bar-nav{
+    box-shadow: none;
+}
 .mui-content{
     background: #cc1a3f;
 }
@@ -333,7 +340,8 @@ export default {
         font-size: 0.14rem;
         line-height: 28px;
         margin: 0.2rem auto 0.16rem;
-        letter-spacing: 6px;
+        letter-spacing: 3px;
+        // box-shadow: inset 0px 0px 11px 2px #ffffff;
     }
 }
 .box_2.flex{

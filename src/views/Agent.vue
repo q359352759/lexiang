@@ -63,14 +63,14 @@
                         <i class="icon iconfont icon-fenrun"></i>
                     </div>
                     <div class="title">促销分润</div>
-                    <div class="money">{{代理人分润资产.balance ? 代理人分润资产.balance : 0}}</div>
+                    <div class="money">{{(代理人分润资产 && 代理人分润资产.balance) ? 代理人分润资产.balance : 0}}</div>
                 </li>
                 <li :class="{'active':type_1==5}" @click="type_1=5">
                     <div class="img_box">
                         <i class="icon iconfont icon-ketixianjine"></i>
                     </div>
                     <div class="title">可提现</div>
-                    <div class="money">{{agentUser.sutotal ? agentUser.sutotal : 0}}</div>
+                    <div class="money">{{总可提现}}</div>
                 </li>
             </ul>
 
@@ -81,18 +81,18 @@
                         <li>姓名</li>
                         <li>日期</li>
                         <li>直补</li>
-                        <li>+直补</li>
+                        <!-- <li>+直补</li> -->
                         <li>间补</li>
-                        <li>+间补</li>
+                        <!-- <li>+间补</li> -->
                     </ul>
                     <ul class="list">
                         <li v-for="(x, index) in butie.list" :key="index">
                             <div>{{x.realName}}</div>
                             <div>{{x.updateTime | datatime('yyyy-MM-dd')}}</div>
                             <div>{{x.dtSubsidies}}</div>
-                            <div>{{x.dtSubsidiesPlus}}</div>
+                            <!-- <div>{{x.dtSubsidiesPlus}}</div> -->
                             <div>{{x.itSubsidies}}</div>
-                            <div>{{x.itSubsidiesPlus}}</div>
+                            <!-- <div>{{x.itSubsidiesPlus}}</div> -->
                         </li>
                         <loading :loadingtype="butie.loading" :nodata="!butie.loading && butie.total==0" :end="!butie.loading && butie.list.length==butie.total && butie.total!=0"/>
                     </ul>
@@ -205,8 +205,8 @@
                             <div>0</div>
                         </li>
                         <li>
-                            <div>店铺分润</div>
-                            <div>{{代理人分润资产.balance ? 代理人分润资产.balance : 0}}</div>
+                            <div>促销分润</div>
+                            <div>{{(代理人分润资产 && 代理人分润资产.balance) ? 代理人分润资产.balance : 0}}</div>
                         </li>
                         <!-- <li>
                             <div>补贴：{{agentUser.sutotal}}</div>
@@ -214,7 +214,15 @@
                         </li>-->
                     </ul>
                     <ul class="Collect_Money" @click="Account()">
-                        <li>收款账户：{{Account_obj.account}}</li>
+                        <li>
+                            <span>收款账户：</span>
+                            <span v-if="Account_obj.type==0">支付宝</span>
+                            <span v-if="实名信息 && 实名信息.name">(*{{实名信息.name.substring(1)}})</span>
+                            <span>
+                                {{Account_obj.account | 过滤账号}}
+                            </span>
+                            <!-- 收款账户：{{Account_obj.account}} -->
+                        </li>
                         <li><i class="mui-icon mui-icon-arrowright"></i></li>
                     </ul>
                     <ul class="money">
@@ -233,7 +241,6 @@
                         </div>
                         <span @click="radio_type_2 = !radio_type_2">我也阅读并同意</span>
                         <span @click="$router.push('/WithdrawalAgreement')">《提现服务协议》</span>
-                        
                         <span>
                             <span @click="$router.push('/EmbodyRecord?type=0')">
                                 提现记录
@@ -241,9 +248,6 @@
                         </span>
                     </div>
                     <btn value="提交" @click.native="显示密码输入框()"/>
-                    <!-- <button @click="获取测试()">点击获取数据测试</button> -->
-
-                    <!-- <button class="btn_1" @click="alipay()">支付宝测试</button> -->
                 </div>
             </div>
 
@@ -395,6 +399,7 @@ export default {
             截图地址:"",
             //===============
             提现完成:false,
+            提现标识:'',
             提现提示语:[
                 // type 0 不能提现 1 加载中 2 成功 3 失败 4 待审核
                 {名称:'团队补贴',金额:0,type:0,提示:'一元起提'},   
@@ -407,6 +412,13 @@ export default {
     filters: {
         datatime(time, type) {
             return dateFtt(time, type);
+        },
+        过滤账号(账号){
+            try {
+                return "***"+账号.substring(账号.length-4)            
+            } catch (error) {
+                return 账号
+            }
         }
     },
     computed: {
@@ -425,7 +437,7 @@ export default {
         总可提现(){
             var 总可提现=0;
                 总可提现+=this.agentUser.sutotal ? this.agentUser.sutotal : 0;
-                总可提现+=this.代理人分润资产.balance ? this.代理人分润资产.balance : 0
+                总可提现+=(this.代理人分润资产 && this.代理人分润资产.balance) ? this.代理人分润资产.balance : 0
             return 总可提现
         }, 
     },
@@ -533,7 +545,8 @@ export default {
                         userid: this.userInfo.username,
                         payPassword: this.accout_password,
                         id: this.userInfo.id,
-                        name: this.name
+                        name: this.name,
+                        identity:this.提现标识
                     };
             return new Promise((resolve, reject) => {
                 if(!obj.amount || obj.amount<1){
@@ -554,7 +567,8 @@ export default {
                     name:this.name,
                     account:this.Account_obj.account, //到账账号
                     type:1,     //1代理人 2 代理商
-                    amount:this.代理人分润资产.balance
+                    amount:(this.代理人分润资产 && this.代理人分润资产.balance) ? this.代理人分润资产.balance : 0,
+                    identity:this.提现标识
                 }
             return new Promise((resolve, reject) => {
                 if(!obj.amount || obj.amount<1){
@@ -575,6 +589,7 @@ export default {
                 mui.toast("支付密码为6位数字。", {duration: 2000,type: "div"});
                 return;
             }
+            this.提现标识=this.生成提现唯一标识();
             this.payment = false;
             this.CanBePresented = false;    //可以提现 或 提现中
             this.input_name_box = false;    //名字输入框
@@ -585,14 +600,14 @@ export default {
                 {名称:'团队补贴',金额:(this.agentUser.sutotal ? this.agentUser.sutotal : 0),type:0,提示:'一元起提'},
                 {名称:'平台分佣',金额:0,type:0,提示:'一元起提'},
                 {名称:'店铺分佣',金额:0,type:0,提示:'一元起提'},
-                {名称:'促销分润',金额:(this.代理人分润资产.balance ? this.代理人分润资产.balance : 0),type:0,提示:'一元起提'},
+                {名称:'促销分润',金额:(this.代理人分润资产 && this.代理人分润资产.balance ? this.代理人分润资产.balance : 0),type:0,提示:'一元起提'},
             ]
             if(!this.agentUser.sutotal || this.agentUser.sutotal<1){
                this.提现提示语[0].type=0
             }else{
                this.提现提示语[0].type=1
             }
-            if(!this.代理人分润资产.balance || this.代理人分润资产.balance<0){
+            if(!this.代理人分润资产 || !this.代理人分润资产.balance || this.代理人分润资产.balance<0){
                 this.提现提示语[3].type=0
             }else{
                 this.提现提示语[3].type=1
@@ -608,8 +623,14 @@ export default {
                     this.提现提示语[0].提示='网络错误';
                 }else if(this.提现提示语[0].type!=0){   //无金额可提现就不需要操作了
                     if(res[0].data.code==200){
-                        this.提现提示语[0].type=2;
-                        this.提现提示语[0].提示='成功';
+                        var str=res[0].data.msg;
+                        if(str.indexOf("审核")==-1){
+                            this.提现提示语[0].type=2;
+                            this.提现提示语[0].提示='成功';
+                        }else{
+                            this.提现提示语[0].type=4;
+                            this.提现提示语[0].提示='等待审核';
+                        }
                     }else if(res[0].data.code == "PAYEE_USER_INFO_ERROR" || res[0].data.code == "PAYEE_ACC_OCUPIED"){
                         是否需要输入名字=true;
                     }else{
@@ -625,8 +646,14 @@ export default {
                     this.提现提示语[3].提示='网络错误';
                 }else if(this.提现提示语[3].type!=0){
                     if(res[1].data.code==200){
-                        this.提现提示语[3].type=2;
-                        this.提现提示语[3].提示='成功';
+                        var str=res[1].data.msg;
+                        if(str.indexOf("审核")==-1){
+                            this.提现提示语[3].type=2;
+                            this.提现提示语[3].提示='成功';
+                        }else{
+                            this.提现提示语[3].type=4;
+                            this.提现提示语[3].提示='等待审核';
+                        }
                     }else if(res[1].data.code == "PAYEE_USER_INFO_ERROR" || res[1].data.code == "PAYEE_ACC_OCUPIED"){
                         是否需要输入名字=true;
                     }else{
@@ -762,6 +789,10 @@ export default {
                 }).catch(err=>{
                     console.log(err)
                 })
+        },
+        生成提现唯一标识(){
+            // identity
+            return this.userInfo.username+'_'+new Date().getTime();
         }
     },
     mounted: function() {
@@ -769,7 +800,7 @@ export default {
             this.userInfo = JSON.parse(localStorage.userInfo);
         } catch (error) {}
         
-        
+        console.log(this.生成提现唯一标识())
         //查看下级带来的收益
         this.subsidies();
         //查询支付宝账号
@@ -974,6 +1005,7 @@ export default {
         color: #ffffff;
         li {
             min-height: 100%;
+            width: 25%;
             flex-grow: 1;
             text-align: center;
             border-left: 1px solid #e2e1e1;
@@ -983,15 +1015,12 @@ export default {
             width: 30px;
             font-size: 12px;
             line-height: 30px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         > li:nth-child(1) {
-            white-space: nowrap;
-            width: 60px;
             border: none;
-        }
-        > li:nth-child(2) {
-            white-space: nowrap;
-            width: 50px;
         }
     }
     .list {
@@ -1017,18 +1046,12 @@ export default {
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            width: 30px;
             font-size: 12px;
             line-height: 30px;
+            width: 25%;
         }
         > div:nth-child(1) {
-            white-space: nowrap;
-            width: 60px;
             border: none;
-        }
-        > div:nth-child(2) {
-            white-space: nowrap;
-            width: 50px;
         }
     }
     .footer {

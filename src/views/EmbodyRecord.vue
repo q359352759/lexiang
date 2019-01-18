@@ -52,13 +52,22 @@
                                 <div>{{x.createTime | fleter_time('hh:mm:ss')}}</div>
                             </td>
                             <td>
-                                {{get_type==0 ? '个人补贴' : '团队补贴'}}
+                                <span v-show="x.type==0">代理人团队补贴</span>
+                                <span v-show="x.type==1">代理人分润</span>
+                                <span v-show="x.type==2">代理商分润</span>
                             </td>
                             <td>
-                                <span v-if="x.type==0">支</span>
+                                <span v-if="x.withdrawalType==1">支</span>
                                 ({{x.account | fleter_account}})
+                                <!-- type 0 代理人团队补贴 1 代理人分润 2 代理商分润  -->
+                                <!-- withdrawalType 1 支付宝 -->
                             </td>
-                            <td>成功</td>
+                            <td>
+                                <!-- <span v-show="x.state==0">失败</span> -->
+                                <span v-show="x.state==1">成功</span>
+                                <span v-show="x.state==0">待审核</span>
+                                <span v-show="x.state==2">拒绝</span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -163,9 +172,9 @@
                 } else if (x == 2) {
                     this.userPicker.setData([
                         {value: null,text: "全部"},
-                        {value: "0",text: "待审核"},
                         {value: "1",text: "通过"},
-                        {value: "2",text: "拒绝"}
+                        {value: "2",text: "待审核"},
+                        {value: "0",text: "拒绝"}
                     ]);
                 } else if (x == 3) {
                     this.userPicker.setData([

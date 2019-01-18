@@ -159,11 +159,25 @@ export default {
         },
         修改商品({},商品列表){
             return new Promise((resolve, reject) => {
-                axios.post('/api-s/shops/commodity/update',商品列表).then(x=>{
+                console.log(123)
+                var loginDate=JSON.parse(localStorage.loginDate)
+                axios({
+                    url:'/api-s/shops/commodity/update',
+                    method:'post',
+                    headers:{
+                        "Authorization" : "Bearer " + loginDate.access_token
+                    },
+                    data:商品列表
+                }).then(x=>{
                     resolve(x);
                 }).catch(err=>{
                     reject(err);
-                })    
+                })
+                // axios.post('/api-s/shops/commodity/update',商品列表).then(x=>{
+                //     resolve(x);
+                // }).catch(err=>{
+                //     reject(err);
+                // })    
             });
         },
         删除商品({},商品){

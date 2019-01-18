@@ -153,7 +153,7 @@ export default {
             var obj=Object.assign({},x);            
             obj.state=obj.state==0 ? 1 : 0;
             obj.arrImg=x.img.split(',');
-            if(x.EXID){
+            if(x.EXID && x.state==1){
                 var 提示=x.EXTYPE==0 ? '该商品是“新人专享”商品，下架商品会同时会删除对应的专享商品，是否下架？' : '该商品是“生日专享”商品，下架商品会同时会删除对应的专享商品，是否下架？';
                 mui.confirm(提示,'提示',['取消','下架'],(value)=>{
                         if(value.index==1){
@@ -180,16 +180,20 @@ export default {
                     },'div');
             }else{
                 openloading(true);
+                var loginDate=JSON.parse(localStorage.loginDate)
                 this.$axios({
                     method:'post',
                     url:'/api-s/shops/commodity/update',
-                    data:[obj]
+                    data:[obj],
+                    headers:{
+                        "Authorization" : "Bearer " + loginDate.access_token
+                    },
                 }).then(res=>{
                     if(res.data.code==200){
                         x.state=x.state==0 ? 1 : 0;
                         mui.toast('设置成功。', { duration: 2000, type: "div" });
                     }else{
-                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                        mui.alert(res.data.msg ? res.data.msg : res.data.message, "提示",'我知道了', function() {},"div");
                     }
                     openloading(false)
                 }).catch(err=>{

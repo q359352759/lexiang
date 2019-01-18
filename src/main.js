@@ -20,6 +20,18 @@ axios.defaults.timeout =  60000;
 
 Vue.prototype.$axios = axios;
 //拦截器
+// axios.interceptors.request.use(
+//     config => {
+//         try {
+//             var loginDate=JSON.parse(localStorage.loginDate);
+//             config.headers.Authorization = 'Bearer '+loginDate.access_token;
+//             console.log(loginDate.access_token)
+//         } catch (error) {}
+//         return config;
+//     },
+//     err => {
+//         return Promise.reject(err);
+// });
 axios.interceptors.response.use(
     function (response) {
         return response;
@@ -62,6 +74,7 @@ router.beforeEach((to, from, next) => {
             '/ForgetPassword',
             '/Recommend',       //分享页面
             '/BeInvited',        //分享注册页面
+            '/shizhe/tuiguang'
         ]; //未登录可以访问的白名单
     if (!loginDate || loginDate == null || loginDate == undefined) {
         

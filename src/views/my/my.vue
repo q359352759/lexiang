@@ -256,7 +256,7 @@ export default {
                 this.$router.push('/shizhe/shenqingshuoming');
             }else{
                 if(this.$store.state.agentUser.type==1){
-                    mui.toast("您一是代理人无需申请红购使者。", { duration: 2000, type: "div" });
+                    mui.toast("您已是代理人无需申请红购使者。", { duration: 2000, type: "div" });
                 }else{
                     this.$router.push('/shizhe/honggoushizhe');
                 }

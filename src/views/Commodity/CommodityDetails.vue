@@ -130,7 +130,10 @@
                             </div>
                             <div class="hongbao">
                                 <i class="icon_1 icon iconfont icon-hongbao1"></i>
-                                <span class="qian">可抵扣：{{commodity.deduction}}元</span>
+                                <span class="qian" v-if="专享 && 专享.type==0">新人优惠：{{专享.deduction}}元</span>
+                                <span class="qian" v-if="专享 && 专享.type==1">生日优惠：{{专享.deduction}}元</span>
+                                <span class="qian" v-if="!专享">可抵扣：{{commodity.deduction}}元</span>
+                                
                             </div>
                         </li>
                         <li class="erweima_box" ref="qrcode">

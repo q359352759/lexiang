@@ -1,7 +1,14 @@
 <template>
     <div>
         <ul class="账户" @click="$router.push('/Account')">
-            <li>收款账户：{{收款账号.account}}</li>
+            <li>
+                <span>收款账户：</span>
+                <span v-if="收款账号.type==0">支付宝</span>
+                <span v-if="实名信息 && 实名信息.name">(*{{实名信息.name.substring(1)}})</span>
+                <span>
+                    {{收款账号.account | 过滤账号}}
+                </span>
+            </li>
             <li><i class="mui-icon mui-icon-arrowright"></i></li>
         </ul>
         <ul class="可提现">
@@ -23,7 +30,7 @@
             <span @click="$router.push('/WithdrawalAgreement')">《提现服务协议》</span>
             
             <span>
-                <span @click="go('/EmbodyRecord?type=0')">
+                <span @click="$router.push('/EmbodyRecord?type=0')">
                     提现记录
                 </span>
             </span>
@@ -51,10 +58,20 @@ export default {
             amount:0
         }
     },
+    filters:{
+        过滤账号(账号){
+            try {
+                return "***"+账号.substring(账号.length-4)            
+            } catch (error) {
+                return 账号
+            }
+        }
+    },
     computed: {
         ...mapGetters({
             收款账号:'红购使者/红购使者/收款账号',
             代理人分润资产:'agent/ShopBonus/dailiren_fenrun_zichan',    //代理人分润资产
+            实名信息:'实名认证/实名信息'
         })
     },
     methods: {

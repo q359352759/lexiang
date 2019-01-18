@@ -21,7 +21,7 @@
         <loading :loadingtype="会员.loading" :end="!会员.loading && 会员.total!=0 && 会员.total==会员.list.length" :nodata="!会员.loading && 会员.total==0"/>
 
         <ul class="底部">
-            <li>商家：{{会员.total}}人</li>
+            <li>会员：{{会员.total}}人</li>
             <li>总分润：-0元</li>
         </ul>
     </div>

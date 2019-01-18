@@ -88,6 +88,9 @@ export default {
         this.获取商家分润列表();
         this.获取会员分润列表();
         this.代理人分润()
+
+        var str = "等待审核";
+        console.log(str.indexOf("审核1"));
     }
 }
 </script>
