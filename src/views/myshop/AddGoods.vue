@@ -572,6 +572,7 @@ export default {
             var obj=[
                     {'value':'个','text':'个'},
                     {'value':'件','text':'件'},
+                    {'value':'台','text':'台'},
                     {'value':'套','text':'套'},
                     {'value':'份','text':'份'},
                     {'value':'盒','text':'盒'},

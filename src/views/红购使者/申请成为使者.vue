@@ -51,6 +51,7 @@ function convert(arr, id) {
     return res;
 }
 import btn from '@/components/button.vue';
+import { mapActions } from "vuex";
 export default {
     name:'',
     components: {
@@ -69,7 +70,8 @@ export default {
                 userid: '',
                 phone: '',
                 openid:''
-            }
+            },
+            实名认证信息:{}
         }
     },
     computed: {
@@ -86,6 +88,9 @@ export default {
         }
     },
     methods: {
+        ...mapActions({
+            查询认证情况:'实名认证/查询认证情况'
+        }),
         选择区域(){
             var cityPicker3 = new mui.PopPicker({
                 layer: 3
@@ -112,7 +117,7 @@ export default {
                 this.$router.push('/AlreadyRealName')
             }
         },
-        申请(){
+        async 申请(){
             if(this.userInfo.iaiState==0){
                 mui.toast("请先实名认证。", { duration: 2000, type: "div" });
                 return
@@ -120,6 +125,11 @@ export default {
                 mui.toast("请选择区域", { duration: 2000, type: "div" });
                 return
             }
+            var 认证情况=await this.查询认证情况(this.实名认证信息.idNumber);
+                if(认证情况.data.code!=200){
+                    mui.alert(认证情况.data.msg ? 认证情况.data.msg : 认证情况.data.message, "提示",'我知道了', function() {},"div");
+                    return
+                }
             this.申请对象.userid=this.userInfo.username;
             this.申请对象.phone=this.userInfo.phone;
             this.申请对象.openid=this.weixinobj.openid;
@@ -151,6 +161,7 @@ export default {
         this.$axios.get("/api-u/certification/findByUserid?userid=" +this.userInfo.username).then(x=>{
             console.log(x);
             if(x.data){
+                this.实名认证信息=x.data
                 this.申请对象.realName=x.data.name
             }
         }).catch(err=>{})

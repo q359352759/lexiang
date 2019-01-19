@@ -189,6 +189,7 @@ export default {
                         "Authorization" : "Bearer " + loginDate.access_token
                     },
                 }).then(res=>{
+                    // console.log(res);
                     if(res.data.code==200){
                         x.state=x.state==0 ? 1 : 0;
                         mui.toast('设置成功。', { duration: 2000, type: "div" });

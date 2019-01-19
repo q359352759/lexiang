@@ -31,7 +31,17 @@ export default {
                 axios.get("/api-u/certification/findByUserid?userid="+username).then(x=>{
                     state.实名信息=x.data
                     resolve(x);
-                }).then(err=>{
+                }).catch(err=>{
+                    reject(err);
+                })
+            });
+        },
+        //根据身份证号查询是否已经用于代理人或者红购使者
+        查询认证情况({},idNumber){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-u/certification/countCertificationAgent?idNumber='+idNumber).then(x=>{
+                    resolve(x);
+                }).catch(err=>{
                     reject(err);
                 })
             });

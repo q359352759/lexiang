@@ -16,7 +16,7 @@
             <li>
                 <span class="金额">
                     <span>￥</span>
-                    <input readonly type="text" :value="代理人分润资产.balance" />
+                    <input readonly type="text" :value="代理人分润资产 ? 代理人分润资产.balance : 0" />
                 </span>
                 <span class="起步价">一元起提</span>
                 <span class="费率">费率：4%</span>

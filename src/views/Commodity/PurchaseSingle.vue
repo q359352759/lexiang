@@ -158,6 +158,7 @@ export default {
             var shangPing_hongbao_number=this.shangPing_hongbao.length
             console.log('商品红包长度',shangPing_hongbao_number)
             var honghao_kedikou=0   //红包可抵扣总额
+            
             if(this.dikou==1){
                 honghao_kedikou=this.shengri_hongbao.length>0 ? this.shengri_hongbao[0].redAmount : 0;
             }else if(this.dikou==2){
@@ -197,7 +198,14 @@ export default {
                     if(honghao_kedikou>=0){
                         //其他红包抵扣
                         obj.hongbao=[];
-                        var kedikou=obj.deduction;  //每个商品可抵扣
+                        if((this.专享.可享受新人专享 || this.专享.可享受生日专享) && this.专享商品){
+                            var kedikou=this.专享商品deduction<obj.deduction ? obj.deduction : this.专享商品.deduction;  //每个商品可抵扣
+                        }else{
+                            var kedikou=obj.deduction;  //每个商品可抵扣
+                            // var money=this.shangPing.deduction<this.shangPing_hongbao[0].redAmount ? this.shangPing.deduction : this.shangPing_hongbao[0].redAmount;
+                        }
+                        
+                        // var kedikou=obj.deduction;  //每个商品可抵扣
                         if(this_1.dikou==1){
                             obj.shiji_dikou=honghao_kedikou<kedikou ? honghao_kedikou : kedikou;
                             var hongbao=Object.assign({},this_1.shengri_hongbao[0]);
@@ -442,15 +450,12 @@ export default {
             var this_1=this;
             var submitCommodityList=[];
             this.shangPing_list.forEach(item => {
-                
                 item.shopRedEnvelope=(item.shiji_dikou && item.shiji_dikou!=0) ?  item.hongbao : []
-                // shopRedEnvelope[0].paymentAmount=item.dikou
-                    if(!item.shiji_dikou || item.shiji_dikou==0){
-                        item.exclusive='';
-                    }
+                if(!item.shiji_dikou || item.shiji_dikou==0){
+                    item.exclusive='';
+                }
                 var obj={
                         shopCommodity:item,
-                        // shopRedEnvelope:item.hongbao,
                         deduction:item.shiji_dikou ? item.shiji_dikou : 0,
                         actualPayment:item.shiji_dikou ? Math.ceil((item.sellingPrice-item.shiji_dikou)*100)/100 : item.sellingPrice
                     }
@@ -464,8 +469,8 @@ export default {
                     amount:this.shiji,                  //金额
                     submitCommodityList:submitCommodityList        ////商品实体类
                 }
-            console.log(sumit_obj)
-            console.log(JSON.stringify(sumit_obj));
+            // console.log(sumit_obj)
+            // console.log(JSON.stringify(sumit_obj));
             // return;
             openloading(true)
             this.$request('/api-s/shops/createOrders',sumit_obj,'post').then(x=>{

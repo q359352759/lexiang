@@ -128,6 +128,7 @@ export default {
     methods: {
         ...mapActions({
             actions_agentUser:'actions_agentUser',  //获取代理商信息
+            查询认证情况:'实名认证/查询认证情况'
         }),
         //添加代理人激活码测试
         add_angentActivation(){
@@ -255,11 +256,17 @@ export default {
             });
         },
         //注册
-        add() {
+        async add() {
             if(this.userInfo.iaiState==0){
                 mui.toast("请先实名认证。", { duration: 2000, type: "div" });
                 return
             }
+            var 认证情况=await this.查询认证情况(this.Authentication.idNumber);
+                if(认证情况.data.code!=200){
+                    mui.alert(认证情况.data.msg ? 认证情况.data.msg : 认证情况.data.message, "提示",'我知道了', function() {},"div");
+                    openloading(false);
+                    return
+                }
             var this_1 = this;
             var areaCode = "";
             if (this.city[2].value) {

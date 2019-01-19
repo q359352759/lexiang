@@ -4,6 +4,8 @@ import App from "./App.vue";
 import VCharts from 'v-charts'
 Vue.use(VCharts)
 
+import router from "./router";
+
 // import VueHtml5Editor from 'vue-html5-editor'
 // Vue.use(VueHtml5Editor,{});
 
@@ -34,7 +36,16 @@ Vue.prototype.$axios = axios;
 // });
 axios.interceptors.response.use(
     function (response) {
-        return response;
+        // console.log(response);
+        if(response.data.error && response.data.error=='invalid_token'){
+            mui.confirm('此操作需要登录权限，你的登录已过期，是否重新登录？','提示',['取消','是的'],(value)=>{
+                if(value.index==1){
+                    router.push('/login');
+                }
+            })
+        }else{
+            return response;
+        }
     },
     function (error) {
         if(error){
@@ -48,7 +59,6 @@ axios.interceptors.response.use(
 import qs from "qs";
 Vue.prototype.$qs = qs;
 
-import router from "./router";
 import store from "./store";
 Vue.config.productionTip = false;
 
