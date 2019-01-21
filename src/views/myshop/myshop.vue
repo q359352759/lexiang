@@ -61,11 +61,14 @@
                     <div @click="$router.push('/myshop/comment/commentList')"><i class="icon iconfont icon-pinglun"></i></div>
                     <div>评论</div>
                 </li>
-                <li>
+                <li v-if="店铺身份==1">
                     <div @click="$router.push('/myshop/dianyuan/guanli')"><i class="icon iconfont icon-icon_dianyuanguanli"></i></div>
                     <div>店员</div>
                 </li>
-
+                <li v-if="店铺身份==2">
+                    <div @click="设置打卡框(true)"><i class="icon iconfont icon-qiandao-xianxing"></i></div>
+                    <div>打卡</div>
+                </li>
             </ul>
 
             <div class="box_3">
@@ -171,6 +174,7 @@
         </div>
 
         <tuijianren v-if="myshop.referrerPhone"  v-show="referrer_show"/>
+        <daka v-show="显示打卡框"/>
     </div>
 </template>
 
@@ -179,18 +183,21 @@
 import html2canvas from 'html2canvas'
 import QRCode from 'qrcodejs2';
 import {openloading , getDateStr} from '@/assets/js/currency.js';
+import {getCurrentMonthFirst , getCurrentMonthLast} from '@/assets/js/time.js';
 import $ from "jquery"
 import { mapActions, mapGetters } from 'vuex';
+
 import tuijianren from '@/components/myshop/tuijianren.vue';
 import btn from '@/components/button.vue';
+import daka from './打卡/打卡弹出框.vue';
 
-import {getCurrentMonthFirst , getCurrentMonthLast} from '@/assets/js/time.js';
 
 export default {
     name:'',
     components:{
         tuijianren,
-        btn
+        btn,
+        daka
     },
     data(){
         return{
@@ -225,6 +232,8 @@ export default {
             referrer:'myshops/referrer',
             今日销售:'myshops/销售/今日销售',
             本月销售:'myshops/销售/本月销售',
+            店铺身份:'myshops/身份',
+            显示打卡框:'myshops/显示打卡框'
         }),
         ketixian(){
             if(this.zichan && this.zichan.balance){
@@ -242,7 +251,9 @@ export default {
             findshopTurnoverByShopid:'myshops/zichan/findshopTurnoverByShopid',
             set_referrer_show:'myshops/set_referrer_show',       //推荐人显示框
             查询销售统计:'myshops/销售/查询销售统计',
-            get_agentUser_phone:'agent/get_agentUser_phone'
+            get_agentUser_phone:'agent/get_agentUser_phone',
+            查询所有店员:'myshops/店员/查询所有店员',
+            设置打卡框:'myshops/设置打卡框'
         }),
         获取今日新增会员(){
             this.$axios.get('/api-s/shops/countTodayshopCustomer/'+this.myshop.shopid).then(x=>{
@@ -384,9 +395,15 @@ export default {
                 console.log(err)
             })
         },
+        弹出打卡框(){
+            alert('点击了打卡')
+        },
         async shopinit(){
             openloading(true)
-            await this.getMyshop();
+            if(!this.myshop || !this.myshop.shopid){
+                await this.getMyshop();
+            }
+            
             this.get_hongbao();
             this.set_zichan_shopid(this.myshop.shopid);
             this.findshopTurnoverByShopid().then(x=>{
@@ -395,7 +412,8 @@ export default {
             // this.获取营业统计()
             this.查询销售统计(this.myshop.shopid);
             this.获取今日新增会员();
-            this.获取顾客()
+            this.获取顾客();
+            this.查询所有店员();
             if(this.myshop.referrerPhone){
                 this.get_agentUser_phone(this.myshop.referrerPhone).then(x=>{
                     if(x.data.code==200){
@@ -418,32 +436,9 @@ export default {
         // var a=[];
         //     a[0]='ssssssss';
         //     console.log(typeof a[0])
-        //根据店铺查询店铺新人红包
-        if(this.myshop && this.myshop.shopid){
-            openloading(true)
-            this.get_hongbao();
-            this.set_zichan_shopid(this.myshop.shopid);
-            this.findshopTurnoverByShopid().then(x=>{
-                openloading(false);
-            });
-            this.查询销售统计(this.myshop.shopid);
-            this.获取今日新增会员();
-            this.获取顾客()
-            //查询店铺推荐人
-            if(this.myshop.referrerPhone){
-                this.get_agentUser_phone(this.myshop.referrerPhone).then(x=>{
-                    if(x.data.code==200){
-                        this.设置推荐人(x.data.data)
-                    }
-                }).catch(err=>{})
-            }
-        }else{
-            // this.$store.commit('setMyshop');
-            this.shopinit();
-        }
+        this.shopinit();
     },
     activated(){
-        console.log(11111111);
         this.getType=0;
     },
     beforeUpdate: function() {

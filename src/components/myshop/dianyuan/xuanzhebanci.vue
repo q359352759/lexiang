@@ -2,31 +2,47 @@
     <div class="Banci">
         <div class="mask" @click="close()"></div>
         <ul>
-            <li>
-                <div @click="change_radio_2()" class="radio_1" :class="{'active':false}">
+            <li v-for="(item, index) in 当前考勤时间" :key="index">
+                <div @click="选择班次(item,index)" class="radio_1" :class="{'active':选中班次==item}">
                     <i class="icon iconfont icon-xuanze"></i>
                 </div>
-                <div>早班（9:00-18:00）</div>
-            </li>
-            <li>
-                <div @click="change_radio_2()" class="radio_1" :class="{'active':false}">
-                    <i class="icon iconfont icon-xuanze"></i>
+                <div v-if="班次.length>0 && 班次[0].schedulingtype==1">
+                    <span>固定班次（{{item.officehours}}-{{item.quittingtime}}）</span>
                 </div>
-                <div>晚班（9:00-18:00）</div>
+                <div v-if="班次.length>0 && 班次[0].schedulingtype==2">
+                    <span v-if="index==0">早班（{{item.officehours}}-{{item.quittingtime}}）</span>
+                    <span v-if="index==1">晚班（{{item.officehours}}-{{item.quittingtime}}）</span>
+                </div>
+                <div v-if="班次.length>0 && 班次[0].schedulingtype==3">
+                    <span v-if="index==0">早班（{{item.officehours}}-{{item.quittingtime}}）</span>
+                    <span v-if="index==1">中班（{{item.officehours}}-{{item.quittingtime}}）</span>
+                    <span v-if="index==2">晚班（{{item.officehours}}-{{item.quittingtime}}）</span>
+                </div>
             </li>
         </ul>
     </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
     name:'',
     data () {
         return {
-            
+            选中班次:''
         }
     },
+    computed: {
+        ...mapGetters({
+            当前考勤时间:'myshops/班次/当前考勤时间',
+            班次:'myshops/班次/班次'
+        }),
+    },
     methods: {
+        选择班次(item,index){
+            this.选中班次=item;
+            this.$emit('setbancishow',false,item,index);
+        },
         close(){
             this.$emit('setbancishow',false,123);
         }

@@ -200,7 +200,7 @@ import html2canvas from 'html2canvas'
 import QRCode from 'qrcodejs2'
 import {openloading} from '@/assets/js/currency.js';
 import {b64DecodeUnicode} from '@/assets/js/base64jiema.js';
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import btn from '@/components/button.vue'
 export default {
     name: "my",
@@ -234,6 +234,9 @@ export default {
         }
     },
     computed: {
+        ...mapGetters({
+            店铺身份:'myshops/身份'
+        }),
         myshop(){
             return this.$store.state.myshop
         }
@@ -242,7 +245,8 @@ export default {
         ...mapActions({
             updated_user:'user/updated_user',
             get_user:'user/get_user',
-            获取代理人信息:'actions_agentUser'
+            获取代理人信息:'actions_agentUser',
+            获取店铺:'getMyshop'
         }),
         更换主题色(){
             console.log('跟换主题色')
@@ -424,7 +428,9 @@ export default {
         //获取代理人信息
         this.获取代理人信息()
         //查询和你自己申请的店铺
-        this.$store.commit('setMyshop');
+        // this.$store.commit('setMyshop');
+        this.获取店铺()
+
         // console.group('------mounted 挂载结束状态 ------');
     },
     beforeUpdate: function() {

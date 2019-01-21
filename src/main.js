@@ -22,18 +22,18 @@ axios.defaults.timeout =  60000;
 
 Vue.prototype.$axios = axios;
 //拦截器
-// axios.interceptors.request.use(
-//     config => {
-//         try {
-//             var loginDate=JSON.parse(localStorage.loginDate);
-//             config.headers.Authorization = 'Bearer '+loginDate.access_token;
-//             console.log(loginDate.access_token)
-//         } catch (error) {}
-//         return config;
-//     },
-//     err => {
-//         return Promise.reject(err);
-// });
+axios.interceptors.request.use(
+    config => {
+        try {
+            var loginDate=JSON.parse(localStorage.loginDate);
+            config.headers.Authorization = 'Bearer '+loginDate.access_token;
+            // console.log(loginDate.access_token)
+        } catch (error) {}
+        return config;
+    },
+    err => {
+        return Promise.reject(err);
+});
 axios.interceptors.response.use(
     function (response) {
         // console.log(response);

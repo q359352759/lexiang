@@ -5,40 +5,45 @@
             <h1 class="mui-title">店员管理</h1>
             <span @click="tianjiadianyuan()">添加店员</span>
         </header>
-        <div class="mui-content mui-fullscreen">
+        <div class="mui-content mui-fullscreen" @scroll="scroll($event)">
             <div class="box_1">
                 <ul class="mui-table-view">
                     <li class="mui-table-view-cell">
                         <a class="mui-navigate-right item" @click="$router.push('/myshop/dianyuan/banci')">
                             <div class="title">班次</div>
-                            <div class="tishi">请设定班次</div>
-                            <!-- <div>两班次</div> -->
+                            <div class="tishi" v-if="班次.length==0 || 班次[0].id==''">请设定班次</div>
+                            <div v-if="班次.length>0 && 班次[0].id!=''">
+                                <span v-show="班次[0].schedulingtype==1">固定班次</span>
+                                <span v-show="班次[0].schedulingtype==2">两班</span>
+                                <span v-show="班次[0].schedulingtype==3">三班</span>
+                            </div>
                         </a>
                     </li>
                 </ul>
             </div>
             
-            <ul class="mui-table-view box_2" v-for="(item, index) in list" :key="index">
+            <ul class="mui-table-view box_2" v-for="(item, index) in 店员列表.list" :key="index">
 				<li class="mui-table-view-cell">
-					<div class="mui-slider-right mui-disabled">
+					<div class="mui-slider-right mui-disabled" @click="移除员工(item,index)">
 						<a class="mui-btn mui-btn-red">移除</a>
 					</div>
 					<div class="mui-slider-handle item">
                         <div class="img_box" @click="xiangqing()">
                             <div class="img_1">
-                                <img src="image/kaifazhong.png" alt="">
-                                <span class="active"></span>
+                                <img v-if="!item.user || !item.user.headImgUrl" src="image/kaifazhong.png" alt="">
+                                <img v-if="item.user && item.user.headImgUrl" :src="item.user.headImgUrl" alt="">
+                                <span :class="{'active':item.workstate==1}"></span>
                             </div>
-                            <div>张三</div>
+                            <div>{{item.clerksname}}</div>
                         </div>
                         <div class="text_box"  @click="xiangqing()">
                             <div class="mui-pull-right banci">
                                 班次：
-                                <span>早班</span>
+                                <span>{{item.shiftid | 过滤考勤段(当前考勤时间)}}</span>
                             </div>
-                            <div>回复：0条</div>
-                            <div>收银：0笔</div>
-                            <div>营业额：0元</div>
+                            <div>回复：-0条</div>
+                            <div>收银：-0笔</div>
+                            <div>营业额：-0元</div>
                         </div>
                         <div class="icon_box"  @click="xiugai()">
                             <i class="mui-icon mui-icon-arrowright"></i>
@@ -46,7 +51,7 @@
 					</div>
 				</li>
 			</ul>
-
+            <loading :loadingtype="店员列表.loading" :nodata="!店员列表.loading && 店员列表.total==0" :end="!店员列表.loading && 店员列表.total!=0 && 店员列表.total==店员列表.list.length"/>
             <!-- <button @click="test()">测试</button>
             <button @click="test1()">测试1</button> -->
 
@@ -58,10 +63,14 @@
 
 <script>
 import xuanzhebanci from '@/components/myshop/dianyuan/xuanzhebanci.vue';
+import { mapGetters , mapActions } from "vuex";
+import { openloading } from "@/assets/js/currency.js";
+import loading from '@/components/loading.vue'
 export default {
     name:'',
     components: {
-        xuanzhebanci  
+        xuanzhebanci,
+        loading
     },
     data () {
         return {
@@ -69,7 +78,46 @@ export default {
             xiugaibanci_show:false
         }
     },
+    filters: {
+        过滤考勤段(id,list){
+            var 考勤=list.find(x=>x.id==id);
+            var index = list.findIndex(x => x.id == id);
+
+            if(考勤.shift=='固定班次'){
+                return 固定班次
+            }else if(考勤.shift=='两班'){
+                return index==0 ? '早班' : '晚班'
+            }else if(考勤.shift=='三班'){
+                var 名字=['早班','中班','晚班']
+                return 名字[index];
+            }
+        }  
+    },
+    computed: {
+        ...mapGetters({
+            班次:'myshops/班次/班次',
+            当前考勤时间:'myshops/班次/当前考勤时间',
+            店员列表:'myshops/店员/店员列表'
+        })
+    },
     methods: {
+        ...mapActions({
+            setMyshop:'setMyshop',
+            查询班次:'myshops/班次/查询班次',
+            查询考勤时间:'myshops/班次/查询考勤时间',
+            店员初始化:'myshops/店员/店员初始化',
+            查询店员列表:'myshops/店员/查询店员列表',
+            移除员工_1:'myshops/店员/移除员工',
+            店员下一页:'myshops/店员/店员下一页'
+        }),
+        scroll(e){        
+            var h = e.target.offsetHeight; //容器高度
+            var sh = e.target.scrollHeight; //滚动条总高
+            var t = e.target.scrollTop; //滚动条到顶部距离
+            if(h + t >= sh - 10 && !this.店员列表.loading && this.店员列表.list.length<this.店员列表.total){
+                this.店员下一页()
+            }
+        },
         get_banci(x,y){
             console.log(x,y);
             this.xiugaibanci_show=x;
@@ -91,18 +139,52 @@ export default {
             }
         },
         tianjiadianyuan(){
-            this.$router.push('/myshop/dianyuan/addDianyuan')
-            // mui.confirm('请先设置班次','提示',['取消','设置'],(value)=>{
-            //     console.log(value);
-            //     if(value.index==1){
-            //         this.$router.push('/myshop/dianyuan/banci')
-            //     }
-            // })
+            if(this.班次.length==0 || this.班次[0].id==''){
+                mui.confirm('请先设置班次','提示',['取消','设置'],(value)=>{
+                    console.log(value);
+                    if(value.index==1){
+                        this.$router.push('/myshop/dianyuan/banci')
+                    }
+                })
+            }else{
+                this.$router.push('/myshop/dianyuan/addDianyuan')
+            }
         },
         xiangqing(){
             this.$router.push('/myshop/dianyuan/dianyuanXiangqing')
+        },
+        移除员工(item,index){
+            openloading(true)
+            this.移除员工_1([item,index]).then(x=>{
+                if(x.data.code==200){
+                    mui.toast('移除成功', {duration: "long", type: "div" });
+                }else{
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
+                }
+                openloading(false)
+            }).catch(err=>{
+                openloading(false)
+            })
+        },
+        async 获取数据(){
+            openloading(true);
+            this.店员初始化();
+            if(!this.店铺 || !this.店铺.shopid){
+                await this.setMyshop()
+            }
+            // await this.查询班次();
+            Promise.all([this.查询班次(),this.查询考勤时间(),this.查询店员列表()]).then(x=>{
+                openloading(false);
+            }).catch(err=>{
+                openloading(false);
+            })
+            // await this.查询考勤时间();
         }
-    }
+    },
+    mounted() {
+        this.获取数据();
+    },
+
 }
 </script>
 

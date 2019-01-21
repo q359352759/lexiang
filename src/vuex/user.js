@@ -98,6 +98,28 @@ export default {
             }).catch(err=>{
                 console.log('设置微信',err)
             })
+        },
+        通过电话号码获取用户({},phone){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-u/users/findByPhone?phone='+phone).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err); 
+                })
+            });
+        },
+        通过username查询用户({},username){
+            console.log(username)
+            return new Promise((resolve, reject) => {
+                axios.get('/api-u/users/findByUserid/'+username).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err);
+                })
+            });
+        },
+        测试({},test){
+            console.log(test);
         }
     },
     modules: {

@@ -57,7 +57,7 @@ export default {
             axios.post('/api-s/shops/addShopBasicsPopularity',qs.stringify(obj)).then(x=>{
                 console.log('添加店铺人气',x)
             })
-        }
+        },
     },
     modules: {
         

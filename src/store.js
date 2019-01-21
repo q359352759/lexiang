@@ -300,7 +300,6 @@ export default new Vuex.Store({
                     console.log('获取自己的店铺错误',err)
                 })
             },
-            
         },
         actions: {
             //获取自己的店铺
@@ -313,9 +312,9 @@ export default new Vuex.Store({
                     }).then(x=>{
                         console.log('获取自己的店铺',x);
                         this.state.myshop=x.data.data;
-                        resolve()
+                        resolve(x)
                     }).catch(err=>{
-                        reject()
+                        reject(err)
                     })
                 });
             },
@@ -342,29 +341,61 @@ export default new Vuex.Store({
                     })
                 });
             },
-            getMyshop({dispatch,commit}){
+            async getMyshop({state,dispatch,commit,rootGetters}){
+                // console.log('其他地方的state',rootState);
+                // console.log(rootGetters['vip/get']) // 打印其他模块的 getters
+                // dispatch('vip/get', {}, {root: true}) // 调用其他模块的 actions
+                // commit('vip/receive', data, {root: true}) // 调用其他模块的 mutations
+                var 员工信息= await dispatch('myshops/员工查询自己的信息');
+                var 身份=rootGetters['myshops/身份'];
+                // 身份:0,  // -1 查询失败 0 没有店铺 1 老板 2 员工
                 return new Promise((resolve, reject)=>{
-                    // await dispatch('actionA') // 等待 actionA 完成
-                    try {
-                        var userInfo = JSON.parse(localStorage.userInfo);                
-                    } catch (error) {
+                    if(身份==-1){
                         resolve();
                         return
+                    }else if(身份==2){
+                        dispatch('myshops/根据店铺Id查询店铺',员工信息.data.data.shopid,{root:true}).then(x=>{
+                            if(x.data.code==200 && x.data.data){
+                                state.myshop=x.data.data;
+                                dispatch('myshops/设置身份',2)
+                            }
+                            resolve(x)
+                        })
+                    }else{
+                        dispatch('myshops/查询自己的店铺').then(x=>{
+                            if(x && x.data.code==200){
+                                if(x.data.data){
+                                    dispatch('myshops/设置身份',1);
+                                    state.myshop=x.data.data;
+                                }else{
+                                    dispatch('myshops/设置身份',0);
+                                    state.myshop=x.data.data;
+                                }    
+                            }
+                            resolve(x);
+                        })
                     }
-                    request('/api-s/shops/finByUserid/'+userInfo.username,'','get').then(x=>{
-                        this.state.myshop=x.data.data
-                        resolve(x)
-                    }).catch(error=>{
-                        reject(error)
-                    })
-                    // resolve(1)
                 })
+                // return new Promise((resolve, reject)=>{
+                //     try {
+                //         var userInfo = JSON.parse(localStorage.userInfo);                
+                //     } catch (error) {
+                //         resolve();
+                //         return
+                //     }
+                //     request('/api-s/shops/finByUserid/'+userInfo.username,'','get').then(x=>{
+                //         this.state.myshop=x.data.data
+                //         resolve(x)
+                //     }).catch(error=>{
+                //         reject(error)
+                //     })
+                // })
             },
             //获取地区
             get_area({state}){
                 axios({
                     method: "get",
-                    url: "http://api.redmall.vip:10002/api-u/area/findAll",
+                    url: "/api-u/area/findAll",
                     params: {
                         start: 0,
                         length: 30000

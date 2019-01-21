@@ -80,7 +80,7 @@ const BusinessDetails = resolve => { require.ensure([], () => {
 //申请店铺
 const ShopInstructions = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/ShopInstructions.vue")); }); }; //开店说明
 const ApplicationShop = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/ApplicationShop.vue")); }); }; //申请店铺详情
-const myshop = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/myshop.vue")); }); }; //申请通过过的店铺
+const myshop = resolve => { require.ensure([], () => { resolve(require("./views/myshop/myshop.vue")); }); }; //申请通过过的店铺
 const ShopDetails = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/ShopDetails.vue")); }); }; //我的店铺详情
 const shopAuthentication = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/shopAuthentication.vue")); }); }; //我的店铺法人认证
 const shopBusinessDetails = resolve => { require.ensure([], () => { resolve(require("./views/ApplyForAShop/shopBusinessDetails.vue")); }); }; //我的店铺营业执照
