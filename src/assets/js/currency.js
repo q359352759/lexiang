@@ -50,6 +50,7 @@ function dateFtt(val, format , add_8){
         // let date = chGMT(val);
         let date = new Date(val);
         date.setHours(date.getHours() + 8);
+        date.setHours(date.getHours() + 8);
         const [whole, yy, MM, dd, hh, mm, ss] = date.toISOString().match(REGEX);
         const year = new Date().getFullYear();
         const month = new Date().getMonth() + 1;
@@ -73,16 +74,12 @@ function dateFtt(val, format , add_8){
 //yyyy.MM.dd hh:mm
 function 当前时间格式化(format,val){
     const REGEX = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/;
-    if (val.toString().indexOf("-") > 0) {
-        val = val.replace(/T/g, " ").replace(/\.[\d]{3}Z/, "").replace(/(-)/g, "/"); // 将 '-' 替换成 '/'
-        val = val.slice(0, val.indexOf(".")); // 删除小数点及后面的数字
-    }
     if(val){
         var date = new Date(val);
     }else{
         var date = new Date();        
     }
-    date.setHours(date.getHours() + 8)
+    date.setHours(date.getHours() + 8);
     const [whole, yy, MM, dd, hh, mm, ss] = date.toISOString().match(REGEX);
     const year = new Date().getFullYear();
     const month = new Date().getMonth() + 1;

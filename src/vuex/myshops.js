@@ -6,6 +6,7 @@ import zichan from '@/vuex/myshop/zichan.js';
 import 销售 from '@/vuex/myshop/销售.js'
 import 班次 from '@/vuex/myshop/班次.js'
 import 店员 from '@/vuex/myshop/店员.js'
+import 打卡 from '@/vuex/myshop/打卡.js'
 export default {
     namespaced:true,
     state:{
@@ -94,6 +95,7 @@ export default {
         zichan:zichan,
         销售:销售,
         班次:班次,
-        店员:店员
+        店员:店员,
+        打卡:打卡
     }
 }

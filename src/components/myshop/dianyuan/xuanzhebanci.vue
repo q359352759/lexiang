@@ -44,7 +44,7 @@ export default {
             this.$emit('setbancishow',false,item,index);
         },
         close(){
-            this.$emit('setbancishow',false,123);
+            this.$emit('setbancishow',false);
         }
     },
 }

@@ -107,7 +107,7 @@
                             </div>
                         </a>
                     </li>
-                    <li class="mui-table-view-cell" @click="$router.push('/myshop/WithdrawMoney')">
+                    <li class="mui-table-view-cell" @click="跳转提现()">
                         <a class="mui-navigate-right">
                             <div class="cont_1">
                                 <div class="mui-pull-right tixian">
@@ -191,7 +191,6 @@ import tuijianren from '@/components/myshop/tuijianren.vue';
 import btn from '@/components/button.vue';
 import daka from './打卡/打卡弹出框.vue';
 
-
 export default {
     name:'',
     components:{
@@ -253,8 +252,20 @@ export default {
             查询销售统计:'myshops/销售/查询销售统计',
             get_agentUser_phone:'agent/get_agentUser_phone',
             查询所有店员:'myshops/店员/查询所有店员',
-            设置打卡框:'myshops/设置打卡框'
+            设置打卡框:'myshops/设置打卡框',
+            
+            查询班次:'myshops/班次/查询班次',
+            考勤时间初始化:'myshops/班次/考勤时间初始化',
+            查询考勤时间:'myshops/班次/查询考勤时间',
+            查询自己的打卡记录:'myshops/打卡/查询自己的打卡记录'
         }),
+        跳转提现(){
+            if(this.店铺身份==1){
+                this.$router.push('/myshop/WithdrawMoney')
+            }else{
+                mui.toast('员工不能提现哦~', { duration: "long",type: "div" });                    
+            }
+        },
         获取今日新增会员(){
             this.$axios.get('/api-s/shops/countTodayshopCustomer/'+this.myshop.shopid).then(x=>{
                 console.log('获取今日新增',x);
@@ -414,6 +425,10 @@ export default {
             this.获取今日新增会员();
             this.获取顾客();
             this.查询所有店员();
+            this.考勤时间初始化();
+            this.查询班次()
+            this.查询考勤时间();
+            this.查询自己的打卡记录()
             if(this.myshop.referrerPhone){
                 this.get_agentUser_phone(this.myshop.referrerPhone).then(x=>{
                     if(x.data.code==200){

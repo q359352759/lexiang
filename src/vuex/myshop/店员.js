@@ -41,6 +41,24 @@ export default {
                 })
             });
         },
+        修改员工({},obj){
+            return new Promise((resolve, reject) => {
+                axios.post('/api-s/shops/updateShopClerks',obj).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err)
+                })
+            });
+        },
+        根据Id查询店员({state},id){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-s/shops/findShopClerksById?id='+id).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err)
+                })
+            });
+        },
         查询店员列表({state,rootGetters,dispatch}){
             // console.log('其他地方的state',rootState);
             // console.log(rootGetters['vip/get']) // 打印其他模块的 getters
