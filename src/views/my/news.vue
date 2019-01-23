@@ -58,119 +58,117 @@
 </template>
 
 <script>
-import loading from '@/components/loading.vue'
+import loading from "@/components/loading.vue";
 export default {
-    name:'',
-    components:{
-        loading
-    },
-    data(){
-        return{}
-    }
-}
+  name: "",
+  components: {
+    loading
+  },
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
-.mui-bar-nav{
-    box-shadow: none;
+.mui-bar-nav {
+  box-shadow: none;
 }
 
-.box_1{
-    background: $header_background;
-    height: 52px;
+.box_1 {
+  background: $header_background;
+  height: 52px;
 }
 
-.box_2{
-    height: 30px;
-    margin: 0px 8px;
-    position: relative;
-    ul{
-        position: absolute;
-        width: 100%;
-        bottom: 5px;
-        left: 0px;
-        display: flex;
-        background: #ffffff;
-        border-radius: 10px;
-        padding: 11px 0px 5px;
-        >li{
-            width: 25%;
-            text-align: center;
-            >div:nth-child(1){
-                width: 36px;
-                height: 36px;
-                position: relative;
-                margin: 0px auto;
-                img{
-                    width: 100%;
-                    height: 100%;
-                }
-                span{
-                    position: absolute;
-                    top: 0px;
-                    right: 0px;
-                    min-width: 12px;
-                    height: 12px;
-                    background-color: rgba(212, 48, 48, 1);
-                    border-radius: 12px;
-                    text-align: center;
-                    color: #ffffff;
-                    line-height: 12px;
-                    font-size: 10px;
-                }
-            }
-            >div:nth-child(2){
-                color: rgba(80, 80, 80, 1);
-            	font-size: 10px;
-                margin: 3px 0px 0px;
-            }
-        }
-    }
-}
-
-.box_3{
-    >li{
-        background: #ffffff;
-        border-bottom: 1px solid #efeff4;
-        padding: 9px 13px 14px;
-    }
-    .img_box{
+.box_2 {
+  height: 30px;
+  margin: 0px 8px;
+  position: relative;
+  ul {
+    position: absolute;
+    width: 100%;
+    bottom: 5px;
+    left: 0px;
+    display: flex;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 11px 0px 5px;
+    > li {
+      width: 25%;
+      text-align: center;
+      > div:nth-child(1) {
         width: 36px;
-    	height: 36px;
-        margin: 0px 8px 0px 0px;
+        height: 36px;
         position: relative;
-        img{
-            width: 100%;
-            height: 100%;
+        margin: 0px auto;
+        img {
+          width: 100%;
+          height: 100%;
         }
-        span{
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            min-width: 12px;
-            height: 12px;
-            border-radius: 12px;
-            color: #ffffff;
-            text-align: center;
-            font-size: 10px;
-            line-height: 10px;
-            background: rgba(212, 48, 48, 1);
+        span {
+          position: absolute;
+          top: 0px;
+          right: 0px;
+          min-width: 12px;
+          height: 12px;
+          background-color: rgba(212, 48, 48, 1);
+          border-radius: 12px;
+          text-align: center;
+          color: #ffffff;
+          line-height: 12px;
+          font-size: 10px;
         }
-    }
-    .time_1{
-        color: rgba(166, 166, 166, 1);
-    	font-size: 10px;
-    }
-    .title_1{
+      }
+      > div:nth-child(2) {
         color: rgba(80, 80, 80, 1);
-        font-size: 12px;
-    }
-    .text_1{
-        color: rgba(166, 166, 166, 1);
         font-size: 10px;
+        margin: 3px 0px 0px;
+      }
     }
+  }
+}
+
+.box_3 {
+  > li {
+    background: #ffffff;
+    border-bottom: 1px solid #efeff4;
+    padding: 9px 13px 14px;
+  }
+  .img_box {
+    width: 36px;
+    height: 36px;
+    margin: 0px 8px 0px 0px;
+    position: relative;
+    img {
+      width: 100%;
+      height: 100%;
+    }
+    span {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      min-width: 12px;
+      height: 12px;
+      border-radius: 12px;
+      color: #ffffff;
+      text-align: center;
+      font-size: 10px;
+      line-height: 10px;
+      background: rgba(212, 48, 48, 1);
+    }
+  }
+  .time_1 {
+    color: rgba(166, 166, 166, 1);
+    font-size: 10px;
+  }
+  .title_1 {
+    color: rgba(80, 80, 80, 1);
+    font-size: 12px;
+  }
+  .text_1 {
+    color: rgba(166, 166, 166, 1);
+    font-size: 10px;
+  }
 }
 </style>
-
-

@@ -130,102 +130,105 @@
 </template>
 
 <script>
-import loading from '@/components/loading.vue'
+import loading from "@/components/loading.vue";
 export default {
-    nameL: "",
-    components:{
-        loading
-    },
-    data() {
-        return {
-            type: 0,
-            areaManager:'',
-            userInfo:'',
-            name:'',
-            shop:{
-                loading:true,
-                list:[],
-                page_index:0,
-                total:0,
-                query:{
-                    start:0,
-                    length:10,
-                    state:1,
-                    areaCode:'',
-                    name:'',
-                }
-            }
-        };
-    },
-    methods: {
-        //查询
-        chaxun(){
-            this.shop.list=[];
-            this.shop.page_index=0;
-            this.get_shop();
-        },
-        select_type(x) {
-            this.type = x;
-        },
-        //滚动条
-        scroll(){
-            var h = e.target.offsetHeight; //容器高度
-            var sh = e.target.scrollHeight; //滚动条总高
-            var t = e.target.scrollTop; //滚动条到顶部距离
-            if (h + t >= sh - 10) { 
-                if(this.type==0){
-                    if(!this.shop.loading && this.shop.list.length<this.shop.total){
-                        this.shop.page_index++;
-                        this.get_shop()
-                    }
-                }else if(this.type==1){
-                }else if(this.type==2){
-                }
-                console.log("到底底部");
-            }
-        },
-        //获取代理商信息
-        get_areaManager() {
-            this.$axios({
-                method: "get",
-                url:"/api-u/areaManager/findme?userid=" + this.userInfo.username
-            }).then(x => {
-                console.log("获取代理商信息", x);
-                this.areaManager=x.data.data;
-                this.get_shop();
-            }).catch(error => {
-                console.log("获取代理商信息错误", error);
-            });
-        },
-        //根据区域查询店铺
-        get_shop(){
-            this.shop.loading=true;
-            this.shop.query.start=this.shop.page_index*this.shop.query.length;
-            this.shop.query.areaCode=this.areaManager.areaCode;
-            this.$axios({
-                method:'get',
-                url:'/api-s/shops/findAll',
-                params:this.shop.query
-            }).then(x=>{
-                console.log('查询店铺',x)
-                var list=x.data.data.data;
-                this.shop.list=this.shop.list.concat(list);
-                this.shop.total=x.data.data.total;
-                this.shop.loading=false;
-            }).catch(err=>{
-                console.log('查询店铺失败',err);
-            })
+  nameL: "",
+  components: {
+    loading
+  },
+  data() {
+    return {
+      type: 0,
+      areaManager: "",
+      userInfo: "",
+      name: "",
+      shop: {
+        loading: true,
+        list: [],
+        page_index: 0,
+        total: 0,
+        query: {
+          start: 0,
+          length: 10,
+          state: 1,
+          areaCode: "",
+          name: ""
         }
+      }
+    };
+  },
+  methods: {
+    //查询
+    chaxun() {
+      this.shop.list = [];
+      this.shop.page_index = 0;
+      this.get_shop();
     },
-    mounted() {
-        try {
-            this.userInfo=JSON.parse(localStorage.userInfo);
-        } catch (error) {}
-        
-        //查询代理商信息
-        this.get_areaManager()
-        
+    select_type(x) {
+      this.type = x;
     },
+    //滚动条
+    scroll() {
+      var h = e.target.offsetHeight; //容器高度
+      var sh = e.target.scrollHeight; //滚动条总高
+      var t = e.target.scrollTop; //滚动条到顶部距离
+      if (h + t >= sh - 10) {
+        if (this.type == 0) {
+          if (!this.shop.loading && this.shop.list.length < this.shop.total) {
+            this.shop.page_index++;
+            this.get_shop();
+          }
+        } else if (this.type == 1) {
+        } else if (this.type == 2) {
+        }
+        console.log("到底底部");
+      }
+    },
+    //获取代理商信息
+    get_areaManager() {
+      this.$axios({
+        method: "get",
+        url: "/api-u/areaManager/findme?userid=" + this.userInfo.username
+      })
+        .then(x => {
+          console.log("获取代理商信息", x);
+          this.areaManager = x.data.data;
+          this.get_shop();
+        })
+        .catch(error => {
+          console.log("获取代理商信息错误", error);
+        });
+    },
+    //根据区域查询店铺
+    get_shop() {
+      this.shop.loading = true;
+      this.shop.query.start = this.shop.page_index * this.shop.query.length;
+      this.shop.query.areaCode = this.areaManager.areaCode;
+      this.$axios({
+        method: "get",
+        url: "/api-s/shops/findAll",
+        params: this.shop.query
+      })
+        .then(x => {
+          console.log("查询店铺", x);
+          var list = x.data.data.data;
+          this.shop.list = this.shop.list.concat(list);
+          this.shop.total = x.data.data.total;
+          this.shop.loading = false;
+        })
+        .catch(err => {
+          console.log("查询店铺失败", err);
+        });
+    }
+  },
+  mounted() {
+    try {
+      this.userInfo = JSON.parse(localStorage.userInfo);
+    } catch (error) {}
+
+    //查询代理商信息
+    this.get_areaManager();
+  }
 };
 </script>
 
@@ -235,9 +238,9 @@ export default {
   display: flex;
   flex-direction: column;
 }
-.content_1{
-    flex-grow: 1;
-    overflow: auto;
+.content_1 {
+  flex-grow: 1;
+  overflow: auto;
 }
 .box_1 {
   flex-shrink: 0;
@@ -297,8 +300,8 @@ export default {
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      .state_1{
-          color: rgba(0, 122, 255, 1);
+      .state_1 {
+        color: rgba(0, 122, 255, 1);
       }
     }
     .tuiguang {

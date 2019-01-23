@@ -54,27 +54,26 @@
 
 <script>
 export default {
-    name:"",
-    data(){
-        return{}
-    }
-}
+  name: "",
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
-    padding: 10px;
-    font-size: 14px;
-    line-height: 20px;
+.box_1 {
+  padding: 10px;
+  font-size: 14px;
+  line-height: 20px;
 }
-.padding_1{
-    padding-left:20px; 
+.padding_1 {
+  padding-left: 20px;
 }
-.magin_1{
-    margin-top: 10px;
+.magin_1 {
+  margin-top: 10px;
 }
-.indent_1{
-    text-indent: 20px;
+.indent_1 {
+  text-indent: 20px;
 }
 </style>
-

@@ -35,100 +35,110 @@ import { mapGetters } from "vuex";
 import loading from "@/components/loading.vue";
 
 export default {
-    name:"",
-    components:{
-        loading
+  name: "",
+  components: {
+    loading
+  },
+  data() {
+    return {};
+  },
+  filters: {
+    filter_time(time, type) {
+      if (!time) return time;
+      return dateFtt(time, type);
     },
-    data () {
-        return {
-            
-        }
-    },
-    filters:{
-        filter_time(time,type){
-            if(!time) return time;
-            return dateFtt(time,type)
-        },
-        // 名字转Base64
-        filteer_name(name){
-            try {
-                return name=b64DecodeUnicode(name)
-            } catch (error) {
-                return name
-            }
-        }
-    },
-    computed: {
-        ...mapGetters({
-            会员:'agent/ShopBonus/会员'
-        }),
-    },
-    methods: {
-        BonusDetail(item,type){
-           if(type==1){
-                this.$router.push('/agent/BonusDetail?id='+item.finalshopid+'&type='+type+'&name='+item.shopName);
-            }else{
-                this.$router.push('/agent/BonusDetail?id='+item.username+'&type='+type+'&name='+(item.nickname ? item.nickname : item.userPhone) );
-            }
-        }
-    },
-    mounted () {
-             
+    // 名字转Base64
+    filteer_name(name) {
+      try {
+        return (name = b64DecodeUnicode(name));
+      } catch (error) {
+        return name;
+      }
     }
-}
+  },
+  computed: {
+    ...mapGetters({
+      会员: "agent/ShopBonus/会员"
+    })
+  },
+  methods: {
+    BonusDetail(item, type) {
+      if (type == 1) {
+        this.$router.push(
+          "/agent/BonusDetail?id=" +
+            item.finalshopid +
+            "&type=" +
+            type +
+            "&name=" +
+            item.shopName
+        );
+      } else {
+        this.$router.push(
+          "/agent/BonusDetail?id=" +
+            item.username +
+            "&type=" +
+            type +
+            "&name=" +
+            (item.nickname ? item.nickname : item.userPhone)
+        );
+      }
+    }
+  },
+  mounted() {}
+};
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/css/config.scss';
+@import "@/assets/css/config.scss";
 
-.列表{
-    li{
-        display: flex;
-        min-height: 34px;
-        text-align: center;
-        font-size: 12px;
-        >div{
-            border-left: 1px solid #F6F6F6;
-            width: calc(100% / 3);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            >div{
-                width: 100%;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-        }
-        >div:nth-child(1){
-            border-left: none;
-        }
-    }
-    li:nth-child(2n-1){
-        background: #ffffff;
-    }
-    li.header{
-        background: $header_background;
-        color: #ffffff;
-    }
-    .蓝色字体{
-        color: #017AFF;
-    }
-}
-.底部{
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
-	height: 32px;
-	background-color: $header_background;
-    color: rgba(255, 255, 255, 1);
-	font-size: 11px;
-    line-height: 32px;
-	text-align: center;
+.列表 {
+  li {
     display: flex;
-    >li{
-        width: 50%;
+    min-height: 34px;
+    text-align: center;
+    font-size: 12px;
+    > div {
+      border-left: 1px solid #f6f6f6;
+      width: calc(100% / 3);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      > div {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
+    > div:nth-child(1) {
+      border-left: none;
+    }
+  }
+  li:nth-child(2n-1) {
+    background: #ffffff;
+  }
+  li.header {
+    background: $header_background;
+    color: #ffffff;
+  }
+  .蓝色字体 {
+    color: #017aff;
+  }
+}
+.底部 {
+  position: fixed;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  height: 32px;
+  background-color: $header_background;
+  color: rgba(255, 255, 255, 1);
+  font-size: 11px;
+  line-height: 32px;
+  text-align: center;
+  display: flex;
+  > li {
+    width: 50%;
+  }
 }
 </style>

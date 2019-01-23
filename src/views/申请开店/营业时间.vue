@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations } from "vuex";
 
 export default {
   name: "",
@@ -40,7 +40,7 @@ export default {
   },
   methods: {
     ...mapMutations({
-            更新店铺key:'申请开店/更新店铺key'
+      更新店铺key: "申请开店/更新店铺key"
     }),
     SelectionTime(x) {
       this.active = x;
@@ -55,8 +55,8 @@ export default {
       });
     },
     queding() {
-      this.更新店铺key(['openTime', this.startTime])
-      this.更新店铺key(['closeTime', this.entTime])
+      this.更新店铺key(["openTime", this.startTime]);
+      this.更新店铺key(["closeTime", this.entTime]);
       // this.$store.state.apply_for_a_shop.creationTime = this.startTime;
       // this.$store.state.apply_for_a_shop.endTime = this.entTime;
       // this.$store.push()

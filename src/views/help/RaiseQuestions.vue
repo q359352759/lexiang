@@ -33,100 +33,98 @@
 </template>
 
 <script>
-
 export default {
-    name:'',
-    data(){
-        return{}
+  name: "",
+  data() {
+    return {};
+  },
+  methods: {
+    submit() {
+      console.log("132");
     },
-    methods:{
-        submit(){
-            console.log('132')
-        },
-        QuestionRecord(){
-            this.$router.push('/QuestionRecord');
-        }
+    QuestionRecord() {
+      this.$router.push("/QuestionRecord");
     }
-}
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 
-.mui-bar{
-    .text_1{
-        float: right;
-        line-height: 44px;
-        color: #ffffff;
-        position: relative;
-        span{
-            position:absolute;
-            top: 7px;
-            right: -4px;
-            min-width: 12px;
-            height: 12px;
-            border-radius: 12px;
-            background-color: rgba(212, 48, 48, 1);
-            color: #ffffff;
-            text-align: center;
-            line-height: 12px;
-            font-size: 10px;
-        }
-    }
-}
-
-.box_1{
-    height: 44px;
-    display: flex;
-    align-items: center;
-    padding: 0px 14px;
-    background: #ffffff;
-    div{
-        color: rgba(80, 80, 80, 1);
-        font-size: 14px;
-        white-space: nowrap;
-    }
-    input{
-        color: rgba(80, 80, 80, 1);
-        font-size: 14px;
-        padding: 0px;
-        margin: 0px;
-        height: 100%;
-        border: none;
-    }
-}
-
-.box_2{
-    border: none;
-    color: rgba(80, 80, 80, 1);
-    font-size: 14px;
-    padding: 10px 14px;
-    min-height: 170px;
-    margin:3px 0px 0px;
-    background: #ffffff;
-    user-select: text;
-}
-.box_2:empty:before{ 
-    content: '请输入问题详细描述'; 
-    color: gray; 
-} 
-.box_3{
-    padding: 11px 14px;
-    color: rgba(80, 80, 80, 1);
-	font-size: 12px
-}
-
-.btn_1{
-    width: 141px;
-    height: 36px;
-    border-radius: 36px;
-    border: none;
-    background: $header_background;
+.mui-bar {
+  .text_1 {
+    float: right;
+    line-height: 44px;
     color: #ffffff;
-    padding: 0px;
-    font-size: 14px;
-    display: block;
-    margin: 22px auto 0px;
+    position: relative;
+    span {
+      position: absolute;
+      top: 7px;
+      right: -4px;
+      min-width: 12px;
+      height: 12px;
+      border-radius: 12px;
+      background-color: rgba(212, 48, 48, 1);
+      color: #ffffff;
+      text-align: center;
+      line-height: 12px;
+      font-size: 10px;
+    }
+  }
 }
 
+.box_1 {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0px 14px;
+  background: #ffffff;
+  div {
+    color: rgba(80, 80, 80, 1);
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  input {
+    color: rgba(80, 80, 80, 1);
+    font-size: 14px;
+    padding: 0px;
+    margin: 0px;
+    height: 100%;
+    border: none;
+  }
+}
+
+.box_2 {
+  border: none;
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  padding: 10px 14px;
+  min-height: 170px;
+  margin: 3px 0px 0px;
+  background: #ffffff;
+  user-select: text;
+}
+.box_2:empty:before {
+  content: "请输入问题详细描述";
+  color: gray;
+}
+.box_3 {
+  padding: 11px 14px;
+  color: rgba(80, 80, 80, 1);
+  font-size: 12px;
+}
+
+.btn_1 {
+  width: 141px;
+  height: 36px;
+  border-radius: 36px;
+  border: none;
+  background: $header_background;
+  color: #ffffff;
+  padding: 0px;
+  font-size: 14px;
+  display: block;
+  margin: 22px auto 0px;
+}
 </style>

@@ -36,141 +36,146 @@
 </template>
 
 <script>
-import xuanzhebanci from '@/components/myshop/dianyuan/xuanzhebanci.vue';
-import  btn from '@/components/button.vue';
-import { mapGetters , mapActions } from "vuex";
+import xuanzhebanci from "@/components/myshop/dianyuan/xuanzhebanci.vue";
+import btn from "@/components/button.vue";
+import { mapGetters, mapActions } from "vuex";
 import { openloading } from "@/assets/js/currency.js";
 
 export default {
-    name:'',
-    components: {
-        btn,
-        xuanzhebanci
-    },
-    data () {
-        return {
-            xiugaibanci_show:false,
-            选中的班次:'',
-            班次_index:0,        // 1 早班  2 晚班  3 晚班
-            店员:{
-                shopid:'',      
-                clerksid:'',    //店员id
-                clerksname:'',  //店员名字
-                clerksphone:'',  //员工电话
-                workstate:0,   //状态(1:上班,0:下班)
-                shiftid:''      //班次id
-            }
+  name: "",
+  components: {
+    btn,
+    xuanzhebanci
+  },
+  data() {
+    return {
+      xiugaibanci_show: false,
+      选中的班次: "",
+      班次_index: 0, // 1 早班  2 晚班  3 晚班
+      店员: {
+        shopid: "",
+        clerksid: "", //店员id
+        clerksname: "", //店员名字
+        clerksphone: "", //员工电话
+        workstate: 0, //状态(1:上班,0:下班)
+        shiftid: "" //班次id
+      }
+    };
+  },
+  computed: {
+    ...mapGetters({
+      当前考勤时间: "myshops/班次/当前考勤时间",
+      店铺: "get_myshop"
+    }),
+    显示班次名称() {
+      if (this.选中的班次 == "") {
+        return "";
+      } else if (this.选中的班次.shift == "固定班次") {
+        return "固定班次";
+      } else if (this.选中的班次.shift == "两班") {
+        return this.班次_index == 0 ? "早班" : "晚班";
+      } else if (this.选中的班次.shift == "三班") {
+        if (this.班次_index == 0) {
+          return "早班";
+        } else if (this.班次_index == 1) {
+          return "中班";
+        } else {
+          return "晚班";
         }
+      }
+    }
+  },
+  methods: {
+    ...mapActions({
+      setMyshop: "setMyshop",
+      查询班次: "myshops/班次/查询班次",
+      查询考勤时间: "myshops/班次/查询考勤时间",
+      通过电话号码获取用户: "user/通过电话号码获取用户",
+      添加店员: "myshops/店员/添加店员"
+    }),
+    get_banci(type, item, index) {
+      this.xiugaibanci_show = type;
+      this.选中的班次 = item;
+      this.班次_index = index;
+      console.log(item, index);
     },
-    computed: {
-        ...mapGetters({
-            当前考勤时间:'myshops/班次/当前考勤时间',
-            店铺:'get_myshop',
-        }),
-        显示班次名称(){
-            if(this.选中的班次==''){
-                return ''
-            }else if(this.选中的班次.shift=='固定班次'){
-                return '固定班次'
-            }else if(this.选中的班次.shift=='两班'){
-                return this.班次_index==0 ? '早班' : '晚班'
-            }else if(this.选中的班次.shift=='三班'){
-                if(this.班次_index==0){
-                    return '早班'
-                }else if(this.班次_index==1){
-                    return '中班'
-                }else{
-                    return '晚班'
-                }
-            }
-        }
+    async submit() {
+      if (!this.选中的班次) {
+        mui.toast("请选择班次", { duration: "long", type: "div" });
+        return;
+      }
+      openloading(true);
+      var 店员信息 = await this.通过电话号码获取用户(this.店员.clerksphone);
+      if (店员信息.data.code != 200) {
+        openloading(false);
+        mui.toast(
+          店员信息.data.msg ? 店员信息.data.msg : 店员信息.data.message,
+          { duration: "long", type: "div" }
+        );
+        return;
+      }
+      console.log(店员信息);
+      this.店员.shopid = this.店铺.shopid;
+      this.店员.clerksid = 店员信息.data.data.username;
+      this.店员.shiftid = this.选中的班次.id;
+      var 添加店员 = await this.添加店员(this.店员);
+      openloading(false);
+      if (添加店员.data.code == 200) {
+        mui.toast("添加成功", { duration: "long", type: "div" });
+      } else {
+        mui.toast(
+          添加店员.data.msg ? 添加店员.data.msg : 添加店员.data.message,
+          { duration: "long", type: "div" }
+        );
+      }
     },
-    methods: {
-        ...mapActions({
-            setMyshop:'setMyshop',
-            查询班次:'myshops/班次/查询班次',
-            查询考勤时间:'myshops/班次/查询考勤时间',
-            通过电话号码获取用户:'user/通过电话号码获取用户',
-            添加店员:'myshops/店员/添加店员'
-        }),
-        get_banci(type,item,index){
-            this.xiugaibanci_show=type;
-            this.选中的班次=item
-            this.班次_index=index;
-            console.log(item,index)
-        },
-        async submit(){
-            if(!this.选中的班次){
-                mui.toast('请选择班次', {duration: "long", type: "div" });
-                return               
-            }
-            openloading(true)
-            var 店员信息=await this.通过电话号码获取用户(this.店员.clerksphone);
-            if(店员信息.data.code!=200){
-                openloading(false)
-                mui.toast(店员信息.data.msg ? 店员信息.data.msg : 店员信息.data.message, {duration: "long", type: "div" });
-                return          
-            }
-            console.log(店员信息);
-            this.店员.shopid=this.店铺.shopid;
-            this.店员.clerksid=店员信息.data.data.username;
-            this.店员.shiftid=this.选中的班次.id;
-            var 添加店员=await this.添加店员(this.店员)
-            openloading(false)
-            if(添加店员.data.code==200){
-                mui.toast('添加成功', {duration: "long", type: "div" });
-            }else{
-                mui.toast(添加店员.data.msg ? 添加店员.data.msg : 添加店员.data.message, {duration: "long", type: "div" });
-            }
-        },
-        选择班次(){
-            this.xiugaibanci_show=true;
-        },
-        async 获取数据(){
-            openloading(true)
-            if(!this.店铺 || !this.店铺.shopid){
-                await this.setMyshop()
-            }
-            await this.查询班次();
-            await this.查询考勤时间();
-            openloading(false);
-        }
+    选择班次() {
+      this.xiugaibanci_show = true;
     },
-    mounted() {
-        this.获取数据();
-    },
-}
+    async 获取数据() {
+      openloading(true);
+      if (!this.店铺 || !this.店铺.shopid) {
+        await this.setMyshop();
+      }
+      await this.查询班次();
+      await this.查询考勤时间();
+      openloading(false);
+    }
+  },
+  mounted() {
+    this.获取数据();
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
-    .mui-table-view-cell:after{
-        right: 15px;
+.box_1 {
+  .mui-table-view-cell:after {
+    right: 15px;
+  }
+  .item {
+    color: #505050;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    .title {
+      width: 96px;
     }
-    .item{
-        color: #505050;
-    	font-size: 14px;
-        display: flex;
-        align-items: center;
-        .title{
-            width: 96px;
-        }
-        input{
-            height: 100%;
-            padding: 0px;
-            margin: 0px;
-            border: none;
-            color: #505050;
-        	font-size: 14px;
-        }        
-        input::-webkit-input-placeholder {
-            color: #d9d9d9;
-            font-size: 12px;
-        }
+    input {
+      height: 100%;
+      padding: 0px;
+      margin: 0px;
+      border: none;
+      color: #505050;
+      font-size: 14px;
     }
+    input::-webkit-input-placeholder {
+      color: #d9d9d9;
+      font-size: 12px;
+    }
+  }
 }
-.box_2{
-    margin: 23px 0px;
+.box_2 {
+  margin: 23px 0px;
 }
 </style>
-

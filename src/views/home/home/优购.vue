@@ -50,132 +50,127 @@
 <script>
 import loading from "@/components/loading.vue";
 
-import { mapGetters } from 'vuex';
+import { mapGetters } from "vuex";
 
 export default {
-    name:'',
-    components:{
-        loading
-    },
-    data () {
-        return {
-            
-        }
-    },
-    computed: {
-        ...mapGetters({
-            优购:'home/优购/优购',
-        })
-    },
-}
+  name: "",
+  components: {
+    loading
+  },
+  data() {
+    return {};
+  },
+  computed: {
+    ...mapGetters({
+      优购: "home/优购/优购"
+    })
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-
-.优购列表{
-    display:flex;
-    flex-wrap: wrap;
-    padding: 0px 5px;
-    >li{
-        width: 50%;
-        padding: 5px;
-        >div{
-            background: #ffffff;
-        }
+.优购列表 {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0px 5px;
+  > li {
+    width: 50%;
+    padding: 5px;
+    > div {
+      background: #ffffff;
     }
-    .img_box{
-        width: 1.72rem;
-        height: 1.29rem;
-        img{
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+  }
+  .img_box {
+    width: 1.72rem;
+    height: 1.29rem;
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
-    h1{
-        padding: 0px 0.06rem;
-        color: rgba(80, 80, 80, 1);
-        font-size: 0.12rem;
-        font-weight: 400;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: flex;
-        >div:nth-child(1){
-            flex-grow: 1;
-        }
-        >div:nth-child(2){
-            color: rgba(128, 128, 128, 1);
-        	font-size: 10px;
-            i{
-                color: rgba(224, 28, 4, 1);
-            }
-        }
+  }
+  h1 {
+    padding: 0px 0.06rem;
+    color: rgba(80, 80, 80, 1);
+    font-size: 0.12rem;
+    font-weight: 400;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    > div:nth-child(1) {
+      flex-grow: 1;
     }
-    .text_1{
-        display: flex;
-        justify-content: space-between;
-        padding: 0px 0.06rem;
-        .xiaoshou{
-            >span:nth-child(1){
-                margin: 0px 3px 0px 0px;
-                display: inline-block;
-                width: 0.12rem;
-                height: 0.12rem;
-                font-size: 0.08rem;
-                line-height: 0.12rem;
-                text-align: center;
-                border-radius: 100%;
-                background: #ff5733;
-                color: #ffffff;
-            }
-            >span:nth-child(2){
-                color: rgba(166, 166, 166, 1);
-                font-size: 0.1rem;
-            }
-        }
-        .dikou{
-            i{
-                color: #fc4c4c;
-                font-size: 0.1rem;
-            }
-            span{
-                margin: 0px 0px 0px 3px;
-                font-size: 0.1rem;
-                color: #fc4c4c;
-            }
-        }
+    > div:nth-child(2) {
+      color: rgba(128, 128, 128, 1);
+      font-size: 10px;
+      i {
+        color: rgba(224, 28, 4, 1);
+      }
     }
-    .text_2{
-        padding: 0px 0.06rem 4px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        >div:nth-child(1){
-            display: flex;
-            align-items: flex-end;
-        }
-        .xianjia{
-            color: #d43030;
-            font-size: 0.12rem;
-            font-weight: bold;
-        }
-        .yuanjia{
-            font-size: 0.1rem;
-            color: #a6a6a6;
-            margin: 0px 0px 0px 0.05rem;
-        }
-        .zhuanxiang{
-            border: 1px solid #e33c64;
-            font-size: 8px;
-            height: 13px;
-            color: #e33c64;
-            line-height: 11px;
-            padding: 0px 2px;
-            border-radius: 2px;
-        }
+  }
+  .text_1 {
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 0.06rem;
+    .xiaoshou {
+      > span:nth-child(1) {
+        margin: 0px 3px 0px 0px;
+        display: inline-block;
+        width: 0.12rem;
+        height: 0.12rem;
+        font-size: 0.08rem;
+        line-height: 0.12rem;
+        text-align: center;
+        border-radius: 100%;
+        background: #ff5733;
+        color: #ffffff;
+      }
+      > span:nth-child(2) {
+        color: rgba(166, 166, 166, 1);
+        font-size: 0.1rem;
+      }
     }
+    .dikou {
+      i {
+        color: #fc4c4c;
+        font-size: 0.1rem;
+      }
+      span {
+        margin: 0px 0px 0px 3px;
+        font-size: 0.1rem;
+        color: #fc4c4c;
+      }
+    }
+  }
+  .text_2 {
+    padding: 0px 0.06rem 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    > div:nth-child(1) {
+      display: flex;
+      align-items: flex-end;
+    }
+    .xianjia {
+      color: #d43030;
+      font-size: 0.12rem;
+      font-weight: bold;
+    }
+    .yuanjia {
+      font-size: 0.1rem;
+      color: #a6a6a6;
+      margin: 0px 0px 0px 0.05rem;
+    }
+    .zhuanxiang {
+      border: 1px solid #e33c64;
+      font-size: 8px;
+      height: 13px;
+      color: #e33c64;
+      line-height: 11px;
+      padding: 0px 2px;
+      border-radius: 2px;
+    }
+  }
 }
 </style>
-
-

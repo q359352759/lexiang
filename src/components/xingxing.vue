@@ -10,31 +10,29 @@
 
 <script>
 export default {
-    props:{
-        number:{
-            default:5
-        }
-    },
-    name:'',
-    data(){
-        return{}
+  props: {
+    number: {
+      default: 5
     }
-}
+  },
+  name: "",
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-ul{
-    display: flex;
-    justify-content: space-between;
-    font-size: 18px;
-    li{
-        color: #888888;
-        margin: 0px 3px;
-    }
-    .active{
-        color: #f8d40c;
-    }
+ul {
+  display: flex;
+  justify-content: space-between;
+  font-size: 18px;
+  li {
+    color: #888888;
+    margin: 0px 3px;
+  }
+  .active {
+    color: #f8d40c;
+  }
 }
 </style>
-
-

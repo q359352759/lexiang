@@ -142,508 +142,513 @@
 </template>
 
 <script>
-import circularNav from '@/components/circularNav'
+import circularNav from "@/components/circularNav";
 import { openloading } from "@/assets/js/currency";
 import { VueCropper } from "vue-cropper";
-import { mapMutations } from 'vuex';
+import { mapMutations } from "vuex";
 export default {
-    name: "LegalPersonCertification",
-    components: {
-        VueCropper,
-        circularNav
-    },
-    data() {
-        return {
-            xieyi:true,
-            userinfo: "", //用户信息
-            add_loading: false, //正在添加
-            zhengmian_ok: false, //正面已上传百度认证
-            fanmian_ok: false, //反正已上传百度认证
-            zhengmian_loading: false,
-            fanmian_loading: false,
-            Cropper_show: false, //裁剪弹出框
-            Uncertified: false, //没有认证
-            zhengmian_img: "", //正面图片
-            fanmian_img: "", //反面
-            access_token: "",
-            Positive: true, //正面
-            option: {
-                img: "",
-                size: 1,
-                full: false,
-                outputType: "png",
-                canMove: true,
-                fixedBox: true, //裁剪框固定大小不动 true 固定
-                original: false,
-                canMoveBox: false,
-                autoCrop: true, //一开始就裁剪
-                outputType: "jpeg" //png,jpeg,webp
-            },
-            Positive_obj: {
-                //正面信息
-                address: "", //地址
-                idNumber: "", //身份证号码
-                birthday: "", //出生
-                name: "", //姓名
-                sex: "", //性别
-                nation: "" //名族
-            },
-            The_other_side: {
-                Invalid: "", //失效日期
-                Date_of_issue: "", //签发日期
-                issueArea: "" //签发机关
-            },
-            image_status: {
-                normal: "识别正常",
-                reversed_side: "身份证正反面颠倒",
-                non_idcard: "上传的图片中不包含身份证",
-                blurred: "身份证模糊",
-                other_type_card: "其他类型证照",
-                over_exposure: "身份证关键字段反光或过曝",
-                unknown: "未知状态"
-            }
-        };
-    },
-    computed: {
-        // userinfo() {
-        //     return this.$store.state.userInfo;
-        // }
-        findByUserid(){
-            return this.$store.state.findByUserid
-        }
-    },
+  name: "LegalPersonCertification",
+  components: {
+    VueCropper,
+    circularNav
+  },
+  data() {
+    return {
+      xieyi: true,
+      userinfo: "", //用户信息
+      add_loading: false, //正在添加
+      zhengmian_ok: false, //正面已上传百度认证
+      fanmian_ok: false, //反正已上传百度认证
+      zhengmian_loading: false,
+      fanmian_loading: false,
+      Cropper_show: false, //裁剪弹出框
+      Uncertified: false, //没有认证
+      zhengmian_img: "", //正面图片
+      fanmian_img: "", //反面
+      access_token: "",
+      Positive: true, //正面
+      option: {
+        img: "",
+        size: 1,
+        full: false,
+        outputType: "png",
+        canMove: true,
+        fixedBox: true, //裁剪框固定大小不动 true 固定
+        original: false,
+        canMoveBox: false,
+        autoCrop: true, //一开始就裁剪
+        outputType: "jpeg" //png,jpeg,webp
+      },
+      Positive_obj: {
+        //正面信息
+        address: "", //地址
+        idNumber: "", //身份证号码
+        birthday: "", //出生
+        name: "", //姓名
+        sex: "", //性别
+        nation: "" //名族
+      },
+      The_other_side: {
+        Invalid: "", //失效日期
+        Date_of_issue: "", //签发日期
+        issueArea: "" //签发机关
+      },
+      image_status: {
+        normal: "识别正常",
+        reversed_side: "身份证正反面颠倒",
+        non_idcard: "上传的图片中不包含身份证",
+        blurred: "身份证模糊",
+        other_type_card: "其他类型证照",
+        over_exposure: "身份证关键字段反光或过曝",
+        unknown: "未知状态"
+      }
+    };
+  },
+  computed: {
+    // userinfo() {
+    //     return this.$store.state.userInfo;
+    // }
+    findByUserid() {
+      return this.$store.state.findByUserid;
+    }
+  },
 
-    methods: {
-        ...mapMutations({
-            更新店铺key:'申请开店/更新店铺key'
-        }),
-        //协议
-        change_radio_2(){
-            this.xieyi=!this.xieyi;
-        },
-        //选择以实名的省份证
-        select_shengfen(){
-            this.更新店铺key(['sex',this.findByUserid.sex]);
-            this.更新店铺key(['nation',this.findByUserid.nation]);
-            this.更新店铺key(['birthday',this.findByUserid.birthday]);
-            this.更新店铺key(['iaiAddress',this.findByUserid.iaiAddress]);
-            this.更新店铺key(['idNumber',this.findByUserid.idNumber]);
-            this.更新店铺key(['issueArea',this.findByUserid.issueArea]);
-            this.更新店铺key(['frontImg',this.findByUserid.frontImg]);
-            this.更新店铺key(['reverseImg',this.findByUserid.reverseImg]);
-            this.更新店铺key(['validity',this.findByUserid.validity]);
-            this.更新店铺key(['iaiName',this.findByUserid.name]);
-            history.back();
-        },
-        //左转
-        rotateLeft() {
-            this.$refs.cropper.rotateLeft();
-        },
-        //右转
-        rotateRight() {
-            this.$refs.cropper.rotateRight();
-        },
-        //确认裁剪
-        confirm() {
-            this.Cropper_show = false;
-            this.$refs.cropper.getCropData(data => {
-                if (this.Positive) {
-                    this.zhengmian_img = data;
-                } else {
-                    this.fanmian_img = data;
-                }
-                this.idcard(this.Positive);
-            });
-        },
-        //关闭裁剪弹出框
-        close_1() {
-            this.Cropper_show = false;
-        },
-        //实时预览函数
-        realTime(data) {
-            this.previews = data;
-        },
-        //获取百度 token
-        get_token() {
-            this.add_loading=true
-            this.$axios({
-                method: "get",
-                url: "/api-u/baidu/identify"
-            }).then(x => {
-                console.log(x);
-                this.access_token = x.data;
-                this.add_loading=false
-            }).catch(err => {
-                console.log(err);
-                this.add_loading=false
-            });
-        },
-        //点击正面
-        zhengmian(x) {
-            this.Positive = x;
-            document
-                .getElementById("zhengmianInput")
-                .getElementsByTagName("input")[0]
-                .click();
-        },
-        input_change(e) {
-            console.log(e);
-            var that = this;
-            var file = e.target.files[0];
-            var size=file.size/1024;
-            if(size>1024){
-                this.option.size=size/1024
-            }else{
-                this.option.size=1
-            }
-            var reader = new FileReader();
-            reader.readAsDataURL(file); // 读出 base64
-            reader.onloadend = function() {
-                that.Cropper_show = true;
-                that.option.img = reader.result;
-                // console.log(reader.result)
-            };
-        },
-        //获取身份信息
-        idcard(type) {
+  methods: {
+    ...mapMutations({
+      更新店铺key: "申请开店/更新店铺key"
+    }),
+    //协议
+    change_radio_2() {
+      this.xieyi = !this.xieyi;
+    },
+    //选择以实名的省份证
+    select_shengfen() {
+      this.更新店铺key(["sex", this.findByUserid.sex]);
+      this.更新店铺key(["nation", this.findByUserid.nation]);
+      this.更新店铺key(["birthday", this.findByUserid.birthday]);
+      this.更新店铺key(["iaiAddress", this.findByUserid.iaiAddress]);
+      this.更新店铺key(["idNumber", this.findByUserid.idNumber]);
+      this.更新店铺key(["issueArea", this.findByUserid.issueArea]);
+      this.更新店铺key(["frontImg", this.findByUserid.frontImg]);
+      this.更新店铺key(["reverseImg", this.findByUserid.reverseImg]);
+      this.更新店铺key(["validity", this.findByUserid.validity]);
+      this.更新店铺key(["iaiName", this.findByUserid.name]);
+      history.back();
+    },
+    //左转
+    rotateLeft() {
+      this.$refs.cropper.rotateLeft();
+    },
+    //右转
+    rotateRight() {
+      this.$refs.cropper.rotateRight();
+    },
+    //确认裁剪
+    confirm() {
+      this.Cropper_show = false;
+      this.$refs.cropper.getCropData(data => {
+        if (this.Positive) {
+          this.zhengmian_img = data;
+        } else {
+          this.fanmian_img = data;
+        }
+        this.idcard(this.Positive);
+      });
+    },
+    //关闭裁剪弹出框
+    close_1() {
+      this.Cropper_show = false;
+    },
+    //实时预览函数
+    realTime(data) {
+      this.previews = data;
+    },
+    //获取百度 token
+    get_token() {
+      this.add_loading = true;
+      this.$axios({
+        method: "get",
+        url: "/api-u/baidu/identify"
+      })
+        .then(x => {
+          console.log(x);
+          this.access_token = x.data;
+          this.add_loading = false;
+        })
+        .catch(err => {
+          console.log(err);
+          this.add_loading = false;
+        });
+    },
+    //点击正面
+    zhengmian(x) {
+      this.Positive = x;
+      document
+        .getElementById("zhengmianInput")
+        .getElementsByTagName("input")[0]
+        .click();
+    },
+    input_change(e) {
+      console.log(e);
+      var that = this;
+      var file = e.target.files[0];
+      var size = file.size / 1024;
+      if (size > 1024) {
+        this.option.size = size / 1024;
+      } else {
+        this.option.size = 1;
+      }
+      var reader = new FileReader();
+      reader.readAsDataURL(file); // 读出 base64
+      reader.onloadend = function() {
+        that.Cropper_show = true;
+        that.option.img = reader.result;
+        // console.log(reader.result)
+      };
+    },
+    //获取身份信息
+    idcard(type) {
+      if (type) {
+        this.zhengmian_loading = true;
+      } else {
+        this.fanmian_loading = true;
+      }
+      var obj = {
+        id_card_side: this.Positive ? "front" : "back",
+        image: this.Positive
+          ? this.zhengmian_img.substring(this.zhengmian_img.indexOf("4") + 2)
+          : this.fanmian_img.substring(this.fanmian_img.indexOf("4") + 2),
+        detect_direction: true
+      };
+      this.$axios({
+        method: "post",
+        url:
+          "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=" +
+          this.access_token,
+        data: this.$qs.stringify(obj)
+      })
+        .then(x => {
+          console.log(x);
+          if (x.data.image_status == "normal") {
+            var words_result = x.data.words_result;
             if (type) {
-                this.zhengmian_loading = true;
+              //表示正面的
+              this.zhengmian_ok = true;
+              this.zhengmian_loading = false;
+              this.Positive_obj = {
+                address: words_result["住址"].words, //地址
+                idNumber: words_result["公民身份号码"].words, //身份证号码
+                birthday: words_result["出生"].words, //出生
+                name: words_result["姓名"].words, //姓名
+                sex: words_result["性别"].words, //性别
+                nation: words_result["民族"].words //民族
+              };
             } else {
-                this.fanmian_loading = true;
+              this.fanmian_ok = true;
+              this.fanmian_loading = false;
+              this.The_other_side = {
+                Invalid: words_result["失效日期"].words, //失效日期
+                Date_of_issue: words_result["签发日期"].words, //签发日期
+                issueArea: words_result["签发机关"].words //签发机关
+              };
             }
-            var obj = {
-                id_card_side: this.Positive ? "front" : "back",
-                image: this.Positive ? this.zhengmian_img.substring( this.zhengmian_img.indexOf("4") + 2 ) : this.fanmian_img.substring( this.fanmian_img.indexOf("4") + 2),
-                detect_direction: true
-            };
-            this.$axios({
-                method: "post",
-                url: "https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=" + this.access_token,
-                data: this.$qs.stringify(obj)
-            })
-                .then(x => {
-                    console.log(x);
-                    if (x.data.image_status == "normal") {
-                        var words_result = x.data.words_result;
-                        if (type) {
-                            //表示正面的
-                            this.zhengmian_ok = true;
-                            this.zhengmian_loading = false;
-                            this.Positive_obj = {
-                                address: words_result["住址"].words, //地址
-                                idNumber: words_result["公民身份号码"].words, //身份证号码
-                                birthday: words_result["出生"].words, //出生
-                                name: words_result["姓名"].words, //姓名
-                                sex: words_result["性别"].words, //性别
-                                nation: words_result["民族"].words //民族
-                            };
-                        } else {
-                            this.fanmian_ok = true;
-                            this.fanmian_loading = false;
-                            this.The_other_side = {
-                                Invalid: words_result["失效日期"].words, //失效日期
-                                Date_of_issue: words_result["签发日期"].words, //签发日期
-                                issueArea: words_result["签发机关"].words //签发机关
-                            };
-                        }
-                    } else {
-                        if (type) {
-                            this.zhengmian_loading = false;
-                        } else {
-                            this.fanmian_loading = false;
-                        }
-                        mui.toast(this.image_status[x.data.image_status], {
-                            duration: 2000,
-                            type: "div"
-                        });
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-        },
-        // 开始提交
-        add() {
-            this.更新店铺key(['iaiName','']);
-            var this_1 = this;
-            if (!this.zhengmian_ok || !this.fanmian_ok) {
-                mui.toast("请先上传完整的证件照。", { duration: 2000, type: "div" });
-                return;
-            }else if(!this.xieyi){
-                mui.toast("请同意实名认证协议。", { duration: 2000, type: "div" });
-                return
+          } else {
+            if (type) {
+              this.zhengmian_loading = false;
+            } else {
+              this.fanmian_loading = false;
             }
-            // this.add_loading = true;
+            mui.toast(this.image_status[x.data.image_status], {
+              duration: 2000,
+              type: "div"
+            });
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    // 开始提交
+    add() {
+      this.更新店铺key(["iaiName", ""]);
+      var this_1 = this;
+      if (!this.zhengmian_ok || !this.fanmian_ok) {
+        mui.toast("请先上传完整的证件照。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.xieyi) {
+        mui.toast("请同意实名认证协议。", { duration: 2000, type: "div" });
+        return;
+      }
+      // this.add_loading = true;
 
-            this.更新店铺key(['sex',this.Positive_obj.sex=="男" ? 0 : 1]);
-            this.更新店铺key(['nation',this.Positive_obj.nation]);
-            this.更新店铺key(['birthday',this.Positive_obj.birthday]);
-            this.更新店铺key(['iaiAddress',this.Positive_obj.address]);
-            this.更新店铺key(['idNumber',this.Positive_obj.idNumber]);
-            this.更新店铺key(['issueArea',this.The_other_side.issueArea]);
-            this.更新店铺key(['frontImg',this.zhengmian_img]);
-            this.更新店铺key(['reverseImg',this.fanmian_img]);
-            this.更新店铺key(['validity',this.The_other_side.Invalid]);
-            this.更新店铺key(['iaiName',this.Positive_obj.name]);
+      this.更新店铺key(["sex", this.Positive_obj.sex == "男" ? 0 : 1]);
+      this.更新店铺key(["nation", this.Positive_obj.nation]);
+      this.更新店铺key(["birthday", this.Positive_obj.birthday]);
+      this.更新店铺key(["iaiAddress", this.Positive_obj.address]);
+      this.更新店铺key(["idNumber", this.Positive_obj.idNumber]);
+      this.更新店铺key(["issueArea", this.The_other_side.issueArea]);
+      this.更新店铺key(["frontImg", this.zhengmian_img]);
+      this.更新店铺key(["reverseImg", this.fanmian_img]);
+      this.更新店铺key(["validity", this.The_other_side.Invalid]);
+      this.更新店铺key(["iaiName", this.Positive_obj.name]);
 
-            history.back();
-        },
-    },
-    beforeCreate: function() {
-        // console.group('------beforeCreate创建前状态------');
-    },
-    created: function() {
-        // console.group('------created创建完毕状态------');
-    },
-    beforeMount: function() {
-        // console.group('------beforeMount挂载前状态------');
-    },
-    mounted: function() {
-        try {
-            this.userinfo = JSON.parse(localStorage.userInfo);
-        } catch (error) {
-        }
-        
-        //获取用户实名信息
-        // this.findByUserid();
-        this.$store.commit('setfindByUserid');
-        //获取百度  token
-        this.get_token();
-        console.log(this.userinfo);
-        // console.group('------mounted 挂载结束状态------');
-    },
-    beforeUpdate: function() {
-        // console.group('beforeUpdate 更新前状态===============》');
-    },
-    updated: function() {
-        // console.group('updated 更新完成状态===============》');
-    },
-    beforeDestroy: function() {
-        // console.group('beforeDestroy 销毁前状态===============》');
-    },
-    destroyed: function() {
-        // console.group('destroyed 销毁完成状态===============》');
-    },
-    watch: {}
+      history.back();
+    }
+  },
+  beforeCreate: function() {
+    // console.group('------beforeCreate创建前状态------');
+  },
+  created: function() {
+    // console.group('------created创建完毕状态------');
+  },
+  beforeMount: function() {
+    // console.group('------beforeMount挂载前状态------');
+  },
+  mounted: function() {
+    try {
+      this.userinfo = JSON.parse(localStorage.userInfo);
+    } catch (error) {}
+
+    //获取用户实名信息
+    // this.findByUserid();
+    this.$store.commit("setfindByUserid");
+    //获取百度  token
+    this.get_token();
+    console.log(this.userinfo);
+    // console.group('------mounted 挂载结束状态------');
+  },
+  beforeUpdate: function() {
+    // console.group('beforeUpdate 更新前状态===============》');
+  },
+  updated: function() {
+    // console.group('updated 更新完成状态===============》');
+  },
+  beforeDestroy: function() {
+    // console.group('beforeDestroy 销毁前状态===============》');
+  },
+  destroyed: function() {
+    // console.group('destroyed 销毁完成状态===============》');
+  },
+  watch: {}
 };
 </script>
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
-#LegalPersonCertification .box_5{
-    display: flex;
-    padding: 10px 10px;
-    align-items: center;
-    color: rgba(80, 80, 80, 1);
-	font-size: 14px;
-    .radio_1{
-        margin: 0px 5px 0px 0px;
-    }
-    .xieyi{
-        color: #2a82e4;
-    }
+#LegalPersonCertification .box_5 {
+  display: flex;
+  padding: 10px 10px;
+  align-items: center;
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  .radio_1 {
+    margin: 0px 5px 0px 0px;
+  }
+  .xieyi {
+    color: #2a82e4;
+  }
 }
-#LegalPersonCertification .box_3{
-    color: #505050;
-    font-size:0.14rem;
-    .item{
-        display: flex;
-        align-items: center;
-        .radio_1{
-            margin: 0px 10px 0px 0px;
-        }
+#LegalPersonCertification .box_3 {
+  color: #505050;
+  font-size: 0.14rem;
+  .item {
+    display: flex;
+    align-items: center;
+    .radio_1 {
+      margin: 0px 10px 0px 0px;
     }
-    span{
-        color: #2a82e4;
-    }
-} 
+  }
+  span {
+    color: #2a82e4;
+  }
+}
 #LegalPersonCertification #zhengmianInput {
-    display: none;
+  display: none;
 }
 #LegalPersonCertification {
+  height: 100%;
+  .mui-content {
     height: 100%;
-    .mui-content {
-        height: 100%;
-        background:#ffffff;
-    }
+    background: #ffffff;
+  }
 }
 #LegalPersonCertification .mui-bar {
-    background: $header_background;
-    a {
-        color: #ffffff;
-    }
+  background: $header_background;
+  a {
+    color: #ffffff;
+  }
 }
 #LegalPersonCertification .mui-title {
-    color: #ffffff;
+  color: #ffffff;
 }
 #LegalPersonCertification .swiper-pagination-bullet-active {
-    background: $header_background;
+  background: $header_background;
 }
 
-#LegalPersonCertification .box_4{
-    font-size: 0.12rem;
-    text-align: center;
-    padding: 10px 0px 0px;
-    color: red;
+#LegalPersonCertification .box_4 {
+  font-size: 0.12rem;
+  text-align: center;
+  padding: 10px 0px 0px;
+  color: red;
 }
 #LegalPersonCertification .box_1 {
-    padding: 1px 10px;
-    li {
-        display: flex;
-        height: 2.1rem;
-        border-radius: 10px;
-        background: #e0e0e0;
-        font-size: 14px;
-        justify-content: space-between;
-        align-items: center;
-        margin: 0.2rem 0px 0px 0px;
-        color: #797979;
-        position: relative;
+  padding: 1px 10px;
+  li {
+    display: flex;
+    height: 2.1rem;
+    border-radius: 10px;
+    background: #e0e0e0;
+    font-size: 14px;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.2rem 0px 0px 0px;
+    color: #797979;
+    position: relative;
+  }
+  .zhengmian {
+    // padding: 0px 0.15rem 0px 0.25rem;
+    span {
+      margin: 0px 0px 0px 0.25rem;
     }
-    .zhengmian {
-        // padding: 0px 0.15rem 0px 0.25rem;
-        span {
-            margin: 0px 0px 0px 0.25rem;
-        }
-        > div:nth-child(2) {
-            margin: 0px 0.15rem 0px 0px;
-            img {
-                width: 1.25rem;
-            }
-        }
-        > img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+    > div:nth-child(2) {
+      margin: 0px 0.15rem 0px 0px;
+      img {
+        width: 1.25rem;
+      }
     }
-    .beimian {
-        // padding: 0px 0.3rem 0px 0.2rem;
-        span {
-            margin: 0px 0.3rem 0px 0px;
-        }
-        > div:nth-child(1) {
-            height: 100%;
-            padding: 0.25rem 0px 0px 0.2rem;
-            img {
-                width: 0.63rem;
-            }
-        }
-        > img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+    > img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
+  }
+  .beimian {
+    // padding: 0px 0.3rem 0px 0.2rem;
+    span {
+      margin: 0px 0.3rem 0px 0px;
+    }
+    > div:nth-child(1) {
+      height: 100%;
+      padding: 0.25rem 0px 0px 0.2rem;
+      img {
+        width: 0.63rem;
+      }
+    }
+    > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
 }
 
 @keyframes rotate {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 #LegalPersonCertification .loading {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    padding: 0px;
-    background: rgba(0, 0, 0, 0.2);
-    margin: 0px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    color: #ffffff;
-    > div {
-        // transform: rotate(90deg);
-        animation: rotate 3s linear infinite;
-    }
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  padding: 0px;
+  background: rgba(0, 0, 0, 0.2);
+  margin: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  color: #ffffff;
+  > div {
+    // transform: rotate(90deg);
+    animation: rotate 3s linear infinite;
+  }
 }
 #LegalPersonCertification .loading_1 {
-    position: fixed;
+  position: fixed;
 }
 
 #LegalPersonCertification .box_2 {
-    padding: 10px;
-    li {
-        display: flex;
-        align-items: center;
-        margin: 0px 0px 0.1rem 0px;
-        font-size: 0.14rem;
-        color: #484848;
-        > div:nth-child(1) {
-            width: 0.75rem;
-            flex-shrink: 0;
-        }
-        > div:nth-child(2) {
-            flex-grow: 1;
-            background: #ffffff;
-            padding: 5px;
-            min-height: 0.3rem;
-        }
+  padding: 10px;
+  li {
+    display: flex;
+    align-items: center;
+    margin: 0px 0px 0.1rem 0px;
+    font-size: 0.14rem;
+    color: #484848;
+    > div:nth-child(1) {
+      width: 0.75rem;
+      flex-shrink: 0;
     }
+    > div:nth-child(2) {
+      flex-grow: 1;
+      background: #ffffff;
+      padding: 5px;
+      min-height: 0.3rem;
+    }
+  }
 }
 #LegalPersonCertification .btn_1 {
-    width: 1.8rem;
-    height: 0.35rem;
-    display: block;
-    border-radius: 0.35rem;
-    background: $header_background;
-    margin: 0.2rem auto 0.2rem;
-    color: #ffffff;
-    border: none;
+  width: 1.8rem;
+  height: 0.35rem;
+  display: block;
+  border-radius: 0.35rem;
+  background: $header_background;
+  margin: 0.2rem auto 0.2rem;
+  color: #ffffff;
+  border: none;
 }
 #LegalPersonCertification .Cropper_box {
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100%;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: #e5e5e5;
+  z-index: 10;
+  .cont_1 {
     height: 100%;
-    background: #e5e5e5;
-    z-index: 10;
-    .cont_1 {
-        height: 100%;
-    }
-    .footer_1 {
-        position: absolute;
-        width: 100%;
-        left: 0px;
-        bottom: 0px;
-        display: flex;
-        font-size: 20px;
-        color: #ffffff;
-        padding: 25px 0px;
-        justify-content: space-around;
-    }
+  }
+  .footer_1 {
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    bottom: 0px;
+    display: flex;
+    font-size: 20px;
+    color: #ffffff;
+    padding: 25px 0px;
+    justify-content: space-around;
+  }
 
-    .vue-cropper {
-        background: #e5e5e5;
-    }
-    .cropper-modal {
-        background: rgba(181, 181, 181, 0.5);
-    }
-    .cropper-face {
-        background-size: cover;
-        background-color: rgba(0, 0, 0, 0);
-        opacity: 1;
-    }
-    .cropper-view-box {
-        outline: none;
-    }
+  .vue-cropper {
+    background: #e5e5e5;
+  }
+  .cropper-modal {
+    background: rgba(181, 181, 181, 0.5);
+  }
+  .cropper-face {
+    background-size: cover;
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 1;
+  }
+  .cropper-view-box {
+    outline: none;
+  }
 }
 
 #LegalPersonCertification .Cropper_box.zhengmian .cropper-face {
-    background-image: url(../../assets/image/zhengmian.png);
+  background-image: url(../../assets/image/zhengmian.png);
 }
 #LegalPersonCertification .Cropper_box.fanmian .cropper-face {
-    background-image: url(../../assets/image/fanmian.png);
+  background-image: url(../../assets/image/fanmian.png);
 }
 </style>

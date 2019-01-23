@@ -12,24 +12,16 @@
 //         return Promise.reject(error.response); // 返回接口返回的错误信息
 //     }
 // );
-import order from '@/vuex/orders/order.js';     //支付订单界面用
-import orderList from '@/vuex/orders/orderList.js';     //我的订单 列表
+import order from "@/vuex/orders/order.js"; //支付订单界面用
+import orderList from "@/vuex/orders/orderList.js"; //我的订单 列表
 export default {
-    namespaced:true,
-    state:{
-        
-    },
-    getters:{
-
-    },
-    mutations:{
-        
-    },
-    actions: {
-
-    },
-    modules: {
-        order:order,
-        orderList:orderList
-    }
-}
+  namespaced: true,
+  state: {},
+  getters: {},
+  mutations: {},
+  actions: {},
+  modules: {
+    order: order,
+    orderList: orderList
+  }
+};

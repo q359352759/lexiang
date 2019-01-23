@@ -18,47 +18,46 @@
 <script>
 import GeneralTime from "@/components/time/GeneralTime.vue";
 export default {
-    name:'',
-    components: {
-        GeneralTime
+  name: "",
+  components: {
+    GeneralTime
+  },
+  data() {
+    return {
+      time: "",
+      GeneralTime_show: false
+    };
+  },
+  methods: {
+    get_time(x) {
+      this.GeneralTime_show = false;
+      if (x) {
+        this.time = x;
+        this.$emit("setTime", x);
+      }
     },
-    data () {
-        return {
-            time:'',
-            GeneralTime_show:false,
-        }
-    },
-    methods: {
-        get_time(x){
-            this.GeneralTime_show=false;
-            if(x){
-                this.time=x;
-                this.$emit('setTime',x);
-            }
-        },
-        xuanzheshijian(){
-            this.GeneralTime_show=true;
-        }
+    xuanzheshijian() {
+      this.GeneralTime_show = true;
     }
-}
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.Time{
-    border:1px solid #f6f6f6;
-    min-width: 120px;
-	height: 26px;
-    padding: 0px 5px;
-    .time{
-        color: rgba(80, 80, 80, 1);
-        font-size: 12px;
-        flex-grow: 1;
-    }
-    .icon_box{
-        height: 17px;
-    }
-    display: flex;
-    align-items: center;
+.Time {
+  border: 1px solid #f6f6f6;
+  min-width: 120px;
+  height: 26px;
+  padding: 0px 5px;
+  .time {
+    color: rgba(80, 80, 80, 1);
+    font-size: 12px;
+    flex-grow: 1;
+  }
+  .icon_box {
+    height: 17px;
+  }
+  display: flex;
+  align-items: center;
 }
 </style>
-

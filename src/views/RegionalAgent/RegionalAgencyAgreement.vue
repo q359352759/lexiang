@@ -102,67 +102,65 @@
 </template>
 
 <script>
-import {openloading,convert} from "@/assets/js/currency";
+import { openloading, convert } from "@/assets/js/currency";
 
 export default {
-    name:'',
-    data(){
-        return{}
-    },
-    methods:{
-        ApplicationRegionalAgents(){
-            this.$router.push('/ApplicationRegionalAgents')
-        }
-    },
-    mounted: function() {
-        var area=[];
-        try {
-            area=JSON.parse(localStorage.area)
-        } catch (error) {}
-        
-        var cityData3 = convert(area, null);
-        localStorage.cityData3=JSON.stringify(cityData3)
-        
-        // console.group('------mounted 挂载结束状态------');
-    },
-    
-}
+  name: "",
+  data() {
+    return {};
+  },
+  methods: {
+    ApplicationRegionalAgents() {
+      this.$router.push("/ApplicationRegionalAgents");
+    }
+  },
+  mounted: function() {
+    var area = [];
+    try {
+      area = JSON.parse(localStorage.area);
+    } catch (error) {}
+
+    var cityData3 = convert(area, null);
+    localStorage.cityData3 = JSON.stringify(cityData3);
+
+    // console.group('------mounted 挂载结束状态------');
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 
-.mui-content{
-    background: #ffffff;
+.mui-content {
+  background: #ffffff;
 }
-.box_1{
-    color: rgba(80, 80, 80, 1);
-	font-size: 14px;
-    text-align: center;
-    margin: 13px 0px 0px;
+.box_1 {
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  text-align: center;
+  margin: 13px 0px 0px;
 }
-.box_2{
-    color: rgba(80, 80, 80, 1);
-	font-size: 14px;
-    padding: 10px;
-    .text_indent_1{
-        text-indent: 20px;
-    }
-    .kong{
-        height: 20px;
-    }
+.box_2 {
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  padding: 10px;
+  .text_indent_1 {
+    text-indent: 20px;
+  }
+  .kong {
+    height: 20px;
+  }
 }
-.btn_1{
-    display: block;
-    width: 1.75rem;
-	height: 34px;
-    padding: 0px;
-    margin: 0.4rem auto 0.6rem;
-    border-radius: 34px;
-    background: $header_background;
-    color: #ffffff;
-    font-size: 14px;
-    border: none;
+.btn_1 {
+  display: block;
+  width: 1.75rem;
+  height: 34px;
+  padding: 0px;
+  margin: 0.4rem auto 0.6rem;
+  border-radius: 34px;
+  background: $header_background;
+  color: #ffffff;
+  font-size: 14px;
+  border: none;
 }
 </style>
-

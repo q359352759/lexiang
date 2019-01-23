@@ -53,211 +53,221 @@
     </div>
 </template>
 <script>
-import { getCurrentMonthFirst ,getCurrentMonthLast , getDaysByDateString} from "@/assets/js/time.js";
+import {
+  getCurrentMonthFirst,
+  getCurrentMonthLast,
+  getDaysByDateString
+} from "@/assets/js/time.js";
 import { 当前时间格式化 } from "@/assets/js/currency.js";
-import { mapGetters , mapActions } from "vuex";
-import loading from '@/components/loading.vue';
+import { mapGetters, mapActions } from "vuex";
+import loading from "@/components/loading.vue";
 export default {
-    name:'',
-    data () {
-        return {
-            店员信息:{},
-            id:'',
-            时间:当前时间格式化('yyyy年MM月'),
-        }
+  name: "",
+  data() {
+    return {
+      店员信息: {},
+      id: "",
+      时间: 当前时间格式化("yyyy年MM月")
+    };
+  },
+  components: {
+    loading
+  },
+  filters: {
+    filter_time(time, type) {
+      try {
+        return 当前时间格式化(type, time);
+      } catch (error) {
+        return time;
+      }
     },
-    components: {
-        loading  
-    },
-    filters: {
-        filter_time(time,type){
-            try {
-                return 当前时间格式化(type,time)
-            } catch (error) {
-                return time;
-            }
-        },
-        filter_班次(id,list1,list2,list3){
-            var 固定班次_index=list1.findIndex(x=>x.id==id);
-            if(固定班次_index!=-1){
-                return '固定班次';
-            }
-            var 两班_index=list2.findIndex(x=>x.id==id)
-            if(两班_index!=-1){
-                var type=['早班','晚班'];
-                return type[两班_index]
-            }
-            var 三班_index=list3.findIndex(x=>x.id==id);
-            if(三班_index!=-1){
-                 var type=['早班','中班','晚班'];
-                return type[三班_index]
-            }
-            return '未知班次'
-        }
-    },
-    computed: {
-        ...mapGetters({
-            店铺:'get_myshop',
-            店员打卡记录:'myshops/打卡/店员打卡记录',
-            固定班次:'myshops/班次/固定班次',
-            两班:'myshops/班次/两班',
-            三班:'myshops/班次/三班'
-        }),
-    },
-    methods: {
-        ...mapActions({
-            查询店铺:'setMyshop',
-            根据Id查询店员:'myshops/店员/根据Id查询店员',
-            店员打卡记录初始化:'myshops/打卡/店员打卡记录初始化',
-            查询打卡记录:'myshops/打卡/查询打卡记录',
-            查询记录下一页:'myshops/打卡/查询记录下一页',
-            查询考勤时间:'myshops/班次/查询考勤时间',
-        }),
-        scroll(e){
-            var h = e.target.offsetHeight; //容器高度
-            var sh = e.target.scrollHeight; //滚动条总高
-            var t = e.target.scrollTop; //滚动条到顶部距离
-            if (h + t >= sh - 10 && !this.店员打卡记录.loading && this.店员打卡记录.list.length<this.店员打卡记录.total){
-                this.查询记录下一页()
-            }
-        },
-        //设置zoom 设置字体大小
-        set_zoom(){
-            var div=this.$refs.fontSzie;
-            div.style.zoom=div.clientWidth>div.parentElement.clientWidth ? div.parentElement.clientWidth/div.clientWidth : 1
-        },
-        //选择时间
-        select_time(){
-            
-            var picker = new mui.DtPicker({
-                    "type":"month",
-                    CustomFormat:'yyyy/MM/dd HH:mm:ss'
-                });
-                picker.show(rs=>{
-                    console.log(rs);
-                    this.时间=当前时间格式化('yyyy年MM月',rs.value)
-                    this.店员打卡记录初始化([this.店员信息.clerksid,rs.value+'-01',rs.value+'-31']);
-                    this.查询打卡记录();
-                    picker.dispose();
-                    picker = null;
-                });
-        },
-        //回复详情
-        huifuxiangqing(){
-            
-        },
-        店员收银(){
-            console.log('123');
-            this.$router.push('/myshop/dianyuan/dianYuanShouYing')
-        },
-        async 初始化(){
-            await this.根据Id查询店员(this.id).then(x=>{
-                if(x.data.code==200){
-                    console.log('店员详情',x);
-                    this.店员信息=x.data.data
-                }
-            })
-            if(!this.店铺 && !this.店铺.shopid){
-                await this.查询店铺()
-            }
-            // this.店员打卡记录初始化([this.店员信息.clerksid,getCurrentMonthFirst() /*当月第一天*/,getCurrentMonthLast()/*当月最后一天*/]);
-            this.店员打卡记录初始化([this.店员信息.clerksid]);
-            this.查询打卡记录();
-            this.查询考勤时间()
-        }
-    },
-    mounted () {
-        this.set_zoom();
-        this.id=this.$route.query.id
-        this.初始化();
+    filter_班次(id, list1, list2, list3) {
+      var 固定班次_index = list1.findIndex(x => x.id == id);
+      if (固定班次_index != -1) {
+        return "固定班次";
+      }
+      var 两班_index = list2.findIndex(x => x.id == id);
+      if (两班_index != -1) {
+        var type = ["早班", "晚班"];
+        return type[两班_index];
+      }
+      var 三班_index = list3.findIndex(x => x.id == id);
+      if (三班_index != -1) {
+        var type = ["早班", "中班", "晚班"];
+        return type[三班_index];
+      }
+      return "未知班次";
     }
-}
+  },
+  computed: {
+    ...mapGetters({
+      店铺: "get_myshop",
+      店员打卡记录: "myshops/打卡/店员打卡记录",
+      固定班次: "myshops/班次/固定班次",
+      两班: "myshops/班次/两班",
+      三班: "myshops/班次/三班"
+    })
+  },
+  methods: {
+    ...mapActions({
+      查询店铺: "setMyshop",
+      根据Id查询店员: "myshops/店员/根据Id查询店员",
+      店员打卡记录初始化: "myshops/打卡/店员打卡记录初始化",
+      查询打卡记录: "myshops/打卡/查询打卡记录",
+      查询记录下一页: "myshops/打卡/查询记录下一页",
+      查询考勤时间: "myshops/班次/查询考勤时间"
+    }),
+    scroll(e) {
+      var h = e.target.offsetHeight; //容器高度
+      var sh = e.target.scrollHeight; //滚动条总高
+      var t = e.target.scrollTop; //滚动条到顶部距离
+      if (
+        h + t >= sh - 10 &&
+        !this.店员打卡记录.loading &&
+        this.店员打卡记录.list.length < this.店员打卡记录.total
+      ) {
+        this.查询记录下一页();
+      }
+    },
+    //设置zoom 设置字体大小
+    set_zoom() {
+      var div = this.$refs.fontSzie;
+      div.style.zoom =
+        div.clientWidth > div.parentElement.clientWidth
+          ? div.parentElement.clientWidth / div.clientWidth
+          : 1;
+    },
+    //选择时间
+    select_time() {
+      var picker = new mui.DtPicker({
+        type: "month",
+        CustomFormat: "yyyy/MM/dd HH:mm:ss"
+      });
+      picker.show(rs => {
+        console.log(rs);
+        this.时间 = 当前时间格式化("yyyy年MM月", rs.value);
+        this.店员打卡记录初始化([
+          this.店员信息.clerksid,
+          rs.value + "-01",
+          rs.value + "-31"
+        ]);
+        this.查询打卡记录();
+        picker.dispose();
+        picker = null;
+      });
+    },
+    //回复详情
+    huifuxiangqing() {},
+    店员收银() {
+      console.log("123");
+      this.$router.push("/myshop/dianyuan/dianYuanShouYing");
+    },
+    async 初始化() {
+      await this.根据Id查询店员(this.id).then(x => {
+        if (x.data.code == 200) {
+          console.log("店员详情", x);
+          this.店员信息 = x.data.data;
+        }
+      });
+      if (!this.店铺 && !this.店铺.shopid) {
+        await this.查询店铺();
+      }
+      // this.店员打卡记录初始化([this.店员信息.clerksid,getCurrentMonthFirst() /*当月第一天*/,getCurrentMonthLast()/*当月最后一天*/]);
+      this.店员打卡记录初始化([this.店员信息.clerksid]);
+      this.查询打卡记录();
+      this.查询考勤时间();
+    }
+  },
+  mounted() {
+    this.set_zoom();
+    this.id = this.$route.query.id;
+    this.初始化();
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-
-.mui-content{
-    display: flex;
-    flex-direction: column;
-    .box_1{
-        flex-shrink: 0;
-    }
-    .内容区{
-        overflow: auto;
-        padding: 0px 0px 40px;
-    }
+.mui-content {
+  display: flex;
+  flex-direction: column;
+  .box_1 {
+    flex-shrink: 0;
+  }
+  .内容区 {
+    overflow: auto;
+    padding: 0px 0px 40px;
+  }
 }
-.box_1{
-    height: 32px;
-    line-height: 32px;
-    padding: 0px 20px;
+.box_1 {
+  height: 32px;
+  line-height: 32px;
+  padding: 0px 20px;
+  color: rgba(166, 166, 166, 1);
+  i {
+    height: 17px;
+    margin: 0px 3px 0px 0px;
+  }
+  span {
+    font-size: 14px;
+  }
+}
+
+.box_2 {
+  margin: 0px 0px 3px 0px;
+  background: #ffffff;
+  align-items: flex-end;
+  display: flex;
+  padding: 8px 10px 8px 0px;
+  > li:nth-child(1) {
+    width: 80px;
+    flex-shrink: 0;
     color: rgba(166, 166, 166, 1);
-    i{
-        height: 17px;
-        margin: 0px 3px 0px 0px;
+    font-size: 10px;
+    text-align: center;
+    b {
+      color: rgba(80, 80, 80, 1);
+      font-size: 28px;
     }
-    span{
-    	font-size: 14px;
+  }
+  > li:nth-child(2) {
+    flex-grow: 1;
+    color: rgba(80, 80, 80, 1);
+    font-size: 12px;
+    .huifu {
+      color: #007aff;
     }
+  }
+  > li:nth-child(3) {
+    color: rgba(80, 80, 80, 1);
+    font-size: 12px;
+    .zhengchang {
+      color: #00baad;
+    }
+    .tiban {
+      color: #ff8d1a;
+    }
+    .xiangqing {
+      color: #007aff;
+    }
+    .queban {
+      color: #d43030;
+    }
+  }
 }
 
-.box_2{
-    margin: 0px 0px 3px 0px;
-    background: #ffffff;
-    align-items: flex-end;
-    display: flex;
-    padding: 8px 10px 8px 0px;
-    >li:nth-child(1){
-        width: 80px;
-        flex-shrink: 0;
-        color: rgba(166, 166, 166, 1);
-    	font-size: 10px;
-        text-align: center;
-        b{
-            color: rgba(80, 80, 80, 1);
-        	font-size: 28px; 
-        }
-    }
-    >li:nth-child(2){
-        flex-grow: 1;
-        color: rgba(80, 80, 80, 1);
-    	font-size: 12px;
-        .huifu{
-            color: #007aff;
-        }
-    }
-    >li:nth-child(3){
-        color: rgba(80, 80, 80, 1);
-    	font-size: 12px;
-        .zhengchang{
-            color: #00baad;
-        }
-        .tiban{
-            color: #ff8d1a;
-        }
-        .xiangqing{
-            color: #007aff;
-        }
-        .queban{
-            color: #d43030;
-        }
-    }
-}
-
-.box_3{
-    position: fixed;
-    width: 100%;
-    left: 0px;
-    bottom: 0px;
-    z-index: 1;
-    background: #ffffff;
-	color: rgba(80, 80, 80, 1);
-	font-size: 12px;
-    white-space: nowrap;
-    >div{
-        padding: 10px 14px;
-        width: fit-content;
-    }
+.box_3 {
+  position: fixed;
+  width: 100%;
+  left: 0px;
+  bottom: 0px;
+  z-index: 1;
+  background: #ffffff;
+  color: rgba(80, 80, 80, 1);
+  font-size: 12px;
+  white-space: nowrap;
+  > div {
+    padding: 10px 14px;
+    width: fit-content;
+  }
 }
 </style>
-

@@ -72,11 +72,11 @@
 </template>
 
 <script>
-import loading from '@/components/loading.vue';
+import loading from "@/components/loading.vue";
 export default {
   name: "",
-  components:{
-      loading
+  components: {
+    loading
   },
   data() {
     return {};

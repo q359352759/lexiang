@@ -11,18 +11,17 @@
 
 <script>
 export default {
-    name:'',
-    data(){
-        return{}
-    }
-}
+  name: "",
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.mui-content{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.mui-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
-

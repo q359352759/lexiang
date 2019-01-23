@@ -75,85 +75,83 @@
 </template>
 
 <script>
-import btn from '@/components/button.vue';
+import btn from "@/components/button.vue";
 
 export default {
-    name:'',
-    components: {
-        btn  
-    },
-    data(){
-        return{}
-    },
-    methods:{
-        market(){
-            this.$router.push('/market');
-        }
+  name: "",
+  components: {
+    btn
+  },
+  data() {
+    return {};
+  },
+  methods: {
+    market() {
+      this.$router.push("/market");
     }
-}
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/css/config.scss';
+@import "@/assets/css/config.scss";
 
-.mui-bar .yewushichang{
-    line-height: 44px;
-    color: #ffffff;
-    position: absolute;
-    top: 0px;
-    right: 10px;
-    font-size: 14px;
+.mui-bar .yewushichang {
+  line-height: 44px;
+  color: #ffffff;
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  font-size: 14px;
 }
-.mui-content{
-    background: #ffffff;
+.mui-content {
+  background: #ffffff;
 }
-.box_1{
-    color: rgba(80, 80, 80, 1);
-	font-size: 14px;
-    padding: 27px 15px 8px;
-    li:nth-child(2){
-        text-indent: 20px;
-    }
-}
-
-.box_2{
-    padding: 0px 15px;
-    font-size: 12px;
-    text-align: center;
-    table{
-        width: 100%;
-        border-top:  1px solid #D8D8D8;
-        border-right: 1px solid #D8D8D8;
-    }
-    thead{
-        background:$header_background;
-        color: #ffffff;
-    }
-    td{
-        width: 50%;
-        height: 30px;
-        line-height: 30px;
-        border-left: 1px solid #D8D8D8;
-        border-bottom: 1px solid #D8D8D8;
-        span{
-            color: rgba(80, 80, 80, 1);
-        }
-        .text_red{
-            color: #d43030;
-        }
-    }
-}
-
-.box_3{
+.box_1 {
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  padding: 27px 15px 8px;
+  li:nth-child(2) {
     text-indent: 20px;
-    color: rgba(80, 80, 80, 1);
-    font-size: 14px;
-    padding: 18px 11px 0px;
+  }
 }
 
-.btn_1{
-    margin: 17px auto 20px;
+.box_2 {
+  padding: 0px 15px;
+  font-size: 12px;
+  text-align: center;
+  table {
+    width: 100%;
+    border-top: 1px solid #d8d8d8;
+    border-right: 1px solid #d8d8d8;
+  }
+  thead {
+    background: $header_background;
+    color: #ffffff;
+  }
+  td {
+    width: 50%;
+    height: 30px;
+    line-height: 30px;
+    border-left: 1px solid #d8d8d8;
+    border-bottom: 1px solid #d8d8d8;
+    span {
+      color: rgba(80, 80, 80, 1);
+    }
+    .text_red {
+      color: #d43030;
+    }
+  }
 }
 
+.box_3 {
+  text-indent: 20px;
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  padding: 18px 11px 0px;
+}
+
+.btn_1 {
+  margin: 17px auto 20px;
+}
 </style>
-

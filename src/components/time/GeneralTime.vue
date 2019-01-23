@@ -126,45 +126,45 @@ export default {
     },
     //返回
     back() {
-        // history.back();
-        this.$emit('setTime',false);
+      // history.back();
+      this.$emit("setTime", false);
     },
     //获取指定年月天数
-    getDaysInOneMonth(year, month){ 
-        month = parseInt(month, 10); 
-        var d= new Date(year, month, 0); 
-        return d.getDate(); 
+    getDaysInOneMonth(year, month) {
+      month = parseInt(month, 10);
+      var d = new Date(year, month, 0);
+      return d.getDate();
     },
     //确定
     Sure() {
-        var obj = {
-                year: this.year,
-                month: this.month,
-                day: this.day,
-                end_year: this.end_year,
-                end_month: this.end_month,
-                end_day: this.end_day,
-                type: this.type
-            };
-            // this.$store.state.general_time = obj;
-            // history.back();
-            if(obj.type==1 && obj.end_day){
-                var time=obj.year+'-'+obj.month+'-'+obj.day;
-                var time_1=obj.end_year+'-'+obj.end_month+'-'+obj.end_day
-                if(time>time_1){
-                    mui.toast('时间选择有误。', {duration: "long", type: "div" });
-                    return;
-                }
-            }
-            if(obj.type==0){
-                // console.log('获取指定年月天数',this.getDaysInOneMonth(this.year,this.month));
-                obj.day=1;
-                obj.end_year=this.year;
-                obj.end_month=this.month;
-                obj.end_day=this.getDaysInOneMonth(this.year,this.month)
-            }
-            this.$emit('setTime',obj);
+      var obj = {
+        year: this.year,
+        month: this.month,
+        day: this.day,
+        end_year: this.end_year,
+        end_month: this.end_month,
+        end_day: this.end_day,
+        type: this.type
+      };
+      // this.$store.state.general_time = obj;
+      // history.back();
+      if (obj.type == 1 && obj.end_day) {
+        var time = obj.year + "-" + obj.month + "-" + obj.day;
+        var time_1 = obj.end_year + "-" + obj.end_month + "-" + obj.end_day;
+        if (time > time_1) {
+          mui.toast("时间选择有误。", { duration: "long", type: "div" });
+          return;
         }
+      }
+      if (obj.type == 0) {
+        // console.log('获取指定年月天数',this.getDaysInOneMonth(this.year,this.month));
+        obj.day = 1;
+        obj.end_year = this.year;
+        obj.end_month = this.month;
+        obj.end_day = this.getDaysInOneMonth(this.year, this.month);
+      }
+      this.$emit("setTime", obj);
+    }
   },
   beforeCreate: function() {
     // console.group('------beforeCreate创建前状态------');
@@ -329,7 +329,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.mui-bar{
+.mui-bar {
   z-index: 11;
 }
 .mui-content {

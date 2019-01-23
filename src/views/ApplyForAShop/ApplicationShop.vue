@@ -207,1172 +207,1257 @@
 </template>
 
 <script>
-import { openloading, bd_decrypt,get_url } from "@/assets/js/currency";
+import { openloading, bd_decrypt, get_url } from "@/assets/js/currency";
 import { VueCropper } from "vue-cropper";
-import btn from '@/components/button.vue';
+import btn from "@/components/button.vue";
 
 import $ from "jquery";
 export default {
-    name: "",
-    components: {
-        VueCropper,
-        btn
+  name: "",
+  components: {
+    VueCropper,
+    btn
+  },
+  data() {
+    return {
+      画布base64: "",
+      画布img: "",
+      degree: 0, //旋转角度
+      //===========
+      get_myshop: true,
+      //裁剪框配置
+      userInfo: "",
+      Cropper_show: false, //显示裁剪框
+      option: {
+        img: "",
+        outputSize: 1, //outputSize
+        outputType: "png", //png,jpeg,webp
+        canMove: true, //上传图片是否可以移动
+        fixedBox: true, //裁剪框固定大小不动 true 固定
+        canMoveBox: false, //截图框能否拖动
+        autoCrop: true, //是否默认生成截图框
+        fixedNumber: [30, 22], //截图框的宽高比例
+        autoCropWidth: 300,
+        autoCropHeight: 220,
+        fixed: true, //是否开启截图框宽高固定比例 默认true
+        centerBox: true, //截图框是否被限制在图片里面
+        canScale: true, //图片是否允许滚轮缩放
+        mode: "auto 220px" //contain , cover, 100px, 100% auto
+      },
+      // ========================
+      cropper_type: 1, //裁剪类型 1，表示LOGO 2,环境图片
+      img_list: [], //轮播图片
+      swiper: "", //轮播组件
+      left: false, //向左箭头
+      radio_obj: {
+        WIFI: true,
+        parking: false
+      },
+      radio_Agreement: true,
+      type_list: [],
+      shop_type: [], //店铺类型
+      Picker3: "", //3级联动
+
+      picker_time: "",
+      shopname: "",
+
+      cityList: [], //城市列表
+      city: [], //所选择的的城市
+      shop_fenlei: [],
+      serviceType_list: [], //服务列表
+
+      shop_obj: {
+        //添加店铺对象
+        userid: "", //用户Id
+        name: "", //店铺名
+        shopType: "", //店铺类型
+        phone: "", //联系电话
+        areaCode: "", //区域code
+        address: "", //地址
+        x: "", //经度
+        y: "", //纬度
+        businessNature: "", //1个体 2实体
+        businessLicense: "", //营业执照 base64
+        blnumber: "", //营业执照号
+        signboard: "", //商家店招
+        // environmentalImg:[],    //环境图片
+        arrEnvironmentalImg: [], //环境图片
+        // serviceType:[],         //服务种类，环境
+        arrServiceType: [], //服务种类，环境
+        referrerPhone: "", //推荐人（代理人手机号码） 可不传
+        openTime: "", //开门时间
+        closeTime: "", //关门时间
+        //认证信息
+        sex: "", //性别
+        nation: "", //民族
+        birthday: "", //出生日期
+        iaiAddress: "", //住址
+        idNumber: "", //证件号码
+        issueArea: "", //签证机关
+        frontImg: "", //正面
+        reverseImg: "", //背面
+        validity: "", //有效期
+        iaiName: "" //认证名
+      },
+      getType: 0, //0表示什么都没做 1表示点击了重新提交
+      Red_envelopes: "" //红包
+    };
+  },
+  computed: {
+    address() {
+      //开店地址
+      return this.$store.state.geographical_position.address;
     },
-    data() {
-        return {
-            画布base64:'',
-            画布img:'',
-            degree:0,       //旋转角度
-            //===========
-            get_myshop:true,
-            //裁剪框配置
-            userInfo:'',
-            Cropper_show: false, //显示裁剪框
-            option: {
-                img: "",
-                outputSize: 1,                //outputSize
-                outputType: "png",      //png,jpeg,webp
-                canMove: true,          //上传图片是否可以移动
-                fixedBox: true,         //裁剪框固定大小不动 true 固定
-                canMoveBox: false,      //截图框能否拖动
-                autoCrop: true,         //是否默认生成截图框
-                fixedNumber:[30,22],    //截图框的宽高比例
-                autoCropWidth:300,
-                autoCropHeight:220,
-                fixed:true,	            //是否开启截图框宽高固定比例 默认true
-                centerBox:true,         //截图框是否被限制在图片里面
-                canScale:true,          //图片是否允许滚轮缩放
-                mode:'auto 220px',           //contain , cover, 100px, 100% auto
-            },
-            // ========================
-            cropper_type: 1, //裁剪类型 1，表示LOGO 2,环境图片
-            img_list: [], //轮播图片
-            swiper: "", //轮播组件
-            left: false, //向左箭头
-            radio_obj: {
-                WIFI: true,
-                parking: false
-            },
-            radio_Agreement: true,
-            type_list: [],
-            shop_type: [], //店铺类型
-            Picker3: "", //3级联动
-
-            picker_time: "",
-            shopname: "",
-
-            cityList: [], //城市列表
-            city: [], //所选择的的城市
-            shop_fenlei:[],
-            serviceType_list:[],    //服务列表
-
-            shop_obj:{          //添加店铺对象
-                userid:'',      //用户Id
-                name:'',        //店铺名
-                shopType:'',    //店铺类型
-                phone:'',       //联系电话
-                areaCode:'',    //区域code
-                address:'',     //地址
-                x:'',           //经度
-                y:'',           //纬度
-                businessNature:'',  //1个体 2实体 
-                businessLicense:'', //营业执照 base64 
-                blnumber:'',        //营业执照号
-                signboard:'',       //商家店招 
-                // environmentalImg:[],    //环境图片
-                arrEnvironmentalImg:[], //环境图片
-                // serviceType:[],         //服务种类，环境   
-                arrServiceType:[],      //服务种类，环境
-                referrerPhone:'',       //推荐人（代理人手机号码） 可不传
-                openTime:'',            //开门时间
-                closeTime:'',           //关门时间
-                //认证信息
-                sex:'',     //性别
-                nation:'',   //民族
-                birthday:'',    //出生日期
-                iaiAddress:'',  //住址
-                idNumber:'',    //证件号码
-                issueArea:'',      //签证机关
-                frontImg:'',        //正面
-                reverseImg:'',      //背面
-                validity:'',        //有效期
-                iaiName:'',         //认证名
-            },
-            getType:0,      //0表示什么都没做 1表示点击了重新提交
-            Red_envelopes:'',       //红包
-        };
+    longitude() {
+      //经度
+      return this.$store.state.geographical_position.longitude;
     },
-    computed: {
-        address() {       //开店地址
-            return this.$store.state.geographical_position.address;
-        },
-        longitude(){      //经度
-            return this.$store.state.geographical_position.longitude;
-        },
-        latitude(){       //纬度
-            return this.$store.state.geographical_position.latitude
-        },
-        shops_tree_list(){  //店铺类型数组
-            return this.$store.state.shops_tree_list
-        },
-        creationTime(){     //开门时间
-            return this.$store.state.apply_for_a_shop.creationTime;
-        },
-        endTime(){          //关门时间
-           return this.$store.state.apply_for_a_shop.endTime;
-        },
-        shopType(){         //申请店铺类型 个体实体
-            return this.$store.state.apply_for_a_shop.shopType;
-        },
-        businessLicense(){  //营业执照图片
-            return this.$store.state.apply_for_a_shop.businessLicense;
-        },
-        myshop(){
-            return this.$store.state.myshop
-        }
+    latitude() {
+      //纬度
+      return this.$store.state.geographical_position.latitude;
     },
-    methods: {
-        //跳转发布界面新人红包
-        ShopRedEnvelopes(){
-            this.$router.push('/ShopRedEnvelopes')
-        },
-        //点击重新提交
-        chongxingtijiao(){
-            var this_1=this;
-            var myshop=this.myshop;
-            var shop_obj={};
-                for(var key in myshop){
-                    shop_obj[key]=myshop[key]
-                }
-            this.shop_obj=shop_obj;
-            this.shop_fenlei=get_url(this.shops_tree_list,this.myshop.shopType);
-            this.city=get_url(this.cityList,this.myshop.areaCode);  ///"652929"
-            this.$store.state.geographical_position.address=this.myshop.address;
-
-            this.$store.state.geographical_position.longitude=this.myshop.x;
-            this.$store.state.geographical_position.latitude=this.myshop.y;
-
-            this.$store.state.apply_for_a_shop.creationTime=this.myshop.openTime
-            this.$store.state.apply_for_a_shop.endTime=this.myshop.closeTime;
-            
-            this.$store.state.apply_for_a_shop.sex=this.myshop.sex
-            this.$store.state.apply_for_a_shop.nation=this.myshop.nation;
-            this.$store.state.apply_for_a_shop.birthday=this.myshop.birthday;
-            this.$store.state.apply_for_a_shop.iaiAddress=this.myshop.iaiAddress;
-            //法人认证
-            this.$store.state.apply_for_a_shop.idNumber=this.myshop.idNumber;
-            this.$store.state.apply_for_a_shop.issueArea=this.myshop.issueArea;
-            this.$store.state.apply_for_a_shop.frontImg=this.myshop.frontImg;
-            this.$store.state.apply_for_a_shop.reverseImg=this.myshop.reverseImg;
-            this.$store.state.apply_for_a_shop.validity=this.myshop.validity;
-            this.$store.state.apply_for_a_shop.iaiName=this.myshop.iaiName;
-            //执照
-            this.$store.state.apply_for_a_shop.businessLicense=this.myshop.businessLicense;
-            this.$store.state.apply_for_a_shop.shopType=this.myshop.businessNature;
-            this.$store.state.apply_for_a_shop.blnumber=this.myshop.blnumber
-            this.img_list=this.myshop.environmentalImg.split(',');
-
-            var serviceType=this.myshop.serviceType.split(',');
-            
-            var serviceType_list=this.serviceType_list;
-            for(var i=0;i<serviceType_list.length;i++){
-                this_1.$set(serviceType_list[i],'active',false);
-                for(var j=0;j<serviceType.length;j++){
-                    if(serviceType_list[i].id==serviceType[j]){
-                        // serviceType_list[i].
-                        this_1.$set(serviceType_list[i],'active',true);
-                    }
-                }
-            }
-            // this.address=this.myshop.address
-            // this.shop_fenlei=this.myshop.shopType;
-            console.log('我的店铺',this.myshop);
-            this.getType=1;
-
-            sessionStorage.removeItem('Red_envelopes_0')
-            //根据店铺查询店铺新人红包
-            this.$axios({
-                method:'get',
-                url:'/api-s/shops/redenvelope/'+this.myshop.shopid,
-                // data:this.Red_envelopes,
-            }).then(x=>{
-                console.log('查询店铺新人红包',x);
-                if(x.data.code==200){
-                    this.Red_envelopes=x.data.data;
-                    sessionStorage.Red_envelopes_0=JSON.stringify(x.data.data);
-                }
-            }).catch(err=>{
-                console.log(err)
-            })
-
-        },  
-        //删除店招图片
-        delete_signboard(){
-            this.shop_obj.signboard=''
-        },
-        //点击类型
-        radio(x){
-            this.$set(x,'active',!x.active)
-        },
-        //添加
-        add(){
-            var this_1=this;
-            // this.$router.push('/myshop');
-            if(this.shop_fenlei[2] && this.shop_fenlei[2].id){
-                this.shop_obj.shopType=this.shop_fenlei[2].id;      //店铺类型
-            }else if(this.shop_fenlei[1] && this.shop_fenlei[1].id){
-                this.shop_obj.shopType=this.shop_fenlei[1].id;      //店铺类型
-            }else if(this.shop_fenlei[0] && this.shop_fenlei[0].id){
-                this.shop_obj.shopType=this.shop_fenlei[0].id;      //店铺类型
-            }
-            if(this.city[2] && this.city[2].value){
-                this.shop_obj.areaCode=this.city[2].value       //区域
-            }else if(this.city[1] && this.city[1].value){
-                this.shop_obj.areaCode=this.city[1].value       //区域
-            }else if(this.city[1] && this.city[0].value){
-                this.shop_obj.areaCode=this.city[0].value       //区域
-            }
-                this.shop_obj.address=this.address;
-                this.shop_obj.x=this.$store.state.geographical_position.longitude.toString();
-                this.shop_obj.y=this.$store.state.geographical_position.latitude.toString();
-                this.shop_obj.businessNature=this.shopType;
-                this.shop_obj.businessLicense=this.$store.state.apply_for_a_shop.businessLicense;
-                this.shop_obj.blnumber=this.$store.state.apply_for_a_shop.blnumber;
-                // this.shop_obj.environmentalImg=this.img_list[0] ? this.img_list[0] : '';
-                this.shop_obj.arrEnvironmentalImg=this.img_list;
-                var serviceType=[];
-                var serviceType_list=this.serviceType_list;
-                for(var i=0;i<serviceType_list.length;i++){
-                    if(serviceType_list[i].active){
-                        serviceType.push(serviceType_list[i].id)
-                    }
-                }
-                // var serviceType=serviceType_list[0] ? serviceType_list[0].id : '';
-                this.shop_obj.arrServiceType=serviceType;
-                this.shop_obj.openTime=this.creationTime;
-                this.shop_obj.closeTime=this.endTime;
-
-                this.shop_obj.sex=this.$store.state.apply_for_a_shop.sex;
-                this.shop_obj.nation=this.$store.state.apply_for_a_shop.nation;
-                this.shop_obj.birthday=this.$store.state.apply_for_a_shop.birthday;
-                this.shop_obj.iaiAddress=this.$store.state.apply_for_a_shop.iaiAddress;
-                this.shop_obj.idNumber=this.$store.state.apply_for_a_shop.idNumber;
-                this.shop_obj.issueArea=this.$store.state.apply_for_a_shop.issueArea;
-                this.shop_obj.frontImg=this.$store.state.apply_for_a_shop.frontImg;
-                this.shop_obj.reverseImg=this.$store.state.apply_for_a_shop.reverseImg;
-                this.shop_obj.validity=this.$store.state.apply_for_a_shop.validity;
-                this.shop_obj.iaiName=this.$store.state.apply_for_a_shop.iaiName;
-
-                var test_phone=/^1\d{10}$/;
-                //执照号码
-                var test_zhizhao = /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/;
-            if(!this.shop_obj.shopType){
-                mui.toast("请选择店铺分类。", { duration: 2000, type: "div" });
-                return
-            }else if(!this.shop_obj.name){
-                mui.toast("请填写店铺名称。", { duration: 2000, type: "div" });
-                return                
-            }else if(!this.shop_obj.phone || !test_phone.test(this.shop_obj.phone)){
-                mui.toast("请填写正确电话。", { duration: 2000, type: "div" });
-                return
-            }else if(!this.shop_obj.areaCode){
-                mui.toast("请填选择店铺区域。", { duration: 2000, type: "div" });
-                return;
-            }else if(!this.shop_obj.address){
-                mui.toast("请填设置店铺地址。", { duration: 2000, type: "div" });
-                return;
-            }else if(!this.shop_obj.openTime || !this.shop_obj.closeTime){
-                mui.toast("请填设置营业时间。", { duration: 2000, type: "div" });
-                return
-            }else if(!this.shop_obj.iaiName){
-                mui.toast("请完成法人认证。", { duration: 2000, type: "div" });
-                return
-            }else if(!this.shop_obj.businessNature){
-                mui.toast("请设置营业执照。", {duration: 2000, type: "div" });
-                return
-            }else if(!test_zhizhao.test(this.shop_obj.blnumber)){
-                mui.toast("营业执照号格式不正确。", {duration: 2000, type: "div" });
-                return
-            }else if(!this.shop_obj.signboard){
-                mui.toast("请设置店招。", { duration: 2000, type: "div" });
-                return;
-            }else if(this.shop_obj.arrEnvironmentalImg.length==0){
-                mui.toast("请设置环境图片。", { duration: 2000, type: "div" });
-                return;
-            }else if(!this.radio_Agreement){
-                mui.toast("请同意商家合作协议。", { duration: 2000, type: "div" });
-                return
-            }else if(!this.Red_envelopes){
-                mui.toast("请设置店铺新人红包。", { duration: 2000, type: "div" });
-                return
-            }
-            
-            if(this.shop_obj.referrerPhone){
-                var phone_test = /^1\d{10}$/;
-                if(!phone_test.test(this.shop_obj.referrerPhone)){
-                    mui.toast("推荐人手机号码填写有误。", { duration: 2000, type: "div" });
-                    return
-                }else{
-                    openloading(true)
-                    this.$axios({
-                        method:'get',
-                        url:'/api-u/users/findByPhone?phone='+this.shop_obj.referrerPhone
-                    }).then(x=>{
-                        console.log(x);
-                        if(x.data.code==200){
-                            this.sub()
-                        }else{
-                            openloading(false)
-                            mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
-                        }
-                    }).catch(err=>{
-                        console.log(err)
-                        mui.toast('查询推荐人信息失败，稍后再试。', { duration: 2000, type: "div" }); 
-                         openloading(false)
-                    })
-                }
-                return
-            } 
-            this.sub()
-        },
-        sub(){
-            var this_1=this;
-            openloading(true)
-            if(this.getType==0){
-                this.$axios({
-                    method:'post',
-                    url:'/api-s/shops/add',
-                    data:this.shop_obj
-                }).then(x=>{
-                    console.log(x)
-                    if(x.data.code==200){
-                        this.Red_envelopes.shopid=x.data.data;
-                        this.add_hongbao();
-                    }else{
-                       mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
-                    }
-                    openloading(false)
-                }).catch(err=>{
-                    console.log(err)
-                    mui.toast("系统错误，请稍后再试。", { duration: 2000, type: "div" });
-                    openloading(false)
-                })
-            }else{
-                ///api-s/shops/update
-                // this.shop_obj.state=0;
-                var shop_obj=this.shop_obj;
-                var obj={};
-                for(var key in shop_obj){
-                    obj[key]=shop_obj[key]
-                }
-                    obj.state=0
-                this.$axios({
-                    method:'put',
-                    url:'/api-s/shops/update',
-                    data:obj,
-
-                }).then(x=>{
-                    console.log(x)
-                    if(x.data.code==200){
-                        if(!this.Red_envelopes.id){
-                            this.add_hongbao()
-                        }else{
-                            this.updata_hongbao();
-                        }
-                    }else{
-                       mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
-                    }
-                    openloading(false)
-                }).catch(err=>{
-                    console.log(err)
-                    mui.toast("系统错误，请稍后再试。", { duration: 2000, type: "div" });
-                    openloading(false)
-                })
-            }
-        },
-        add_hongbao(){
-            var this_1=this;
-            this.$axios({
-                method:'post',
-                url:'/api-s/shops/redenvelope/add',
-                data:this.Red_envelopes,
-            }).then(x=>{
-                console.log(x);
-                if(x.data.code==200){
-                    mui.alert('提交成功，等待审核。', "提示", function() {
-                        this_1.getType=0;
-                        this_1.$store.commit('setMyshop');    //查询我的店铺
-                        this_1.$router.push("/my");
-                    },"div");
-                }else{
-                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
-                }
-            }).catch(err=>{
-                console.log(err);
-                mui.alert('店铺设置成功，自动设置红包失败，请通过后手动设置。', "提示", function() {
-                    this_1.getType=0;
-                    this_1.$store.commit('setMyshop');    //查询我的店铺
-                    this_1.$router.push("/my");
-                },"div");
-            })
-        },
-        updata_hongbao(){
-            //
-            var this_1=this;
-            this.$axios({
-                method:'post',
-                url:'/api-s/shops/redenvelope/update',
-                data:this.Red_envelopes,
-            }).then(x=>{
-                console.log(x);
-                if(x.data.code==200){
-                    mui.alert('提交成功，等待审核。', "提示", function() {
-                        this_1.getType=0;
-                        this_1.$store.commit('setMyshop');    //查询我的店铺
-                        this_1.$router.push("/my");
-                    },"div");
-                }else{
-                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
-                }
-            }).catch(err=>{
-                console.log(err)
-                mui.alert('店铺设置成功，自动设置红包失败，请通过后手动设置。', "提示", function() {
-                    this_1.getType=0;
-                    this_1.$store.commit('setMyshop');    //查询我的店铺
-                    this_1.$router.push("/my");
-                },"div");
-                // mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" }); 
-            })
-        },
-        //协议
-        RegistrationAgreement(){
-            var str=this.$store.state.apply_for_a_shop.iaiName+(this.shop_obj.phone ? ' ('+this.shop_obj.phone+')' : '');
-             this.$router.push('/shopAgreement?name='+str);
-        },
-        //跳转微信地图测试
-        weixinmaptest(){
-            var ditu = bd_decrypt(
-                this.$store.state.geographical_position.longitude,  
-                this.$store.state.geographical_position.latitude
-            );
-            console.log(ditu);
-            wx.openLocation({
-                latitude: ditu.lat, // 纬度，浮点数，范围为90 ~ -90
-                longitude: ditu.lng, // 经度，浮点数，范围为180 ~ -180。
-                name: "测试", // 位置名
-                address: "地址测试说明", // 地址详情说明
-                scale: 28, // 地图缩放级别,整形值,范围从1~28。默认为最大
-                infoUrl: "" // 在查看位置界面底部显示的超链接,可点击跳转
-            });
-        },
-        //跳转到百度地图页面
-        baiduMap() {
-            this.$router.push("/baiduMap");
-        },
-        //跳转法人认证
-        LegalPersonCertification() {
-            this.$router.push("/LegalPersonCertification");
-        },
-        //跳转营业执照添加界面
-        BusinessLicense() {
-            this.$router.push("/BusinessLicense");
-        },
-        //选择时间
-        select_time() {
-            this.$router.push("/TimeSlot");
-        },
-        //选择地区
-        select_region() {
-            this.Picker3.setData(this.cityList);
-            this.Picker3.show(x => {
-                console.log(x);
-                this.city = x;
-            });
-        },
-        //选择店铺类型
-        select_shop_type() {
-            console.log(this.shops_tree_list)
-            this.Picker3.setData(this.shops_tree_list);
-            this.Picker3.show(x => {
-                console.log(x);
-                this.shop_fenlei=x
-            });
-        },
-        //图片轮播商一些
-        slideNext() {
-            this.swiper.slideNext();
-        },
-        //选择LOGO
-        Choice_img(x) {
-            if (x == 2 && this.img_list.length == 12) return;
-            this.cropper_type = x;
-            document.getElementById("zhengmianInput").getElementsByTagName("input")[0].click();
-        },
-        input_change(e) {
-            openloading(true);
-            console.log(e);
-            var that = this;
-            var file = e.target.files[0];
-            var size=file.size/1024;
-            if(size>1024){
-                this.option.outputSize=size/1024
-            }else{
-                this.option.outputSize=1
-            }
-            var reader = new FileReader();
-            reader.readAsDataURL(file); // 读出 base64
-            reader.onloadend = function() {
-                // that.Cropper_show = true;
-                // that.option.img = reader.result;
-                that.画布base64=reader.result;
-                that.set_myCanvas()
-            };
-        },
-        //设置画布
-        set_myCanvas(){
-            console.log('设置画布');
-            var this_1=this;
-            var ww=document.body.clientWidth;
-            var c=this.$refs.myCanvas;
-            var cxt=c.getContext("2d");
-                // this.cxt=c.getContext("2d");
-                cxt.clearRect(0,0,c.width,c.height)     //清除画布
-            this.画布img=new Image();
-            this.画布img.src=this.画布base64;
-            this.画布img.onload=()=>{
-                console.log( 0 , 0 , c.width , this_1.画布img.height*c.width/this_1.画布img.width)
-                this_1.degree=0;
-                c.height=this_1.画布img.height*c.width/this_1.画布img.width;
-                cxt.drawImage( this_1.画布img , 0 , 0 , c.width , c.height);
-                var imgData=c.toDataURL();
-                this_1.Cropper_show = true;
-                if(30/22>c.width/c.height){
-                    this_1.option.mode='300px auto'
-                }else{
-                    this_1.option.mode='auto 225px'
-                }
-                this_1.option.img = imgData;
-                openloading(false);
-            }
-        },
-        旋转画布(type){
-            openloading(true);
-            var this_1=this;
-            this.degree += type ? 90 : -90;
-            var degree= this.degree %= 360;
-            var c=this.$refs.myCanvas
-            var cxt=c.getContext("2d");
-            var 新高度=this.画布img.height*c.width/this.画布img.width;
-                if(degree/90%2==0 || degree/90%2==-0){
-                    //旋转了180度
-                    c.height=this.画布img.height*c.width/this.画布img.width;
-                }else{
-                    c.height=c.width/this.画布img.height*this.画布img.width;
-                }
-            cxt.save();
-            cxt.clearRect(0, 0, c.width, c.height);
-            cxt.translate(c.width / 2, c.height / 2);
-            cxt.rotate(degree / 180 * Math.PI);
-            if(degree/90%2==0 || degree/90%2==-0){
-                cxt.translate(-c.width / 2, -c.height / 2);
-                cxt.drawImage( this.画布img , 0 , 0 , c.width , c.height);
-            }else{
-                cxt.translate( -c.height / 2,-c.width / 2);
-                cxt.drawImage( this.画布img , 0 , 0 , c.height , c.width);
-            }
-            cxt.restore();
-            var imgData=c.toDataURL();
-            this_1.option.img = imgData;
-            if(30/22>c.width/c.height){
-                this_1.option.mode='300px auto'
-            }else{
-                this_1.option.mode='auto 225px'
-            }
-            setTimeout(()=>{
-                openloading(false);
-            },500)
-        },
-        //关闭裁剪弹出框
-        close_1() {
-            this.Cropper_show = false;
-        },
-        //左转
-        rotateLeft() {
-            // this.$refs.cropper.rotateLeft();
-            this.旋转画布(false)
-        },
-        //右转
-        rotateRight() {
-            this.旋转画布(true)
-            // this.$refs.cropper.rotateRight();
-        },
-        //确定裁剪
-        confirm() {
-            this.Cropper_show = false;
-            this.$refs.cropper.getCropData(data => {
-                if (this.cropper_type == 1) {
-                    this.shop_obj.signboard = data;
-                } else {
-                    this.img_list.push(data);
-                }
-            });
-        },
-        //获取服务列表 如wifi等
-        get_serviceType(){
-           
-            this.$axios({
-                method:'get',
-                url:'/api-s/shops/type/findAll?start=0&length=10000'
-            }).then(x=>{
-                console.log('获取服务列表',x);
-                if(x.data.code==200){
-                    this.serviceType_list=x.data.data.data;
-                }
-            }).catch(err=>{
-                console.log('获取服务列表',err);
-            })
-        },
-        init(){
-            if(!this.myshop){
-                console.log('没有店铺');
-                this.get_myshop=false
-            }else if(this.myshop.shopid && this.myshop.state!=1){
-                console.log('有店铺没通过');
-                this.get_myshop=false
-            }else if(this.myshop.shopid && this.myshop.state==1){
-                console.log('有店铺');
-                // this.get_myshop=false
-                this.$router.push('/myshop')
-            }else{
-                console.log('正在获取店铺');
-                setTimeout(()=>{
-                    this.init()
-                },2000)
-            }
-        }
+    shops_tree_list() {
+      //店铺类型数组
+      return this.$store.state.shops_tree_list;
     },
-    beforeCreate: function() {
-        
-        // console.group('------beforeCreate创建前状态------');
+    creationTime() {
+      //开门时间
+      return this.$store.state.apply_for_a_shop.creationTime;
     },
-    created: function() {
-        // console.group('------created创建完毕状态------');
+    endTime() {
+      //关门时间
+      return this.$store.state.apply_for_a_shop.endTime;
     },
-    beforeMount: function() {
-        // console.group('------beforeMount挂载前状态------');
+    shopType() {
+      //申请店铺类型 个体实体
+      return this.$store.state.apply_for_a_shop.shopType;
     },
-    mounted: function() {
-        var this_1 = this;
-        try {
-            this.userInfo=JSON.parse(localStorage.userInfo);
-        } catch (error) {}
-        this.shop_obj.userid=this.userInfo.username;
-        
-        //查询我的店铺
-        this.$store.commit('setMyshop');
-        console.log(this.myshop);
-        this.init();
-        
-        //店铺类型
-        this.Picker3 = new mui.PopPicker({
-            layer: 3
-        });
-        //查询服务类别
-        this.get_serviceType();
-
-        //地区
-        var area = [];
-        try {
-            area = JSON.parse(localStorage.area);
-        } catch (error) {}
-        //递归
-        function convert(arr, id) {
-            var res = [];
-            for (var i = 0; i < arr.length; i++) {
-                arr[i].value = arr[i].id;
-                arr[i].text = arr[i].name;
-                if (arr[i].parentid == id) {
-                    res.push(arr[i]);
-                    arr[i].children = convert(arr, arr[i].id);
-                }
-            }
-            return res;
-        }
-        this.cityList = convert(area, null);
-        //图片轮播
-        this.swiper = new Swiper("#ApplicationShop .swiper-container", {
-            // loop: true,
-            // autoplay: true,
-            slidesPerView: 'auto',
-            observer:true,
-            spaceBetween: 10,
-            on: {
-                transitionEnd() {
-                    console.log('过渡结束transitionEnd',this.activeIndex);
-                    if (this_1.img_list.length - this.activeIndex > 2) {
-                        this_1.left = true;
-                    } else {
-                        this_1.left = false;
-                    }
-                }
-            }
-        });
-        //删除图片
-        $("#ApplicationShop .box_3 .img_list").on("click",".delete_1",function() {
-                var index = $(this).attr("inde");
-                this_1.img_list.splice(index, 1);
-            }
-        );
-
-    
-        // console.group('------mounted 挂载结束状态------');
+    businessLicense() {
+      //营业执照图片
+      return this.$store.state.apply_for_a_shop.businessLicense;
     },
-    activated() {
-        console.log(this.getType);
-        var this_1 = this;
-        try {
-            this.userInfo=JSON.parse(localStorage.userInfo);
-        } catch (error) {}
-        this.shop_obj.userid=this.userInfo.username;
-
-        try {
-            this.Red_envelopes=JSON.parse(sessionStorage.Red_envelopes_0);     
-        } catch (error) {};
-
-        
-
-
-    },
-    beforeUpdate: function() {
-        // console.group('beforeUpdate 更新前状态===============》');
-    },
-    updated: function() {
-        // console.group('updated 更新完成状态===============》');
-    },
-    beforeDestroy: function() {
-        // console.group('beforeDestroy 销毁前状态===============》');
-    },
-    destroyed: function() {
-        // document.querySelector(".mui-slider_1").removeEventListener("slide", function() {});
-        // console.group('destroyed 销毁完成状态===============》');
-    },
-    watch: {
-        myshop(){
-            // if(this.$route.path!='/myshop'){
-            //     return
-            // }
-            // if(!this.myshop){
-            //     console.log('没有店铺');
-            //     this.get_myshop=false
-            // }else if(this.myshop.shopid){
-            //     console.log(this.$route)
-            //     console.log('有店铺');
-            //         this.$router.push('/myshop')
-            // }else{
-            //     console.log('正在获取店铺');
-            // }
-        }
-        // img_list() {
-        //     this.$nextTick(function() {
-        //         console.log("数据渲染完成");
-        //         this.getswiper();
-        //     });
-        // }
+    myshop() {
+      return this.$store.state.myshop;
     }
+  },
+  methods: {
+    //跳转发布界面新人红包
+    ShopRedEnvelopes() {
+      this.$router.push("/ShopRedEnvelopes");
+    },
+    //点击重新提交
+    chongxingtijiao() {
+      var this_1 = this;
+      var myshop = this.myshop;
+      var shop_obj = {};
+      for (var key in myshop) {
+        shop_obj[key] = myshop[key];
+      }
+      this.shop_obj = shop_obj;
+      this.shop_fenlei = get_url(this.shops_tree_list, this.myshop.shopType);
+      this.city = get_url(this.cityList, this.myshop.areaCode); ///"652929"
+      this.$store.state.geographical_position.address = this.myshop.address;
+
+      this.$store.state.geographical_position.longitude = this.myshop.x;
+      this.$store.state.geographical_position.latitude = this.myshop.y;
+
+      this.$store.state.apply_for_a_shop.creationTime = this.myshop.openTime;
+      this.$store.state.apply_for_a_shop.endTime = this.myshop.closeTime;
+
+      this.$store.state.apply_for_a_shop.sex = this.myshop.sex;
+      this.$store.state.apply_for_a_shop.nation = this.myshop.nation;
+      this.$store.state.apply_for_a_shop.birthday = this.myshop.birthday;
+      this.$store.state.apply_for_a_shop.iaiAddress = this.myshop.iaiAddress;
+      //法人认证
+      this.$store.state.apply_for_a_shop.idNumber = this.myshop.idNumber;
+      this.$store.state.apply_for_a_shop.issueArea = this.myshop.issueArea;
+      this.$store.state.apply_for_a_shop.frontImg = this.myshop.frontImg;
+      this.$store.state.apply_for_a_shop.reverseImg = this.myshop.reverseImg;
+      this.$store.state.apply_for_a_shop.validity = this.myshop.validity;
+      this.$store.state.apply_for_a_shop.iaiName = this.myshop.iaiName;
+      //执照
+      this.$store.state.apply_for_a_shop.businessLicense = this.myshop.businessLicense;
+      this.$store.state.apply_for_a_shop.shopType = this.myshop.businessNature;
+      this.$store.state.apply_for_a_shop.blnumber = this.myshop.blnumber;
+      this.img_list = this.myshop.environmentalImg.split(",");
+
+      var serviceType = this.myshop.serviceType.split(",");
+
+      var serviceType_list = this.serviceType_list;
+      for (var i = 0; i < serviceType_list.length; i++) {
+        this_1.$set(serviceType_list[i], "active", false);
+        for (var j = 0; j < serviceType.length; j++) {
+          if (serviceType_list[i].id == serviceType[j]) {
+            // serviceType_list[i].
+            this_1.$set(serviceType_list[i], "active", true);
+          }
+        }
+      }
+      // this.address=this.myshop.address
+      // this.shop_fenlei=this.myshop.shopType;
+      console.log("我的店铺", this.myshop);
+      this.getType = 1;
+
+      sessionStorage.removeItem("Red_envelopes_0");
+      //根据店铺查询店铺新人红包
+      this.$axios({
+        method: "get",
+        url: "/api-s/shops/redenvelope/" + this.myshop.shopid
+        // data:this.Red_envelopes,
+      })
+        .then(x => {
+          console.log("查询店铺新人红包", x);
+          if (x.data.code == 200) {
+            this.Red_envelopes = x.data.data;
+            sessionStorage.Red_envelopes_0 = JSON.stringify(x.data.data);
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+    //删除店招图片
+    delete_signboard() {
+      this.shop_obj.signboard = "";
+    },
+    //点击类型
+    radio(x) {
+      this.$set(x, "active", !x.active);
+    },
+    //添加
+    add() {
+      var this_1 = this;
+      // this.$router.push('/myshop');
+      if (this.shop_fenlei[2] && this.shop_fenlei[2].id) {
+        this.shop_obj.shopType = this.shop_fenlei[2].id; //店铺类型
+      } else if (this.shop_fenlei[1] && this.shop_fenlei[1].id) {
+        this.shop_obj.shopType = this.shop_fenlei[1].id; //店铺类型
+      } else if (this.shop_fenlei[0] && this.shop_fenlei[0].id) {
+        this.shop_obj.shopType = this.shop_fenlei[0].id; //店铺类型
+      }
+      if (this.city[2] && this.city[2].value) {
+        this.shop_obj.areaCode = this.city[2].value; //区域
+      } else if (this.city[1] && this.city[1].value) {
+        this.shop_obj.areaCode = this.city[1].value; //区域
+      } else if (this.city[1] && this.city[0].value) {
+        this.shop_obj.areaCode = this.city[0].value; //区域
+      }
+      this.shop_obj.address = this.address;
+      this.shop_obj.x = this.$store.state.geographical_position.longitude.toString();
+      this.shop_obj.y = this.$store.state.geographical_position.latitude.toString();
+      this.shop_obj.businessNature = this.shopType;
+      this.shop_obj.businessLicense = this.$store.state.apply_for_a_shop.businessLicense;
+      this.shop_obj.blnumber = this.$store.state.apply_for_a_shop.blnumber;
+      // this.shop_obj.environmentalImg=this.img_list[0] ? this.img_list[0] : '';
+      this.shop_obj.arrEnvironmentalImg = this.img_list;
+      var serviceType = [];
+      var serviceType_list = this.serviceType_list;
+      for (var i = 0; i < serviceType_list.length; i++) {
+        if (serviceType_list[i].active) {
+          serviceType.push(serviceType_list[i].id);
+        }
+      }
+      // var serviceType=serviceType_list[0] ? serviceType_list[0].id : '';
+      this.shop_obj.arrServiceType = serviceType;
+      this.shop_obj.openTime = this.creationTime;
+      this.shop_obj.closeTime = this.endTime;
+
+      this.shop_obj.sex = this.$store.state.apply_for_a_shop.sex;
+      this.shop_obj.nation = this.$store.state.apply_for_a_shop.nation;
+      this.shop_obj.birthday = this.$store.state.apply_for_a_shop.birthday;
+      this.shop_obj.iaiAddress = this.$store.state.apply_for_a_shop.iaiAddress;
+      this.shop_obj.idNumber = this.$store.state.apply_for_a_shop.idNumber;
+      this.shop_obj.issueArea = this.$store.state.apply_for_a_shop.issueArea;
+      this.shop_obj.frontImg = this.$store.state.apply_for_a_shop.frontImg;
+      this.shop_obj.reverseImg = this.$store.state.apply_for_a_shop.reverseImg;
+      this.shop_obj.validity = this.$store.state.apply_for_a_shop.validity;
+      this.shop_obj.iaiName = this.$store.state.apply_for_a_shop.iaiName;
+
+      var test_phone = /^1\d{10}$/;
+      //执照号码
+      var test_zhizhao = /(^(?:(?![IOZSV])[\dA-Z]){2}\d{6}(?:(?![IOZSV])[\dA-Z]){10}$)|(^\d{15}$)/;
+      if (!this.shop_obj.shopType) {
+        mui.toast("请选择店铺分类。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.shop_obj.name) {
+        mui.toast("请填写店铺名称。", { duration: 2000, type: "div" });
+        return;
+      } else if (
+        !this.shop_obj.phone ||
+        !test_phone.test(this.shop_obj.phone)
+      ) {
+        mui.toast("请填写正确电话。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.shop_obj.areaCode) {
+        mui.toast("请填选择店铺区域。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.shop_obj.address) {
+        mui.toast("请填设置店铺地址。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.shop_obj.openTime || !this.shop_obj.closeTime) {
+        mui.toast("请填设置营业时间。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.shop_obj.iaiName) {
+        mui.toast("请完成法人认证。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.shop_obj.businessNature) {
+        mui.toast("请设置营业执照。", { duration: 2000, type: "div" });
+        return;
+      } else if (!test_zhizhao.test(this.shop_obj.blnumber)) {
+        mui.toast("营业执照号格式不正确。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.shop_obj.signboard) {
+        mui.toast("请设置店招。", { duration: 2000, type: "div" });
+        return;
+      } else if (this.shop_obj.arrEnvironmentalImg.length == 0) {
+        mui.toast("请设置环境图片。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.radio_Agreement) {
+        mui.toast("请同意商家合作协议。", { duration: 2000, type: "div" });
+        return;
+      } else if (!this.Red_envelopes) {
+        mui.toast("请设置店铺新人红包。", { duration: 2000, type: "div" });
+        return;
+      }
+
+      if (this.shop_obj.referrerPhone) {
+        var phone_test = /^1\d{10}$/;
+        if (!phone_test.test(this.shop_obj.referrerPhone)) {
+          mui.toast("推荐人手机号码填写有误。", {
+            duration: 2000,
+            type: "div"
+          });
+          return;
+        } else {
+          openloading(true);
+          this.$axios({
+            method: "get",
+            url: "/api-u/users/findByPhone?phone=" + this.shop_obj.referrerPhone
+          })
+            .then(x => {
+              console.log(x);
+              if (x.data.code == 200) {
+                this.sub();
+              } else {
+                openloading(false);
+                mui.alert(
+                  x.data.msg ? x.data.msg : x.data.message,
+                  "提示",
+                  "我知道了",
+                  function() {},
+                  "div"
+                );
+              }
+            })
+            .catch(err => {
+              console.log(err);
+              mui.toast("查询推荐人信息失败，稍后再试。", {
+                duration: 2000,
+                type: "div"
+              });
+              openloading(false);
+            });
+        }
+        return;
+      }
+      this.sub();
+    },
+    sub() {
+      var this_1 = this;
+      openloading(true);
+      if (this.getType == 0) {
+        this.$axios({
+          method: "post",
+          url: "/api-s/shops/add",
+          data: this.shop_obj
+        })
+          .then(x => {
+            console.log(x);
+            if (x.data.code == 200) {
+              this.Red_envelopes.shopid = x.data.data;
+              this.add_hongbao();
+            } else {
+              mui.alert(
+                x.data.msg ? x.data.msg : x.data.message,
+                "提示",
+                "我知道了",
+                function() {},
+                "div"
+              );
+            }
+            openloading(false);
+          })
+          .catch(err => {
+            console.log(err);
+            mui.toast("系统错误，请稍后再试。", {
+              duration: 2000,
+              type: "div"
+            });
+            openloading(false);
+          });
+      } else {
+        ///api-s/shops/update
+        // this.shop_obj.state=0;
+        var shop_obj = this.shop_obj;
+        var obj = {};
+        for (var key in shop_obj) {
+          obj[key] = shop_obj[key];
+        }
+        obj.state = 0;
+        this.$axios({
+          method: "put",
+          url: "/api-s/shops/update",
+          data: obj
+        })
+          .then(x => {
+            console.log(x);
+            if (x.data.code == 200) {
+              if (!this.Red_envelopes.id) {
+                this.add_hongbao();
+              } else {
+                this.updata_hongbao();
+              }
+            } else {
+              mui.alert(
+                x.data.msg ? x.data.msg : x.data.message,
+                "提示",
+                "我知道了",
+                function() {},
+                "div"
+              );
+            }
+            openloading(false);
+          })
+          .catch(err => {
+            console.log(err);
+            mui.toast("系统错误，请稍后再试。", {
+              duration: 2000,
+              type: "div"
+            });
+            openloading(false);
+          });
+      }
+    },
+    add_hongbao() {
+      var this_1 = this;
+      this.$axios({
+        method: "post",
+        url: "/api-s/shops/redenvelope/add",
+        data: this.Red_envelopes
+      })
+        .then(x => {
+          console.log(x);
+          if (x.data.code == 200) {
+            mui.alert(
+              "提交成功，等待审核。",
+              "提示",
+              function() {
+                this_1.getType = 0;
+                this_1.$store.commit("setMyshop"); //查询我的店铺
+                this_1.$router.push("/my");
+              },
+              "div"
+            );
+          } else {
+            mui.alert(
+              x.data.msg ? x.data.msg : x.data.message,
+              "提示",
+              "我知道了",
+              function() {},
+              "div"
+            );
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          mui.alert(
+            "店铺设置成功，自动设置红包失败，请通过后手动设置。",
+            "提示",
+            function() {
+              this_1.getType = 0;
+              this_1.$store.commit("setMyshop"); //查询我的店铺
+              this_1.$router.push("/my");
+            },
+            "div"
+          );
+        });
+    },
+    updata_hongbao() {
+      //
+      var this_1 = this;
+      this.$axios({
+        method: "post",
+        url: "/api-s/shops/redenvelope/update",
+        data: this.Red_envelopes
+      })
+        .then(x => {
+          console.log(x);
+          if (x.data.code == 200) {
+            mui.alert(
+              "提交成功，等待审核。",
+              "提示",
+              function() {
+                this_1.getType = 0;
+                this_1.$store.commit("setMyshop"); //查询我的店铺
+                this_1.$router.push("/my");
+              },
+              "div"
+            );
+          } else {
+            mui.alert(
+              x.data.msg ? x.data.msg : x.data.message,
+              "提示",
+              "我知道了",
+              function() {},
+              "div"
+            );
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          mui.alert(
+            "店铺设置成功，自动设置红包失败，请通过后手动设置。",
+            "提示",
+            function() {
+              this_1.getType = 0;
+              this_1.$store.commit("setMyshop"); //查询我的店铺
+              this_1.$router.push("/my");
+            },
+            "div"
+          );
+          // mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" });
+        });
+    },
+    //协议
+    RegistrationAgreement() {
+      var str =
+        this.$store.state.apply_for_a_shop.iaiName +
+        (this.shop_obj.phone ? " (" + this.shop_obj.phone + ")" : "");
+      this.$router.push("/shopAgreement?name=" + str);
+    },
+    //跳转微信地图测试
+    weixinmaptest() {
+      var ditu = bd_decrypt(
+        this.$store.state.geographical_position.longitude,
+        this.$store.state.geographical_position.latitude
+      );
+      console.log(ditu);
+      wx.openLocation({
+        latitude: ditu.lat, // 纬度，浮点数，范围为90 ~ -90
+        longitude: ditu.lng, // 经度，浮点数，范围为180 ~ -180。
+        name: "测试", // 位置名
+        address: "地址测试说明", // 地址详情说明
+        scale: 28, // 地图缩放级别,整形值,范围从1~28。默认为最大
+        infoUrl: "" // 在查看位置界面底部显示的超链接,可点击跳转
+      });
+    },
+    //跳转到百度地图页面
+    baiduMap() {
+      this.$router.push("/baiduMap");
+    },
+    //跳转法人认证
+    LegalPersonCertification() {
+      this.$router.push("/LegalPersonCertification");
+    },
+    //跳转营业执照添加界面
+    BusinessLicense() {
+      this.$router.push("/BusinessLicense");
+    },
+    //选择时间
+    select_time() {
+      this.$router.push("/TimeSlot");
+    },
+    //选择地区
+    select_region() {
+      this.Picker3.setData(this.cityList);
+      this.Picker3.show(x => {
+        console.log(x);
+        this.city = x;
+      });
+    },
+    //选择店铺类型
+    select_shop_type() {
+      console.log(this.shops_tree_list);
+      this.Picker3.setData(this.shops_tree_list);
+      this.Picker3.show(x => {
+        console.log(x);
+        this.shop_fenlei = x;
+      });
+    },
+    //图片轮播商一些
+    slideNext() {
+      this.swiper.slideNext();
+    },
+    //选择LOGO
+    Choice_img(x) {
+      if (x == 2 && this.img_list.length == 12) return;
+      this.cropper_type = x;
+      document
+        .getElementById("zhengmianInput")
+        .getElementsByTagName("input")[0]
+        .click();
+    },
+    input_change(e) {
+      openloading(true);
+      console.log(e);
+      var that = this;
+      var file = e.target.files[0];
+      var size = file.size / 1024;
+      if (size > 1024) {
+        this.option.outputSize = size / 1024;
+      } else {
+        this.option.outputSize = 1;
+      }
+      var reader = new FileReader();
+      reader.readAsDataURL(file); // 读出 base64
+      reader.onloadend = function() {
+        // that.Cropper_show = true;
+        // that.option.img = reader.result;
+        that.画布base64 = reader.result;
+        that.set_myCanvas();
+      };
+    },
+    //设置画布
+    set_myCanvas() {
+      console.log("设置画布");
+      var this_1 = this;
+      var ww = document.body.clientWidth;
+      var c = this.$refs.myCanvas;
+      var cxt = c.getContext("2d");
+      // this.cxt=c.getContext("2d");
+      cxt.clearRect(0, 0, c.width, c.height); //清除画布
+      this.画布img = new Image();
+      this.画布img.src = this.画布base64;
+      this.画布img.onload = () => {
+        console.log(
+          0,
+          0,
+          c.width,
+          (this_1.画布img.height * c.width) / this_1.画布img.width
+        );
+        this_1.degree = 0;
+        c.height = (this_1.画布img.height * c.width) / this_1.画布img.width;
+        cxt.drawImage(this_1.画布img, 0, 0, c.width, c.height);
+        var imgData = c.toDataURL();
+        this_1.Cropper_show = true;
+        if (30 / 22 > c.width / c.height) {
+          this_1.option.mode = "300px auto";
+        } else {
+          this_1.option.mode = "auto 225px";
+        }
+        this_1.option.img = imgData;
+        openloading(false);
+      };
+    },
+    旋转画布(type) {
+      openloading(true);
+      var this_1 = this;
+      this.degree += type ? 90 : -90;
+      var degree = (this.degree %= 360);
+      var c = this.$refs.myCanvas;
+      var cxt = c.getContext("2d");
+      var 新高度 = (this.画布img.height * c.width) / this.画布img.width;
+      if ((degree / 90) % 2 == 0 || (degree / 90) % 2 == -0) {
+        //旋转了180度
+        c.height = (this.画布img.height * c.width) / this.画布img.width;
+      } else {
+        c.height = (c.width / this.画布img.height) * this.画布img.width;
+      }
+      cxt.save();
+      cxt.clearRect(0, 0, c.width, c.height);
+      cxt.translate(c.width / 2, c.height / 2);
+      cxt.rotate((degree / 180) * Math.PI);
+      if ((degree / 90) % 2 == 0 || (degree / 90) % 2 == -0) {
+        cxt.translate(-c.width / 2, -c.height / 2);
+        cxt.drawImage(this.画布img, 0, 0, c.width, c.height);
+      } else {
+        cxt.translate(-c.height / 2, -c.width / 2);
+        cxt.drawImage(this.画布img, 0, 0, c.height, c.width);
+      }
+      cxt.restore();
+      var imgData = c.toDataURL();
+      this_1.option.img = imgData;
+      if (30 / 22 > c.width / c.height) {
+        this_1.option.mode = "300px auto";
+      } else {
+        this_1.option.mode = "auto 225px";
+      }
+      setTimeout(() => {
+        openloading(false);
+      }, 500);
+    },
+    //关闭裁剪弹出框
+    close_1() {
+      this.Cropper_show = false;
+    },
+    //左转
+    rotateLeft() {
+      // this.$refs.cropper.rotateLeft();
+      this.旋转画布(false);
+    },
+    //右转
+    rotateRight() {
+      this.旋转画布(true);
+      // this.$refs.cropper.rotateRight();
+    },
+    //确定裁剪
+    confirm() {
+      this.Cropper_show = false;
+      this.$refs.cropper.getCropData(data => {
+        if (this.cropper_type == 1) {
+          this.shop_obj.signboard = data;
+        } else {
+          this.img_list.push(data);
+        }
+      });
+    },
+    //获取服务列表 如wifi等
+    get_serviceType() {
+      this.$axios({
+        method: "get",
+        url: "/api-s/shops/type/findAll?start=0&length=10000"
+      })
+        .then(x => {
+          console.log("获取服务列表", x);
+          if (x.data.code == 200) {
+            this.serviceType_list = x.data.data.data;
+          }
+        })
+        .catch(err => {
+          console.log("获取服务列表", err);
+        });
+    },
+    init() {
+      if (!this.myshop) {
+        console.log("没有店铺");
+        this.get_myshop = false;
+      } else if (this.myshop.shopid && this.myshop.state != 1) {
+        console.log("有店铺没通过");
+        this.get_myshop = false;
+      } else if (this.myshop.shopid && this.myshop.state == 1) {
+        console.log("有店铺");
+        // this.get_myshop=false
+        this.$router.push("/myshop");
+      } else {
+        console.log("正在获取店铺");
+        setTimeout(() => {
+          this.init();
+        }, 2000);
+      }
+    }
+  },
+  beforeCreate: function() {
+    // console.group('------beforeCreate创建前状态------');
+  },
+  created: function() {
+    // console.group('------created创建完毕状态------');
+  },
+  beforeMount: function() {
+    // console.group('------beforeMount挂载前状态------');
+  },
+  mounted: function() {
+    var this_1 = this;
+    try {
+      this.userInfo = JSON.parse(localStorage.userInfo);
+    } catch (error) {}
+    this.shop_obj.userid = this.userInfo.username;
+
+    //查询我的店铺
+    this.$store.commit("setMyshop");
+    console.log(this.myshop);
+    this.init();
+
+    //店铺类型
+    this.Picker3 = new mui.PopPicker({
+      layer: 3
+    });
+    //查询服务类别
+    this.get_serviceType();
+
+    //地区
+    var area = [];
+    try {
+      area = JSON.parse(localStorage.area);
+    } catch (error) {}
+    //递归
+    function convert(arr, id) {
+      var res = [];
+      for (var i = 0; i < arr.length; i++) {
+        arr[i].value = arr[i].id;
+        arr[i].text = arr[i].name;
+        if (arr[i].parentid == id) {
+          res.push(arr[i]);
+          arr[i].children = convert(arr, arr[i].id);
+        }
+      }
+      return res;
+    }
+    this.cityList = convert(area, null);
+    //图片轮播
+    this.swiper = new Swiper("#ApplicationShop .swiper-container", {
+      // loop: true,
+      // autoplay: true,
+      slidesPerView: "auto",
+      observer: true,
+      spaceBetween: 10,
+      on: {
+        transitionEnd() {
+          console.log("过渡结束transitionEnd", this.activeIndex);
+          if (this_1.img_list.length - this.activeIndex > 2) {
+            this_1.left = true;
+          } else {
+            this_1.left = false;
+          }
+        }
+      }
+    });
+    //删除图片
+    $("#ApplicationShop .box_3 .img_list").on("click", ".delete_1", function() {
+      var index = $(this).attr("inde");
+      this_1.img_list.splice(index, 1);
+    });
+
+    // console.group('------mounted 挂载结束状态------');
+  },
+  activated() {
+    console.log(this.getType);
+    var this_1 = this;
+    try {
+      this.userInfo = JSON.parse(localStorage.userInfo);
+    } catch (error) {}
+    this.shop_obj.userid = this.userInfo.username;
+
+    try {
+      this.Red_envelopes = JSON.parse(sessionStorage.Red_envelopes_0);
+    } catch (error) {}
+  },
+  beforeUpdate: function() {
+    // console.group('beforeUpdate 更新前状态===============》');
+  },
+  updated: function() {
+    // console.group('updated 更新完成状态===============》');
+  },
+  beforeDestroy: function() {
+    // console.group('beforeDestroy 销毁前状态===============》');
+  },
+  destroyed: function() {
+    // document.querySelector(".mui-slider_1").removeEventListener("slide", function() {});
+    // console.group('destroyed 销毁完成状态===============》');
+  },
+  watch: {
+    myshop() {
+      // if(this.$route.path!='/myshop'){
+      //     return
+      // }
+      // if(!this.myshop){
+      //     console.log('没有店铺');
+      //     this.get_myshop=false
+      // }else if(this.myshop.shopid){
+      //     console.log(this.$route)
+      //     console.log('有店铺');
+      //         this.$router.push('/myshop')
+      // }else{
+      //     console.log('正在获取店铺');
+      // }
+    }
+    // img_list() {
+    //     this.$nextTick(function() {
+    //         console.log("数据渲染完成");
+    //         this.getswiper();
+    //     });
+    // }
+  }
 };
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 
-.推荐人错误{
-    padding: 12px 15px  ;
-	color: rgba(217, 57, 59, 1);
-	font-size: 12px;
+.推荐人错误 {
+  padding: 12px 15px;
+  color: rgba(217, 57, 59, 1);
+  font-size: 12px;
 }
-.myCanvas{
-    border: 1px solid red;
-    position: fixed;
-    left: -110%;
+.myCanvas {
+  border: 1px solid red;
+  position: fixed;
+  left: -110%;
 }
 #ApplicationShop {
-    height: 100%;
-    .mui-content{
-        // background: #ffffff;
-        padding-bottom: 20px;
-    }
+  height: 100%;
+  .mui-content {
+    // background: #ffffff;
+    padding-bottom: 20px;
+  }
 }
-#ApplicationShop .get_myshop{
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    left: 0px;
-    z-index: 10;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+#ApplicationShop .get_myshop {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #ApplicationShop .mui-bar {
-    background: $header_background;
-    a {
-        color: #ffffff;
-    }
+  background: $header_background;
+  a {
+    color: #ffffff;
+  }
 }
 #ApplicationShop .mui-title {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 #ApplicationShop .box_1 {
-    margin: 0px 0px 5px;
-    font-size: 0.14rem;
-    color: rgba(80, 80, 80, 1);
-    span {
-        width: 0.9rem;
-        display: inline-block;
-        flex-shrink: 0;
+  margin: 0px 0px 5px;
+  font-size: 0.14rem;
+  color: rgba(80, 80, 80, 1);
+  span {
+    width: 0.9rem;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .input_box {
+    display: flex;
+    padding: 0px 0px 0px 15px;
+    height: 0.4rem;
+    align-items: center;
+    input {
+      padding: 0px;
+      margin: 0px;
+      border: none;
+      font-size: 0.14rem;
     }
-    .input_box {
-        display: flex;
-        padding: 0px 0px 0px 15px;
-        height: 0.4rem;
-        align-items: center;
-        input {
-            padding: 0px;
-            margin: 0px;
-            border: none;
-            font-size: 0.14rem;
-        }
-    }
+  }
 }
 
 #ApplicationShop .box_2 {
-    padding: 0.1rem 0px 0.1rem 15px;
-    margin: 0px 0px 5px;
-    background: #ffffff;
-    font-size: 0.14rem;
-    display: flex;
-    > li:nth-child(1) {
-        width: 0.9rem;
-        flex-shrink: 0;
+  padding: 0.1rem 0px 0.1rem 15px;
+  margin: 0px 0px 5px;
+  background: #ffffff;
+  font-size: 0.14rem;
+  display: flex;
+  > li:nth-child(1) {
+    width: 0.9rem;
+    flex-shrink: 0;
+  }
+  > li:nth-child(2) {
+    width: 1.5rem;
+    height: 1.12rem;
+    position: relative;
+    .tishi {
+      width: 100%;
+      height: 100%;
+      background: #cccccc;
+      text-align: center;
+      line-height: 1.1rem;
+      color: #ffffff;
     }
-    > li:nth-child(2) {
-        width: 1.5rem;
-        height: 1.12rem;
-        position: relative;
-        .tishi {
-            width: 100%;
-            height: 100%;
-            background: #cccccc;
-            text-align: center;
-            line-height: 1.1rem;
-            color: #ffffff;
-        }
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        span {
-            position: absolute;
-            right: 0px;
-            top: 0px;
-            width: 0.32rem;
-            height: 0.32rem;
-            background-color: rgba(153, 153, 153, 0.5);
-            color: #ffffff;
-            text-align: center;
-            line-height: 0.32rem;
-            font-size: 0.22rem;
-        }
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
+    span {
+      position: absolute;
+      right: 0px;
+      top: 0px;
+      width: 0.32rem;
+      height: 0.32rem;
+      background-color: rgba(153, 153, 153, 0.5);
+      color: #ffffff;
+      text-align: center;
+      line-height: 0.32rem;
+      font-size: 0.22rem;
+    }
+  }
 }
 
 #ApplicationShop .box_3 {
-    background: #ffffff;
-    margin: 0px 0px 5px 0px;
-    .title_1 {
-        padding: 11px 15px;
-        font-size: 0.14rem;
-        color: rgba(80, 80, 80, 1);
+  background: #ffffff;
+  margin: 0px 0px 5px 0px;
+  .title_1 {
+    padding: 11px 15px;
+    font-size: 0.14rem;
+    color: rgba(80, 80, 80, 1);
+  }
+  .lunbo {
+    display: flex;
+    padding: 0px 0px 11px 0px;
+    .left_1 {
+      width: 15px;
+      height: 0.9rem;
+      line-height: 0.9rem;
+      flex-shrink: 0;
+      position: relative;
+      i {
+        font-size: 16px;
+      }
     }
-    .lunbo {
-        display: flex;
-        padding: 0px 0px 11px 0px;
-        .left_1 {
-            width: 15px;
-            height: 0.9rem;
-            line-height: 0.9rem;
-            flex-shrink: 0;
-            position: relative;
-            i {
-                font-size: 16px;
-            }
+    .img_list {
+      border: 1px solid #e4e4e4;
+      flex-grow: 1;
+      width: 0;
+      .swiper-container {
+        width: 100%;
+      }
+      .swiper-slide {
+        width: 120px;
+        height: 0.9rem;
+        span {
+          position: absolute;
+          right: 0px;
+          top: 0px;
+          width: 0.32rem;
+          height: 0.32rem;
+          background-color: rgba(153, 153, 153, 0.5);
+          color: #ffffff;
+          text-align: center;
+          line-height: 0.32rem;
+          font-size: 0.22rem;
         }
-        .img_list {
-            border: 1px solid #e4e4e4;
-            flex-grow: 1;
-            width: 0;
-            .swiper-container {
-                width: 100%;
-            }
-            .swiper-slide {
-                width: 120px;
-                height: 0.9rem;
-                span {
-                    position: absolute;
-                    right: 0px;
-                    top: 0px;
-                    width: 0.32rem;
-                    height: 0.32rem;
-                    background-color: rgba(153, 153, 153, 0.5);
-                    color: #ffffff;
-                    text-align: center;
-                    line-height: 0.32rem;
-                    font-size: 0.22rem;
-                }
-            }
-            img {
-                height: 100%;
-                width: 100%;
-                object-fit: cover;
-            }
-        }
-        .right_1 {
-            width: 0.4rem;
-            height: 0.9rem;
-            flex-shrink: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(229, 229, 229, 1);
-            span {
-                width: 0.26rem;
-                height: 0.26rem;
-                border-radius: 100%;
-                border: 1px solid rgba(40, 148, 220, 1);
-                text-align: center;
-                color: rgba(40, 148, 220, 1);
-            }
-        }
+      }
+      img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+      }
     }
+    .right_1 {
+      width: 0.4rem;
+      height: 0.9rem;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(229, 229, 229, 1);
+      span {
+        width: 0.26rem;
+        height: 0.26rem;
+        border-radius: 100%;
+        border: 1px solid rgba(40, 148, 220, 1);
+        text-align: center;
+        color: rgba(40, 148, 220, 1);
+      }
+    }
+  }
 }
 
 #ApplicationShop .box_4 {
-    background: #ffffff;
-    padding: 0px 15px;
-    margin: 0px 0px 5px 0px;
-    .title_1 {
-        padding: 11px 0px;
-        font-size: 0.14rem;
-        color: rgba(80, 80, 80, 1);
-        .tishi {
-            color: rgba(166, 166, 166, 1);
-            font-size: 12px;
-        }
-    }
-    .table_box {
-        // padding: 0px 15px;
-        text-align: right;
-        white-space: nowrap;
-        color: #505050;
-        font-size: 0.14rem;
-    }
-    table {
-        width: 100%;
-    }
-    tr {
-        border-bottom: 1px solid #ededed;
-        > td:nth-child(1) {
-            width: 1px;
-        }
-    }
-    td {
-        padding: 10px 0px;
-    }
-}
-
-#ApplicationShop .box_5{
-    height: 44px;
-    padding: 0px 17px;
-    color: rgba(80, 80, 80, 1);
-    background: #ffffff;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-    span{
-        width: 90px;
-        flex-shrink: 0;
-    }
-    input{
-        padding: 0px;
-        margin: 0px;
-        height: auto;
-        border:none;
-        background: none;
-        font-size: 14px;
-    }
-}
-
-#ApplicationShop .box_6{
+  background: #ffffff;
+  padding: 0px 15px;
+  margin: 0px 0px 5px 0px;
+  .title_1 {
+    padding: 11px 0px;
     font-size: 0.14rem;
-    margin: 0px 0px 5px;
+    color: rgba(80, 80, 80, 1);
+    .tishi {
+      color: rgba(166, 166, 166, 1);
+      font-size: 12px;
+    }
+  }
+  .table_box {
+    // padding: 0px 15px;
+    text-align: right;
+    white-space: nowrap;
+    color: #505050;
+    font-size: 0.14rem;
+  }
+  table {
+    width: 100%;
+  }
+  tr {
+    border-bottom: 1px solid #ededed;
+    > td:nth-child(1) {
+      width: 1px;
+    }
+  }
+  td {
+    padding: 10px 0px;
+  }
 }
 
+#ApplicationShop .box_5 {
+  height: 44px;
+  padding: 0px 17px;
+  color: rgba(80, 80, 80, 1);
+  background: #ffffff;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  span {
+    width: 90px;
+    flex-shrink: 0;
+  }
+  input {
+    padding: 0px;
+    margin: 0px;
+    height: auto;
+    border: none;
+    background: none;
+    font-size: 14px;
+  }
+}
+
+#ApplicationShop .box_6 {
+  font-size: 0.14rem;
+  margin: 0px 0px 5px;
+}
 
 #ApplicationShop .Agreement {
-    display: flex;
-    padding: 0px 20px;
-    font-size: 12px;
-    align-items: center;
-    margin: 20px 0px;
-    > span:nth-child(2) {
-        margin: 0px 0px 0px 5px;
-    }
-    > span:nth-child(3) {
-        /* color: rgba(58, 182, 237, 1) */
-        color: rgba(42, 130, 228, 1);
-    }
-    > span:nth-child(4) {
-        flex-grow: 1;
-        text-align: right;
-        color: rgba(42, 130, 228, 1);
-    }
+  display: flex;
+  padding: 0px 20px;
+  font-size: 12px;
+  align-items: center;
+  margin: 20px 0px;
+  > span:nth-child(2) {
+    margin: 0px 0px 0px 5px;
+  }
+  > span:nth-child(3) {
+    /* color: rgba(58, 182, 237, 1) */
+    color: rgba(42, 130, 228, 1);
+  }
+  > span:nth-child(4) {
+    flex-grow: 1;
+    text-align: right;
+    color: rgba(42, 130, 228, 1);
+  }
 }
 
 #ApplicationShop .btn_1 {
-    width: 2.5rem;
-    display: block;
-    margin: 0px auto 0.2rem;
-    height: 35px;
-    background: $header_background;
-    border: none;
-    border-radius: 35px;
-    color: #ffffff;
+  width: 2.5rem;
+  display: block;
+  margin: 0px auto 0.2rem;
+  height: 35px;
+  background: $header_background;
+  border: none;
+  border-radius: 35px;
+  color: #ffffff;
 }
 
 #ApplicationShop .Cropper_box {
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100%;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: #e5e5e5;
+  z-index: 10;
+  .cont_1 {
     height: 100%;
+  }
+  .footer_1 {
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    bottom: 0px;
+    display: flex;
+    font-size: 20px;
+    color: #ffffff;
+    padding: 25px 0px;
+    justify-content: space-around;
+  }
+
+  .vue-cropper {
     background: #e5e5e5;
-    z-index: 10;
-    .cont_1 {
-        height: 100%;
-    }
-    .footer_1 {
-        position: absolute;
-        width: 100%;
-        left: 0px;
-        bottom: 0px;
-        display: flex;
-        font-size: 20px;
-        color: #ffffff;
-        padding: 25px 0px;
-        justify-content: space-around;
-    }
-
-    .vue-cropper {
-        background: #e5e5e5;
-    }
-    .cropper-modal {
-        background: rgba(181, 181, 181, 0.5);
-    }
-    .cropper-face {
-        background-size: cover;
-        background-color: rgba(0, 0, 0, 0);
-        opacity: 1;
-    }
-    .cropper-view-box {
-        outline: none;
-    }
+  }
+  .cropper-modal {
+    background: rgba(181, 181, 181, 0.5);
+  }
+  .cropper-face {
+    background-size: cover;
+    background-color: rgba(0, 0, 0, 0);
+    opacity: 1;
+  }
+  .cropper-view-box {
+    outline: none;
+  }
 }
 
-#ApplicationShop .shenhezhong{
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    background: #ffffff;
-    padding: 1.2rem 0px 0px;
-    text-align: center;
-    color: rgba(80, 80, 80, 1);
+#ApplicationShop .shenhezhong {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  padding: 1.2rem 0px 0px;
+  text-align: center;
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  z-index: 1;
+  i {
+    display: inline-block;
+    font-size: 1.2rem;
+    color: rgba(248, 204, 132, 1);
+    margin: 0px 0px 30px 0px;
+  }
+}
+#ApplicationShop .jujue {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  padding: 1.2rem 0px 0px;
+  text-align: center;
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  z-index: 1;
+  i {
+    display: inline-block;
+    font-size: 1.2rem;
+    color: rgba(220, 56, 64, 1);
+    margin: 0px 0px 30px 0px;
+  }
+  .text_box {
+    width: 45%;
+    margin: 0px auto;
+    text-align: left;
+  }
+  button {
+    width: 1.4rem;
+    height: 0.3rem;
+    display: block;
+    margin: 0.5rem auto;
+    padding: 0px;
+    border-radius: 0.3rem;
     font-size: 14px;
-    z-index: 1;
-    i{
-        display: inline-block;
-        font-size: 1.2rem;
-        color: rgba(248, 204, 132, 1);
-        margin: 0px 0px 30px 0px;
-    }
-    
+    border: none;
+    color: #ffffff;
+    background: $header_background;
+  }
 }
-#ApplicationShop .jujue{
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    background: #ffffff;
-    padding: 1.2rem 0px 0px;
-    text-align: center;
-    color: rgba(80, 80, 80, 1);
-	font-size: 14px;
-    z-index: 1;
-    i{
-        display: inline-block;
-        font-size: 1.2rem;
-        color: rgba(220, 56, 64, 1);
-        margin: 0px 0px 30px 0px;
-    }
-    .text_box{
-        width: 45%;
-        margin: 0px auto;
-        text-align: left;
-    }
-    button{
-        width: 1.4rem;
-        height: 0.3rem;
-        display: block;
-        margin: 0.5rem auto;
-        padding: 0px;
-        border-radius: 0.3rem;
-        font-size: 14px;
-        border:none;
-        color: #ffffff;
-        background: $header_background;
-    }
-}
-
 
 // 单选
 #ApplicationShop .radio_1 {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    text-align: center;
-    line-height: 13px;
-    border-radius: 100%;
-    border: 2px solid #cccccc;
-    overflow: hidden;
-    margin: 0px 0px -4px 3px;
-    i {
-        font-size: 8px;
-        // display: none;
-        opacity: 0;
-    }
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  text-align: center;
+  line-height: 13px;
+  border-radius: 100%;
+  border: 2px solid #cccccc;
+  overflow: hidden;
+  margin: 0px 0px -4px 3px;
+  i {
+    font-size: 8px;
+    // display: none;
+    opacity: 0;
+  }
 }
 #ApplicationShop .radio_1.active {
-    background: rgba(58, 182, 237, 1);
-    border: 2px solid rgba(58, 182, 237, 1);
-    color: #ffffff;
-    i {
-        display: inline-block;
-        opacity: 1;
-    }
+  background: rgba(58, 182, 237, 1);
+  border: 2px solid rgba(58, 182, 237, 1);
+  color: #ffffff;
+  i {
+    display: inline-block;
+    opacity: 1;
+  }
 }
 </style>

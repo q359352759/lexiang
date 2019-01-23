@@ -61,23 +61,21 @@
 
 <script>
 export default {
-    name:'',
-    data(){
-        return{}
-    }
-}
+  name: "",
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
-    padding: 0.1rem;
-    li{
-        text-indent: 1em;
-        color: rgba(80, 80, 80, 1);
-        font-size: 0.14rem;
-        margin: 3px 0px ;
-    }
+.box_1 {
+  padding: 0.1rem;
+  li {
+    text-indent: 1em;
+    color: rgba(80, 80, 80, 1);
+    font-size: 0.14rem;
+    margin: 3px 0px;
+  }
 }
-
 </style>
-

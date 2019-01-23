@@ -6,28 +6,27 @@
 
 <script>
 export default {
-    name:'',
-    data () {
-        return {
-            width:''
-        }
-    },
-    mounted() {
-        var width=375;
-        var height=20
-        var canvas=this.$refs.canvas;
-        var ctx=canvas.getContext('2d');
-        ctx.moveTo(0,height);
-        ctx.quadraticCurveTo(width/2,-height,width,height);
-        ctx.fillStyle="#ffffff";
-        ctx.fill();
-    },
-}
+  name: "",
+  data() {
+    return {
+      width: ""
+    };
+  },
+  mounted() {
+    var width = 375;
+    var height = 20;
+    var canvas = this.$refs.canvas;
+    var ctx = canvas.getContext("2d");
+    ctx.moveTo(0, height);
+    ctx.quadraticCurveTo(width / 2, -height, width, height);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-canvas{
-    display: block;
+canvas {
+  display: block;
 }
 </style>
-

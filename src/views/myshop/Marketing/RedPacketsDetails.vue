@@ -160,202 +160,211 @@
 </template>
 
 <script>
-import loading from '@/components/loading.vue';
+import loading from "@/components/loading.vue";
 
-import {openloading,dateFtt} from '@/assets/js/currency'
+import { openloading, dateFtt } from "@/assets/js/currency";
 
-import hongbaoerwima from '@/components/myshop/hongbao/hongbaoerwima.vue'
+import hongbaoerwima from "@/components/myshop/hongbao/hongbaoerwima.vue";
 export default {
-    name:'',
-    components:{
-        loading,
-        hongbaoerwima
+  name: "",
+  components: {
+    loading,
+    hongbaoerwima
+  },
+  data() {
+    return {
+      RongqiShow: false,
+      shixiao: "", //是否失效
+      type: "", //0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
+      id: "",
+      Red_envelopes: {
+        //红包详情
+      },
+      commodity: {} //商品详情 用于查询商品红包
+    };
+  },
+  filters: {
+    filter_time(time) {
+      if (!time) return "";
+      return dateFtt(time, "yyyy.MM.dd");
+    }
+  },
+  methods: {
+    //分享
+    fenxiang() {
+      this.RongqiShow = !this.RongqiShow;
     },
-    data(){
-        return{
-            RongqiShow:false,
-            shixiao:'',     //是否失效
-            type:'',        //0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
-            id:'',
-            Red_envelopes:{ //红包详情
-                
-            },
-            commodity:{},   //商品详情 用于查询商品红包
-        }
+    //跳转修改红包页面
+    RedEnvelopeIssue() {
+      if (this.type == 1) {
+        this.$router.push("/RedEnvelopeIssue?type=" + this.type);
+      } else {
+        this.$router.push(
+          "/RedEnvelopeIssue?id=" + this.id + "&url_type=" + this.type
+        );
+      }
     },
-    filters:{
-        filter_time(time){
-            if(!time) return '';
-            return dateFtt(time,'yyyy.MM.dd')
-        },
-    },
-    methods:{
-        //分享
-        fenxiang(){
-            this.RongqiShow=!this.RongqiShow
-        },
-        //跳转修改红包页面
-        RedEnvelopeIssue(){
-            if(this.type==1){
-                this.$router.push('/RedEnvelopeIssue?type='+this.type);
-            }else{
-                this.$router.push('/RedEnvelopeIssue?id='+this.id+'&url_type='+this.type);
+    //根据Id查询红包
+    get_redenvelope_id() {
+      this.$axios({
+        method: "get",
+        url: "/api-s/shops/redenvelope/findById/" + this.id
+      })
+        .then(x => {
+          console.log(x);
+          if (x.data.code == 200) {
+            var data = x.data.data;
+            this.Red_envelopes = data;
+            if (data.type == 1) {
+              this.get_commodity(data.commodityId);
             }
-        },
-        //根据Id查询红包
-        get_redenvelope_id(){
-            this.$axios({
-                method:'get',
-                url:'/api-s/shops/redenvelope/findById/'+this.id
-            }).then(x=>{
-                console.log(x);
-                if(x.data.code==200){
-                    var data=x.data.data;
-                    this.Red_envelopes=data;
-                    if(data.type==1){
-                        this.get_commodity(data.commodityId);
-                    }
-                }else{
-                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示",'我知道了', function() {},"div");
-                }
-            }).catch(err=>{
-                console.log(err);
-                mui.toast('系统错误，稍后再试。', { duration: 2000, type: "div" });
-            })
-        },
-        //根据Id查询商品
-        get_commodity(x){
-            this.$axios({
-                method:'get',
-                url:'/api-s/shops/commodity/findById/'+x
-            }).then(x=>{
-                console.log('查询商品',x);
-                if(x.data.code==200){
-                    this.commodity=x.data.data;
-                }
-            }).catch(err=>{
-                console.log(err)
-            })
-        }
-        //
+          } else {
+            mui.alert(
+              x.data.msg ? x.data.msg : x.data.messag,
+              "提示",
+              "我知道了",
+              function() {},
+              "div"
+            );
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          mui.toast("系统错误，稍后再试。", { duration: 2000, type: "div" });
+        });
     },
-    mounted(){
-        console.log(this.$route);
-        if(this.$route.query.type){
-            this.type=this.$route.query.type;
-        }
-        this.id=this.$route.query.id;
-        this.shixiao=this.$route.query.shixiao ? this.$route.query.shixiao : '';
-        //根据Id查询红包
-        this.get_redenvelope_id()
-    },
-}
+    //根据Id查询商品
+    get_commodity(x) {
+      this.$axios({
+        method: "get",
+        url: "/api-s/shops/commodity/findById/" + x
+      })
+        .then(x => {
+          console.log("查询商品", x);
+          if (x.data.code == 200) {
+            this.commodity = x.data.data;
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+    //
+  },
+  mounted() {
+    console.log(this.$route);
+    if (this.$route.query.type) {
+      this.type = this.$route.query.type;
+    }
+    this.id = this.$route.query.id;
+    this.shixiao = this.$route.query.shixiao ? this.$route.query.shixiao : "";
+    //根据Id查询红包
+    this.get_redenvelope_id();
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 
-.mui-bar .header_1{
-    position: absolute;
-    top: 0px;
-    right: 10px;
-    color: #ffffff;
-    line-height: 44px;
+.mui-bar .header_1 {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  color: #ffffff;
+  line-height: 44px;
 }
 
-
-.box_1{
-    // padding: 10px 12px;
-    padding: 7px 0px;
-    >div{
-        background: #ffffff;
-        display: flex;
-        padding: 6px 10px;
-        .img_box{
-            width: 53px;
-            flex-shrink: 0;
-            margin: 0px 5px 0px 0px;
-            position: relative;
-            img{
-                width: 100%;
-            }
-            span{
-                position: absolute;
-                width: 100%;
-                left: 0px;
-                top: 30px;
-                text-align: center;
-                color: #ffffff;
-            }
-            .qianDaoHongBao{
-                position: absolute;
-                width: 100%;
-                left: 0px;
-                top: 22px;
-                text-align: center;
-                color: #ffffff;
-                font-size: 10px;
-                >div:nth-child(2){
-                    line-height: 10px;
-                }
-            }
-        }
-        >ul{
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            color: rgba(80, 80, 80, 1);
-        	font-size: 10px;
-            .text_1{
-                color: rgba(166, 166, 166, 1);
-            }
-            .cuxiao{
-                color: rgba(212, 48, 48, 1);
-            }
-            .name_1{
-                color: #007aff;
-            }
-        }
-    }
-}
-.box_2{
-    li{
-        display: flex;
-        font-size: 14px;
-        >div{
-            width: 25%;
-            min-height: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-left: 1px solid #F6F6F6;
-        }
-        >div:nth-child(1){
-            border-left: none;
-        }
-    }
-    >li:nth-child(2n-1):not(.title){
-        background: #ffffff
-    }
-    .title{
-        background: $header_background;
+.box_1 {
+  // padding: 10px 12px;
+  padding: 7px 0px;
+  > div {
+    background: #ffffff;
+    display: flex;
+    padding: 6px 10px;
+    .img_box {
+      width: 53px;
+      flex-shrink: 0;
+      margin: 0px 5px 0px 0px;
+      position: relative;
+      img {
+        width: 100%;
+      }
+      span {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        top: 30px;
+        text-align: center;
         color: #ffffff;
+      }
+      .qianDaoHongBao {
+        position: absolute;
+        width: 100%;
+        left: 0px;
+        top: 22px;
+        text-align: center;
+        color: #ffffff;
+        font-size: 10px;
+        > div:nth-child(2) {
+          line-height: 10px;
+        }
+      }
     }
+    > ul {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      color: rgba(80, 80, 80, 1);
+      font-size: 10px;
+      .text_1 {
+        color: rgba(166, 166, 166, 1);
+      }
+      .cuxiao {
+        color: rgba(212, 48, 48, 1);
+      }
+      .name_1 {
+        color: #007aff;
+      }
+    }
+  }
 }
-
-.btn_1{
+.box_2 {
+  li {
+    display: flex;
+    font-size: 14px;
+    > div {
+      width: 25%;
+      min-height: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-left: 1px solid #f6f6f6;
+    }
+    > div:nth-child(1) {
+      border-left: none;
+    }
+  }
+  > li:nth-child(2n-1):not(.title) {
+    background: #ffffff;
+  }
+  .title {
     background: $header_background;
     color: #ffffff;
-    height: 40px;
-    width: 100%;
-    line-height: 40px;
-    position: fixed;
-    left: 0px;
-    bottom: 0px;
-    font-size: 14px;
-    text-align: center;
+  }
+}
+
+.btn_1 {
+  background: $header_background;
+  color: #ffffff;
+  height: 40px;
+  width: 100%;
+  line-height: 40px;
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  font-size: 14px;
+  text-align: center;
 }
 </style>
-
-

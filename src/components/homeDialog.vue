@@ -31,100 +31,95 @@
 
 <script>
 export default {
-    name:'',
-    data(){
-        return{
-            radio_type_2:false,
-            userInfo:''
-        }
+  name: "",
+  data() {
+    return {
+      radio_type_2: false,
+      userInfo: ""
+    };
+  },
+  methods: {
+    change_radio_2() {
+      this.radio_type_2 = !this.radio_type_2;
     },
-    methods:{
-        change_radio_2(){
-            this.radio_type_2=!this.radio_type_2;
-        },
-        zhidaole(){
-            // console.log(new Date("2018-12-12 11:40").getTime());
-            // console.log(new Date('2018-12-12 13:40').getTime());
-            // console.log(new Date('2018-12-12 13:40').getTime()-new Date('2018-12-12 11:40').getTime());
-            // 2 小时
-            // console.log((new Date('2018-12-12 13:40').getTime()-new Date('2018-12-12 11:40').getTime())/1000/60/60)
-            var obj={
-                    userid:this.userInfo ? this.userInfo.username : '',      //用户Id 没有id 表示游客
-                    time:new Date().getTime(),
-                    Tips:this.radio_type_2,     //false 表示需要再提示 true 表示不再提示;
-                }
-            localStorage.homeDialog=JSON.stringify(obj);
-            this.$emit('setHomeDialog',1);
-        },
-        help(){            
-            this.$router.push('/help')
-        }
+    zhidaole() {
+      // console.log(new Date("2018-12-12 11:40").getTime());
+      // console.log(new Date('2018-12-12 13:40').getTime());
+      // console.log(new Date('2018-12-12 13:40').getTime()-new Date('2018-12-12 11:40').getTime());
+      // 2 小时
+      // console.log((new Date('2018-12-12 13:40').getTime()-new Date('2018-12-12 11:40').getTime())/1000/60/60)
+      var obj = {
+        userid: this.userInfo ? this.userInfo.username : "", //用户Id 没有id 表示游客
+        time: new Date().getTime(),
+        Tips: this.radio_type_2 //false 表示需要再提示 true 表示不再提示;
+      };
+      localStorage.homeDialog = JSON.stringify(obj);
+      this.$emit("setHomeDialog", 1);
     },
-    mounted() {
-        try {
-            this.userInfo=JSON.parse(localStorage.userInfo);
-        } catch (error) {
-            
-        }
-    },
-}
+    help() {
+      this.$router.push("/help");
+    }
+  },
+  mounted() {
+    try {
+      this.userInfo = JSON.parse(localStorage.userInfo);
+    } catch (error) {}
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.dialog{
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.36);
-    z-index: 12;
-    overflow: auto;
+.dialog {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.36);
+  z-index: 12;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  .content_1 {
+    background: #ffffff;
+    width: 2.87rem;
+    border-radius: 12px;
+  }
+  .title {
+    height: 43px;
+    line-height: 43px;
+    font-size: 14px;
+    text-align: center;
+    font-weight: bold;
+  }
+  .cont {
+    padding: 0px 15px;
+    color: rgba(80, 80, 80, 1);
+    font-size: 14px;
+    li {
+      text-indent: 15px;
+    }
+  }
+  .tishi {
     display: flex;
     align-items: center;
-    justify-content: center;
-    .content_1{
-        background: #ffffff;
-        width: 2.87rem;
-        border-radius: 12px;
+    padding: 14px 0px 0px 38px;
+    color: rgba(128, 128, 128, 1);
+    font-size: 14px;
+    > div {
+      margin: 0px 5px 0px 0px;
     }
-    .title{
-        height: 43px;
-        line-height: 43px;
-    	font-size: 14px;
-        text-align: center;
-        font-weight: bold;
+  }
+  .btn_1 {
+    display: flex;
+    text-align: center;
+    color: rgba(0, 122, 255, 1);
+    font-size: 14px;
+    line-height: 55px;
+    li {
+      width: 50%;
     }
-    .cont{
-        padding: 0px 15px;
-        color: rgba(80, 80, 80, 1);
-    	font-size: 14px;
-        li{
-            text-indent: 15px;
-        }
-    }
-    .tishi{
-        display: flex;
-        align-items: center;
-        padding:14px 0px 0px 38px; 
-        color: rgba(128, 128, 128, 1);
-    	font-size: 14px;
-        >div{
-            margin: 0px 5px 0px 0px;
-        }
-    }
-    .btn_1{
-        display: flex;
-        text-align: center;
-        color: rgba(0, 122, 255, 1);
-    	font-size: 14px;
-        line-height: 55px;
-        li{
-            width: 50%;
-        }
-    }
+  }
 }
-
 </style>
-
-

@@ -88,221 +88,217 @@
 
 <script>
 import xingxing from "@/components/xingxing.vue";
-import loading from '@/components/loading.vue';
+import loading from "@/components/loading.vue";
 
 export default {
-    name:"",
-    components:{
-        xingxing,
-        loading
-    },
-    data(){
-        return{
-            huifu_box:false
-        }
-    },
-    methods:{
-        huifu(x){
-            console.log('回复')
-            this.huifu_box=x;
-        }
+  name: "",
+  components: {
+    xingxing,
+    loading
+  },
+  data() {
+    return {
+      huifu_box: false
+    };
+  },
+  methods: {
+    huifu(x) {
+      console.log("回复");
+      this.huifu_box = x;
     }
-}
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/css/config.scss';
+@import "@/assets/css/config.scss";
 
-.box_1{
-    padding: 0px 10px;
-    background: #ffffff;
-    margin: 0px 0px 5px 0px;
-    .header{
-        display: flex;
-        padding: 6px 0px;
-        flex-shrink: 0;
-        .Head_portrait{
-            width: 38px;
-            height: 38px;
-            margin: 0px 12px 0px 0px;
-            img{
-                width: 100%;
-                height: 100%;
-                border-radius: 100%;
-            }
-        }
-        .text{
-            flex-grow: 1;
-            div{
-                display: flex;
-                justify-content: space-between;
-            }
-            .name{
-                color: rgba(80, 80, 80, 1);
-            	font-size: 14px;
-            }
-            .time{
-                color: rgba(166, 166, 166, 1);
-            	font-size: 10px;
-            }   
-        }
-    }
-    .content_1{
-        >li{
-            border-bottom:1px solid rgba(246, 246, 246, 1);
-            padding: 0px 0px 8px 0px;
-            margin: 0px 0px 6px 0px;
-        }
-        >li:last-child{
-            margin: 0px;
-            border: none;
-        }
-        padding: 0px 0px 0px 50px;
-        color: rgba(80, 80, 80, 1);
-        font-size: 12px;
-        .header{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            .time_1{
-                color: #fc6621;
-            }
-            .time_2{
-                color: rgba(166, 166, 166, 1);
-            	font-size: 10px;
-            }
-        }
-        .text_1{
-            margin: 0px 0px 8px 0px;
-        }
-        .img_box{
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            .img_list{
-                display: flex;
-                flex-wrap: wrap;
-                >li{
-                    width: 60px;
-                    height: 60px;
-                    margin: 0px 8px 0px 0px;
-                    img{
-                        width: 100%;
-                        height: 100%;
-                    }
-                }
-            }
-            .dianzan{
-                color: rgba(166, 166, 166, 1);
-                font-size: 14px;
-                i{
-                    color: #f86c0c;
-                    font-size: 24px;
-                }
-            }
-        }
-        .huifu{
-            padding: 11px 0px 0px 0px;
-            div{
-                width: 52px;
-                height: 22px;
-                border-radius: 22px;
-                line-height: 20px;
-                font-size: 12px;
-                margin: 0px 0px 0px 12px;
-                text-align: center;
-            }
-            >div:nth-child(1){
-                color: #007aff;
-                border:1px solid #007aff;
-            }
-            >div:nth-child(2){
-                color: #808080;
-                border:1px solid #808080;
-            }
-        }
-    }
-}
-
-.box_2{
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    z-index: 10;
-    width: 100%;
-    height: 100%;
-    .mask{
+.box_1 {
+  padding: 0px 10px;
+  background: #ffffff;
+  margin: 0px 0px 5px 0px;
+  .header {
+    display: flex;
+    padding: 6px 0px;
+    flex-shrink: 0;
+    .Head_portrait {
+      width: 38px;
+      height: 38px;
+      margin: 0px 12px 0px 0px;
+      img {
         width: 100%;
         height: 100%;
-        background: #999999;
-        opacity: 0.5;
+        border-radius: 100%;
+      }
     }
-    .content_1{
-        padding: 0px 10px;
-        position: absolute;
-        left: 0px;
-        bottom: 0px;
-        width: 100%;
-        background: #ffffff;
-        .name{
-            padding: 8px 0px;
-            text-align: center;
-            color: rgba(80, 80, 80, 1);
-        	font-size: 14px;
-        }
-        .text_box{
-            min-height: 86px;
-            background-color: rgba(246, 246, 246, 1);
-            font-size: 14px;
-            padding: 8px;
-            position: relative;
-        }
-        .text_box:empty::after{
-            position: absolute;
-            top: 6px;
-            left: 8px;
-            content: "请输入回复内容";            
-            color: rgba(166, 166, 166, 1);
-            font-size: 14px;
-        }
-        .img_box{
-            padding: 7px 0px 0px;
-            display: flex;
-            flex-wrap: wrap;
-            >li{
-                width: 66px;
-                height: 66px;
-                position: relative;
-                margin: 0px 8px 0px 0px;
-                background-color: rgba(229, 229, 229, 1);
-                img{
-                    width: 100%;
-                    height: 100%;
-                }
-            }
-            .add{
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 33px;
-                color: rgba(80, 80, 80, 1);
-            }
-        }
-        .btn_1{
-            background: $header_background;
-            width: 175px;
-            height: 34px;
-            margin: 28px auto 35px;
-            border-radius: 34px;
-            text-align: center;
-            color: #ffffff;
-            line-height: 34px;
-            font-size: 14px;
-        }
+    .text {
+      flex-grow: 1;
+      div {
+        display: flex;
+        justify-content: space-between;
+      }
+      .name {
+        color: rgba(80, 80, 80, 1);
+        font-size: 14px;
+      }
+      .time {
+        color: rgba(166, 166, 166, 1);
+        font-size: 10px;
+      }
     }
+  }
+  .content_1 {
+    > li {
+      border-bottom: 1px solid rgba(246, 246, 246, 1);
+      padding: 0px 0px 8px 0px;
+      margin: 0px 0px 6px 0px;
+    }
+    > li:last-child {
+      margin: 0px;
+      border: none;
+    }
+    padding: 0px 0px 0px 50px;
+    color: rgba(80, 80, 80, 1);
+    font-size: 12px;
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .time_1 {
+        color: #fc6621;
+      }
+      .time_2 {
+        color: rgba(166, 166, 166, 1);
+        font-size: 10px;
+      }
+    }
+    .text_1 {
+      margin: 0px 0px 8px 0px;
+    }
+    .img_box {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      .img_list {
+        display: flex;
+        flex-wrap: wrap;
+        > li {
+          width: 60px;
+          height: 60px;
+          margin: 0px 8px 0px 0px;
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+      .dianzan {
+        color: rgba(166, 166, 166, 1);
+        font-size: 14px;
+        i {
+          color: #f86c0c;
+          font-size: 24px;
+        }
+      }
+    }
+    .huifu {
+      padding: 11px 0px 0px 0px;
+      div {
+        width: 52px;
+        height: 22px;
+        border-radius: 22px;
+        line-height: 20px;
+        font-size: 12px;
+        margin: 0px 0px 0px 12px;
+        text-align: center;
+      }
+      > div:nth-child(1) {
+        color: #007aff;
+        border: 1px solid #007aff;
+      }
+      > div:nth-child(2) {
+        color: #808080;
+        border: 1px solid #808080;
+      }
+    }
+  }
 }
 
-        
+.box_2 {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  .mask {
+    width: 100%;
+    height: 100%;
+    background: #999999;
+    opacity: 0.5;
+  }
+  .content_1 {
+    padding: 0px 10px;
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+    background: #ffffff;
+    .name {
+      padding: 8px 0px;
+      text-align: center;
+      color: rgba(80, 80, 80, 1);
+      font-size: 14px;
+    }
+    .text_box {
+      min-height: 86px;
+      background-color: rgba(246, 246, 246, 1);
+      font-size: 14px;
+      padding: 8px;
+      position: relative;
+    }
+    .text_box:empty::after {
+      position: absolute;
+      top: 6px;
+      left: 8px;
+      content: "请输入回复内容";
+      color: rgba(166, 166, 166, 1);
+      font-size: 14px;
+    }
+    .img_box {
+      padding: 7px 0px 0px;
+      display: flex;
+      flex-wrap: wrap;
+      > li {
+        width: 66px;
+        height: 66px;
+        position: relative;
+        margin: 0px 8px 0px 0px;
+        background-color: rgba(229, 229, 229, 1);
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .add {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 33px;
+        color: rgba(80, 80, 80, 1);
+      }
+    }
+    .btn_1 {
+      background: $header_background;
+      width: 175px;
+      height: 34px;
+      margin: 28px auto 35px;
+      border-radius: 34px;
+      text-align: center;
+      color: #ffffff;
+      line-height: 34px;
+      font-size: 14px;
+    }
+  }
+}
 </style>
-
-

@@ -799,21 +799,17 @@ minor-fareast;mso-hansi-font-family:Calibri;mso-hansi-theme-font:minor-latin'>åœ
 
 <script>
 export default {
-    name:'',
-    data () {
-        return {
-            
-        }
-    }
-}
+  name: "",
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.mui-content{
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 60px;
+.mui-content {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 60px;
 }
 </style>
-
-

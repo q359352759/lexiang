@@ -27,17 +27,15 @@
 
 <script>
 export default {
-    name:"",
-    data () {
-        return {
-            
-        }
-    }
-}
+  name: "",
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
-	padding: 10px;
+.box_1 {
+  padding: 10px;
 }
 </style>

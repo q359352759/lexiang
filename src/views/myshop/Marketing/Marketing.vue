@@ -68,139 +68,139 @@
 </template>
 
 <script>
-import loading from '@/components/loading.vue';
-import {openloading} from '@/assets/js/currency.js';
-import { mapActions, mapGetters } from 'vuex';
+import loading from "@/components/loading.vue";
+import { openloading } from "@/assets/js/currency.js";
+import { mapActions, mapGetters } from "vuex";
 export default {
-    name:'',
-    components:{
-        loading
+  name: "",
+  components: {
+    loading
+  },
+  data() {
+    return {
+      专享列表: {}
+    };
+  },
+  computed: {
+    ...mapGetters({
+      我的店铺: "get_myshop"
+    })
+  },
+  methods: {
+    ...mapActions({
+      查询我的店铺: "setMyshop",
+      查询店铺专享: "shangPing/查询店铺专享"
+    }),
+    //跳转红包界面
+    RedEnvelopes() {
+      this.$router.push("/RedEnvelopes");
     },
-    data(){
-        return{
-            专享列表:{}
+    //跳转专享营销
+    MarketingVip() {
+      this.$router.push("/MarketingVip");
+    },
+    async 店铺初始化() {
+      await this.查询我的店铺();
+      this.查询店铺专享(this.我的店铺.shopid).then(x => {
+        if (x.data.code == 200) {
+          this.专享列表 = x.data.data;
         }
-    },
-    computed: {
-        ...mapGetters({
-            我的店铺:'get_myshop'
+      });
+    }
+  },
+  mounted() {
+    if (this.我的店铺 && this.我的店铺.shopid) {
+      console.log(this.我的店铺);
+      this.查询店铺专享(this.我的店铺.shopid)
+        .then(x => {
+          if (x.data.code == 200) {
+            this.专享列表 = x.data.data;
+          }
         })
-    },
-    methods:{
-        ...mapActions({
-            查询我的店铺:'setMyshop',
-            查询店铺专享:'shangPing/查询店铺专享',
-        }),
-        //跳转红包界面
-        RedEnvelopes(){
-            this.$router.push('/RedEnvelopes')
-        },
-        //跳转专享营销
-        MarketingVip(){
-            this.$router.push('/MarketingVip')
-        },
-        async 店铺初始化(){
-            await this.查询我的店铺();
-            this.查询店铺专享(this.我的店铺.shopid).then(x=>{
-                if(x.data.code==200){
-                    this.专享列表=x.data.data
-                }
-            })
-        }
-    },
-    mounted() {
-        if(this.我的店铺 && this.我的店铺.shopid){
-            console.log(this.我的店铺);
-            this.查询店铺专享(this.我的店铺.shopid).then(x=>{
-                if(x.data.code==200){
-                    this.专享列表=x.data.data
-                }
-            }).catch(err=>{})
-        }else{
-            this.店铺初始化();            
-        }
-    },
-}
+        .catch(err => {});
+    } else {
+      this.店铺初始化();
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
-    padding: 12px 0px 12px 0px;
+.box_1 {
+  padding: 12px 0px 12px 0px;
+  display: flex;
+  background: #ffffff;
+  display: flex;
+  color: rgba(80, 80, 80, 1);
+  font-size: 12px;
+  > li {
+    width: calc(100% / 3);
+    text-align: center;
+    position: relative;
+  }
+  > li::after {
+    position: absolute;
+    width: 1px;
+    height: 60px;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    background-color: rgba(229, 229, 229, 1);
+    content: "";
+    margin: auto;
+  }
+  > li:nth-child(1)::after {
+    display: none;
+  }
+  .img_box {
+    height: 32px;
+    img {
+      height: 32px;
+      width: 32px;
+    }
+  }
+  .text {
+    margin: 3px 0px 0px 0px;
+  }
+}
+.box_2 {
+  margin: 3px 0px 0px;
+  > li {
     display: flex;
     background: #ffffff;
-    display: flex;
-    color: rgba(80, 80, 80, 1);
-	font-size: 12px;
-    >li{
-        width: calc(100% / 3);
-        text-align: center;
-        position: relative;
+    border-bottom: 1px solid #efeff4;
+    padding: 11px;
+    .img_box {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      margin: 0px 12px 0px 0px;
+      img {
+        width: 100%;
+        height: 100%;
+      }
     }
-    >li::after{
-        position: absolute;
-        width: 1px;
-    	height: 60px;
-        top: 0px;
-        bottom: 0px;
-        left:0px;
-        background-color: rgba(229, 229, 229, 1);
-        content: '';
-        margin: auto;    
+    .cont_1 {
+      flex-grow: 1;
+      width: 0;
+      .title_1 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: rgba(80, 80, 80, 1);
+        font-size: 14px;
+      }
+      .text_1 {
+        color: rgba(166, 166, 166, 1);
+        font-size: 10px;
+      }
     }
-    >li:nth-child(1)::after{
-        display: none;
+    .right_1 {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      color: #c0bcbc;
     }
-    .img_box{
-        height: 32px;
-        img{
-            height: 32px;
-            width: 32px;
-        }
-    }
-    .text{
-        margin: 3px 0px 0px 0px;
-    }
-
-}
-.box_2{
-    margin: 3px 0px 0px;
-    >li{
-        display: flex;
-        background: #ffffff;
-        border-bottom: 1px solid #efeff4;
-        padding: 11px;
-        .img_box{
-            width: 32px;
-            height: 32px;
-            flex-shrink: 0;
-            margin: 0px 12px 0px 0px;
-            img{
-                width: 100%;
-                height: 100%;
-            }
-        }
-        .cont_1{
-            flex-grow: 1;
-            width: 0;
-            .title_1{
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                color: rgba(80, 80, 80, 1);
-            	font-size: 14px;
-            }
-            .text_1{
-                color: rgba(166, 166, 166, 1);
-            	font-size: 10px;
-            }
-        }
-        .right_1{
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            color: #c0bcbc;
-        }
-    }
+  }
 }
 </style>
-

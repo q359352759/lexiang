@@ -63,110 +63,112 @@
 
 <script>
 export default {
-    name: "",
-    data() {
-        return {
-            Positive_obj: {},
-            The_other_side: {},
-            userInfo: JSON.parse(localStorage.userInfo),
-            Authentication: {
-                address: "", //四川省大竹县永胜乡麻柳村8组
-                birthday: "", //19870905
-                createTime: "", //2018-10-27T12:14:15.000+0000
-                frontImg: "", //64618f66fd453163e55451cb2db89f14
-                id: "",
-                idNumber: "", //513029198709055132
-                issueArea: "", //大竹县公安局
-                name: "", //孟春成
-                nation: "", //汉
-                reverseImg: "", //7a1201141e8de5337692459ee0e718c1  反面
-                userid: "" //18583034205
-            }
-        };
-    },
-    mounted() {
-        this.$axios({
-            method: "get",
-            url:"/api-u/certification/findByUserid?userid=" +this.userInfo.username
-        }).then(x => {
-            console.log("获取认证信息", x);
-            this.Authentication = x.data;
-        }).catch(error => {
-            console.log("获取认证信息错误", error);
-        });
-    }
+  name: "",
+  data() {
+    return {
+      Positive_obj: {},
+      The_other_side: {},
+      userInfo: JSON.parse(localStorage.userInfo),
+      Authentication: {
+        address: "", //四川省大竹县永胜乡麻柳村8组
+        birthday: "", //19870905
+        createTime: "", //2018-10-27T12:14:15.000+0000
+        frontImg: "", //64618f66fd453163e55451cb2db89f14
+        id: "",
+        idNumber: "", //513029198709055132
+        issueArea: "", //大竹县公安局
+        name: "", //孟春成
+        nation: "", //汉
+        reverseImg: "", //7a1201141e8de5337692459ee0e718c1  反面
+        userid: "" //18583034205
+      }
+    };
+  },
+  mounted() {
+    this.$axios({
+      method: "get",
+      url: "/api-u/certification/findByUserid?userid=" + this.userInfo.username
+    })
+      .then(x => {
+        console.log("获取认证信息", x);
+        this.Authentication = x.data;
+      })
+      .catch(error => {
+        console.log("获取认证信息错误", error);
+      });
+  }
 };
 </script>
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
 #AlreadyRealName #zhengmianInput {
-    display: none;
+  display: none;
 }
 #AlreadyRealName {
+  height: 100%;
+  .mui-content {
     height: 100%;
-    .mui-content {
-        height: 100%;
-        // background:#ffffff;
-    }
+    // background:#ffffff;
+  }
 }
 #AlreadyRealName .mui-bar {
-    background: $header_background;
-    a {
-        color: #ffffff;
-    }
+  background: $header_background;
+  a {
+    color: #ffffff;
+  }
 }
 #AlreadyRealName .mui-title {
-    color: #ffffff;
+  color: #ffffff;
 }
 
 #AlreadyRealName .box_1 {
-    text-align: center;
-    padding: 0.2rem 0px;
+  text-align: center;
+  padding: 0.2rem 0px;
 }
 #AlreadyRealName .box_2 {
-    padding: 10px;
-    li {
-        display: flex;
-        align-items: center;
-        margin: 0px 0px 0.1rem 0px;
-        font-size: 0.14rem;
-        min-height: 0.3rem;
-        line-height: 0.3rem;
-        color: #484848;
-        > div:nth-child(1) {
-            width: 0.75rem;
-            flex-shrink: 0;
-        }
-        > div:nth-child(2) {
-            flex-grow: 1;
-            background: #ffffff;
-            padding: 0px 0px 0px 5px;
-        }
+  padding: 10px;
+  li {
+    display: flex;
+    align-items: center;
+    margin: 0px 0px 0.1rem 0px;
+    font-size: 0.14rem;
+    min-height: 0.3rem;
+    line-height: 0.3rem;
+    color: #484848;
+    > div:nth-child(1) {
+      width: 0.75rem;
+      flex-shrink: 0;
     }
+    > div:nth-child(2) {
+      flex-grow: 1;
+      background: #ffffff;
+      padding: 0px 0px 0px 5px;
+    }
+  }
 }
 #AlreadyRealName .box_3 {
-    > li {
-        margin: 0px 0px 0.23rem 0px;
-        display: flex;
-        align-items: center;
-        > div:nth-child(1) {
-            width: 1.35rem;
-            text-align: right;
-            padding: 0px 0.36rem 0px 0px;
-            font-size: 0.14rem;
-            color: #505050;
-        }
-        > div:nth-child(2) {
-            width: 1.9rem;
-            height: 1.17rem;
-            background: #ffffff;
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-        }
+  > li {
+    margin: 0px 0px 0.23rem 0px;
+    display: flex;
+    align-items: center;
+    > div:nth-child(1) {
+      width: 1.35rem;
+      text-align: right;
+      padding: 0px 0.36rem 0px 0px;
+      font-size: 0.14rem;
+      color: #505050;
     }
+    > div:nth-child(2) {
+      width: 1.9rem;
+      height: 1.17rem;
+      background: #ffffff;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
 }
 </style>

@@ -13,25 +13,24 @@
 
 <script>
 export default {
-    name: "",
-    props: {
-        loadingtype: Boolean, //加载中
-        nodata: Boolean, //没有一条数据
-        end: Boolean, //全部加载完成
-        text:'',      //提示语
-    },
-    data() {
-        return {};
-    }
+  name: "",
+  props: {
+    loadingtype: Boolean, //加载中
+    nodata: Boolean, //没有一条数据
+    end: Boolean, //全部加载完成
+    text: "" //提示语
+  },
+  data() {
+    return {};
+  }
 };
 </script>
 
 <style scoped>
 .config_loading {
-    padding: 10px;
-    font-size: 0.14rem;
-    color: rgba(80, 80, 80, 1);
-
+  padding: 10px;
+  font-size: 0.14rem;
+  color: rgba(80, 80, 80, 1);
 }
 .config_load {
   padding: 10px;
@@ -39,20 +38,18 @@ export default {
   color: rgba(80, 80, 80, 1);
 }
 .config_No_data {
-    padding: 50px 0px 0px;
-    font-size: 0.14rem;
-    color: rgba(80, 80, 80, 1);
+  padding: 50px 0px 0px;
+  font-size: 0.14rem;
+  color: rgba(80, 80, 80, 1);
 }
-.config_No_data div{
-    color: rgba(80, 80, 80, 1);
-	font-size: 14px;
+.config_No_data div {
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
 }
-.img_box{
-    margin: 0px 0px 5px 0px;
+.img_box {
+  margin: 0px 0px 5px 0px;
 }
-.img_box>img{
-    width: 80px;
+.img_box > img {
+  width: 80px;
 }
-
-
 </style>

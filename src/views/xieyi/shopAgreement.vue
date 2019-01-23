@@ -131,45 +131,42 @@
 
 <script>
 export default {
-    props:{
-        // name:{
-        //     default:''
-        // }
-    },
-    name:'',
-    data(){
-        return{
-            name:''
-        }
-    },
-    mounted() {
-        console.log(this.$route);
-        var query=this.$route.query;
-        this.name=this.$route.query.name ? this.$route.query.name : ''
-    },
-}
+  props: {
+    // name:{
+    //     default:''
+    // }
+  },
+  name: "",
+  data() {
+    return {
+      name: ""
+    };
+  },
+  mounted() {
+    console.log(this.$route);
+    var query = this.$route.query;
+    this.name = this.$route.query.name ? this.$route.query.name : "";
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
-    padding: 10px;
-    font-size: 14px;
-    line-height: 20px;
+.box_1 {
+  padding: 10px;
+  font-size: 14px;
+  line-height: 20px;
 }
-.title_1{
-    font-weight: bold;
+.title_1 {
+  font-weight: bold;
 }
-.title_2{
-    margin: 5px 0px 0px;
-    font-weight: bold;
+.title_2 {
+  margin: 5px 0px 0px;
+  font-weight: bold;
 }
-.kong{
-    height: 10px;
+.kong {
+  height: 10px;
 }
-.indent_1{
-    text-indent: 20px;
+.indent_1 {
+  text-indent: 20px;
 }
-
 </style>
-
-

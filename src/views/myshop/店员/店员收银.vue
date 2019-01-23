@@ -28,66 +28,62 @@
 
 <script>
 export default {
-    name:'',
-    data () {
-        return {
-            
-        }
-    }
-}
+  name: "",
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-@import '@/assets/css/config.scss';
-.mui-bar{
-    span{
-        position: absolute;
-        top: 0px;
-        right: 10px;
-        font-size: 12px;
-        color: #ffffff;
-        line-height: 44px;
-    }
+@import "@/assets/css/config.scss";
+.mui-bar {
+  span {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    font-size: 12px;
+    color: #ffffff;
+    line-height: 44px;
+  }
 }
-.mui-content{
-    flex-direction: column;
+.mui-content {
+  flex-direction: column;
+  display: flex;
+  .box_1.头部 {
+    flex-shrink: 0;
+  }
+  .box_1.内容 {
+    flex-grow: 1;
+    overflow: auto;
+  }
+}
+.box_1 {
+  li {
     display: flex;
-    .box_1.头部{
-        flex-shrink: 0;
+    line-height: 32px;
+    text-align: center;
+    font-size: 12px;
+    div {
+      width: 25%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border-left: 1px solid #fafafa;
     }
-    .box_1.内容{
-        flex-grow: 1;
-        overflow: auto;
+    div:nth-child(1) {
+      border: none;
     }
-}
-.box_1{
-    li{
-        display: flex;
-        line-height: 32px;
-        text-align: center;
-        font-size: 12px;
-        div{
-            width: 25%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            border-left: 1px solid #FAFAFA;
-        }
-        div:nth-child(1){
-            border:none;
-        }
-        .order{
-            color: #2B82E4;
-        }
+    .order {
+      color: #2b82e4;
     }
-    li:nth-child(2n-1):not(.header_1){
-        background:#ffffff; 
-    }
-    li.header_1{
-        background: $header_background;
-        color: #ffffff;
-    }
+  }
+  li:nth-child(2n-1):not(.header_1) {
+    background: #ffffff;
+  }
+  li.header_1 {
+    background: $header_background;
+    color: #ffffff;
+  }
 }
 </style>
-
-

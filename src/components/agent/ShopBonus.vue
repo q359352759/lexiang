@@ -57,157 +57,166 @@
 import { dateFtt } from "@/assets/js/currency";
 import { b64DecodeUnicode } from "@/assets/js/base64jiema";
 
-
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from "vuex";
 import loading from "@/components/loading.vue";
 export default {
-    name:'',
-    components:{
-        loading
+  name: "",
+  components: {
+    loading
+  },
+  props: {
+    fixed: {
+      define: false
+    }
+  },
+  data() {
+    return {};
+  },
+  // yyyy.MM.dd hh:mm
+  filters: {
+    filter_time(time, type) {
+      if (!time) return time;
+      return dateFtt(time, type);
     },
-    props: {
-        fixed:{
-            define:false
-        }
-    },
-    data () {
-        return {
-        }
-    },
-    // yyyy.MM.dd hh:mm
-    filters:{
-        filter_time(time,type){
-            if(!time) return time;
-            return dateFtt(time,type)
-        },
-        // 名字转Base64
-        filteer_name(name){
-            try {
-                name=b64DecodeUnicode(name)
-            } catch (error) {}
-            return name
-        }
-    },
-    computed: {
-        ...mapGetters({
-            type:'agent/ShopBonus/get_type',
-            fenrun_huiyuan: 'agent/ShopBonus/get_list2',
-            dailiren_fenrun_zichan:'agent/ShopBonus/dailiren_fenrun_zichan',    //代理人店铺分润资产
-            商家:'agent/ShopBonus/商家',
-            会员:'agent/ShopBonus/会员',
-        })
-    },
-    methods: {
-        ...mapActions({
-            set_type:'agent/ShopBonus/set_type'
-        }),
-        BonusDetail(item,type){
-            if(type==1){
-                this.$router.push('/agent/BonusDetail?id='+item.finalshopid+'&type='+type+'&name='+item.shopName);
-            }else{
-                this.$router.push('/agent/BonusDetail?id='+item.username+'&type='+type+'&name='+(item.nickname ? item.nickname : item.userPhone) );
-            }
-        }
-        // set_type()
-    },
-    mounted() {
-        // await 
-    },
-}
+    // 名字转Base64
+    filteer_name(name) {
+      try {
+        name = b64DecodeUnicode(name);
+      } catch (error) {}
+      return name;
+    }
+  },
+  computed: {
+    ...mapGetters({
+      type: "agent/ShopBonus/get_type",
+      fenrun_huiyuan: "agent/ShopBonus/get_list2",
+      dailiren_fenrun_zichan: "agent/ShopBonus/dailiren_fenrun_zichan", //代理人店铺分润资产
+      商家: "agent/ShopBonus/商家",
+      会员: "agent/ShopBonus/会员"
+    })
+  },
+  methods: {
+    ...mapActions({
+      set_type: "agent/ShopBonus/set_type"
+    }),
+    BonusDetail(item, type) {
+      if (type == 1) {
+        this.$router.push(
+          "/agent/BonusDetail?id=" +
+            item.finalshopid +
+            "&type=" +
+            type +
+            "&name=" +
+            item.shopName
+        );
+      } else {
+        this.$router.push(
+          "/agent/BonusDetail?id=" +
+            item.username +
+            "&type=" +
+            type +
+            "&name=" +
+            (item.nickname ? item.nickname : item.userPhone)
+        );
+      }
+    }
+    // set_type()
+  },
+  mounted() {
+    // await
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
-.ShopBonus{
-    padding: 0px 0px 50px;
+.ShopBonus {
+  padding: 0px 0px 50px;
 }
-.Header_1{
-    margin: 3px 0px 0px;
-    line-height: 34px;
+.Header_1 {
+  margin: 3px 0px 0px;
+  line-height: 34px;
+  display: flex;
+  background: #ffffff;
+  li {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    span {
+      display: inline-block;
+      padding: 0px 10px;
+    }
+  }
+  .active {
+    span {
+      border-bottom: 2px solid $header_background;
+    }
+  }
+}
+.List {
+  padding: 30px 0px 0px;
+  margin: 3px 0px 0px;
+  position: relative;
+  li {
     display: flex;
+    text-align: center;
+    min-height: 30px;
+    padding: 3px 0px;
+    font-size: 12px;
+    white-space: nowrap;
+    > div {
+      width: calc(100% / 3);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0px 10px;
+      border-left: 1px solid #f6f6f6;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      > div {
+        width: 100%;
+      }
+    }
+    > div:nth-child(1) {
+      border: none;
+    }
+  }
+  .hader_1.active {
+    position: fixed;
+    top: 44px;
+  }
+  .hader_1 {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    color: #ffffff;
+    background: $header_background;
+  }
+  li:nth-child(2n-1):not(.hader_1) {
+    background: #f0f0f0;
+  }
+  li:nth-child(2n) {
     background: #ffffff;
-    li{
-        width: 100%;
-        text-align: center;
-        font-size: 14px;
-        span{
-            display: inline-block;
-            padding: 0px 10px;
-        }
-    }
-    .active{
-        span{
-            border-bottom: 2px solid $header_background;
-        }
-    }
-}
-.List{
-    padding: 30px 0px 0px;
-    margin: 3px 0px 0px;
-    position: relative;
-    li{
-        display: flex;
-        text-align: center;
-        min-height: 30px;
-        padding: 3px 0px;
-        font-size: 12px;
-        white-space: nowrap;
-        >div{
-            width: calc(100% / 3);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding: 0px 10px;
-            border-left:1px solid #F6F6F6;
-            display: flex;
-            justify-content: center;
-            flex-direction: column;
-            >div{
-                width: 100%;
-            }
-        }
-        >div:nth-child(1){
-            border: none;
-        }
-    }
-    .hader_1.active{
-        position: fixed;
-        top: 44px;
-    }
-    .hader_1{
-        position: absolute;
-        top: 0px;
-        left: 0px;
-        width: 100%;
-        color: #ffffff;
-        background: $header_background;
-    }
-    li:nth-child(2n-1):not(.hader_1){
-        background: #F0F0F0;
-    }
-    li:nth-child(2n){
-        background: #ffffff;
-    }
-    .name{
-        color:#2A82E4;
-    }
+  }
+  .name {
+    color: #2a82e4;
+  }
 }
 
-.footer_1{
-    position: fixed;
-    width: 100%;
-    left: 0px;
-    bottom: 0px;
-    display: flex;
-    background: $header_background;
-    color: rgba(255, 255, 255, 1);
-	font-size: 11px;
-    line-height: 32px;
-    >li{
-        width: 50%;
-        text-align: center;
-    }
+.footer_1 {
+  position: fixed;
+  width: 100%;
+  left: 0px;
+  bottom: 0px;
+  display: flex;
+  background: $header_background;
+  color: rgba(255, 255, 255, 1);
+  font-size: 11px;
+  line-height: 32px;
+  > li {
+    width: 50%;
+    text-align: center;
+  }
 }
 </style>
-
-
-

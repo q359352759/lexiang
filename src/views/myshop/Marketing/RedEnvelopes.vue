@@ -174,234 +174,254 @@
 
 <script>
 export default {
-    name:'',
-    computed:{
-        myshop(){
-            return this.$store.state.myshop
-        },
-    },
-    data(){
-        return{
-            //0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
-            get_index:0,
-            hongbao_0:{
-                loading:true,
-                obj:''
-            },
-            hongbao_1:{
-                loading:true,
-                obj:''
-            },
-            hongbao_2:{
-                loading:true,
-                obj:''
-            },
-            hongbao_3:{
-                loading:true,
-                obj:''
-            },
-            hongbao_4:{
-                loading:true,
-                obj:''
-            },
-            hongbao_5:{
-                loading:true,
-                obj:''
-            }
-        }
-    },
-    methods:{
-        //跳转发放记录
-        jilu(){
-            this.$router.push('/myshop/Marketing/RedPackets/RedPacketRecords');
-        },
-        RedPacketReleaseRecord(x){
-            // this.$router.push('/RedPacketReleaseRecord?type='+x);
-            console.log(x)
-            if(this['hongbao_'+x].loading){
-                mui.toast('正在查询红包信息，请稍等。', { duration: 2000, type: "div" });
-                return
-            }
-            if(x==0){
-                if(this.hongbao_0.obj){
-                    this.$router.push('/redPacketsDetails?type=0&id='+this.hongbao_0.obj.id)
-                }else{
-                    this.$router.push('/RedEnvelopeIssue?type=0')
-                }
-            }else if(x==1){
-                if(this.hongbao_1.obj){
-                    this.$router.push('/redPacketsDetails?type=1&id='+this.hongbao_1.obj.id)
-                }else{
-                    this.$router.push('/RedEnvelopeIssue?type=1')
-                }
-            }else if(x==2){
-                if(this.hongbao_2.obj){
-                    this.$router.push('/redPacketsDetails?type=2&id='+this.hongbao_2.obj.id)
-                }else{
-                    this.$router.push('/RedEnvelopeIssue?type=2')
-                }
-            }else if(x==3){
-                if(this.hongbao_3.obj){
-                    this.$router.push('/redPacketsDetails?type=3&id='+this.hongbao_3.obj.id)
-                }else{
-                    this.$router.push('/RedEnvelopeIssue?type=3')
-                }
-            }else if(x==4){
-                if(this.hongbao_4.obj){
-                    this.$router.push('/redPacketsDetails?type=4&id='+this.hongbao_4.obj.id)
-                }else{
-                    this.$router.push('/RedEnvelopeIssue?type=4')
-                }
-            }else if(x==5){
-                if(this.hongbao_5.obj){
-                    this.$router.push('/redPacketsDetails?type=5&id='+this.hongbao_5.obj.id)
-                }else{
-                    this.$router.push('/RedEnvelopeIssue?type=5')
-                }
-            }
-        },
-        RedEnvelopeIssue(){
-            this.$router.push('/RedEnvelopeIssue')
-        },
-        //查询店铺
-        // /shops/redenvelope/findall
-        get_redenvelope(type){
-            this['hongbao_'+type].loading=true
-            this.$axios({
-                method:'get',
-                url:'/api-s/shops/redenvelope/findAll?start=0&length=10&shopid='+this.myshop.shopid+'&type='+type+'&ccc=1'
-            }).then(x=>{
-                console.log('查询红包',x)
-                if(x.data.code==200){
-                    this['hongbao_'+type].loading=false;
-                    if(x.data.data.data.length){
-                        this['hongbao_'+type].obj=x.data.data.data[0]
-                    }
-                }
-            }).catch(err=>{
-                console.log(err)
-                this['hongbao_'+type].loading=false;
-            })
-        }
-    },
-    mounted() {
-        if(this.myshop && this.myshop.shopid){
-            this.get_index=1
-            this.get_redenvelope(0);
-            this.get_redenvelope(1);
-            this.get_redenvelope(2);
-            this.get_redenvelope(3);
-            this.get_redenvelope(4);
-            this.get_redenvelope(5);
-        }else{
-            //获取自己的店铺
-            this.$store.commit('setMyshop');
-        }
-    },
-    watch:{
-        myshop(){
-            if(this.myshop && this.myshop.shopid && this.get_index==0){
-                this.get_redenvelope(0);
-                this.get_redenvelope(1);
-                this.get_redenvelope(2);
-                this.get_redenvelope(3);
-                this.get_redenvelope(4);
-                this.get_redenvelope(5);
-            }
-        }
+  name: "",
+  computed: {
+    myshop() {
+      return this.$store.state.myshop;
     }
-}
+  },
+  data() {
+    return {
+      //0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
+      get_index: 0,
+      hongbao_0: {
+        loading: true,
+        obj: ""
+      },
+      hongbao_1: {
+        loading: true,
+        obj: ""
+      },
+      hongbao_2: {
+        loading: true,
+        obj: ""
+      },
+      hongbao_3: {
+        loading: true,
+        obj: ""
+      },
+      hongbao_4: {
+        loading: true,
+        obj: ""
+      },
+      hongbao_5: {
+        loading: true,
+        obj: ""
+      }
+    };
+  },
+  methods: {
+    //跳转发放记录
+    jilu() {
+      this.$router.push("/myshop/Marketing/RedPackets/RedPacketRecords");
+    },
+    RedPacketReleaseRecord(x) {
+      // this.$router.push('/RedPacketReleaseRecord?type='+x);
+      console.log(x);
+      if (this["hongbao_" + x].loading) {
+        mui.toast("正在查询红包信息，请稍等。", {
+          duration: 2000,
+          type: "div"
+        });
+        return;
+      }
+      if (x == 0) {
+        if (this.hongbao_0.obj) {
+          this.$router.push(
+            "/redPacketsDetails?type=0&id=" + this.hongbao_0.obj.id
+          );
+        } else {
+          this.$router.push("/RedEnvelopeIssue?type=0");
+        }
+      } else if (x == 1) {
+        if (this.hongbao_1.obj) {
+          this.$router.push(
+            "/redPacketsDetails?type=1&id=" + this.hongbao_1.obj.id
+          );
+        } else {
+          this.$router.push("/RedEnvelopeIssue?type=1");
+        }
+      } else if (x == 2) {
+        if (this.hongbao_2.obj) {
+          this.$router.push(
+            "/redPacketsDetails?type=2&id=" + this.hongbao_2.obj.id
+          );
+        } else {
+          this.$router.push("/RedEnvelopeIssue?type=2");
+        }
+      } else if (x == 3) {
+        if (this.hongbao_3.obj) {
+          this.$router.push(
+            "/redPacketsDetails?type=3&id=" + this.hongbao_3.obj.id
+          );
+        } else {
+          this.$router.push("/RedEnvelopeIssue?type=3");
+        }
+      } else if (x == 4) {
+        if (this.hongbao_4.obj) {
+          this.$router.push(
+            "/redPacketsDetails?type=4&id=" + this.hongbao_4.obj.id
+          );
+        } else {
+          this.$router.push("/RedEnvelopeIssue?type=4");
+        }
+      } else if (x == 5) {
+        if (this.hongbao_5.obj) {
+          this.$router.push(
+            "/redPacketsDetails?type=5&id=" + this.hongbao_5.obj.id
+          );
+        } else {
+          this.$router.push("/RedEnvelopeIssue?type=5");
+        }
+      }
+    },
+    RedEnvelopeIssue() {
+      this.$router.push("/RedEnvelopeIssue");
+    },
+    //查询店铺
+    // /shops/redenvelope/findall
+    get_redenvelope(type) {
+      this["hongbao_" + type].loading = true;
+      this.$axios({
+        method: "get",
+        url:
+          "/api-s/shops/redenvelope/findAll?start=0&length=10&shopid=" +
+          this.myshop.shopid +
+          "&type=" +
+          type +
+          "&ccc=1"
+      })
+        .then(x => {
+          console.log("查询红包", x);
+          if (x.data.code == 200) {
+            this["hongbao_" + type].loading = false;
+            if (x.data.data.data.length) {
+              this["hongbao_" + type].obj = x.data.data.data[0];
+            }
+          }
+        })
+        .catch(err => {
+          console.log(err);
+          this["hongbao_" + type].loading = false;
+        });
+    }
+  },
+  mounted() {
+    if (this.myshop && this.myshop.shopid) {
+      this.get_index = 1;
+      this.get_redenvelope(0);
+      this.get_redenvelope(1);
+      this.get_redenvelope(2);
+      this.get_redenvelope(3);
+      this.get_redenvelope(4);
+      this.get_redenvelope(5);
+    } else {
+      //获取自己的店铺
+      this.$store.commit("setMyshop");
+    }
+  },
+  watch: {
+    myshop() {
+      if (this.myshop && this.myshop.shopid && this.get_index == 0) {
+        this.get_redenvelope(0);
+        this.get_redenvelope(1);
+        this.get_redenvelope(2);
+        this.get_redenvelope(3);
+        this.get_redenvelope(4);
+        this.get_redenvelope(5);
+      }
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
-.mui-bar{
-    .title_1{
-        position: absolute;
-        font-size: 14px;
-        color: #ffffff;
-        line-height: 44px;
-        top: 0px;
-        right: 10px;
-    }
-}
-
-.mui-content{
-    padding-bottom:44px; 
-}
-.box_1{
-    margin: 3px 0px 0px;
-    padding: 0px 12px;
-    background: #ffffff;
-    .header_1{
-        position: relative;
-        border-bottom: 1px solid #efeff4;
-        padding: 7px 0px;
-        display: flex;
-        align-items: center;
-        >div:nth-child(1){
-            flex-grow: 1;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .title_1{
-            color: rgba(56, 56, 56, 1);
-            font-size: 12px;
-            font-weight: bold;
-        }
-        .text_1{
-            color: rgba(0, 122, 255, 1);
-        	font-size: 12px;
-        }
-        i{
-            color: #c0bcbc;
-            font-size: 16px;
-        }
-        .load_1{
-            width: 20px;
-            height: 20px;
-            position: absolute;
-            margin: auto;
-            top: 0px;
-            bottom: 0px;
-            left: 0px;
-            right: 0px;
-            i{
-                display: inline-block;
-                animation: index_loading 1s linear infinite;
-            }
-        }
-    }
-    .table_box{
-        padding: 0px 20px 13px;
-        color: rgba(56, 56, 56, 1);
-        font-size: 12px;
-        .text_1{
-            color: #d43030;
-        }
-    }
-    table{
-        width: 100%;
-        white-space: nowrap;
-        td{
-            padding: 13px 0px 0px;
-        }
-    }
-}
-
-.btn_1{
-    width: 100%;
-    height: 40px;
-    background: $header_background;
-    position: fixed;
-    left: 0px;
-    bottom: 0px;
-    text-align: center;
-    line-height: 40px;
+.mui-bar {
+  .title_1 {
+    position: absolute;
     font-size: 14px;
     color: #ffffff;
+    line-height: 44px;
+    top: 0px;
+    right: 10px;
+  }
+}
+
+.mui-content {
+  padding-bottom: 44px;
+}
+.box_1 {
+  margin: 3px 0px 0px;
+  padding: 0px 12px;
+  background: #ffffff;
+  .header_1 {
+    position: relative;
+    border-bottom: 1px solid #efeff4;
+    padding: 7px 0px;
+    display: flex;
+    align-items: center;
+    > div:nth-child(1) {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .title_1 {
+      color: rgba(56, 56, 56, 1);
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .text_1 {
+      color: rgba(0, 122, 255, 1);
+      font-size: 12px;
+    }
+    i {
+      color: #c0bcbc;
+      font-size: 16px;
+    }
+    .load_1 {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      margin: auto;
+      top: 0px;
+      bottom: 0px;
+      left: 0px;
+      right: 0px;
+      i {
+        display: inline-block;
+        animation: index_loading 1s linear infinite;
+      }
+    }
+  }
+  .table_box {
+    padding: 0px 20px 13px;
+    color: rgba(56, 56, 56, 1);
+    font-size: 12px;
+    .text_1 {
+      color: #d43030;
+    }
+  }
+  table {
+    width: 100%;
+    white-space: nowrap;
+    td {
+      padding: 13px 0px 0px;
+    }
+  }
+}
+
+.btn_1 {
+  width: 100%;
+  height: 40px;
+  background: $header_background;
+  position: fixed;
+  left: 0px;
+  bottom: 0px;
+  text-align: center;
+  line-height: 40px;
+  font-size: 14px;
+  color: #ffffff;
 }
 </style>
-
-

@@ -9,45 +9,44 @@ axios.defaults.timeout = 60000;
 // axios.defaults.headers.common['Authorization'] = 'AUTH_TOKEN AUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKENAUTH_TOKEN';
 // axios.defaults.baseURL = 'http://local.register.com:8761/';
 
-
 import qs from "qs";
 //拦截器
 axios.interceptors.response.use(
-    function (response) {
-        return response;
-    },
-    function (error) {
-        if (error) {
-            if (error.response) {
-                return error.response;
-            }
-        }
-        return Promise.reject(error.response); // 返回接口返回的错误信息
+  function(response) {
+    return response;
+  },
+  function(error) {
+    if (error) {
+      if (error.response) {
+        return error.response;
+      }
     }
+    return Promise.reject(error.response); // 返回接口返回的错误信息
+  }
 );
 
-
 // 输出方法
-export default function request(url, data = {}, method = 'post', type) {
-    return new Promise((resolve, reject) => {
-        const options = {
-            url,
-            method
-        }
-        if (method.toLowerCase() === 'get') {
-            options.params = data
-        } else if (type) {
-            options.data = qs.stringify(data)
-        } else {
-            options.data = data
-
-        }
-        axios(options).then(res => {
-            // console.log('返回数据', res)
-            resolve(res)
-        }).catch(error => {
-            reject()
-            console.error(error)
-        })
-    })
+export default function request(url, data = {}, method = "post", type) {
+  return new Promise((resolve, reject) => {
+    const options = {
+      url,
+      method
+    };
+    if (method.toLowerCase() === "get") {
+      options.params = data;
+    } else if (type) {
+      options.data = qs.stringify(data);
+    } else {
+      options.data = data;
+    }
+    axios(options)
+      .then(res => {
+        // console.log('返回数据', res)
+        resolve(res);
+      })
+      .catch(error => {
+        reject();
+        console.error(error);
+      });
+  });
 }

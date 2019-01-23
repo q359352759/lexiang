@@ -45,118 +45,135 @@
 </template>
 
 <script>
-import btn from '@/components/button.vue';
-import { mapActions } from 'vuex';
+import btn from "@/components/button.vue";
+import { mapActions } from "vuex";
 export default {
-    name:'',
-    components: {
-        btn  
-    },
-    data () {
-        return {
-            phone:'',
-            text:'获取数据中',
-            获取完成:false
-        }
-    },
-    methods: {
-        ...mapActions({
-            get_agentUser_phone:'agent/get_agentUser_phone',
-            actions_agentUser:'actions_agentUser'
-        }),
-        tijiao(){
-            var phone_test=/^[1][0-9]{10}/;
-            if(!phone_test.test(this.phone)){
-                mui.toast('请输入正确电话号码。', {duration: "long", type: "div" });
-            }else{
-                this.get_agentUser_phone(this.phone).then(x=>{
-                    if(x.data.code==200){
-                        if(x.data.data ){
-                            this.$router.push('/ApplicationAgent?phone='+this.phone);
-                        }else{
-                            mui.toast('此号码不是代理商', {duration: "long", type: "div" });                            
-                        }
-                    }else{
-                        mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示",'我知道了', function() {},"div");
-                    }
-                }).catch(err=>{
-                    mui.alert('系统错误稍后再试。', "提示",'我知道了', function() {},"div");
-                })
+  name: "",
+  components: {
+    btn
+  },
+  data() {
+    return {
+      phone: "",
+      text: "获取数据中",
+      获取完成: false
+    };
+  },
+  methods: {
+    ...mapActions({
+      get_agentUser_phone: "agent/get_agentUser_phone",
+      actions_agentUser: "actions_agentUser"
+    }),
+    tijiao() {
+      var phone_test = /^[1][0-9]{10}/;
+      if (!phone_test.test(this.phone)) {
+        mui.toast("请输入正确电话号码。", { duration: "long", type: "div" });
+      } else {
+        this.get_agentUser_phone(this.phone)
+          .then(x => {
+            if (x.data.code == 200) {
+              if (x.data.data) {
+                this.$router.push("/ApplicationAgent?phone=" + this.phone);
+              } else {
+                mui.toast("此号码不是代理商", {
+                  duration: "long",
+                  type: "div"
+                });
+              }
+            } else {
+              mui.alert(
+                x.data.msg ? x.data.msg : x.data.message,
+                "提示",
+                "我知道了",
+                function() {},
+                "div"
+              );
             }
+          })
+          .catch(err => {
+            mui.alert(
+              "系统错误稍后再试。",
+              "提示",
+              "我知道了",
+              function() {},
+              "div"
+            );
+          });
+      }
+    }
+  },
+  mounted() {
+    this.actions_agentUser()
+      .then(x => {
+        console.log("获取代理商信息", x);
+        if (x.data.code == 200 && x.data.data.type == 1) {
+          this.$router.push("/Agent");
+        } else if (x.data.code) {
+          this.获取完成 = true;
+        } else {
+          this.text = "网络错误，稍后再试。";
         }
-    },
-    mounted() {
-        this.actions_agentUser().then(x=>{
-            console.log('获取代理商信息',x);
-            if(x.data.code==200 && x.data.data.type==1){
-                this.$router.push('/Agent');
-            }else if(x.data.code){
-                this.获取完成=true;
-            }else{
-                this.text="网络错误，稍后再试。"
-            }
-        }).catch(err=>{
-            this.text="网络错误，稍后再试。"
-            console.log(err);
-        })
-    },
-}
+      })
+      .catch(err => {
+        this.text = "网络错误，稍后再试。";
+        console.log(err);
+      });
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
-    padding: 15px;
+.box_1 {
+  padding: 15px;
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  line-height: 200%;
+  margin: 0px 0px 15px;
+  .text_indent {
+    text-indent: 20px;
+  }
+}
+.box_2 {
+  background: #ffffff;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  li:nth-child(1) {
+    width: 113px;
+    padding: 0px 0px 0px 15px;
     color: rgba(80, 80, 80, 1);
-	font-size: 14px;
-    line-height: 200%;
-    margin: 0px 0px 15px;
-    .text_indent{
-        text-indent: 20px;
-    }
+    font-size: 14px;
+  }
+  li:nth-child(2) {
+    flex-grow: 1;
+    height: 100%;
+  }
+  input {
+    padding: 0px;
+    margin: 0px;
+    height: 100%;
+    border: none;
+    font-size: 14px;
+  }
 }
-.box_2{
-    background: #ffffff;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    li:nth-child(1){
-        width: 113px;
-        padding: 0px 0px 0px 15px;
-        color: rgba(80, 80, 80, 1);
-    	font-size: 14px;
-    }
-    li:nth-child(2){
-        flex-grow: 1;
-        height: 100%;
-    }
-    input{
-        padding: 0px;
-        margin: 0px;
-        height: 100%;
-        border: none;
-        font-size: 14px;
-    }
+.box_3 {
+  padding: 15px;
+  color: rgba(166, 166, 166, 1);
+  font-size: 12px;
 }
-.box_3{
-    padding: 15px;
-    color: rgba(166, 166, 166, 1);
-	font-size: 12px;
-}
-.box_4{
-    padding: 15px 0px;
+.box_4 {
+  padding: 15px 0px;
 }
 
-.获取数据中{
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    top: 0px;
-    left: 0px;
-    background: #ffffff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.获取数据中 {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  background: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
-
-

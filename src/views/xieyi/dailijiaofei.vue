@@ -51,33 +51,31 @@
 
 <script>
 export default {
-    name:'',
-    data(){
-        return{}
-    }
-}
+  name: "",
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
-    padding: 10px;
-    font-size: 14px;
-    line-height: 24px;
+.box_1 {
+  padding: 10px;
+  font-size: 14px;
+  line-height: 24px;
 }
-.text_1{
-    margin: 15px 0px 0px;
+.text_1 {
+  margin: 15px 0px 0px;
 }
-.table_1{
-    width: 100%;
-    border:1px solid #a2a2a2;
-    text-align: center;
-    tr{
-        border-top: 1px solid #a2a2a2;
-    }
-    td{
-        border-left:1px solid #a2a2a2;
-    }
+.table_1 {
+  width: 100%;
+  border: 1px solid #a2a2a2;
+  text-align: center;
+  tr {
+    border-top: 1px solid #a2a2a2;
+  }
+  td {
+    border-left: 1px solid #a2a2a2;
+  }
 }
 </style>
-
-

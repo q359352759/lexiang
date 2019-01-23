@@ -28,25 +28,23 @@
 
 <script>
 export default {
-    name:'',
-    data(){
-        return{}
-    }
-}
+  name: "",
+  data() {
+    return {};
+  }
+};
 </script>
 
 <style lang="scss" scoped>
-.box_1{
-    color: rgba(80, 80, 80, 1);
-	font-size: 14px;
-    padding: 10px;
+.box_1 {
+  color: rgba(80, 80, 80, 1);
+  font-size: 14px;
+  padding: 10px;
 }
-.indent_1{
-    text-indent: 20px;
+.indent_1 {
+  text-indent: 20px;
 }
-.kong{
-    height: 20px;
+.kong {
+  height: 20px;
 }
 </style>
-
-
