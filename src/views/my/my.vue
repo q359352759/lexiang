@@ -453,8 +453,6 @@ export default {
     }
     //获取代理人信息
     this.获取代理人信息();
-    //查询和你自己申请的店铺
-    // this.$store.commit('setMyshop');
     this.获取店铺();
 
     // console.group('------mounted 挂载结束状态 ------');

@@ -247,7 +247,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      获取店铺: "setMyshop",
+      获取店铺: "getMyshop",
       添加商品: "shangPing/添加商品",
       修改商品: "shangPing/修改商品",
       添加专享: "shangPing/添加专享",

@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      查询我的店铺: "setMyshop",
+      查询我的店铺: "getMyshop",
       查询店铺专享: "shangPing/查询店铺专享"
     }),
     //跳转红包界面

@@ -132,9 +132,6 @@ export default {
     } else {
       this.init();
     }
-    // this.$store.commit('setMyshop');
-    // console.log(this.myshop);
-    // this.init();
   }
 };
 </script>
