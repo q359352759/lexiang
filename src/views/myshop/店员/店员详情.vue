@@ -20,7 +20,7 @@
                     <li>
                         <div>回复：<span class="huifu" @click="$router.push('/myshop/dianyuan/huifuList')">-0</span>条</div>
                         <div>收银：-0笔</div>
-                        <div>营业额：-0元</div>
+                        <div>营业额：{{item.营业额 ? item.营业额 : 0}}元</div>
                     </li>
                     <li>
                         <div>
@@ -36,7 +36,7 @@
                         <div>
                             <span v-if="!item.replaceid" class="zhengchang">正常</span>
                             <span v-if="item.replaceid && item.replaceid!=店员信息.clerksid" class="tiban">替班：{{item.被替班人员.clerksname}}</span>
-                            <span v-if="item.replaceid!=店员信息.clerksid" class="xiangqing mui-pull-right" @click="店员收银()">详情</span>
+                            <span v-if="item.replaceid!=店员信息.clerksid" class="xiangqing mui-pull-right" @click="$router.push('/myshop/dianyuan/dianYuanShouYing?id='+item.id)">详情</span>
                             <span v-if="item.replaceid && item.replaceid==店员信息.clerksid" class="queban">缺班</span>
                         </div>
                     </li>
@@ -47,7 +47,7 @@
         </div>
         <div class="box_3">
             <div ref="fontSzie">
-                0月共计：上班-0天，收单：-0单，共计-0元，回复：-0条
+                0月共计：上班{{店员打卡记录.total}}天，收单：-0单，共计{{总营业额 ? 总营业额 : 0}}元，回复：-0条
             </div>
         </div>
     </div>
@@ -67,7 +67,8 @@ export default {
         return {
             店员信息: {},
             id: "",
-            时间: 当前时间格式化("yyyy年MM月")
+            时间: 当前时间格式化("yyyy年MM月"),
+            总营业额:0
         };
     },
     components: {
@@ -105,7 +106,7 @@ export default {
             店员打卡记录: "myshops/打卡/店员打卡记录",
             固定班次: "myshops/班次/固定班次",
             两班: "myshops/班次/两班",
-            三班: "myshops/班次/三班"
+            三班: "myshops/班次/三班",
         })
     },
     methods: {
@@ -115,17 +116,14 @@ export default {
             店员打卡记录初始化: "myshops/打卡/店员打卡记录初始化",
             查询打卡记录: "myshops/打卡/查询打卡记录",
             查询记录下一页: "myshops/打卡/查询记录下一页",
-            查询考勤时间: "myshops/班次/查询考勤时间"
+            查询考勤时间: "myshops/班次/查询考勤时间",
+            查询统计:'myshops/销售/查询统计'
         }),
         scroll(e) {
             var h = e.target.offsetHeight; //容器高度
             var sh = e.target.scrollHeight; //滚动条总高
             var t = e.target.scrollTop; //滚动条到顶部距离
-            if (
-                h + t >= sh - 10 &&
-                !this.店员打卡记录.loading &&
-                this.店员打卡记录.list.length < this.店员打卡记录.total
-            ) {
+            if (h + t >= sh - 10 && !this.店员打卡记录.loading && this.店员打卡记录.list.length < this.店员打卡记录.total) {
                 this.查询记录下一页();
             }
         },
@@ -155,10 +153,6 @@ export default {
         },
         //回复详情
         huifuxiangqing() { },
-        店员收银() {
-            console.log("123");
-            this.$router.push("/myshop/dianyuan/dianYuanShouYing");
-        },
         async 初始化() {
             await this.根据Id查询店员(this.id).then(x => {
                 if (x.data.code == 200) {
@@ -173,6 +167,17 @@ export default {
             this.店员打卡记录初始化([this.店员信息.clerksid]);
             this.查询打卡记录();
             this.查询考勤时间();
+            var 查询统计={
+                    staffid:this.店员信息.clerksid,
+                    shopid:this.店铺.shopid,
+                    state:1
+                }
+            this.查询统计(查询统计).then(x=>{
+                console.log('查询统计',x)
+                if(x.data.code==200){
+                    this.总营业额=x.data.data;
+                }
+            })
         }
     },
     mounted() {

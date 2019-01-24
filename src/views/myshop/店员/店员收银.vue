@@ -27,63 +27,83 @@
 </template>
 
 <script>
+import { mapGetters,mapActions } from "vuex";
 export default {
-  name: "",
-  data() {
-    return {};
-  }
+    name: "",
+    data() {
+        return {
+            店员Id:''
+        };
+    },
+    computed: {
+        
+    },
+    methods: {
+        ...mapActions({
+            查询店铺: "getMyshop",
+            根据Id查询店员: "myshops/店员/根据Id查询店员",
+            店员打卡记录初始化: "myshops/打卡/店员打卡记录初始化",
+        }),
+        async 初始化(){
+
+        }
+    },
+    mounted() {
+        this.店员Id=this.$route.query.id;
+        this.初始化();
+    },
 };
 </script>
 
 <style lang="scss" scoped>
 @import "@/assets/css/config.scss";
 .mui-bar {
-  span {
-    position: absolute;
-    top: 0px;
-    right: 10px;
-    font-size: 12px;
-    color: #ffffff;
-    line-height: 44px;
-  }
+    span {
+        position: absolute;
+        top: 0px;
+        right: 10px;
+        font-size: 12px;
+        color: #ffffff;
+        line-height: 44px;
+    }
 }
 .mui-content {
-  flex-direction: column;
-  display: flex;
-  .box_1.头部 {
-    flex-shrink: 0;
-  }
-  .box_1.内容 {
-    flex-grow: 1;
-    overflow: auto;
-  }
+    flex-direction: column;
+    display: flex;
+    .box_1.头部 {
+        flex-shrink: 0;
+    }
+    .box_1.内容 {
+        flex-grow: 1;
+        overflow: auto;
+    }
 }
 .box_1 {
-  li {
-    display: flex;
-    line-height: 32px;
-    text-align: center;
-    font-size: 12px;
-    div {
-      width: 25%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      border-left: 1px solid #fafafa;
+    li {
+        display: flex;
+        line-height: 32px;
+        text-align: center;
+        font-size: 12px;
+        div {
+            width: 25%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-left: 1px solid #fafafa;
+        }
+        div:nth-child(1) {
+            border: none;
+        }
+        .order {
+            color: #2b82e4;
+        }
     }
-    div:nth-child(1) {
-      border: none;
+    li:nth-child(2n-1):not(.header_1) {
+        background: #ffffff;
     }
-    .order {
-      color: #2b82e4;
+    li.header_1 {
+        background: $header_background;
+        color: #ffffff;
     }
-  }
-  li:nth-child(2n-1):not(.header_1) {
-    background: #ffffff;
-  }
-  li.header_1 {
-    background: $header_background;
-    color: #ffffff;
-  }
 }
 </style>

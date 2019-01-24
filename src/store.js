@@ -36,6 +36,7 @@ import agent from "@/vuex/agent.js";
 import 红购使者 from "@/vuex/红购使者.js";
 import 买单 from "@/vuex/买单.js";
 import home from "@/vuex/home.js";
+import 获取位置 from "@/vuex/获取位置.js";
 Vue.use(Vuex);
 // 对名字进行解码
 import { b64DecodeUnicode } from "@/assets/js/base64jiema.js";
@@ -123,6 +124,9 @@ export default new Vuex.Store({
         redid: "" //红包id
     },
     getters: {
+        当前位置(state){
+            return state.my_position
+        },
         geographical_position(state) {
             return state.geographical_position;
         },
@@ -209,59 +213,40 @@ export default new Vuex.Store({
         //获取个人信息
         setCurrent(state) {
             // console.log(this.state.loginDate)
-            if (
-                !localStorage.id ||
-                localStorage.id == "" ||
-                localStorage.id == null ||
-                localStorage.id == undefined ||
-                localStorage.id == "undefined"
-            ) {
+            if (!localStorage.id || localStorage.id == "" || localStorage.id == null || localStorage.id == undefined || localStorage.id == "undefined") {
                 alert("获取用户信息失败，请重新登录");
                 location.href = "index.html#/login";
                 return;
             }
             var id = localStorage.id;
-            axios({
-                method: "get",
-                url: "api-u/users/" + id
-            })
-                .then(x => {
-                    if (x.data.error) return;
-                    if (x.data.code != 200) {
-                        alert("获取用户信息失败，请重新登录");
-                        location.href = "index.html#/login";
-                        return;
-                    } else {
-                        console.log("获取个人信息", x);
-                        let userInfo = x.data.data;
-                        try {
-                            userInfo.nickname = b64DecodeUnicode(userInfo.nickname);
-                        } catch (error) { }
-
-                        state.userInfo = userInfo;
-                        localStorage.userInfo = JSON.stringify(userInfo);
-                    }
-                })
-                .catch(error => {
+            axios.get("api-u/users/" + id).then(x => {
+                if (x.data.error) return;
+                if (x.data.code != 200) {
                     alert("获取用户信息失败，请重新登录");
                     location.href = "index.html#/login";
-                    // router.push("/login");
-                });
+                    return;
+                } else {
+                    console.log("获取个人信息", x);
+                    let userInfo = x.data.data;
+                    try {
+                        userInfo.nickname = b64DecodeUnicode(userInfo.nickname);
+                    } catch (error) { }
+
+                    state.userInfo = userInfo;
+                    localStorage.userInfo = JSON.stringify(userInfo);
+                }
+            }).catch(error => {
+                alert("获取用户信息失败，请重新登录");
+                location.href = "index.html#/login";
+            });
         },
         //获取用户实名信息
         setfindByUserid() {
             var userInfo = JSON.parse(localStorage.userInfo);
-            axios({
-                method: "get",
-                url: "/api-u/certification/findByUserid?userid=" + userInfo.username
-            })
-                .then(x => {
-                    console.log("获取用户实名信息", x);
-                    this.state.findByUserid = x.data;
-                })
-                .catch(error => {
-                    console.log("获取用户实名信息", error);
-                });
+            axios.get("/api-u/certification/findByUserid?userid=" + userInfo.username).then(x => {
+                this.state.findByUserid = x.data;
+            }).catch(error => {
+            });
         },
         //获取店铺类型
         setShopTree() {
@@ -325,6 +310,7 @@ export default new Vuex.Store({
             // console.log(rootGetters['vip/get']) // 打印其他模块的 getters
             // dispatch('vip/get', {}, {root: true}) // 调用其他模块的 actions
             // commit('vip/receive', data, {root: true}) // 调用其他模块的 mutations
+            
             var 员工信息 = await dispatch("myshops/员工查询自己的信息");
             var 身份 = rootGetters["myshops/身份"];
             // 身份:0,  // -1 查询失败 0 没有店铺 1 老板 2 员工
@@ -341,6 +327,7 @@ export default new Vuex.Store({
                         resolve(x);
                     });
                 } else {
+                    //老板
                     dispatch("myshops/查询自己的店铺").then(x => {
                         if (x && x.data.code == 200) {
                             if (x.data.data) {
@@ -387,7 +374,8 @@ export default new Vuex.Store({
         申请开店: 申请开店,
         红购使者: 红购使者,
         买单: 买单,
-        home: home
+        home: home,
+        获取位置:获取位置
     }
 });
 // })

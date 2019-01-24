@@ -30,10 +30,14 @@
                             @click="选择班次()">
                             <a class="mui-navigate-right item">
                                 <div class="title">班次：</div>
-                                <input type="text"
+                                <div class="选项">
+                                    <span v-show="显示班次名称">{{显示班次名称}}</span>
+                                    <span v-show="!显示班次名称" class="提示">请选择班次</span>
+                                </div>
+                                <!-- <input type="text"
                                        placeholder="请选择班次"
                                        :value="显示班次名称"
-                                       readonly />
+                                       readonly /> -->
                             </a>
                         </li>
                     </ul>
@@ -83,7 +87,7 @@ export default {
             店铺: "get_myshop"
         }),
         显示班次名称() {
-            if (this.选中的班次 == "") {
+            if (!this.选中的班次 || this.选中的班次 == "") {
                 return "";
             } else if (this.选中的班次.shift == "固定班次") {
                 return "固定班次";
@@ -110,8 +114,12 @@ export default {
         }),
         get_banci(type, item, index) {
             this.xiugaibanci_show = type;
-            this.选中的班次 = item;
-            this.班次_index = index;
+            if(item){
+                this.选中的班次 = item;
+            }
+            if(index){
+                this.班次_index = index;
+            }
             console.log(item, index);
         },
         async submit() {
@@ -180,7 +188,18 @@ export default {
         display: flex;
         align-items: center;
         .title {
-            width: 96px;
+            width: 75px;
+            flex-shrink: 0;
+            flex-grow: 0;
+        }
+        .选项{
+            flex-grow: 1;
+            color: #505050;
+            font-size: 14px;
+            .提示{
+                 color: #d9d9d9;
+                font-size: 12px;
+            }
         }
         input {
             height: 100%;

@@ -155,7 +155,7 @@ export default {
             if (state.班次.length == 0) {
                 var 添加对象 = {
                     shopid: 店铺.shopid,
-                    schedulingtype: 班次类型
+                    schedulingtype: state.班次类型
                 };
                 await dispatch("添加班次", 添加对象);
                 await dispatch("查询班次");
@@ -196,9 +196,12 @@ export default {
             var 店铺 = rootGetters["get_myshop"];
             obj.shopid = 店铺.shopid;
             obj.shiftid = state.班次[0].id;
+            
+			var loginDate = JSON.parse(localStorage.loginDate);
+			var access_token=loginDate.access_token ? loginDate.access_token : '';
             return new Promise((resolve, reject) => {
                 if (obj.id) {
-                    axios.post("/api-s/shops/updateShopShift", obj).then(x => {
+                    axios.post("/api-s/shops/updateShopShift", obj , {headers:{Authorization:"Bearer "+access_token}} ).then(x => {
                         if (x.data.code != 200) {
                             mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示", "我知道了", function () { }, "div");
                             reject();
@@ -208,7 +211,7 @@ export default {
                         reject(err);
                     });
                 } else {
-                    axios.post("/api-s/shops/addShopShift", obj).then(x => {
+                    axios.post("/api-s/shops/addShopShift", obj , {headers:{Authorization:"Bearer "+access_token}} ).then(x => {
                         if (x.data.code != 200) {
                             mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示", "我知道了", function () { }, "div");
                             reject();
@@ -253,8 +256,12 @@ export default {
             });
         },
         修改班次({ state }, obj) {
+            
+			var loginDate = JSON.parse(localStorage.loginDate);
+            var access_token=loginDate.access_token ? loginDate.access_token : '';
+            
             return new Promise((resolve, reject) => {
-                axios.post("/api-s/shops/updateShopScheduling", obj).then(x => {
+                axios.post("/api-s/shops/updateShopScheduling", obj , {headers:{Authorization:"Bearer "+access_token}}).then(x => {
                     if (x.data.code != 200) {
                         mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示", "我知道了", function () { }, "div");
                         reject();
@@ -292,8 +299,10 @@ export default {
             });
         },
         添加班次({ }, obj) {
+			var loginDate = JSON.parse(localStorage.loginDate);
+			var access_token=loginDate.access_token ? loginDate.access_token : '';
             return new Promise((resolve, reject) => {
-                axios.post("/api-s/shops/addShopScheduling", obj).then(x => {
+                axios.post("/api-s/shops/addShopScheduling", obj , {headers:{Authorization:"Bearer "+access_token}} ).then(x => {
                     if (x.data.code != 200) {
                         mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示", "我知道了", function () { }, "div");
                         reject();

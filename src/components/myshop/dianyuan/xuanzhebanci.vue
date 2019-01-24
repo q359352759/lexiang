@@ -6,14 +6,14 @@
                 <div @click="选择班次(item,index)" class="radio_1" :class="{'active':选中班次==item}">
                     <i class="icon iconfont icon-xuanze"></i>
                 </div>
-                <div v-if="班次.length>0 && 班次[0].schedulingtype==1">
+                <div @click="选择班次(item,index)" v-if="班次.length>0 && 班次[0].schedulingtype==1">
                     <span>固定班次（{{item.officehours}}-{{item.quittingtime}}）</span>
                 </div>
-                <div v-if="班次.length>0 && 班次[0].schedulingtype==2">
+                <div @click="选择班次(item,index)" v-if="班次.length>0 && 班次[0].schedulingtype==2">
                     <span v-if="index==0">早班（{{item.officehours}}-{{item.quittingtime}}）</span>
                     <span v-if="index==1">晚班（{{item.officehours}}-{{item.quittingtime}}）</span>
                 </div>
-                <div v-if="班次.length>0 && 班次[0].schedulingtype==3">
+                <div @click="选择班次(item,index)" v-if="班次.length>0 && 班次[0].schedulingtype==3">
                     <span v-if="index==0">早班（{{item.officehours}}-{{item.quittingtime}}）</span>
                     <span v-if="index==1">中班（{{item.officehours}}-{{item.quittingtime}}）</span>
                     <span v-if="index==2">晚班（{{item.officehours}}-{{item.quittingtime}}）</span>

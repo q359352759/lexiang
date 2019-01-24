@@ -516,13 +516,7 @@ export default {
                 this.添加红包();
             } else {
                 openloading(false);
-                mui.alert(
-                    x.data.msg ? x.data.msg : x.data.message,
-                    "提示",
-                    "我知道了",
-                    function () { },
-                    "div"
-                );
+                mui.alert(res.data.msg ? res.data.msg : res.data.message,"提示","我知道了",function () { },"div");
             }
         },
         添加红包() {

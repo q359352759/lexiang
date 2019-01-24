@@ -46,7 +46,7 @@
             </ul>
             <ul class="box_2">
                 <li>
-                    <div  @click="$router.push('/Notice')"><i class="icon iconfont icon-laba"></i></div>
+                    <div @click="$router.push('/Notice')"><i class="icon iconfont icon-laba"></i></div>
                     <div>公告</div>
                 </li>
                 <li>
@@ -99,7 +99,7 @@
                         <a class="mui-navigate-right" @click="$router.push('/myshop/xiaoshou/xiaoshou')">
                             <div class="cont_1">
                                 <div class="mui-pull-right">
-                                本月：{{本月销售.data}}元
+                                    本月：{{本月销售.data}}元
                                 </div>
                                 <div>
                                     今日营业额：{{今日销售.data ? 今日销售.data : 0}}元
@@ -111,7 +111,7 @@
                         <a class="mui-navigate-right">
                             <div class="cont_1">
                                 <div class="mui-pull-right tixian">
-                                提现
+                                    提现
                                 </div>
                                 <div>
                                     可提现金额：{{ketixian}}元
@@ -128,13 +128,12 @@
                             </div>
                         </a>
                     </li>
-                </ul>    
+                </ul>
             </div>
-            
+
             <div class="进入店铺">
-                <btn @click.native="进入店铺()" value="进入店铺"/>
+                <btn @click.native="进入店铺()" value="进入店铺" />
             </div>
-            
 
             <!-- 生成带图片的容器 -->
             <div ref="printMe" class="qrcode_box">
@@ -158,7 +157,7 @@
                     <li>识别二维码领取<span class="hongbao">{{xingren_hongbao.amount}}</span>红包</li>
                 </ul>
             </div>
-            
+
             <div class="QRCode" v-show="qrcode_show" @tap="qrcode_show=false">
                 <div class="mask"></div>
                 <div class="content_1">
@@ -169,12 +168,11 @@
                     <img :src="qrcode" alt="" srcset="">
                 </div>
             </div>
-            
 
         </div>
 
-        <tuijianren v-if="myshop.referrerPhone"  v-show="referrer_show"/>
-        <daka v-show="显示打卡框"/>
+        <tuijianren v-if="myshop.referrerPhone" v-show="referrer_show" />
+        <daka v-show="显示打卡框" />
     </div>
 </template>
 
@@ -192,391 +190,391 @@ import btn from "@/components/button.vue";
 import daka from "./打卡/打卡弹出框.vue";
 
 export default {
-  name: "",
-  components: {
-    tuijianren,
-    btn,
-    daka
-  },
-  data() {
-    return {
-      qrcode: null,
-      qrcode_show: false,
-      erweima_base64: "",
-      xingren_hongbao: {},
-      今日新增: 0,
-      顾客: {
-        //主要用于统计人数
-        query: {
-          start: 0,
-          length: 1,
-          shopid: "",
-          order: "createTime", //PAYMENTAMOUNT 消费 createTime 时间
-          orderType: "DESC" //ASC DESC
-        },
-        list: [],
-        total: 0,
-        loading: false,
-        paget_index: 0
-      }
-    };
-  },
-  computed: {
-    // myshop(){
-    //     return this.$store.state.myshop
-    // },
-    ...mapGetters({
-      myshop: "get_myshop",
-      zichan: "myshops/zichan/g_zichan",
-      referrer_show: "myshops/referrer_show",
-      referrer: "myshops/referrer",
-      今日销售: "myshops/销售/今日销售",
-      本月销售: "myshops/销售/本月销售",
-      店铺身份: "myshops/身份",
-      显示打卡框: "myshops/显示打卡框"
-    }),
-    ketixian() {
-      if (this.zichan && this.zichan.balance) {
-        return Math.floor(this.zichan.balance * 100) / 100;
-      } else {
-        return 0;
-      }
-    }
-  },
-  methods: {
-    ...mapActions({
-      getMyshop: "getMyshop",
-      设置推荐人: "myshops/设置推荐人",
-      set_zichan_shopid: "myshops/zichan/set_shopid",
-      findshopTurnoverByShopid: "myshops/zichan/findshopTurnoverByShopid",
-      set_referrer_show: "myshops/set_referrer_show", //推荐人显示框
-      查询销售统计: "myshops/销售/查询销售统计",
-      get_agentUser_phone: "agent/get_agentUser_phone",
-      查询所有店员: "myshops/店员/查询所有店员",
-      设置打卡框: "myshops/设置打卡框",
-
-      查询班次: "myshops/班次/查询班次",
-      考勤时间初始化: "myshops/班次/考勤时间初始化",
-      查询考勤时间: "myshops/班次/查询考勤时间",
-      查询自己的打卡记录: "myshops/打卡/查询自己的打卡记录"
-    }),
-    跳转提现() {
-      if (this.店铺身份 == 1) {
-        this.$router.push("/myshop/WithdrawMoney");
-      } else {
-        mui.toast("员工不能提现哦~", { duration: "long", type: "div" });
-      }
+    name: "",
+    components: {
+        tuijianren,
+        btn,
+        daka
     },
-    获取今日新增会员() {
-      this.$axios
-        .get("/api-s/shops/countTodayshopCustomer/" + this.myshop.shopid)
-        .then(x => {
-          console.log("获取今日新增", x);
-          if (x.data.code == 200) {
-            this.今日新增 = x.data.data;
-          }
-        })
-        .catch(err => {});
+    data() {
+        return {
+            qrcode: null,
+            qrcode_show: false,
+            erweima_base64: "",
+            xingren_hongbao: {},
+            今日新增: 0,
+            顾客: {
+                //主要用于统计人数
+                query: {
+                    start: 0,
+                    length: 1,
+                    shopid: "",
+                    order: "createTime", //PAYMENTAMOUNT 消费 createTime 时间
+                    orderType: "DESC" //ASC DESC
+                },
+                list: [],
+                total: 0,
+                loading: false,
+                paget_index: 0
+            }
+        };
     },
-    获取顾客() {
-      this.顾客.query.start = this.顾客.query.length * this.顾客.paget_index;
-      this.顾客.query.shopid = this.myshop.shopid;
-      this.$axios
-        .get("/api-s/shops/findShopCustomerAll", { params: this.顾客.query })
-        .then(x => {
-          console.log("获取店铺顾客", x);
-          if (x.data.code == 200) {
-            this.顾客.list = this.顾客.list.concat(x.data.data.data);
-            this.顾客.total = x.data.data.total;
-          }
-        })
-        .catch(err => {});
-    },
-    进入店铺() {
-      sessionStorage.removeItem("backUrl");
-      this.$router.push("/BusinessDetails?shopid=" + this.myshop.shopid);
-    },
-    close_1() {
-      this.qrcode_show = false;
-    },
-    //动态设置字体大小
-    set_font_size(e, size) {
-      // console.log(e.clientWidth);
-      // console.log(e.offsetWidth)
-      // console.log(e.scrollWidth)
-      if (e.clientWidth < e.scrollWidth) {
-        e.style["font-size"] =
-          parseInt((e.clientWidth / e.scrollWidth) * size) + "px";
-      }
-    },
-    set_zoom(e) {
-      console.log(e.children);
-      var w = e.offsetWidth;
-      var max_w = 0;
-      var list = e.children;
-      for (var i = 0; i < list.length; i++) {
-        if (list[i].offsetWidth > max_w) {
-          max_w = list[i].offsetWidth;
-        }
-      }
-      console.log(w, max_w);
-      if (w < max_w) {
-        for (var i = 0; i < list.length; i++) {
-          list[i].style.zoom = w / max_w;
-        }
-      }
-    },
-    //生成二维码
-    qrcode_1() {
-      console.log("生成二维码");
-      if (this.qrcode) {
-        this.qrcode_show = true;
-      } else {
-        // this.set_zoom(this.$refs.zoom_box)
-        // return
-        this.set_font_size(this.$refs.fontsize_1, 14);
-        this.set_font_size(this.$refs.fontsize_2, 12);
-        // return;
-        openloading(true);
-        //图片地址转图片
-        this.$axios({
-          method: "post",
-          url: "/api-u/users/imgtobase64",
-          data: this.$qs.stringify({
-            url: this.myshop.signboard
-          })
-        })
-          .then(x => {
-            console.log(x);
-            if (x.data.code == 200) {
-              this.erweima_base64 = "data:image/jpeg;base64," + x.data.data;
-              var url =
-                window.location.origin +
-                window.location.pathname +
-                "#/BusinessDetails?shopid=" +
-                this.myshop.shopid +
-                "&fenxiang=1";
-              console.log(url);
-              var el = this.$refs.qrcode;
-              el.innerHTML = "";
-              let qrcode = new QRCode(el, {
-                width: 200,
-                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容
-                text: url, // 二维码内容
-                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
-                background: "#fff",
-                foreground: "#fff"
-              });
-              setTimeout(() => {
-                this.print();
-              }, 500);
+    computed: {
+        // myshop(){
+        //     return this.$store.state.myshop
+        // },
+        ...mapGetters({
+            myshop: "get_myshop",
+            zichan: "myshops/zichan/g_zichan",
+            referrer_show: "myshops/referrer_show",
+            referrer: "myshops/referrer",
+            今日销售: "myshops/销售/今日销售",
+            本月销售: "myshops/销售/本月销售",
+            店铺身份: "myshops/身份",
+            显示打卡框: "myshops/显示打卡框"
+        }),
+        ketixian() {
+            if (this.zichan && this.zichan.balance) {
+                return Math.floor(this.zichan.balance * 100) / 100;
             } else {
-              openloading(false);
-              mui.toast("生成二维码失败，稍后再试。", {
-                duration: "long",
-                type: "div"
-              });
+                return 0;
             }
-          })
-          .catch(err => {
-            openloading(false);
-            mui.toast("生成二维码失败，稍后再试。", {
-              duration: "long",
-              type: "div"
-            });
-            console.log(err);
-          });
-      }
+        }
     },
-    //生成带图片的二维码
-    print() {
-      const el = this.$refs.printMe;
-      const options = {
-        useCORS: true,
-        logging: false
-      };
-      html2canvas(el, options).then(
-        canvas => {
-          this.qrcode = canvas.toDataURL();
-          this.qrcode_show = true;
-          openloading(false);
-        },
-        { useCORS: true }
-      );
-    },
-    //跳转店铺详情
-    ShopDetails() {
-      this.$store.state.in_index = 0;
-      this.$router.push("/ShopDetails");
-    },
-    //查询店铺新人
-    get_hongbao() {
-      var query = {
-        start: 0,
-        length: 10,
-        ccc: 1,
-        type: 0,
-        shopid: this.myshop.shopid
-      };
-      this.$request("/api-s/shops/redenvelope/findAll", query, "get")
-        .then(x => {
-          console.log("查询店铺新人红包", x);
-          if (x.data.code == 200) {
-            if (x.data.data.data.length > 0) {
-              this.xingren_hongbao = x.data.data.data[0];
-            }
-          }
-        })
-        .catch(err => {
-          console.log(err);
-        });
-    },
-    弹出打卡框() {
-      alert("点击了打卡");
-    },
-    async shopinit() {
-      openloading(true);
-      if (!this.myshop || !this.myshop.shopid) {
-        await this.getMyshop();
-      }
+    methods: {
+        ...mapActions({
+            getMyshop: "getMyshop",
+            设置推荐人: "myshops/设置推荐人",
+            set_zichan_shopid: "myshops/zichan/set_shopid",
+            findshopTurnoverByShopid: "myshops/zichan/findshopTurnoverByShopid",
+            set_referrer_show: "myshops/set_referrer_show", //推荐人显示框
+            查询销售统计: "myshops/销售/查询销售统计",
+            get_agentUser_phone: "agent/get_agentUser_phone",
+            查询所有店员: "myshops/店员/查询所有店员",
+            设置打卡框: "myshops/设置打卡框",
 
-      this.get_hongbao();
-      this.set_zichan_shopid(this.myshop.shopid);
-      this.findshopTurnoverByShopid().then(x => {
-        openloading(false);
-      });
-      // this.获取营业统计()
-      this.查询销售统计(this.myshop.shopid);
-      this.获取今日新增会员();
-      this.获取顾客();
-      this.查询所有店员();
-      this.考勤时间初始化();
-      this.查询班次();
-      this.查询考勤时间();
-      this.查询自己的打卡记录();
-      if (this.myshop.referrerPhone) {
-        this.get_agentUser_phone(this.myshop.referrerPhone)
-          .then(x => {
-            if (x.data.code == 200) {
-              this.设置推荐人(x.data.data);
+            查询班次: "myshops/班次/查询班次",
+            考勤时间初始化: "myshops/班次/考勤时间初始化",
+            查询考勤时间: "myshops/班次/查询考勤时间",
+            查询自己的打卡记录: "myshops/打卡/查询自己的打卡记录"
+        }),
+        跳转提现() {
+            // if (this.店铺身份 == 1) {
+                this.$router.push("/myshop/WithdrawMoney");
+            // } else {
+            //     mui.toast("员工不能提现哦~", { duration: "long", type: "div" });
+            // }
+        },
+        获取今日新增会员() {
+            this.$axios
+                .get("/api-s/shops/countTodayshopCustomer/" + this.myshop.shopid)
+                .then(x => {
+                    console.log("获取今日新增", x);
+                    if (x.data.code == 200) {
+                        this.今日新增 = x.data.data;
+                    }
+                })
+                .catch(err => { });
+        },
+        获取顾客() {
+            this.顾客.query.start = this.顾客.query.length * this.顾客.paget_index;
+            this.顾客.query.shopid = this.myshop.shopid;
+            this.$axios
+                .get("/api-s/shops/findShopCustomerAll", { params: this.顾客.query })
+                .then(x => {
+                    console.log("获取店铺顾客", x);
+                    if (x.data.code == 200) {
+                        this.顾客.list = this.顾客.list.concat(x.data.data.data);
+                        this.顾客.total = x.data.data.total;
+                    }
+                })
+                .catch(err => { });
+        },
+        进入店铺() {
+            sessionStorage.removeItem("backUrl");
+            this.$router.push("/BusinessDetails?shopid=" + this.myshop.shopid);
+        },
+        close_1() {
+            this.qrcode_show = false;
+        },
+        //动态设置字体大小
+        set_font_size(e, size) {
+            // console.log(e.clientWidth);
+            // console.log(e.offsetWidth)
+            // console.log(e.scrollWidth)
+            if (e.clientWidth < e.scrollWidth) {
+                e.style["font-size"] =
+                    parseInt((e.clientWidth / e.scrollWidth) * size) + "px";
             }
-          })
-          .catch(err => {});
-      }
-    }
-  },
-  beforeCreate: function() {
-    // console.group('------beforeCreate创建前状态------');
-  },
-  created: function() {
-    // console.group('------created创建完毕状态------');
-  },
-  beforeMount: function() {
-    // console.group('------beforeMount挂载前状态------');
-  },
-  mounted: function() {
-    // var a=[];
-    //     a[0]='ssssssss';
-    //     console.log(typeof a[0])
-    this.shopinit();
-  },
-  activated() {
-    this.getType = 0;
-  },
-  beforeUpdate: function() {
-    // console.group('beforeUpdate 更新前状态===============》');
-  },
-  updated: function() {
-    // console.group('updated 更新完成状态===============》');
-  },
-  beforeDestroy: function() {
-    // console.group('beforeDestroy 销毁前状态===============》');
-  },
-  destroyed: function() {
-    // document.querySelector(".mui-slider_1").removeEventListener("slide", function() {});
-    // console.group('destroyed 销毁完成状态===============》');
-  },
-  watch: {}
+        },
+        set_zoom(e) {
+            console.log(e.children);
+            var w = e.offsetWidth;
+            var max_w = 0;
+            var list = e.children;
+            for (var i = 0; i < list.length; i++) {
+                if (list[i].offsetWidth > max_w) {
+                    max_w = list[i].offsetWidth;
+                }
+            }
+            console.log(w, max_w);
+            if (w < max_w) {
+                for (var i = 0; i < list.length; i++) {
+                    list[i].style.zoom = w / max_w;
+                }
+            }
+        },
+        //生成二维码
+        qrcode_1() {
+            console.log("生成二维码");
+            if (this.qrcode) {
+                this.qrcode_show = true;
+            } else {
+                // this.set_zoom(this.$refs.zoom_box)
+                // return
+                this.set_font_size(this.$refs.fontsize_1, 14);
+                this.set_font_size(this.$refs.fontsize_2, 12);
+                // return;
+                openloading(true);
+                //图片地址转图片
+                this.$axios({
+                    method: "post",
+                    url: "/api-u/users/imgtobase64",
+                    data: this.$qs.stringify({
+                        url: this.myshop.signboard
+                    })
+                })
+                    .then(x => {
+                        console.log(x);
+                        if (x.data.code == 200) {
+                            this.erweima_base64 = "data:image/jpeg;base64," + x.data.data;
+                            var url =
+                                window.location.origin +
+                                window.location.pathname +
+                                "#/BusinessDetails?shopid=" +
+                                this.myshop.shopid +
+                                "&fenxiang=1";
+                            console.log(url);
+                            var el = this.$refs.qrcode;
+                            el.innerHTML = "";
+                            let qrcode = new QRCode(el, {
+                                width: 200,
+                                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                                // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容
+                                text: url, // 二维码内容
+                                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
+                                background: "#fff",
+                                foreground: "#fff"
+                            });
+                            setTimeout(() => {
+                                this.print();
+                            }, 500);
+                        } else {
+                            openloading(false);
+                            mui.toast("生成二维码失败，稍后再试。", {
+                                duration: "long",
+                                type: "div"
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        openloading(false);
+                        mui.toast("生成二维码失败，稍后再试。", {
+                            duration: "long",
+                            type: "div"
+                        });
+                        console.log(err);
+                    });
+            }
+        },
+        //生成带图片的二维码
+        print() {
+            const el = this.$refs.printMe;
+            const options = {
+                useCORS: true,
+                logging: false
+            };
+            html2canvas(el, options).then(
+                canvas => {
+                    this.qrcode = canvas.toDataURL();
+                    this.qrcode_show = true;
+                    openloading(false);
+                },
+                { useCORS: true }
+            );
+        },
+        //跳转店铺详情
+        ShopDetails() {
+            this.$store.state.in_index = 0;
+            this.$router.push("/ShopDetails");
+        },
+        //查询店铺新人
+        get_hongbao() {
+            var query = {
+                start: 0,
+                length: 10,
+                ccc: 1,
+                type: 0,
+                shopid: this.myshop.shopid
+            };
+            this.$request("/api-s/shops/redenvelope/findAll", query, "get")
+                .then(x => {
+                    console.log("查询店铺新人红包", x);
+                    if (x.data.code == 200) {
+                        if (x.data.data.data.length > 0) {
+                            this.xingren_hongbao = x.data.data.data[0];
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        },
+        弹出打卡框() {
+            alert("点击了打卡");
+        },
+        async shopinit() {
+            openloading(true);
+            if (!this.myshop || !this.myshop.shopid) {
+                await this.getMyshop();
+            }
+
+            this.get_hongbao();
+            this.set_zichan_shopid(this.myshop.shopid);
+            this.findshopTurnoverByShopid().then(x => {
+                openloading(false);
+            });
+            // this.获取营业统计()
+            this.查询销售统计(this.myshop.shopid);
+            this.获取今日新增会员();
+            this.获取顾客();
+            this.查询所有店员();
+            this.考勤时间初始化();
+            this.查询班次();
+            this.查询考勤时间();
+            this.查询自己的打卡记录();
+            if (this.myshop.referrerPhone) {
+                this.get_agentUser_phone(this.myshop.referrerPhone)
+                    .then(x => {
+                        if (x.data.code == 200) {
+                            this.设置推荐人(x.data.data);
+                        }
+                    })
+                    .catch(err => { });
+            }
+        }
+    },
+    beforeCreate: function () {
+        // console.group('------beforeCreate创建前状态------');
+    },
+    created: function () {
+        // console.group('------created创建完毕状态------');
+    },
+    beforeMount: function () {
+        // console.group('------beforeMount挂载前状态------');
+    },
+    mounted: function () {
+        // var a=[];
+        //     a[0]='ssssssss';
+        //     console.log(typeof a[0])
+        this.shopinit();
+    },
+    activated() {
+        this.getType = 0;
+    },
+    beforeUpdate: function () {
+        // console.group('beforeUpdate 更新前状态===============》');
+    },
+    updated: function () {
+        // console.group('updated 更新完成状态===============》');
+    },
+    beforeDestroy: function () {
+        // console.group('beforeDestroy 销毁前状态===============》');
+    },
+    destroyed: function () {
+        // document.querySelector(".mui-slider_1").removeEventListener("slide", function() {});
+        // console.group('destroyed 销毁完成状态===============》');
+    },
+    watch: {}
 };
 </script>
 
 <style lang="scss">
 #myshop .qrcode_box {
-  width: 273px;
-  background: #ffffff;
-  position: fixed;
-  padding: 20px 25px;
-  left: -100%;
-  // top: 40px;
-  .header_1 {
-    display: flex;
-    .img_box {
-      width: 42px;
-      height: 42px;
-      flex-shrink: 0;
-      margin: 0px 5px 0px 0px;
-      img {
-        width: 100%;
-        height: 100%;
-        border-radius: 100%;
-      }
+    width: 273px;
+    background: #ffffff;
+    position: fixed;
+    padding: 20px 25px;
+    left: -100%;
+    // top: 40px;
+    .header_1 {
+        display: flex;
+        .img_box {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            margin: 0px 5px 0px 0px;
+            img {
+                width: 100%;
+                height: 100%;
+                border-radius: 100%;
+            }
+        }
+        .text_1 {
+            height: 42px;
+            width: 0;
+            flex-grow: 1;
+            color: rgba(80, 80, 80, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            > div:nth-child(1) {
+                font-size: 14px;
+                overflow: auto;
+                white-space: nowrap;
+                width: 100%;
+            }
+            > div:nth-child(2) {
+                font-size: 12px;
+                white-space: nowrap;
+                overflow: auto;
+                color: #afafaf;
+                width: 100%;
+            }
+        }
     }
-    .text_1 {
-      height: 42px;
-      width: 0;
-      flex-grow: 1;
-      color: rgba(80, 80, 80, 1);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      align-items: center;
-      > div:nth-child(1) {
-        font-size: 14px;
-        overflow: auto;
-        white-space: nowrap;
-        width: 100%;
-      }
-      > div:nth-child(2) {
+    .erweima {
+        margin: 20px auto 8px;
+        width: 200px;
+        height: 200px;
+        position: relative;
+        > img {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            margin: auto;
+            border-radius: 10px;
+        }
+        > div {
+            img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+    .footer_1 {
+        color: rgba(80, 80, 80, 1);
         font-size: 12px;
-        white-space: nowrap;
-        overflow: auto;
-        color: #afafaf;
-        width: 100%;
-      }
+        text-align: center;
+        .hongbao {
+            color: #d43030;
+        }
     }
-  }
-  .erweima {
-    margin: 20px auto 8px;
-    width: 200px;
-    height: 200px;
-    position: relative;
-    > img {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      top: 0px;
-      bottom: 0px;
-      left: 0px;
-      right: 0px;
-      margin: auto;
-      border-radius: 10px;
-    }
-    > div {
-      img {
-        width: 100%;
-        height: 100%;
-      }
-    }
-  }
-  .footer_1 {
-    color: rgba(80, 80, 80, 1);
-    font-size: 12px;
-    text-align: center;
-    .hongbao {
-      color: #d43030;
-    }
-  }
 }
 </style>
 
@@ -584,156 +582,156 @@ export default {
 @import "@/assets/css/config.scss";
 
 .QRCode {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0px;
-  left: 0px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 11;
-  .mask {
-    position: absolute;
-    top: 0px;
-    left: 0px;
+    position: fixed;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.4);
-  }
-  .content_1 {
-    > img {
-      width: 100%;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 11;
+    .mask {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
     }
-    position: relative;
-    z-index: 1;
-    background: #ffffff;
-    width: 270px;
-    // padding: 17px 25px 15px 25px;
-    .close_1 {
-      width: 36px;
-      height: 50px;
-      position: absolute;
-      top: -50px;
-      right: 0px;
-      > div:nth-child(1) {
-        height: 36px;
-        text-align: center;
-        line-height: 36px;
-        background: #ffffff;
-        border-radius: 100%;
+    .content_1 {
+        > img {
+            width: 100%;
+        }
         position: relative;
         z-index: 1;
-      }
-      > div:nth-child(2) {
-        position: absolute;
-        width: 1px;
-        height: 100%;
         background: #ffffff;
-        top: 0px;
-        right: 0px;
-        left: 0px;
-        margin: 0px auto;
-      }
+        width: 270px;
+        // padding: 17px 25px 15px 25px;
+        .close_1 {
+            width: 36px;
+            height: 50px;
+            position: absolute;
+            top: -50px;
+            right: 0px;
+            > div:nth-child(1) {
+                height: 36px;
+                text-align: center;
+                line-height: 36px;
+                background: #ffffff;
+                border-radius: 100%;
+                position: relative;
+                z-index: 1;
+            }
+            > div:nth-child(2) {
+                position: absolute;
+                width: 1px;
+                height: 100%;
+                background: #ffffff;
+                top: 0px;
+                right: 0px;
+                left: 0px;
+                margin: 0px auto;
+            }
+        }
     }
-  }
 }
 
 .erweima {
-  color: #ffffff;
-  line-height: 44px;
-  font-size: 20px;
+    color: #ffffff;
+    line-height: 44px;
+    font-size: 20px;
 }
 .box_1 {
-  display: flex;
-  padding: 0.1rem;
-  background: #ffffff;
-  margin: 0px 0px 5px;
-  li:nth-child(1) {
-    width: 0.6rem;
-    height: 0.6rem;
-    position: relative;
-    flex-shrink: 0;
-    img {
-      width: 100%;
-      height: 100%;
+    display: flex;
+    padding: 0.1rem;
+    background: #ffffff;
+    margin: 0px 0px 5px;
+    li:nth-child(1) {
+        width: 0.6rem;
+        height: 0.6rem;
+        position: relative;
+        flex-shrink: 0;
+        img {
+            width: 100%;
+            height: 100%;
+        }
+        div {
+            position: absolute;
+            width: 100%;
+            background: rgba(153, 153, 153, 0.6);
+            color: #ffffff;
+            left: 0px;
+            bottom: 0px;
+            font-size: 0.1rem;
+            text-align: center;
+        }
     }
-    div {
-      position: absolute;
-      width: 100%;
-      background: rgba(153, 153, 153, 0.6);
-      color: #ffffff;
-      left: 0px;
-      bottom: 0px;
-      font-size: 0.1rem;
-      text-align: center;
+    li:nth-child(2) {
+        width: 0;
+        flex-grow: 1;
+        margin: 0px 0.1rem;
+        h1 {
+            font-weight: 400;
+            color: rgba(56, 56, 56, 1);
+            font-size: 0.12rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        h2 {
+            font-weight: 400;
+            color: rgba(56, 56, 56, 1);
+            font-size: 0.12rem;
+        }
+        h3 {
+            font-weight: 400;
+            color: rgba(56, 56, 56, 1);
+            font-size: 0.12rem;
+        }
     }
-  }
-  li:nth-child(2) {
-    width: 0;
-    flex-grow: 1;
-    margin: 0px 0.1rem;
-    h1 {
-      font-weight: 400;
-      color: rgba(56, 56, 56, 1);
-      font-size: 0.12rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    li:nth-child(3) {
+        flex-shrink: 0;
+        font-size: 0.3rem;
+        color: #1c94d8;
+        line-height: 0.6rem;
     }
-    h2 {
-      font-weight: 400;
-      color: rgba(56, 56, 56, 1);
-      font-size: 0.12rem;
-    }
-    h3 {
-      font-weight: 400;
-      color: rgba(56, 56, 56, 1);
-      font-size: 0.12rem;
-    }
-  }
-  li:nth-child(3) {
-    flex-shrink: 0;
-    font-size: 0.3rem;
-    color: #1c94d8;
-    line-height: 0.6rem;
-  }
 }
 .box_2 {
-  display: flex;
-  text-align: center;
-  background: #ffffff;
-  padding: 8px 0px 5px;
-  > li {
-    width: 20%;
-    > div:nth-child(1) {
-      width: 0.35rem;
-      height: 0.35rem;
-      border-radius: 100%;
-      color: #ffffff;
-      background: $header_background;
-      line-height: 0.35rem;
-      margin: 0px auto 5px;
+    display: flex;
+    text-align: center;
+    background: #ffffff;
+    padding: 8px 0px 5px;
+    > li {
+        width: 20%;
+        > div:nth-child(1) {
+            width: 0.35rem;
+            height: 0.35rem;
+            border-radius: 100%;
+            color: #ffffff;
+            background: $header_background;
+            line-height: 0.35rem;
+            margin: 0px auto 5px;
+        }
+        > div:nth-child(2) {
+            color: #505050;
+            font-size: 0.12rem;
+        }
     }
-    > div:nth-child(2) {
-      color: #505050;
-      font-size: 0.12rem;
-    }
-  }
 }
 .box_3 {
-  margin: 5px 0px 0px;
-  color: #505050;
-  font-size: 0.12rem;
-  .cont_1 {
-    padding-right: 0.25rem;
-  }
-  .tixian {
-    color: #1c94d8;
-  }
+    margin: 5px 0px 0px;
+    color: #505050;
+    font-size: 0.12rem;
+    .cont_1 {
+        padding-right: 0.25rem;
+    }
+    .tixian {
+        color: #1c94d8;
+    }
 }
 
 .进入店铺 {
-  margin: 27px 0px;
+    margin: 27px 0px;
 }
 </style>

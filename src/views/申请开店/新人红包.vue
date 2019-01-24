@@ -222,7 +222,6 @@ export default {
         }
     },
     beforeCreate: function () {
-        this.获取店铺()
         // console.group('------beforeCreate创建前状态------');
     },
     created: function () {
@@ -237,6 +236,7 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function () {
+        this.获取店铺()
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function () {

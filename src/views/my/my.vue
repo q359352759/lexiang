@@ -440,7 +440,6 @@ export default {
     if (!this.userInfo.headImgUrl) {
       this.updated_user().then(x => {
         console.log("需改用户信息", x);
-        // this.$store.commit('setCurrent');
         this.get_user()
           .then(res => {
             console.log("获取用户头像", res);

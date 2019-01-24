@@ -22,45 +22,44 @@ axios.defaults.timeout = 60000;
 
 Vue.prototype.$axios = axios;
 //拦截器
-axios.interceptors.request.use(
-  config => {
-    try {
-      var loginDate = JSON.parse(localStorage.loginDate);
-      config.headers.Authorization = "Bearer " + loginDate.access_token;
-      // console.log(loginDate.access_token)
-    } catch (error) {}
-    return config;
-  },
-  err => {
-    return Promise.reject(err);
-  }
-);
+// axios.interceptors.request.use(
+//     config => {
+//         try {
+//             var loginDate = JSON.parse(localStorage.loginDate);
+//             config.headers.Authorization = "Bearer " + loginDate.access_token;
+//         } catch (error) {}
+//         return config;
+//     },
+//     err => {
+//         return Promise.reject(err);
+//     }
+// );
 axios.interceptors.response.use(
-  function(response) {
-    // console.log(response);
-    if (response.data.error && response.data.error == "invalid_token") {
-      mui.confirm(
-        "此操作需要登录权限，你的登录已过期，是否重新登录？",
-        "提示",
-        ["取消", "是的"],
-        value => {
-          if (value.index == 1) {
-            router.push("/login");
-          }
+    function (response) {
+        // console.log(response);
+        if (response.data.error && response.data.error == "invalid_token") {
+            var path=router.history.current.path;
+            var 弹框长度=document.querySelectorAll('.mui-popup').length;
+            if(path!='/login' && 弹框长度==0){
+                mui.confirm("此操作需要登录,你的登录已过期，是否重新登录？","提示",["取消", "是的"],value => {
+                        if (value.index == 1) {
+                            router.push("/login");
+                        }
+                    }
+                );
+            }
+        } else {
+            return response;
         }
-      );
-    } else {
-      return response;
+    },
+    function (error) {
+        if (error) {
+            if (error.response) {
+                return error.response;
+            }
+        }
+        return Promise.reject(error.response); // 返回接口返回的错误信息
     }
-  },
-  function(error) {
-    if (error) {
-      if (error.response) {
-        return error.response;
-      }
-    }
-    return Promise.reject(error.response); // 返回接口返回的错误信息
-  }
 );
 import qs from "qs";
 Vue.prototype.$qs = qs;
@@ -73,39 +72,39 @@ import request from "@/api/request.js";
 Vue.prototype.$request = request;
 
 new Vue({
-  router,
-  store,
-  render: h => h(App)
+    router,
+    store,
+    render: h => h(App)
 }).$mount("#app");
 
 router.beforeEach((to, from, next) => {
-  var toPath = to.path;
-  var loginDate = localStorage.loginDate;
-  var baimingdan = [
-    "/login",
-    "/register",
-    "/home",
-    "/commodity/CommodityDetails", //首页商品详情
-    "/BusinessDetails", //首页商家
-    "/RedEnvelopesList", //商家领取红包页面
-    "/RegistrationAgreement",
-    "/ForgetPassword",
-    "/Recommend", //分享页面
-    "/BeInvited", //分享注册页面
-    "/shizhe/tuiguang"
-  ]; //未登录可以访问的白名单
-  if (!loginDate || loginDate == null || loginDate == undefined) {
-    if (baimingdan.indexOf(toPath) == -1) {
-      console.log("没有登录准备跳转至登录");
-      next({ path: "/login" });
-      //next();
+    var toPath = to.path;
+    var loginDate = localStorage.loginDate;
+    var baimingdan = [
+        "/login",
+        "/register",
+        "/home",
+        "/commodity/CommodityDetails", //首页商品详情
+        "/BusinessDetails", //首页商家
+        "/RedEnvelopesList", //商家领取红包页面
+        "/RegistrationAgreement",
+        "/ForgetPassword",
+        "/Recommend", //分享页面
+        "/BeInvited", //分享注册页面
+        "/shizhe/tuiguang"
+    ]; //未登录可以访问的白名单
+    if (!loginDate || loginDate == null || loginDate == undefined) {
+        if (baimingdan.indexOf(toPath) == -1) {
+            console.log("没有登录准备跳转至登录");
+            next({ path: "/login" });
+            //next();
+        } else {
+            console.log("白名单");
+            next();
+        }
     } else {
-      console.log("白名单");
-      next();
+        next();
     }
-  } else {
-    next();
-  }
-  document.getElementById("loading").style.opacity = "0";
-  document.getElementById("loading").style.display = "none";
+    document.getElementById("loading").style.opacity = "0";
+    document.getElementById("loading").style.display = "none";
 });

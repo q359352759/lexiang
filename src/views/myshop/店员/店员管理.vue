@@ -43,7 +43,7 @@
                             </div>
                             <div>回复：-0条</div>
                             <div>收银：-0笔</div>
-                            <div>营业额：-0元</div>
+                            <div>营业额：{{item.营业额 ? item.营业额 : 0}}元</div>
                         </div>
                         <div class="icon_box" @click="选择店员(item)">
                             <i class="mui-icon mui-icon-arrowright"></i>
@@ -226,11 +226,10 @@ export default {
                 this.查询班次(),
                 this.查询考勤时间(),
                 this.查询店员列表()
-            ])
-                .then(x => {
+            ]).then(x => {
+
                     openloading(false);
-                })
-                .catch(err => {
+            }).catch(err => {
                     openloading(false);
                 });
             // await this.查询考勤时间();

@@ -91,7 +91,10 @@ export default {
                 data: this.$qs.stringify({
                     username: this.username,
                     password: this.password
-                })
+                }),
+                // headers:{
+                //     Authorization:"Bearer "
+                // }
                 //get请求方式
                 // params:{
                 //     firstName: '1',
