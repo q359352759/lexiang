@@ -2,7 +2,7 @@
     <div class="introduction">
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">店铺简介1{{sol}}</h1>
+            <h1 class="mui-title">店铺简介</h1>
         </header>
         <div class="mui-content mui-fullscreen">
 
@@ -52,7 +52,7 @@
 import { isAndroid } from "@/assets/js/currency";
 import Album from "@/components/Album.vue";
 import $ from "jquery";
-import { mapGetters , mapActions } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 export default {
     name: "",
     components: {
@@ -157,12 +157,12 @@ export default {
     },
     computed: {
         ...mapGetters({
-            myshop:'get_myshop'
+            myshop: 'get_myshop'
         })
     },
     methods: {
         ...mapActions({
-            获取店铺:'getMyshop'
+            获取店铺: 'getMyshop'
         }),
         //选择字体大小
         change_font_size() {
@@ -299,42 +299,31 @@ export default {
             this.$axios({
                 method: "get",
                 url: "/api-s/shops/synopsis/" + this.myshop.shopid
-            })
-                .then(x => {
-                    console.log("查询简介", x);
-                    if (x.data.code == 200) {
-                        if (!x.data.data) {
-                            return;
-                        }
-                        this.synopsis = x.data.data;
-                        var this_1 = this;
-                        var str = this.synopsis.remark;
-                        // var str='<div data-v-845c3686="" contenteditable="true" class="content_1" style="font-size: 24px; color: rgb(0, 0, 255);">sdfsdfsdf</div>';
-                        var div = $(str);
-                        this.font_size = div.css("font-size")
-                            ? div.css("font-size")
-                            : "16px";
-                        this.font_size =
-                            parseInt(this.font_size) > 10 ? this.font_size : "10px";
-                        this.font_color = div.css("color") ? div.css("color") : "#000000";
-                        this.html = div.html();
-                    } else {
-                        mui.alert(
-                            x.data.msg ? x.data.msg : x.data.messag,
-                            "提示",
-                            "我知道了",
-                            function () { },
-                            "div"
-                        );
+            }).then(x => {
+                console.log("查询简介", x);
+                if (x.data.code == 200) {
+                    if (!x.data.data) {
+                        return;
                     }
-                })
-                .catch(err => {
-                    mui.toast("系统错误，稍后再试。", { duration: "long", type: "div" });
-                    console.log("查询简介失败", err);
-                });
+                    this.synopsis = x.data.data;
+                    var this_1 = this;
+                    var str = this.synopsis.remark;
+                    // var str='<div data-v-845c3686="" contenteditable="true" class="content_1" style="font-size: 24px; color: rgb(0, 0, 255);">sdfsdfsdf</div>';
+                    var div = $(str);
+                    this.font_size = div.css("font-size") ? div.css("font-size") : "16px";
+                    this.font_size = parseInt(this.font_size) > 10 ? this.font_size : "10px";
+                    this.font_color = div.css("color") ? div.css("color") : "#000000";
+                    this.html = div.html();
+                } else {
+                    mui.alert(x.data.msg ? x.data.msg : x.data.messag, "提示", "我知道了", function () { }, "div");
+                }
+            }).catch(err => {
+                mui.toast("系统错误，稍后再试。", { duration: "long", type: "div" });
+                console.log("查询简介失败", err);
+            });
         },
-        async 初始化(){
-            if(!this.myshop || !this.myshop.shopid){
+        async 初始化() {
+            if (!this.myshop || !this.myshop.shopid) {
                 await this.获取店铺()
             }
             this.get_synopsis();

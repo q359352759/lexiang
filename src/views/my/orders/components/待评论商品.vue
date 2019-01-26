@@ -3,7 +3,7 @@
         <ul class="header">
             <li class="daipingjia mui-pull-right">
                 <span v-show="shangping.state==0">待支付</span>
-                <span v-show="shangping.state==1">已支付</span>
+                <span v-show="shangping.state==1">待评价</span>
             </li>
             <li class="shop">
                 <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
@@ -36,8 +36,7 @@
             <li class="text_1" v-show="shangping.state==1">共计{{shangping.shopOrderCommoditys.length}}个商品，合计{{shangping.paymentAmount+shangping.deduction}}元，优惠{{shangping.deduction}}元。</li>
             <li class="btn_1 quxiao" @click="取消()" v-if="shangping.state==0">取消</li>
             <li @click="zhifu()" class="btn_1 zhifu" v-show="shangping.state==0">支付</li>
-            <!-- <li class="btn_1 zhifu" @click="$router.push('/my/pingjia/pingjia?orderid='+shangping.id)" v-if="shangping.state==1">已支付</li> -->
-            <li class="btn_1 zhifu" v-if="shangping.state==1">已支付</li>
+            <li class="btn_1 zhifu" @click="$router.push('/my/pingjia/pingjia?orderid='+shangping.id)" v-if="shangping.state==1">评价</li>
         </ul>
     </div>
 </template>

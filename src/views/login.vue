@@ -45,19 +45,23 @@
             </div>
 
         </div>
-
+        <guanzhugongzhonghao v-show="!是否关注 && !是否手动关闭"/>
     </div>
 </template>
 
 <script>
+
 import { dateFtt, openloading } from "@/assets/js/currency";
-import { mapActions } from "vuex";
+import { mapActions , mapGetters} from "vuex";
 import { b64DecodeUnicode } from "@/assets/js/base64jiema.js";
 import btn from "@/components/button.vue";
+import guanzhugongzhonghao from '@/components/关注二维码弹出框.vue'
+
 export default {
     name: "login",
     components: {
-        btn
+        btn,
+        guanzhugongzhonghao
     },
     filters: {},
     data() {
@@ -67,10 +71,18 @@ export default {
             password: ""
         };
     },
+    computed: {
+        ...mapGetters({
+            是否关注: 'user/是否关注',
+            是否手动关闭: 'user/是否手动关闭'
+        })
+    },
     methods: {
         ...mapActions({
             set_isfenxiang: "shop/set_isfenxiang",
-            设置openid: "user/设置openid"
+            设置openid: "user/设置openid",
+            判断用户是否关注: 'user/判断用户是否关注',
+            设置手动关闭:'user/设置手动关闭'
         }),
         //跳转忘记密码
         ForgetPassword() {
@@ -145,6 +157,15 @@ export default {
                 openloading(false);
                 mui.toast("登录失败。", { duration: 2000, type: "div" });
             });
+        },
+        判断关注(){
+            this.判断用户是否关注().then(x=>{
+                if(!this.是否手动关闭 && !this.是否关注){
+                    setTimeout(x=>{
+                        this.判断关注()
+                    },2000)
+                }
+            })
         }
     },
     beforeCreate: function () {
@@ -158,16 +179,11 @@ export default {
     },
     mounted: function () {
         this.set_isfenxiang(true);
-        //获取地区
-        if (
-            localStorage.area &&
-            localStorage.area != "" &&
-            localStorage.area != undefined &&
-            localStorage.area != "undefined"
-        ) {
-            this.$store.state.area = JSON.parse(localStorage.area);
-        }
-
+        try {
+             this.$store.state.area = JSON.parse(localStorage.area);
+        } catch (error) {}
+        this.设置手动关闭(false);
+        this.判断关注()
         //获取地区
         this.$store.dispatch("get_area");
         // console.group('------mounted 挂载结束状态------');

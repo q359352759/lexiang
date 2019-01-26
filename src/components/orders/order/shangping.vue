@@ -23,13 +23,13 @@
                 红包抵扣：
                 <span v-for="(item_1, index) in item.filter_hongbao" :key="index">
                     <!-- 查询该类型的红包 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包 -->
-                    <span v-if="item_1.envelopeType==0">新人红包-{{item_1.money}}元、</span>
-                    <span v-if="item_1.envelopeType==1">商品红包-{{item_1.money}}元、</span>
-                    <span v-if="item_1.envelopeType==2">节日红包-{{item_1.money}}元、</span>
-                    <span v-if="item_1.envelopeType==3">签到红包-{{item_1.money}}元、</span>
-                    <span v-if="item_1.envelopeType==4">庆典红包-{{item_1.money}}元、</span>
-                    <span v-if="item_1.envelopeType==5">生日红包-{{item_1.money}}元、</span>
-                    <span v-if="item_1.envelopeType==8">平台红包-{{item_1.money}}元、</span>
+                    <span v-if="item_1.envelopeType==0">新人红包-{{item_1.money}}元{{index!=item.filter_hongbao.length-1 ? '、' :''}}</span>
+                    <span v-if="item_1.envelopeType==1">商品红包-{{item_1.money}}元{{index!=item.filter_hongbao.length-1 ? '、' :''}}</span>
+                    <span v-if="item_1.envelopeType==2">节日红包-{{item_1.money}}元{{index!=item.filter_hongbao.length-1 ? '、' :''}}</span>
+                    <span v-if="item_1.envelopeType==3">签到红包-{{item_1.money}}元{{index!=item.filter_hongbao.length-1 ? '、' :''}}</span>
+                    <span v-if="item_1.envelopeType==4">庆典红包-{{item_1.money}}元{{index!=item.filter_hongbao.length-1 ? '、' :''}}</span>
+                    <span v-if="item_1.envelopeType==5">生日红包-{{item_1.money}}元{{index!=item.filter_hongbao.length-1 ? '、' :''}}</span>
+                    <span v-if="item_1.envelopeType==8">平台红包-{{item_1.money}}元{{index!=item.filter_hongbao.length-1 ? '、' :''}}</span>
                 </span>
             </li>
         </ul>

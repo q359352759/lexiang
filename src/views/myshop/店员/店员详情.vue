@@ -53,11 +53,7 @@
     </div>
 </template>
 <script>
-import {
-    getCurrentMonthFirst,
-    getCurrentMonthLast,
-    getDaysByDateString
-} from "@/assets/js/time.js";
+import {getCurrentMonthFirst,getCurrentMonthLast,getDaysByDateString} from "@/assets/js/time.js";
 import { 当前时间格式化 } from "@/assets/js/currency.js";
 import { mapGetters, mapActions } from "vuex";
 import loading from "@/components/loading.vue";

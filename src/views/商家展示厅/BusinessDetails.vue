@@ -171,11 +171,10 @@
                 <!-- <loading v-if="type_1==2" :nodata="true" :text="'暂无评论'" /> -->
                 <pinglun />
             </div>
-           
 
             <ul v-if="type_1==3">
-                <li v-if="synopsis && synopsis.remark" v-html="synopsis.remark"></li>
-                <loading v-if="!synopsis || !synopsis.remark" :nodata="true" text="这个商家什么也没留下~"/>
+                <li v-if="synopsis && synopsis.remark_1" v-html="synopsis.remark_1"></li>
+                <loading v-if="!synopsis || !synopsis.remark_1" :nodata="true" text="这个商家什么也没留下~" />
             </ul>
 
             <div class="swper_box" v-if="swperdome" @tap="close_swper()">
@@ -216,6 +215,9 @@
                         <div></div>
                     </div>
                     <img :src="qrcode" alt="" srcset="">
+                    <div class="二维码提示">
+                        长按二维码，点击“发送给朋友”
+                    </div>
                 </div>
             </div>
 
@@ -236,6 +238,7 @@ import loading from "@/components/loading.vue";
 import fenxianghongbao from "@/components/home/myshop/fenxianghongbao.vue";
 import pinglun from './components/评论.vue'
 import { mapGetters, mapActions } from "vuex";
+import $ from "jquery";
 
 export default {
     name: "",
@@ -362,7 +365,7 @@ export default {
         ...mapActions({
             set_isfenxiang: "shop/set_isfenxiang",
             添加店铺人气: "shop/添加店铺人气",
-            获取位置:'获取位置/获取位置'
+            获取位置: '获取位置/获取位置'
         }),
         //显示新人红包弹出框
         setxinrenhongbao_show(x) {
@@ -785,7 +788,7 @@ export default {
         },
         //根据Id查询店铺
         async get_shop() {
-            if(!this.当前位置 || this.当前位置.x=='' || this.当前位置.y==''){
+            if (!this.当前位置 || this.当前位置.x == '' || this.当前位置.y == '') {
                 await this.获取位置()
             }
             var this_1 = this;
@@ -808,7 +811,7 @@ export default {
                         }
                     }
                 }
-            }).catch(err => {});
+            }).catch(err => { });
         },
         //查询距离
         get_juli() {
@@ -868,14 +871,12 @@ export default {
             this.$axios({
                 method: "get",
                 url: "/api-s/shops/type/findAll?start=0&length=100"
-            })
-                .then(x => {
-                    console.log("查询服务类型", x);
-                    this.type_list = x.data.data.data;
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            }).then(x => {
+                console.log("查询服务类型", x);
+                this.type_list = x.data.data.data;
+            }).catch(err => {
+                console.log(err);
+            });
         },
         //获取简介
         get_synopsis() {
@@ -883,14 +884,20 @@ export default {
             this.$axios({
                 method: "get",
                 url: "/api-s/shops/synopsis/" + this.shopid
-            })
-                .then(x => {
-                    console.log("店铺简介", x);
-                    this.synopsis = x.data.data;
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            }).then(x => {
+                console.log("店铺简介", x);
+                if (!x.data.data) {
+                    return;
+                }
+                this.synopsis = x.data.data;
+                var str = this.synopsis.remark;
+                // var str='<div data-v-845c3686="" contenteditable="true" class="content_1" style="font-size: 24px; color: rgb(0, 0, 255);">sdfsdfsdf</div>';
+                var div = $(str);
+                this.synopsis.remark_1=div.html();
+                
+            }).catch(err => {
+                console.log(err);
+            });
         },
         //获取公告
         get_shopAnnouncement() {
@@ -1278,9 +1285,17 @@ export default {
         }
         position: relative;
         z-index: 1;
-        background: #ffffff;
         width: 270px;
-        // padding: 17px 25px 15px 25px;
+        .二维码提示{
+            height: 35px;
+            color: rgba(56, 56, 56, 1);
+            background-color: rgba(255, 255, 255, 1);
+            border-radius: 35px;
+            font-size: 14px;
+            text-align: center;
+            margin: 14px 0px 0px;
+            line-height: 35px;
+        }
         .close_1 {
             width: 36px;
             height: 50px;

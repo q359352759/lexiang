@@ -1,0 +1,86 @@
+import axios from "@/api/axios.js";
+import qs from "qs";
+const 评论={
+    page_index:0,
+    list:[],
+    total:0,
+    loading:true,
+    query:{
+        start:0,
+        length:10,
+        shopid:''
+    }
+}
+export default {
+    namespaced: true,
+    state: {
+        评论:{
+            page_index:0,
+            list:[],
+            total:0,
+            loading:true,
+            query:{
+                start:0,
+                length:10,
+                shopid:''
+            }
+        }
+    },
+    getters: {
+        评论(state){
+            return state.评论
+        }
+    },
+    mutations: {
+        
+    },
+    actions: {
+        初始化({state}){
+            state.评论=JSON.parse(JSON.stringify(评论));
+        },
+        查询评价({state , dispatch , rootGetters},query){
+            // console.log('其他地方的state',rootState);
+            // console.log(rootGetters['vip/get']) // 打印其他模块的 getters
+            // dispatch('vip/get', {}, {root: true}) // 调用其他模块的 actions
+            // commit('vip/receive', data, {root: true}) // 调用其他模块的 mutations
+            var 店铺=rootGetters['get_myshop'];
+            state.评论.query.shopid=店铺.shopid;
+            state.评论.query.start=state.评论.page_index*state.评论.query.length;
+            state.评论.loading=true;
+            dispatch('评论/查询评价',state.评论.query , {root: true}).then(x=>{
+                console.log('查询评论');
+                if(x.data.code==200){
+                    var list=x.data.data.data;
+                    list.forEach(item => {
+                        item.用户={};
+                        dispatch('通过username查询用户',item)
+                        item.shopCommodityCommentList.forEach(item_1=>{
+                            item_1.用户={}
+                            item_1.店员={}
+                            dispatch('通过username查询用户',item_1)
+                        })
+                    });
+                    state.评论.list=state.评论.list.concat(list);
+                    state.评论.total=x.data.data.total
+                }
+                state.评论.loading=false;
+            }).catch(err=>{
+                state.评论.loading=false;
+            })
+        },
+        评价下一页({state,dispatch}){
+            state.评论.page_index++;
+            dispatch('查询评价')
+        },
+        //列表专用
+        通过username查询用户({ }, item) {
+            if(!item.userid) return;
+            axios.get("/api-u/users/findByUserid/" + item.userid).then(x => {
+                if(x.data.code==200){
+                    item.用户=x.data.data;
+                }
+            }).catch(err => {});
+        },
+    },
+    modules: {}
+};

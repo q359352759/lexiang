@@ -25,12 +25,6 @@
                 </div>
             </li>
         </ul>
-        <!-- <header class="mui-bar mui-bar-nav">
-            <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-            <h1 class="mui-title">测试</h1>
-            <span @tap="SearchShop()" class="sousuo mui-pull-right"><i class="icon iconfont icon-chazhao"></i></span>
-        </header> -->
-
         <div class="mui-content mui-fullscreen" ref="muiContent" @scroll="content_scroll($event)">
 
             <div class="swiper-container">
@@ -44,9 +38,6 @@
                 <div class="swiper-pagination"></div>
             </div>
 
-            <!-- <div class="banyuan">
-                <div></div>
-            </div> -->
             <div class="半圆">
                 <div>
                     <banyuan />
@@ -170,6 +161,9 @@
                         <div></div>
                     </div>
                     <img :src="qrcode" alt="" srcset="">
+                    <div class="二维码提示">
+                        长按二维码，点击“发送给朋友”
+                    </div>
                 </div>
             </div>
 
@@ -313,7 +307,8 @@ export default {
         }),
         async 测试(){
             // await this.获取位置();
-            alert(JSON.stringify(this.当前位置))
+            console.log(this.$refs.muiContent)
+            mui.alert(JSON.stringify(this.当前位置)+this.$refs.muiContent, "提示", "我知道了", function () { }, "div");
         },
         getHomeDialog(x) {
             this.homeDialog_show = false;
@@ -604,6 +599,7 @@ export default {
                 upy: this.$store.state.my_position.y,
                 orderType: "ASC"
             };
+            
             this.shop.loading = true;
             this.$axios.get("/api-s/shops/findAll", { params: obj }).then(x => {
                 console.log("查询店铺", x);
@@ -619,6 +615,7 @@ export default {
                 this.shop.loading = false;
             });
         },
+        
         //查询 首页显示的 红包
         get_redenvelope() {
             var this_1 = this;
@@ -719,8 +716,16 @@ export default {
     activated() {
         //再次进入页面
         if(!this.首次进入){
-            console.log('再次进入页面')
-            this.$refs.muiContent.scrollTo(0, this.滚动条位置, true);
+            console.log('再次进入页面',this.滚动条位置)
+            console.log(this.$refs.muiContent)
+            // this.$refs.smoothScrollTo(0,this.滚动条位置,true);  
+            try {
+                this.$refs.muiContent.scrollTo(0, this.滚动条位置, true);   
+            } catch (error) {
+                setTimeout(x=>{
+                    this.$refs.muiContent.scrollTo(0, this.滚动条位置, true);
+                },500)
+            }
             if(this.redenvelope.list.length==0 && !this.redenvelope.loading){
                 this.get_redenvelope()
             }
@@ -874,23 +879,6 @@ export default {
     }
 }
 
-#home .banyuan {
-    position: relative;
-    z-index: 1;
-
-    div {
-        position: absolute;
-        width: 100%;
-        height: 10px;
-        background: #ffffff;
-        position: absolute;
-        bottom: -5px;
-        left: 0px;
-        // border-top-left-radius: 100%;
-        // border-top-right-radius: 100%;
-        border-radius: 50%;
-    }
-}
 
 #home .swiper-slide {
     // height: 1.2rem;
@@ -898,7 +886,6 @@ export default {
 }
 
 #home .swiper-slide img {
-    height: 100%;
     width: 100%;
     object-fit: cover;
 }
@@ -1206,7 +1193,7 @@ export default {
         .erweima_box {
             width: 200px;
             height: 200px;
-            margin: 28px auto 0px;
+            margin: 20px auto 0px;
             position: relative;
             div {
                 width: 100%;
@@ -1264,8 +1251,17 @@ export default {
         }
         position: relative;
         z-index: 1;
-        background: #ffffff;
         width: 270px;
+        .二维码提示{
+            height: 35px;
+            color: rgba(56, 56, 56, 1);
+            background-color: rgba(255, 255, 255, 1);
+            border-radius: 35px;
+            font-size: 14px;
+            text-align: center;
+            margin: 14px 0px 0px;
+            line-height: 35px;
+        }
         // padding: 17px 25px 15px 25px;
         .close_1 {
             width: 36px;

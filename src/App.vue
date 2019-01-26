@@ -65,16 +65,7 @@ export default {
 
             var weixin = localStorage.weixin;
             var weixininfo = localStorage.weixininfo;
-            if (
-                !weixin ||
-                weixin == null ||
-                weixin == undefined ||
-                weixin == "undefined" ||
-                !weixininfo ||
-                weixininfo == null ||
-                weixininfo == undefined ||
-                weixininfo == "undefined"
-            ) {
+            if (!weixin || weixin == null || weixin == undefined || weixin == "undefined" || !weixininfo || weixininfo == null || weixininfo == undefined || weixininfo == "undefined") {
                 console.log("没有微信信息");
                 location.href = "getopenid.html";
             } else {
@@ -94,6 +85,7 @@ export default {
     },
     mounted: function () {
         this.$store.state.weixin_ready = false;
+
         // window.addEventListener("storage", e => {
         //     if (e.key !== "vuex") return;
         //     // exit if no change
@@ -134,20 +126,13 @@ export default {
                 return;
             }
         } else if (!this.userInfo.headImgUrl) {
-            this.updated_user()
-                .then(x => {
-                    console.log("修改用户头像", x);
-                    this.get_user()
-                        .then(res => {
-                            console.log("获取用户头像", res);
-                        })
-                        .catch(err => {
-                            console.log("获取头像失败", err);
-                        });
-                })
-                .catch(err => {
-                    console.log(err);
+            this.updated_user().then(x => {
+                this.get_user().then(res => {
+                }).catch(err => {
                 });
+            }).catch(err => {
+                console.log(err);
+            });
         }
 
         //支付宝授权后跳转地址
@@ -183,30 +168,28 @@ export default {
             // url: '/api-v/pay/getSandboxSignKey',
             url: "http://m.lxad.vip/test/jssdk/jssdk.php"
             // url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
-        })
-            .then(x => {
-                console.log("jssdk签名", x);
-                var data = x.data;
-                wx.config({
-                    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                    appId: data.appId, // 必填，公众号的唯一标识
-                    timestamp: data.timestamp, // 必填，生成签名的时间戳
-                    nonceStr: data.nonceStr, // 必填，生成签名的随机串
-                    signature: data.signature, // 必填，签名
-                    jsApiList: jsApiList // 必填，需要使用的JS接口列表
-                });
-                wx.ready(function () {
-                    console.log(123);
-                    this_1.$store.state.weixin_ready = true;
-                    // console.log('config信息验证后会执行ready方法');
-                });
-                wx.error(function (res) {
-                    console.log("config信息验证失败", res);
-                });
-            })
-            .catch(err => {
-                console.log(err);
+        }).then(x => {
+            console.log("jssdk签名", x);
+            var data = x.data;
+            wx.config({
+                debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: data.appId, // 必填，公众号的唯一标识
+                timestamp: data.timestamp, // 必填，生成签名的时间戳
+                nonceStr: data.nonceStr, // 必填，生成签名的随机串
+                signature: data.signature, // 必填，签名
+                jsApiList: jsApiList // 必填，需要使用的JS接口列表
             });
+            wx.ready(function () {
+                console.log(123);
+                this_1.$store.state.weixin_ready = true;
+                // console.log('config信息验证后会执行ready方法');
+            });
+            wx.error(function (res) {
+                console.log("config信息验证失败", res);
+            });
+        }).catch(err => {
+            console.log(err);
+        });
 
         //初始化一些vuex数据
         // 判断是不是微信
@@ -225,12 +208,7 @@ export default {
         //查询店铺类型
         this.$store.commit("setShopTree");
         //获取地区
-        if (
-            localStorage.area &&
-            localStorage.area != "" &&
-            localStorage.area != undefined &&
-            localStorage.area != "undefined"
-        ) {
+        if (localStorage.area && localStorage.area != "" && localStorage.area != undefined && localStorage.area != "undefined") {
             this.$store.state.area = JSON.parse(localStorage.area);
         }
         //初始化分类
@@ -240,7 +218,6 @@ export default {
         } catch (error) { }
         //获取地区
         this.$store.dispatch("get_area");
-
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function () {

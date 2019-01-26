@@ -27,6 +27,7 @@ export default {
             // commit('vip/receive', data, {root: true}) // 调用其他模块的 mutations
         },
         微信获取位置({dispatch,rootState}){
+            console.log('微信获取位置')
             return new Promise((resolve, reject) => {
                 function 获取位置(){
                     if(rootState.weixin_ready){
@@ -52,6 +53,7 @@ export default {
             });
         },
         地图坐标转换({rootState},res){
+            console.log('坐标转换')
             return new Promise((resolve, reject) => {
                 var x=res.longitude;
                 var y=res.latitude
@@ -68,6 +70,7 @@ export default {
             
         },
         百度地图获取位置({rootState}){
+            console.log('使用百度地图获取位置');
             return new Promise((resolve, reject) => {
                 try {
                     var geolocation = new BMap.Geolocation();
@@ -82,6 +85,7 @@ export default {
                         { enableHighAccuracy: true }
                     );
                 } catch (error) {
+                    console.log(JSON.stringify('使用百度地图获取位置错误',error))
                     resolve()
                 }
             });

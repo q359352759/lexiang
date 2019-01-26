@@ -166,6 +166,9 @@
                         <div></div>
                     </div>
                     <img :src="qrcode" alt="" srcset="">
+                    <div class="二维码提示">
+                        长按二维码，点击“发送给朋友”
+                    </div>
                 </div>
             </div>
 
@@ -605,8 +608,17 @@ export default {
         }
         position: relative;
         z-index: 1;
-        background: #ffffff;
         width: 270px;
+        .二维码提示{
+            height: 35px;
+            color: rgba(56, 56, 56, 1);
+            background-color: rgba(255, 255, 255, 1);
+            border-radius: 35px;
+            font-size: 14px;
+            text-align: center;
+            margin: 14px 0px 0px;
+            line-height: 35px;
+        }
         // padding: 17px 25px 15px 25px;
         .close_1 {
             width: 36px;

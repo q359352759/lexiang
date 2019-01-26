@@ -18,44 +18,45 @@
 import { mapState, mapGetters } from "vuex";
 import { dateFtt } from "@/assets/js/currency.js";
 export default {
-  name: "",
-  data() {
-    return {};
-  },
-  filters: {
-    fitler_time(time) {
-      if (!time) {
-        return time;
-      }
-      return dateFtt(time, " yyyy.MM.dd hh:mm:ss");
+    name: "",
+    data() {
+        return {};
+    },
+    filters: {
+        fitler_time(time) {
+            if (!time) {
+                return time;
+            }
+            return dateFtt(time, " yyyy.MM.dd hh:mm:ss");
+        }
+    },
+    computed: {
+        ...mapGetters({
+            dingdanxiangqing: "orders/order/dingdanxiangqing"
+        })
     }
-  },
-  computed: {
-    ...mapGetters({
-      dingdanxiangqing: "orders/order/dingdanxiangqing"
-    })
-  }
 };
 </script>
 
 <style lang="scss" scoped>
 .box {
-  background: #ffffff;
-  font-size: 12px;
-  .header {
-    padding: 0px 11px;
-    height: 30px;
-    line-height: 30px;
-    border-bottom: 1px solid #f6f6f6;
-  }
-  ul {
-    padding: 5px 11px;
-    color: #808080;
-  }
-  .实际支付 {
-    color: #505050;
-    font-weight: bold;
-  }
+    background: #ffffff;
+    font-size: 12px;
+    margin: 5px 0px 0px;
+    .header {
+        padding: 0px 11px;
+        height: 30px;
+        line-height: 30px;
+        border-bottom: 1px solid #f6f6f6;
+    }
+    ul {
+        padding: 5px 11px;
+        color: #808080;
+    }
+    .实际支付 {
+        color: #505050;
+        font-weight: bold;
+    }
 }
 // .img{
 //     width: 50px;

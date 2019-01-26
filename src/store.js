@@ -37,6 +37,8 @@ import 红购使者 from "@/vuex/红购使者.js";
 import 买单 from "@/vuex/买单.js";
 import home from "@/vuex/home.js";
 import 获取位置 from "@/vuex/获取位置.js";
+import 评论 from "@/vuex/评论.js";
+
 Vue.use(Vuex);
 // 对名字进行解码
 import { b64DecodeUnicode } from "@/assets/js/base64jiema.js";
@@ -375,7 +377,8 @@ export default new Vuex.Store({
         红购使者: 红购使者,
         买单: 买单,
         home: home,
-        获取位置:获取位置
+        获取位置:获取位置,
+        评论:评论
     }
 });
 // })

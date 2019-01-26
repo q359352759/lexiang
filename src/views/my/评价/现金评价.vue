@@ -8,9 +8,14 @@
             <div class="店铺头部">
                 <i class="icon_shop icon iconfont icon-jinrudianpu"></i>
                 <span @click="$router.push('/BusinessDetails?shopid='+店铺.shopid)">{{店铺.name}}</span>
+                <div class="星星框">
+                    <div>
+                        <xingxing ref="星星"/>
+                    </div>
+                </div>
             </div>
             <ul class="列表" v-for="(item, index) in 新商品列表" :key="index">
-                <li class="头部">
+                <!-- <li class="头部">
                     <div class="商品图片">
                         <img v-if="item.img && item.img.split(',').length>0" :src="item.img.split(',')[0]" alt="" srcset="">
                     </div>
@@ -18,7 +23,7 @@
                     <div class="星星框">
                         <xingxing ref="星星"/>
                     </div>
-                </li>
+                </li> -->
                 <li>
                     <div class="内容输入框" ref="评论内容" contenteditable="true" placeholder="请输入您的评价"></div>
                 </li>
@@ -150,12 +155,12 @@ export default {
                 var remark_text=this_1.$refs.评论内容[i].innerText
                 var remark=this_1.$refs.评论内容[i].innerHTML
                 var remarkimgList=新商品列表[i].评论图片;
-                var score = this_1.$refs.星星[i].number;
+                var score = this_1.$refs.星星.number;
                 console.log(remark_text);
                 var 评价对象={
                     id:"",          //自增id
                     ordersid:this_1.订单详情.ordersid,    //订单id
-                    commodityid: 新商品列表[i].commodityid, //商品id
+                    commodityid: '', //商品id
                     shopid: 新商品列表[i].shopid,      //商家id
                     userid: this_1.userInfo.username,      //用户id
                     remarkid: '',    //回复评价id
@@ -200,6 +205,14 @@ export default {
                 mui.toast("网络错误，稍后再试。", { duration: "long", type: "div" });
             })
             console.log(评论列表)
+            // this.添加评价()
+            // this.新商品列表.forEach(item => {
+                
+            // });
+            // var 星星数据=this.$refs.星星;
+            // 星星数据.forEach(item => {
+            //     console.log(item.number)
+            // });
         },
         删除图片(item,index){
             item.splice(index,1)
@@ -360,10 +373,18 @@ export default {
         font-size: 20px;
         margin: 0px 5px 0px 0px;
     }
+    .星星框{
+        flex-grow: 1;
+        display: flex;
+        justify-content: flex-end;
+        >div{
+            width: 125px;
+        }
+    }
 }
 .列表{
     background: #ffffff;
-    padding: 0px 10px;
+    padding: 10px 10px 0px;
     margin: 0px 0px 5px 0px;
     .头部{
         height: 44px;

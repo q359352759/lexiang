@@ -1,5 +1,6 @@
-const AboutUs = resolve => { require.ensure([], () => { resolve(require("@/views/my/AboutUs.vue")); }); }; //关于我们
-const 评价 = resolve => { require.ensure([], () => { resolve(require("@/views/my/评价/评价.vue")); }); }; //关于我们
+const AboutUs = resolve => { require.ensure([], () => { resolve(require("@/views/my/AboutUs.vue")); }); };
+const 评价 = resolve => { require.ensure([], () => { resolve(require("@/views/my/评价/评价.vue")); }); }; 
+const 现金评价 = resolve => { require.ensure([], () => { resolve(require("@/views/my/评价/现金评价.vue")); }); };
 
 //my       开头
 const mys = [
@@ -12,6 +13,11 @@ const mys = [
         path: "/my/pingjia/pingjia",
         name: "",
         component: 评价
+    },
+    {
+        path:'/my/pingjia/xianjinPingjia',
+        name:"",
+        component:现金评价
     }
 ];
 

@@ -1,6 +1,6 @@
 import axios from "@/api/axios.js";
 import qs from "qs";
-
+import { 当前时间格式化 } from "@/assets/js/currency.js";
 const 店员打卡记录 = {
 	loading: true,
 	list: [],
@@ -98,10 +98,19 @@ export default {
 			axios.get("/api-s/shops/findShopClerksPunchcardAll", {params: state.店员打卡记录.query}).then(x => {
 				if (x.data.code == 200) {
 					var list = x.data.data.data;
+					// for(let i=0;i<list.length;i++){
+					// 	list[i].被替班人员={};
+					// 	list[i].营业额='';
+					// 	dispatch('查询营业额',list[i])
+					// 	if (list[i].replaceid) {
+					// 		dispatch("根据clerksid查询店员", list[i]);
+					// 	}
+					// }
 					list.forEach(item => {
 						item.被替班人员 = {};
-						item.营业额='';
-						dispatch('查询营业额',item)
+						item.营业额=0;
+						
+						dispatch('营业额',item)
 						if (item.replaceid) {
 							dispatch("根据clerksid查询店员", item);
 						}
@@ -125,18 +134,19 @@ export default {
 				}).catch(err => { });
 		},
 		//列表专用
-        查询营业额({ state }, obj) {
+        营业额({ state }, item) {
             var query = {
-				startTime:obj.officehours,
-				endTime:obj.quittingtime,
-                staffid: obj.clerksid,
-                shopid: obj.shopid,
-                state: 1
-            }
+					startTime: 当前时间格式化('yyyy-MM-dd hh:mm:',item.officehours),
+					endTime: 当前时间格式化('yyyy-MM-dd hh:mm:',item.quittingtime),
+					staffid: item.clerksid,
+					shopid: item.shopid,
+					state: 1
+				}
             axios.get("/api-s/shops/findAmountSum", { params: query }).then(x => {
-                if (x.data.code == 200) {
-                    obj.营业额 = x.data.data;
-                }
+				if(x.data.data){
+					item.营业额 = x.data.data;
+				}
+				console.log(x.data,item);
             }).catch(err => { });
         },
 		查询记录下一页({ state, dispatch }) {
