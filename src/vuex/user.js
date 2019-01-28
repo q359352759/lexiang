@@ -138,7 +138,6 @@ export default {
                     return
                 }
                 var obj={
-                        token:weixin.access_token,
                         openid:weixin.openid
                     }
                 axios.get('/api-u/users/getWeiXin/guanzhu',{params:obj}).then(x=>{

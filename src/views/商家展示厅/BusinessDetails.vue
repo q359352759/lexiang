@@ -266,7 +266,7 @@ export default {
             // swiper_type:[], //服务类型列表
             swiper_type: "",
             type_list: [],
-            type_1: 0,
+            type_1: 2,
             slider: "",
             id: "",
             shop: {},
@@ -365,7 +365,10 @@ export default {
         ...mapActions({
             set_isfenxiang: "shop/set_isfenxiang",
             添加店铺人气: "shop/添加店铺人气",
-            获取位置: '获取位置/获取位置'
+            获取位置: '获取位置/获取位置',
+            评论初始化:'商家展示厅/初始化',
+            查询评价:'商家展示厅/查询评价',
+            评价下一页:'商家展示厅/评价下一页'
         }),
         //显示新人红包弹出框
         setxinrenhongbao_show(x) {
@@ -409,47 +412,33 @@ export default {
                     data: this.$qs.stringify({
                         url: this.shop.signboard
                     })
-                })
-                    .then(x => {
-                        console.log(x);
-                        if (x.data.code == 200) {
-                            this.erweima_base64 = "data:image/jpeg;base64," + x.data.data;
-                            var url =
-                                window.location.origin +
-                                window.location.pathname +
-                                "#/BusinessDetails?shopid=" +
-                                this.shop.shopid +
-                                "&fenxiang=1";
-                            var el = this.$refs.qrcode;
-                            el.innerHTML = "";
-                            let qrcode = new QRCode(el, {
-                                width: 200,
-                                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                                // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.shop.id, // 二维码内容
-                                text: url, // 二维码内容
-                                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
-                                background: "#fff",
-                                foreground: "#fff"
-                            });
-                            setTimeout(() => {
-                                this.print();
-                            }, 500);
-                        } else {
-                            openloading(false);
-                            mui.toast("生成二维码失败，稍后再试。", {
-                                duration: "long",
-                                type: "div"
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        openloading(false);
-                        mui.toast("生成二维码失败，稍后再试。", {
-                            duration: "long",
-                            type: "div"
+                }).then(x => {
+                    console.log(x);
+                    if (x.data.code == 200) {
+                        this.erweima_base64 = "data:image/jpeg;base64," + x.data.data;
+                        var url = window.location.origin + window.location.pathname + "#/BusinessDetails?shopid=" + this.shop.shopid + "&fenxiang=1";
+                        var el = this.$refs.qrcode;
+                        el.innerHTML = "";
+                        let qrcode = new QRCode(el, {
+                            width: 200,
+                            height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                            // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.shop.id, // 二维码内容
+                            text: url, // 二维码内容
+                            // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
+                            background: "#fff",
+                            foreground: "#fff"
                         });
-                        console.log(err);
-                    });
+                        setTimeout(() => {
+                            this.print();
+                        }, 500);
+                    } else {
+                        openloading(false);
+                        mui.toast("生成二维码失败，稍后再试。", { duration: "long", type: "div" });
+                    }
+                }).catch(err => {
+                    openloading(false);
+                    mui.toast("生成二维码失败，稍后再试。", { duration: "long", type: "div" });
+                });
             }
         },
         //生成带图片的二维码
@@ -474,36 +463,25 @@ export default {
         //获取专享商品
         findAllExclusive() {
             this.Exclusive.loading = true;
-            this.$axios({
-                method: "get",
-                url:
-                    "/api-s/shops/findAllExclusive?start=0&length=1000&shopid=" +
-                    this.shopid
-            })
-                .then(x => {
-                    console.log("获取专享商品", x);
-                    if (x.data.code == 200) {
-                        this.Exclusive.list = x.data.data.data;
-                    }
-                    this.Exclusive.loading = false;
-                })
-                .catch(err => {
-                    console.log(err);
-                    this.Exclusive.loading = false;
-                });
+            this.$axios({ method: "get", url: "/api-s/shops/findAllExclusive?start=0&length=1000&shopid=" + this.shopid }).then(x => {
+                console.log("获取专享商品", x);
+                if (x.data.code == 200) {
+                    this.Exclusive.list = x.data.data.data;
+                }
+                this.Exclusive.loading = false;
+            }).catch(err => {
+                console.log(err);
+                this.Exclusive.loading = false;
+            });
         },
         //跳转买单
         Check() {
             if (!this.userInfo) {
-                mui.confirm(
-                    "需要登录才能领取，是否现在去登录。",
-                    "提示",
-                    ["取消", "是的"],
-                    value => {
-                        if (value.index == 1) {
-                            this.$router.push("/login");
-                        }
+                mui.confirm("需要登录才能领取，是否现在去登录。", "提示", ["取消", "是的"], value => {
+                    if (value.index == 1) {
+                        this.$router.push("/login");
                     }
+                }
                 );
                 return;
             }
@@ -521,112 +499,66 @@ export default {
         //领取生日红包
         shengri() {
             if (!this.redenvelope_5) {
-                mui.toast("该店铺没有发布生日红包。", {
-                    duration: "long",
-                    type: "div"
-                });
+                mui.toast("该店铺没有发布生日红包。", { duration: "long", type: "div" });
                 return;
             } else if (!this.userInfo) {
                 // mui.toast('请先登录才能收藏。',{ duration: "long",type: "div" });
-                mui.confirm(
-                    "需要登录才能领取，是否现在去登录。",
-                    "提示",
-                    ["取消", "是的"],
-                    value => {
-                        if (value.index == 1) {
-                            this.$router.push("/login");
-                        }
+                mui.confirm("需要登录才能领取，是否现在去登录。", "提示", ["取消", "是的"], value => {
+                    if (value.index == 1) {
+                        this.$router.push("/login");
                     }
-                );
+                });
                 return;
             } else if (this.userInfo.iaiState != 1) {
-                mui.confirm(
-                    "领取生日红包需要实名认证，您还未认证，请先认证。",
-                    "提示",
-                    ["取消", "去认证"],
-                    value => {
-                        if (value.index == 1) {
-                            this.$router.push("/RealName");
-                        }
+                mui.confirm("领取生日红包需要实名认证，您还未认证，请先认证。", "提示", ["取消", "去认证"], value => {
+                    if (value.index == 1) {
+                        this.$router.push("/RealName");
                     }
+                }
                 );
             } else {
-                mui.confirm(
-                    "确认将自己的生日信息（不包含年龄）授权给此商铺吗？",
-                    "提示",
-                    ["取消", "好的"],
-                    value => {
-                        if (value.index != 1) return;
-                        if (!this.findByUserid) {
-                            mui.toast("获取实名信息失败，稍后再试。", {
-                                duration: 2000,
-                                type: "div"
-                            });
-                            return;
-                        }
-                        var birthday = this.findByUserid.birthday;
-                        var myDate = new Date();
-                        var newdate =
-                            myDate.getFullYear() +
-                            "-" +
-                            birthday.substring(4, 6) +
-                            "-" +
-                            birthday.substring(6);
-                        if (newdate >= getDateStr(0)) {
-                            //领取今年的
-                            this.add_hongbao_obj.startTime = getDateStr(-7, newdate);
-                            this.add_hongbao_obj.endTime = getDateStr(7, newdate);
-                            this.add_red();
-                        } else {
-                            //领取明年的
-                            var newdate =
-                                myDate.getFullYear() +
-                                1 +
-                                "-" +
-                                birthday.substring(4, 6) +
-                                "-" +
-                                birthday.substring(6);
-                            this.add_hongbao_obj.startTime = getDateStr(-7, newdate);
-                            this.add_hongbao_obj.endTime = getDateStr(7, newdate);
-                            this.add_red();
-                        }
+                mui.confirm("确认将自己的生日信息（不包含年龄）授权给此商铺吗？", "提示", ["取消", "好的"], value => {
+                    if (value.index != 1) return;
+                    if (!this.findByUserid) {
+                        mui.toast("获取实名信息失败，稍后再试。", { duration: 2000, type: "div" });
+                        return;
                     }
+                    var birthday = this.findByUserid.birthday;
+                    var myDate = new Date();
+                    var newdate = myDate.getFullYear() + "-" + birthday.substring(4, 6) + "-" + birthday.substring(6);
+                    if (newdate >= getDateStr(0)) {
+                        //领取今年的
+                        this.add_hongbao_obj.startTime = getDateStr(-7, newdate);
+                        this.add_hongbao_obj.endTime = getDateStr(7, newdate);
+                        this.add_red();
+                    } else {
+                        //领取明年的
+                        var newdate = myDate.getFullYear() + 1 + "-" + birthday.substring(4, 6) + "-" + birthday.substring(6);
+                        this.add_hongbao_obj.startTime = getDateStr(-7, newdate);
+                        this.add_hongbao_obj.endTime = getDateStr(7, newdate);
+                        this.add_red();
+                    }
+                }
                 );
             }
         },
         add_red() {
             this.add_hongbao_obj.userid = this.userInfo.username;
             this.add_hongbao_obj.envelopeId = this.redenvelope_5.id;
-            this.add_hongbao_obj.amount = this.redenvelope_5.amount
-                ? this.redenvelope_5.amount
-                : 0;
+            this.add_hongbao_obj.amount = this.redenvelope_5.amount ? this.redenvelope_5.amount : 0;
             console.log(this.add_hongbao_obj);
             openloading(true);
-            this.$axios({
-                method: "post",
-                url: "/api-s/shops/addUserCardPackge",
-                data: this.add_hongbao_obj
-            })
-                .then(x => {
-                    console.log(x);
-                    if (x.data.code == 200) {
-                        mui.toast("恭喜您，领取成功。", { duration: 2000, type: "div" });
-                    } else {
-                        mui.alert(
-                            x.data.msg ? x.data.msg : x.data.message,
-                            "提示",
-                            "我知道了",
-                            function () { },
-                            "div"
-                        );
-                    }
-                    openloading(false);
-                })
-                .catch(err => {
-                    console.log(err);
-                    mui.toast("系统错误，稍后再试。", { duration: 2000, type: "div" });
-                    openloading(false);
-                });
+            this.$axios({ method: "post", url: "/api-s/shops/addUserCardPackge", data: this.add_hongbao_obj }).then(x => {
+                if (x.data.code == 200) {
+                    mui.toast("恭喜您，领取成功。", { duration: 2000, type: "div" });
+                } else {
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示", "我知道了", function () { }, "div");
+                }
+                openloading(false);
+            }).catch(err => {
+                mui.toast("系统错误，稍后再试。", { duration: 2000, type: "div" });
+                openloading(false);
+            });
         },
         //跳转红包页面
         ShopRedEnvelopes() {
@@ -641,8 +573,6 @@ export default {
             var h = e.target.offsetHeight; //容器高度
             var sh = e.target.scrollHeight; //滚动条总高
             var t = e.target.scrollTop; //滚动条到顶部距离
-            // event.currentTarget.offsetTop
-            // console.log(e)
             if (this.$refs.box_3.offsetTop - 44 <= e.target.scrollTop) {
                 this.box_3_actvie = true;
             } else {
@@ -650,13 +580,12 @@ export default {
             }
             if (h + t >= sh - 10) {
                 if (this.type_1 == 1) {
-                    if (
-                        !this.commodity.loading &&
-                        this.commodity.list.length < this.commodity.total
-                    ) {
+                    if (!this.commodity.loading && this.commodity.list.length < this.commodity.total) {
                         this.commodity.page_index++;
                         this.get_commodity();
                     }
+                }else if(this.type_1 == 2){
+                    this.评价下一页();
                 }
                 console.log("到底底部");
             }
@@ -689,28 +618,16 @@ export default {
         },
         //删除收藏
         deleteUserFavorite() {
-            this.$axios({
-                method: "post",
-                url: "/api-s/shops/deleteUserFavorite",
-                data: [this.UserFavorite.id]
-            })
-                .then(x => {
-                    if (x.data.code == 200) {
-                        mui.toast("取消收藏成功。", { duration: 1000, type: "div" });
-                        this.get_findDataUserFavorite();
-                    } else {
-                        mui.alert(
-                            x.data.msg ? x.data.msg : x.data.message,
-                            "提示",
-                            "我知道了",
-                            function () { },
-                            "div"
-                        );
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            this.$axios({ method: "post", url: "/api-s/shops/deleteUserFavorite", data: [this.UserFavorite.id] }).then(x => {
+                if (x.data.code == 200) {
+                    mui.toast("取消收藏成功。", { duration: 1000, type: "div" });
+                    this.get_findDataUserFavorite();
+                } else {
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示", "我知道了", function () { }, "div");
+                }
+            }).catch(err => {
+                console.log(err);
+            });
         },
         //添加收藏
         addUserFavorite() {
@@ -721,29 +638,16 @@ export default {
                 shopid: this.shop.shopid, //商店id
                 commodityid: "" //商品id
             };
-            this.$axios({
-                method: "post",
-                url: "/api-s/shops/addUserFavorite",
-                data: obj
-            })
-                .then(x => {
-                    console.log(x);
-                    if (x.data.code == 200) {
-                        mui.toast("收藏成功。", { duration: 1000, type: "div" });
-                        this.get_findDataUserFavorite();
-                    } else {
-                        mui.alert(
-                            x.data.msg ? x.data.msg : x.data.message,
-                            "提示",
-                            "我知道了",
-                            function () { },
-                            "div"
-                        );
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            this.$axios({ method: "post", url: "/api-s/shops/addUserFavorite", data: obj }).then(x => {
+                if (x.data.code == 200) {
+                    mui.toast("收藏成功。", { duration: 1000, type: "div" });
+                    this.get_findDataUserFavorite();
+                } else {
+                    mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示", "我知道了", function () { }, "div");
+                }
+            }).catch(err => {
+                console.log(err);
+            });
         },
         //查询收藏
         get_findDataUserFavorite() {
@@ -753,32 +657,20 @@ export default {
                 userid: this.userInfo.username,
                 shopid: this.shopid
             };
-            this.$axios({
-                method: "get",
-                url: "/api-s/shops/findDataUserFavorite",
-                params: obj
-            })
-                .then(x => {
-                    console.log("查询收藏信息", x);
-                    if (x.data.code == 200) {
-                        this.UserFavorite =
-                            x.data.data.data.length > 0 ? x.data.data.data[0] : "";
-                    }
-                })
-                .catch(err => {
-                    console.log("查询收藏信息错误", err);
-                });
+            this.$axios({ method: "get", url: "/api-s/shops/findDataUserFavorite", params: obj }).then(x => {
+                if (x.data.code == 200) {
+                    this.UserFavorite =
+                        x.data.data.data.length > 0 ? x.data.data.data[0] : "";
+                }
+            }).catch(err => {
+                console.log("查询收藏信息错误", err);
+            });
         },
         //图片轮播
         getswiper() {
             var swiper = new Swiper("#BusinessDetails .swiper_img", {
-                // loop: true,
-                // autoplay: true,
                 slidesPerView: "auto",
                 spaceBetween: 5
-                // pagination: {
-                //     el: ".swiper-pagination"
-                // }
             });
         },
         //选择类型
@@ -825,20 +717,13 @@ export default {
                     this.$store.state.my_position.x, //起点
                 origins: this.shop.y + "," + this.shop.x
             };
-            this.$axios({
-                method: "get",
-                url: "/api-u/baidu/routematrix",
-                params: obj
-            })
-                .then(x => {
-                    // console.log(x);
-                    if (x.data.status == 0 && x.data.result.length > 0) {
-                        this.juli = x.data.result[0].distance.text;
-                    }
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            this.$axios({ method: "get", url: "/api-u/baidu/routematrix", params: obj }).then(x => {
+                if (x.data.status == 0 && x.data.result.length > 0) {
+                    this.juli = x.data.result[0].distance.text;
+                }
+            }).catch(err => {
+                console.log(err);
+            });
         },
         //根据店铺查询商品
         get_commodity() {
@@ -850,21 +735,15 @@ export default {
                 shopid: this.shopid
             };
             this.commodity.loading = true;
-            this.$axios({
-                method: "get",
-                url: "/api-s/shops/commodity/findAll",
-                params: obj
-            })
-                .then(x => {
-                    console.log("根据店铺查询商品", x);
-                    this.commodity.list = this.commodity.list.concat(x.data.data.data);
-                    this.commodity.total = x.data.data.total;
-                    this.commodity.loading = false;
-                })
-                .catch(err => {
-                    this.commodity.loading = false;
-                    console.log(err);
-                });
+            this.$axios({ method: "get", url: "/api-s/shops/commodity/findAll", params: obj }).then(x => {
+                console.log("根据店铺查询商品", x);
+                this.commodity.list = this.commodity.list.concat(x.data.data.data);
+                this.commodity.total = x.data.data.total;
+                this.commodity.loading = false;
+            }).catch(err => {
+                this.commodity.loading = false;
+                console.log(err);
+            });
         },
         //查询服务类型
         get_type() {
@@ -885,16 +764,13 @@ export default {
                 method: "get",
                 url: "/api-s/shops/synopsis/" + this.shopid
             }).then(x => {
-                console.log("店铺简介", x);
-                if (!x.data.data) {
-                    return;
-                }
+                if (!x.data.data) return;
                 this.synopsis = x.data.data;
                 var str = this.synopsis.remark;
                 // var str='<div data-v-845c3686="" contenteditable="true" class="content_1" style="font-size: 24px; color: rgb(0, 0, 255);">sdfsdfsdf</div>';
                 var div = $(str);
-                this.synopsis.remark_1=div.html();
-                
+                this.synopsis.remark_1 = div.html();
+
             }).catch(err => {
                 console.log(err);
             });
@@ -904,14 +780,11 @@ export default {
             this.$axios({
                 method: "get",
                 url: "/api-s/shops/shopAnnouncement/" + this.shopid
-            })
-                .then(x => {
-                    console.log("获取公告", x);
-                    this.shopAnnouncement = x.data.data;
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+            }).then(x => {
+                this.shopAnnouncement = x.data.data;
+            }).catch(err => {
+                console.log(err);
+            });
         },
         // 0新人店铺红包 1商品红包 2节日红包 3签到红包 4庆典红包 5生日红包
         //查询店铺红包
@@ -924,28 +797,22 @@ export default {
                 shopid: this.shopid
             };
             return new Promise((resolve, reject) => {
-                this.$request("/api-s/shops/redenvelope/findAll", query, "get")
-                    .then(x => {
-                        console.log("查询店铺红包", x);
-                        resolve(x);
-                    })
-                    .catch(err => {
-                        console.log(err);
-                        resolve();
-                    });
+                this.$request("/api-s/shops/redenvelope/findAll", query, "get").then(x => {
+                    resolve(x);
+                }).catch(err => {
+                    console.log(err);
+                    resolve();
+                });
             });
         },
         //根据Id查询红包
         get_redenvelope(id) {
             return new Promise((resolve, reject) => {
-                this.$axios
-                    .get("/api-s/shops/redenvelope/findById/" + id)
-                    .then(x => {
-                        resolve(x);
-                    })
-                    .catch(err => {
-                        resolve(err);
-                    });
+                this.$axios.get("/api-s/shops/redenvelope/findById/" + id).then(x => {
+                    resolve(x);
+                }).catch(err => {
+                    resolve(err);
+                });
             });
         },
         //查询用户是否领取该店铺的红包
@@ -957,15 +824,11 @@ export default {
                 shopid: this.shopid
             };
             return new Promise((resolve, reject) => {
-                this.$axios
-                    .get("/api-s/shops/findEffective", { params: query })
-                    .then(x => {
-                        console.log("获取用户领取的本店红包", x);
-                        resolve(x);
-                    })
-                    .catch(err => {
-                        resolve(x);
-                    });
+                this.$axios.get("/api-s/shops/findEffective", { params: query }).then(x => {
+                    resolve(x);
+                }).catch(err => {
+                    resolve(x);
+                });
             });
         }
     },
@@ -1139,6 +1002,8 @@ export default {
 
         this.get_shop()
 
+        this.评论初始化(this.shopid);
+        this.查询评价();
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function () {
@@ -1286,7 +1151,7 @@ export default {
         position: relative;
         z-index: 1;
         width: 270px;
-        .二维码提示{
+        .二维码提示 {
             height: 35px;
             color: rgba(56, 56, 56, 1);
             background-color: rgba(255, 255, 255, 1);

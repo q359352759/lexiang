@@ -28,12 +28,19 @@ export default {
         dingdanxiangqing(state) {
             return state.dingdanxiangqing;
         },
+        已评价(state){
+            var list = state.dingdanxiangqing.shopOrderCommoditys ? state.dingdanxiangqing.shopOrderCommoditys : [];
+            var 未评价=list.find(x=>x.state==0);
+            if(未评价){
+                return false
+            }else{
+                return true
+            }
+        },
         //展示的商品
         new_shangping_list(state) {
             var new_list = [];
-            var list = state.dingdanxiangqing.shopOrderCommoditys
-                ? state.dingdanxiangqing.shopOrderCommoditys
-                : [];
+            var list = state.dingdanxiangqing.shopOrderCommoditys ? state.dingdanxiangqing.shopOrderCommoditys : [];
             list.forEach(item => {
                 var obj = new_list.find(x => x.commodityid == item.commodityid);
                 if (obj) {

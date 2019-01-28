@@ -38,27 +38,86 @@
             </li>            
         </ul>
 
-        <loading :nodata="true" text="暂无评论"/>
-
-        <div class="评论列表" v-for="(item, index) in 0" :key="index">
+        <div class="评论列表" v-for="(item, index) in 评论.list" :key="index">
             <ul class="header">
                 <li class="Head_portrait">
-                    <img src="image/43.png" alt="" srcset="">
+                    <img v-if="item.用户.headImgUrl" :src="item.用户.headImgUrl" alt="" srcset="">                    
                 </li>
                 <li class="text">
                     <div>
-                        <div class="name">嘣得儿你</div>
+                        <div class="name">
+                            {{item.用户.nickname | 名字转码}}
+                        </div>
                         <div class="xingxing">
-                            <xingxing :number="4"/>
+                            <xingxing :number="item.score" />
                         </div>
                     </div>
                     <div class="time">
-                        <span>2018.11.13</span>
+                        <span>{{item.createtime | 时间格式化('yyyy.MM.dd')}}</span>
                     </div>
                 </li>
             </ul>
             <ul class="content_1">
-                <li v-for="(item, index1) in 3" :key="index1">
+                <!-- 第一次评价的信息 -->
+                <li>
+                    <div class="text_1">
+                        <div v-html="item.remark"></div>
+                    </div>
+                    <div class="img_box">
+                        <div>
+                            <ul class="img_list" v-if="item.remarkimg && item.remarkimg.split(',').length>0">
+                                <li v-for="(img_item, img_index) in item.remarkimg.split(',')" :key="img_index">
+                                    <img :src="img_item" alt="">
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dianzan" @click="点赞(item)">
+                            <i class="icon iconfont icon-dianzan1"></i>
+                            {{item.somegreattimes ? item.somegreattimes : 0}}
+                        </div>
+                    </div>
+                    <!-- <ul class="huifu mui-clearfix">
+                        <div class="mui-pull-right" @tap="回复(item)">回复</div>
+                        <div class="mui-pull-right">不回复</div>
+                    </ul> -->
+                </li>
+
+                <li v-for="(回复item, index1) in item.shopCommodityCommentList" :key="index1">
+                    <ul class="header">
+                        <li class="name" v-if="!回复item.clerksid">
+                            {{回复item.用户.nickname | 名字转码}}回复：
+                        </li>
+                        <li class="name" v-if="回复item.clerksid">
+                            {{回复item.店员.clerksname | 名字转码}}回复：
+                        </li>
+                        <li class="time_1">
+                            <!-- 7天后追评 -->
+                        </li>
+                        <li class="time_2">{{回复item.createtime | 时间格式化('yyyy.MM.dd hh:mm')}}</li>
+                    </ul>
+                    <div class="text_1">
+                        <div v-html="回复item.remark"></div>
+                    </div>
+                    <div class="img_box">
+                        <div>
+                            <ul class="img_list" v-if="回复item.remarkimg && 回复item.remarkimg.split(',').length>0">
+                                <li v-for="(img_item, img_index) in 回复item.remarkimg.split(',')" :key="img_index">
+                                    <img :src="img_item" alt="">
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="dianzan" @click="点赞(回复item)">
+                            <i class="icon iconfont icon-dianzan1"></i>
+                            {{回复item.somegreattimes ? 回复item.somegreattimes : 0}}
+                        </div>
+                    </div>
+                    <!-- <ul class="huifu mui-clearfix">
+                        <div class="mui-pull-right" @tap="回复(item)">回复</div>
+                        <div class="mui-pull-right">不回复</div>
+                    </ul> -->
+                </li>
+
+                <!-- <li v-for="(item, index1) in 3" :key="index1">
                     <ul class="header" v-if="index1!=0">
                         <li class="name">孟哥回复：</li>
                         <li class="time_1">7天后追评</li>  
@@ -83,19 +142,28 @@
                             98
                         </div>
                     </div>
-                    <!-- <ul class="huifu mui-clearfix">
+                    <ul class="huifu mui-clearfix">
                         <div class="mui-pull-right" @tap="huifu(true)">回复</div>
                         <div class="mui-pull-right">不回复</div>
-                    </ul> -->
-                </li>
+                    </ul>
+                </li> -->
+
             </ul>
         </div>
+        
+        <loading :loadingtype="评论.loading" :nodata="!评论.loading && 评论.total==0" :end="!评论.loading && 评论.total!=0 && 评论.total==评论.list.length"/>
+
     </div>
 </template>
 
 <script>
+
+import { openloading , dateFtt } from "@/assets/js/currency.js";
+import { b64DecodeUnicode } from "@/assets/js/base64jiema.js";
+
 import xingxing from '@/components/xingxing.vue'
-import loading from '@/components/loading.vue'
+import loading from '@/components/loading.vue';
+import { mapGetters } from "vuex";
 export default {
     name:"",
     components:{
@@ -104,16 +172,51 @@ export default {
     },
     data () {
         return {
-            
+            userInfo:''
+        }
+    },
+    computed: {
+        ...mapGetters({
+            评论:'商家展示厅/评论',
+        })
+    },
+    filters:{
+        名字转码(name){
+            try {
+                return b64DecodeUnicode(name)
+            } catch (error) {
+                return name
+            }
+        },
+        时间格式化(time,type){
+            //yyyy.MM.dd hh:mm 
+            try {
+                return dateFtt(time,type)
+            } catch (error) {
+                return time
+            }
         }
     },
     methods: {
-        
+        回复item(item){
+            if(!this.userInfo){
+                mui.confirm("需要登录才能领取，是否现在去登录。", "提示", ["取消", "是的"], value => {
+                    if (value.index == 1) {
+                        this.$router.push("/login");
+                    }
+                });
+                return
+            }
+        }
     },
     mounted () {
         
         mui(this.$refs.超赞).progressbar({progress:100}).show();
-        
+        try {
+            this.userInfo=JSON.parse(localStorage.userInfo);
+        } catch (error) {
+            
+        }
     }
 }
 </script>

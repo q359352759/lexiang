@@ -45,12 +45,30 @@ export default {
                 })    
             });
         },
+        修改评价({},obj){
+            return new Promise((resolve, reject) => {
+                axios.post('/api-s/shops/updateShopCommodityComment',obj).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err);
+                })
+            });
+        },
         查询评价({},query){
             return new Promise((resolve, reject) => {
                 axios.get('/api-s/shops/findShopCommodityCommentAll',{params:query}).then(x=>{
                     resolve(x);
                 }).catch(err=>{
                     reject(err);
+                })
+            });
+        },
+        根据id查询评论({},id){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-s/shops/findShopCommodityCommentById',{params:{'id':id}}).then(x=>{
+                    resolve(x);
+                }).catch(err=>{
+                    reject(err)
                 })
             });
         }

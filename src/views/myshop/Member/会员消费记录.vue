@@ -104,11 +104,7 @@ export default {
             var h = e.target.offsetHeight; //容器高度
             var sh = e.target.scrollHeight; //滚动条总高
             var t = e.target.scrollTop; //滚动条到顶部距离
-            if (
-                h + t >= sh - 10 &&
-                !this.list_all.loading &&
-                this.list_all.list.length < this.list_all.total
-            ) {
+            if (h + t >= sh - 10 && !this.list_all.loading && this.list_all.list.length < this.list_all.total) {
                 console.log("到底底部");
                 // this.butie.page_index++;
                 //查看下级带来的收益

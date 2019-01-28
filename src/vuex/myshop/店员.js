@@ -60,6 +60,15 @@ export default {
                 });
             });
         },
+        根据clerksid查询店员({ state }, clerksid) {
+            return new Promise((resolve, reject) => {
+                axios.get("/api-s/shops/findShopClerksByClerksid?clerksid=" + clerksid).then(x => {
+                    resolve(x)
+                }).catch(err => {
+                    reject(err)
+                });
+            });
+        },
         查询店员列表({ state, rootGetters, dispatch }) {
             // console.log('其他地方的state',rootState);
             // console.log(rootGetters['vip/get']) // 打印其他模块的 getters

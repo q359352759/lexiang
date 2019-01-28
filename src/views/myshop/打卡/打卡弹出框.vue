@@ -61,7 +61,7 @@ export default {
         }),
         最后替人打卡信息() {
             var 替人id = "";
-            if (this.员工自己打卡记录.data.length > 0) {
+            if (this.员工自己打卡记录.data && this.员工自己打卡记录.data.length > 0) {
                 替人id = this.员工自己打卡记录.data[0].replaceid;
             }
             if (替人id) {

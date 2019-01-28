@@ -8,12 +8,13 @@ const 评论={
     query:{
         start:0,
         length:10,
-        shopid:''
+        commodityid:''
     }
 }
 export default {
     namespaced: true,
     state: {
+        商品id:'',
         评论:{
             page_index:0,
             list:[],
@@ -22,7 +23,7 @@ export default {
             query:{
                 start:0,
                 length:10,
-                shopid:''
+                commodityid:''
             }
         }
     },
@@ -35,16 +36,12 @@ export default {
         
     },
     actions: {
-        初始化({state}){
+        初始化({state},商品id){
+            state.商品id=商品id
             state.评论=JSON.parse(JSON.stringify(评论));
         },
-        查询评价({state , dispatch , rootGetters},query){
-            // console.log('其他地方的state',rootState);
-            // console.log(rootGetters['vip/get']) // 打印其他模块的 getters
-            // dispatch('vip/get', {}, {root: true}) // 调用其他模块的 actions
-            // commit('vip/receive', data, {root: true}) // 调用其他模块的 mutations
-            var 店铺=rootGetters['get_myshop'];
-            state.评论.query.shopid=店铺.shopid;
+        查询评价({state , dispatch },query){
+            state.评论.query.commodityid=state.商品id;
             state.评论.query.start=state.评论.page_index*state.评论.query.length;
             state.评论.loading=true;
             dispatch('评论/查询评价',state.评论.query , {root: true}).then(x=>{
@@ -57,7 +54,7 @@ export default {
                         item.shopCommodityCommentList.forEach(item_1=>{
                             item_1.用户={}
                             item_1.店员={}
-                            dispatch('通过username查询用户',item_1);
+                            dispatch('通过username查询用户',item_1)
                             dispatch('员工基本信息',item_1)
                         })
                     });
@@ -70,8 +67,10 @@ export default {
             })
         },
         评价下一页({state,dispatch}){
-            state.评论.page_index++;
-            dispatch('查询评价')
+            if(!state.评论.loading && state.评论.list.length<state.评论.total){
+                state.评论.page_index++;
+                dispatch('查询评价')
+            }
         },
         //列表专用
         通过username查询用户({ }, item) {
@@ -90,7 +89,7 @@ export default {
                     item.店员 = x.data.data;
                 }
             }).catch(err => {});
-        },
+        }
     },
     modules: {}
 };

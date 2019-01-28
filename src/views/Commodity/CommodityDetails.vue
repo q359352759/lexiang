@@ -55,15 +55,6 @@
                 </li>
             </ul>
 
-            <ul class="mui-table-view box_3">
-                <li class="mui-table-view-cell">
-                    <a class="mui-navigate-right item">
-                        <span>商品评价</span>
-                        <span>0条</span>
-                    </a>
-                </li>
-            </ul>
-
             <ul class="box_7" v-if="!isshop">
                 <li>
                     <img :src="shop.signboard">
@@ -75,35 +66,16 @@
                 </li>
             </ul>
 
-            <ul class="box_4">
-                <li v-for="(item, index) in 0" :key="index">
-                    <div class="img_box">
-                        <img src="image/43.png" alt="" srcset="">
-                    </div>
-                    <div class="cont_1">
-                        <div class="header_1">
-                            <div>
-                                <div class="title">嘣得儿你</div>
-                                <div class="time_1">2018.11.13 19:26:23</div>
-                            </div>
-                            <div class="xingxing">
-                                <i class="icon iconfont icon-shoucangdianjihou active"></i>
-                                <i class="icon iconfont icon-shoucangdianjihou"></i>
-                                <i class="icon iconfont icon-shoucangdianjihou"></i>
-                                <i class="icon iconfont icon-shoucangdianjihou"></i>
-                                <i class="icon iconfont icon-shoucangdianjihou"></i>
-                            </div>
-                        </div>
-                        <div class="text_1">
-                            拿到照片的时候，既开心又惊喜
-                        </div>
-                        <div class="img_list">
-                            <img src="image/43.png" alt="" srcset="">
-                            <img src="image/43.png" alt="" srcset="">
-                        </div>
-                    </div>
+            <ul class="mui-table-view box_3">
+                <li class="mui-table-view-cell">
+                    <a class="mui-navigate-right item" @click="$router.push('/commodity/pinglunliebiao?id='+id)">
+                        <span>商品评价</span>
+                        <span>{{评论.total}}条</span>
+                    </a>
                 </li>
             </ul>
+            <pinglun :item="评论.list[0]" v-if="评论.list && 评论.list.length>0"/>
+            
 
             <div class="box_5" v-html="commodity.remark">
             </div>
@@ -179,7 +151,8 @@
 import html2canvas from "html2canvas";
 import QRCode from "qrcodejs2";
 import { openloading } from "@/assets/js/currency.js";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
+import pinglun from './components/评论.vue'
 export default {
     name: "",
     data() {
@@ -192,16 +165,25 @@ export default {
             shop: {}, //店铺信息
             UserFavorite: "", //收藏信息
             userInfo: "", //用户信息
-
             qrcode: null,
             img_base64: "",
             专享: ""
         };
     },
+    components: {
+        pinglun
+    },
+    computed: {
+        ...mapGetters({
+            评论:'shangPing/评论/评论'
+        })  
+    },
     methods: {
         ...mapActions({
             商品查询专享: "shangPing/商品查询专享",
-            修改商品: "shangPing/修改商品"
+            修改商品: "shangPing/修改商品",
+            评论初始化:'shangPing/评论/初始化',
+            查询评价:'shangPing/评论/查询评价',
         }),
         //立即购买
         goumai() {
@@ -436,6 +418,8 @@ export default {
     },
     mounted() {
         this.id = this.$route.query.id;
+        this.评论初始化(this.id);
+        this.查询评价();
         //查询单个商品
         this.get_commodity();
         this.商品查询专享(this.id)
@@ -455,6 +439,7 @@ export default {
         try {
             this.userInfo = JSON.parse(localStorage.userInfo);
         } catch (error) { }
+        
 
         //查询收藏
         if (this.userInfo) {
@@ -614,6 +599,7 @@ export default {
 
 .box_3 {
     margin: 3px 0px 0px;
+    border-bottom: 1px solid #efeff4;
     .item {
         padding-right: 40px;
         display: flex;
@@ -668,60 +654,6 @@ export default {
     }
 }
 
-.box_4 {
-    background: #ffffff;
-    > li {
-        display: flex;
-        padding: 6px 12px;
-        border-top: 1px solid #efeff4;
-        .img_box {
-            width: 38px;
-            height: 38px;
-            flex-shrink: 0;
-            margin: 0px 10px 0px 0px;
-            img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                border-radius: 100%;
-            }
-        }
-        .cont_1 {
-            flex-grow: 1;
-            .header_1 {
-                display: flex;
-                justify-content: space-between;
-            }
-            .title {
-                color: rgba(80, 80, 80, 1);
-                font-size: 14px;
-            }
-            .time_1 {
-                color: rgba(166, 166, 166, 1);
-                font-size: 10px;
-            }
-            .xingxing {
-                color: #f8d40c;
-                i {
-                    margin: 0px 2px;
-                }
-            }
-            .text_1 {
-                color: rgba(80, 80, 80, 1);
-                font-size: 12px;
-                margin: 3px 0px 4px;
-            }
-            .img_list {
-                img {
-                    width: 60px;
-                    height: 60px;
-                    margin: 0px 7px 0px 0px;
-                }
-            }
-        }
-    }
-}
-
 .box_5 {
     background: #ffffff;
     padding: 8px 12px;
@@ -740,7 +672,8 @@ export default {
         position: relative;
         width: 0.64rem;
         text-align: center;
-        background-color: rgba(24, 169, 104, 1);
+        // background-color: rgba(24, 169, 104, 1);
+        background-color: rgba(217, 57, 59, 1);
         color: #ffffff;
         font-size: 14px;
         display: flex;
