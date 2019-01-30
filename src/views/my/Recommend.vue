@@ -55,7 +55,6 @@
 
             <loading :loadingtype="invitedrecord.loading" />
             <!-- <button @click="BeInvited()">被邀请界面</button> -->
-
         </div>
 
         <div class="生成容器" ref="生成容器">
@@ -88,7 +87,7 @@
                     <i class="icon iconfont icon-quxiao"></i>
                 </div>
                 <div class="图片容器">
-                    <img :src="截图地址" alt="" srcset="">
+                    <img @touchend="松开()" @touchstart="开始按下()" @touchmove="划过()" :src="截图地址" alt="" srcset="">
                 </div>
                 <div class="文本">长按二维码，点击“发送给朋友”</div>
             </div>
@@ -133,7 +132,8 @@ export default {
             },
             是否分享: false,
             头像base64: "",
-            截图地址: ""
+            截图地址: "",
+            定时器:''
         };
     },
     computed: {
@@ -152,8 +152,24 @@ export default {
     },
     methods: {
         ...mapActions({
-            获取认证: "实名认证/获取认证"
+            获取认证: "实名认证/获取认证",
+            分享图片:'app分享/分享图片'
         }),
+        松开(){
+            console.log('松开');
+            clearTimeout(this.定时器);//清除定时器
+        },
+        开始按下(){
+            this.定时器 = setTimeout(x=>{
+                console.log('长按');
+                this.分享图片(this.截图地址)
+            },2000)
+        },
+        划过(){
+            console.log('划过');
+            clearTimeout(this.定时器);//清除定时器
+            this.定时器 = 0;
+        },
         //被邀请界面
         BeInvited() {
             this.$router.push("/BeInvited");
@@ -198,12 +214,7 @@ export default {
         //生成二维码
         生成二维码() {
             return new Promise((resolve, reject) => {
-                var url =
-                    window.location.origin +
-                    window.location.pathname +
-                    "#/BeInvited?pid=" +
-                    this.userInfo.username +
-                    "&invitationtype=1";
+                var url = 'http://m.lxad.vip/test/dist/index.html' +"#/BeInvited?pid=" + this.userInfo.username + "&invitationtype=1";
                 console.log(url);
                 var el = this.$refs.二维码容器;
                 el.innerHTML = "";

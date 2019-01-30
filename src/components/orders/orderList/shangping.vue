@@ -41,7 +41,7 @@
             <li @click="zhifu()" class="btn_1 zhifu" v-show="shangping.state==0">支付</li>
             <!-- <li class="btn_1 zhifu" @click="$router.push('/my/pingjia/pingjia?orderid='+shangping.id)" v-if="shangping.state==1">已支付</li> -->
             <li class="btn_1 zhifu" v-if="shangping.state==1">
-                <span v-if="已评价" @click="$router.push('/my/pingjia/xiangqing?ordersid='+shangping.ordersid+'&id='+shangping.id)">已评价</span>
+                <span v-if="已评价" @click="$router.push('/my/pingjia/xiangqing?ordersid='+shangping.ordersid+'&id='+shangping.id)">评价</span>
                 <span v-if="!已评价" @click="$router.push('/my/pingjia/pingjia?orderid='+shangping.id)">评价</span>
             </li>
         </ul>

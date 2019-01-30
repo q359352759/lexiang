@@ -72,7 +72,8 @@
                             <li class="time_2">{{回复item.createtime | 时间格式化('yyyy.MM.dd hh:mm')}}</li>
                         </ul>
                         <div class="text_1">
-                            <div v-html="回复item.remark"></div>
+                            <div v-if="回复item.remark" v-html="回复item.remark"></div>
+                            <div v-if="!回复item.remark">你没有填写评论~</div>
                         </div>
                         <div class="img_box">
                             <div>
@@ -217,11 +218,15 @@ export default {
     },
     filters:{
         计算时间差(time1,time2){
-            var 时间差=getDaysByDateString(time1,time2);
-            if(时间差<1){
-                return Math.floor(时间差*24)+'小时'
+            var 时间差=getDaysByDateString(time2,time1);
+            if(时间差>30){
+                return Math.floor(时间差/30)+'月后追评'
+            }else if(时间差>1){
+                return Math.floor(时间差)+'天后追评'
+            }else if(时间差>0.04){
+                return Math.floor(时间差*24)+'小时后追评'
             }else{
-                return Math.floor(时间差)+'天'
+                return '1小时内追评'
             }
         },
         名字转码(name){
@@ -491,7 +496,8 @@ export default {
         this.query.ordersid=this.$route.query.ordersid
         this.初始化();
         
-
+        console.log(getDaysByDateString('2019-01-28T07:49:03.000+0000','2019-01-28T09:33:31.000+0000'));
+        
     },
 }
 </script>

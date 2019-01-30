@@ -90,7 +90,7 @@ export default {
                     item.店员 = x.data.data;
                 }
             }).catch(err => {});
-        },
+        }
     },
     modules: {}
 };

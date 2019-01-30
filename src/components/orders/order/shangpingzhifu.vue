@@ -14,8 +14,8 @@
             <div class="mui-text-right">
                 <div v-show="dingdanxiangqing.state==0" @click="zhifu()" class="zhifu">支付</div>
                 <div v-show="dingdanxiangqing.state==1" class="zhifu">
-                    <span v-if="已评价">已评价</span>
-                    <span v-if="!已评价"  @click="$router.push('/my/pingjia/pingjia?orderid='+shangping.id)">待评价</span>
+                    <span v-if="已评价" @click="$router.push('/my/pingjia/xiangqing?ordersid='+dingdanxiangqing.ordersid+'&id='+dingdanxiangqing.id)">评价</span>
+                    <span v-if="!已评价"  @click="$router.push('/my/pingjia/pingjia?orderid='+dingdanxiangqing.id)">待评价</span>
                 </div>
             </div>
         </li>

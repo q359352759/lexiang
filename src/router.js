@@ -382,12 +382,9 @@ const ExampleOfRevenue = resolve => {
     });
 }; //区域代理商收益示例
 
+const 下载App = resolve => {require.ensure([], () => {resolve(require("@/views/下载App.vue"));});}; //代理人费用说明
 // 协议
-const AgencyCost = resolve => {
-    require.ensure([], () => {
-        resolve(require("./views/xieyi/AgencyCost.vue"));
-    });
-}; //代理人费用说明
+const AgencyCost = resolve => {require.ensure([], () => {resolve(require("./views/xieyi/AgencyCost.vue"));});}; //代理人费用说明
 const RegistrationAgreement = () =>
     import("@/views/xieyi/RegistrationAgreement.vue"); //用户注册协议
 const BusinessAgreement = () => import("@/views/xieyi/BusinessAgreement.vue"); //业务代理合作协议
@@ -452,7 +449,16 @@ export default new Router({
                 circularNav: circularNav
             },
             meta: {
+                无需登录:true,
                 keepAlive: true //缓存当前页面
+            }
+        },
+        {
+            path:'/appxiazai',
+            name:"",
+            component:下载App,
+            meta:{
+                无需登录:true
             }
         },
         {
@@ -468,7 +474,10 @@ export default new Router({
         {
             path: "/RedEnvelopesList",
             name: "",
-            component: RedEnvelopesList
+            component: RedEnvelopesList,
+            meta: { 
+                无需登录:true
+            }
         },
         {
             path: "/SearchShop",
@@ -537,6 +546,9 @@ export default new Router({
             components: {
                 default: login,
                 circularNav: circularNav
+            },
+            meta:{
+                无需登录:true
             }
         },
         {
@@ -545,6 +557,9 @@ export default new Router({
             components: {
                 default: register
                 // circularNav: circularNav
+            },
+            meta:{
+                无需登录:true
             }
         },
         {
@@ -558,7 +573,10 @@ export default new Router({
         {
             path: "/ForgetPassword",
             name: "",
-            component: ForgetPassword
+            component: ForgetPassword,
+            meta:{
+                无需登录:true
+            }
         },
         {
             path: "/PaymentPassword",
@@ -628,7 +646,10 @@ export default new Router({
         {
             path: "/RegistrationAgreement",
             name: "",
-            component: RegistrationAgreement
+            component: RegistrationAgreement,
+            meta:{
+                无需登录:true
+            }
         },
         {
             path: "/Advertising",
@@ -710,7 +731,10 @@ export default new Router({
         {
             path: "/BusinessDetails",
             name: "",
-            component: BusinessDetails
+            component: BusinessDetails,
+            meta:{
+                无需登录:true
+            }
         },
         //申请店铺
         {
@@ -855,12 +879,18 @@ export default new Router({
         {
             path: "/Recommend",
             name: "",
-            component: Recommend
+            component: Recommend,
+            meta:{
+                无需登录:true
+            }
         },
         {
             path: "/BeInvited",
             name: "",
-            component: BeInvited
+            component: BeInvited,
+            meta:{
+                无需登录:true
+            }
         },
         {
             path: "/AgencyCost",

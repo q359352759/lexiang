@@ -50,7 +50,10 @@ const list = [
   {
     path: "/shizhe/tuiguang",
     name: "",
-    component: 红购推广
+    component: 红购推广,
+    meta:{
+      无需登录:true
+    }
   },
   {
     path: "/shizhe/tuiguangzhuanqian",

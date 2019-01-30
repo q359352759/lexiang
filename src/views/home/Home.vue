@@ -160,7 +160,7 @@
                         <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
                         <div></div>
                     </div>
-                    <img :src="qrcode" alt="" srcset="">
+                    <img @touchend="松开()" @touchstart="开始按下()" @touchmove="划过()" :src="qrcode" alt="" srcset="">
                     <div class="二维码提示">
                         长按二维码，点击“发送给朋友”
                     </div>
@@ -271,7 +271,9 @@ export default {
             qrcode_show: false,
             erweima_base64: "", //base64用于嵌入二维码中
             type_list: [], //店铺类型
-            滚动条位置: 0
+            滚动条位置: 0,
+            定时器:'',
+            长按:false,
         };
     },
     computed: {
@@ -303,8 +305,25 @@ export default {
             查询优购: "home/优购/查询优购",
             优购下一页: "home/优购/优购下一页",
             获取代理人信息: "actions_agentUser",
-            获取位置:'获取位置/获取位置'
+            获取位置:'获取位置/获取位置',
+            分享图片:'app分享/分享图片'
         }),
+        松开(){
+            console.log('松开');
+            clearTimeout(this.定时器);//清除定时器
+        },
+        开始按下(){
+            this.定时器 = setTimeout(x=>{
+                console.log('长按');
+                this.分享图片(this.qrcode)
+            },2000)
+        },
+        划过(){
+            console.log('划过');
+            clearTimeout(this.定时器);//清除定时器
+            this.定时器 = 0;
+        },
+
         async 测试(){
             // await this.获取位置();
             console.log(this.$refs.muiContent)
@@ -344,7 +363,7 @@ export default {
                 mui.toast("登录后才有二维码，请先登录。", { duration: "long", type: "div" });
                 return;
             }
-            var url = window.location.origin + window.location.pathname + "#/BeInvited?pid=" + this.userInfo.username + "&invitationtype=1";
+            var url = 'http://m.lxad.vip/test/dist/index.html' + "#/BeInvited?pid=" + this.userInfo.username + "&invitationtype=1";
             if (this.qrcode) {
                 this.qrcode_show = true;
             } else {

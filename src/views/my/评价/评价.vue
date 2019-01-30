@@ -159,7 +159,7 @@ export default {
                     shopid: 新商品列表[i].shopid,      //商家id
                     userid: this_1.userInfo.username,      //用户id
                     remarkid: '',    //回复评价id
-                    remark: remark ,      //评价内容
+                    remark: feikong.test(remark_text) ? remark : '',      //评价内容
                     remarkimg:"",   //评价图片
                     remarkimgList:remarkimgList,
                     somegreattimes:'',  //点赞次数
@@ -175,14 +175,14 @@ export default {
                     lastcommenta:"",    //最后追评/回复时间
                     isfollowcommenta:'',    //是否有新的追评/回复
                 };
-                if(feikong.test(remark_text)){
+                // if(feikong.test(remark_text)){
                     评论列表.push(评价对象)
-                }
+                // }
             }
-            if(评论列表.length<this.新商品列表.length){
-                mui.toast("请输入评论内容", { duration: "long", type: "div" });
-                return
-            }
+            // if(评论列表.length<this.新商品列表.length){
+            //     mui.toast("请输入评论内容", { duration: "long", type: "div" });
+            //     return
+            // }
             openloading(true)
             this.添加评价(评论列表).then(x=>{
                 console.log(x);

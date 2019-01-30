@@ -9,7 +9,10 @@ const commodity = [
     {
         path: "/commodity/CommodityDetails",
         name: "",
-        component: CommodityDetails
+        component: CommodityDetails,
+        meta: {
+            无需登录:true
+        }
     },
     {
         path: "/commodity/PurchaseSingle",

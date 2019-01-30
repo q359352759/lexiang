@@ -51,17 +51,17 @@
 
 
                     <li v-for="(回复item, index1) in item.shopCommodityCommentList" :key="index1">
-                        <ul class="header">
+                        <ul class="header_1">
                             <li class="name" v-if="!回复item.clerksid">
                                 {{回复item.用户.nickname | 名字转码}}回复：
                             </li>
                             <li class="name" v-if="回复item.clerksid">
                                 {{回复item.店员.clerksname | 名字转码}}回复：
                             </li>
-                            <li class="time_1">
-                                <!-- 7天后追评 -->
+                            <li class="time_1 mui-text-center">
+                                <span v-show="回复item.commenttype==1">{{回复item.createtime | 计算时间差(item.createtime)}}</span>
                             </li>
-                            <li class="time_2">{{回复item.createtime | 时间格式化('yyyy.MM.dd hh:mm')}}</li>
+                            <li class="time_2 mui-text-right">{{回复item.createtime | 时间格式化('yyyy.MM.dd hh:mm')}}</li>
                         </ul>
                         <div class="text_1">
                             <div v-html="回复item.remark"></div>
@@ -145,7 +145,7 @@
 <script>
 import { openloading , dateFtt } from "@/assets/js/currency.js";
 import { b64DecodeUnicode } from "@/assets/js/base64jiema.js";
-
+import { getDaysByDateString } from "@/assets/js/time.js";
 import xingxing from "@/components/xingxing.vue";
 import loading from "@/components/loading.vue";
 
@@ -191,6 +191,18 @@ export default {
         };
     },
     filters:{
+        计算时间差(time1,time2){
+            var 时间差=getDaysByDateString(time2,time1);
+            if(时间差>30){
+                return Math.floor(时间差/30)+'月后追评'
+            }else if(时间差>1){
+                return Math.floor(时间差)+'天后追评'
+            }else if(时间差>0.04){
+                return Math.floor(时间差*24)+'小时后追评'
+            }else{
+                return '1小时内追评'
+            }
+        },
         名字转码(name){
             try {
                 return b64DecodeUnicode(name)
@@ -519,10 +531,16 @@ export default {
         padding: 0px 0px 0px 50px;
         color: rgba(80, 80, 80, 1);
         font-size: 12px;
-        .header {
+        .header_1 {            
             display: flex;
             align-items: center;
             justify-content: space-between;
+            >li{
+                width: calc(100% / 3);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
             .time_1 {
                 color: #fc6621;
             }

@@ -51,6 +51,8 @@ export default {
                     list.forEach(item => {
                         item.用户={};
                         dispatch('通过username查询用户',item)
+                        item.是否点赞=0;
+                        dispatch('查询点赞',item)
                         item.shopCommodityCommentList.forEach(item_1=>{
                             item_1.用户={}
                             item_1.店员={}
@@ -70,6 +72,26 @@ export default {
             if(!state.评论.loading && state.评论.list.length<state.评论.total){
                 state.评论.page_index++;
                 dispatch('查询评价')
+            }
+        },
+        查询点赞({dispatch},item){
+            try {
+                var userInfo=JSON.parse(localStorage.userInfo);
+            } catch (error) {
+                return
+            }
+            if(userInfo){
+                    var query={
+                        start:0,
+                        length:10,
+                        commentid:item.id,
+                        userid:userInfo.username
+                    }
+                dispatch('评论/查询点赞',query,{root:true}).then(x=>{
+                    if(x.data.code==200){
+                        item.是否点赞=x.data.data.data.length==0 ? 1 : 2
+                    }
+                })
             }
         },
         //列表专用

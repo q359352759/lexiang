@@ -77,34 +77,20 @@ new Vue({
     render: h => h(App)
 }).$mount("#app");
 
+
 router.beforeEach((to, from, next) => {
-    var toPath = to.path;
-    var loginDate = localStorage.loginDate;
-    var baimingdan = [
-        "/login",
-        "/register",
-        "/home",
-        "/commodity/CommodityDetails", //首页商品详情
-        "/BusinessDetails", //首页商家
-        "/RedEnvelopesList", //商家领取红包页面
-        "/RegistrationAgreement",
-        "/ForgetPassword",
-        "/Recommend", //分享页面
-        "/BeInvited", //分享注册页面
-        "/shizhe/tuiguang"
-    ]; //未登录可以访问的白名单
-    if (!loginDate || loginDate == null || loginDate == undefined) {
-        if (baimingdan.indexOf(toPath) == -1) {
-            console.log("没有登录准备跳转至登录");
-            next({ path: "/login" });
-            //next();
-        } else {
-            console.log("白名单");
+    console.log(to)
+    var meta=to.meta;
+        if(!meta.无需登录){
+            var userInfo=localStorage.userInfo;
+            if (!userInfo || userInfo == null || userInfo == undefined) {
+                next({ path: "/login" });
+            }else{
+                next();
+            }
+        }else{
             next();
         }
-    } else {
-        next();
-    }
     document.getElementById("loading").style.opacity = "0";
     document.getElementById("loading").style.display = "none";
 });

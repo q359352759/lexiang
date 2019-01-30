@@ -39,6 +39,7 @@ import home from "@/vuex/home.js";
 import 获取位置 from "@/vuex/获取位置.js";
 import 评论 from "@/vuex/评论.js";
 import 商家展示厅 from "@/vuex/商家展示厅.js";
+import app分享 from "@/vuex/app分享.js";
 
 Vue.use(Vuex);
 // 对名字进行解码
@@ -380,7 +381,8 @@ export default new Vuex.Store({
         home: home,
         获取位置:获取位置,
         评论:评论,
-        商家展示厅:商家展示厅
+        商家展示厅:商家展示厅,
+        app分享:app分享
     }
 });
 // })

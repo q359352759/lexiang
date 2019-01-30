@@ -56,7 +56,8 @@ function getDaysByDateString(dateString1, dateString2) {
     } catch (error) {
         var endDate = Date.parse(new Date());
     }
-    var diffDate = endDate - startDate + 1 * 24 * 60 * 60 * 1000;
+    // var diffDate = endDate - startDate + 1 * 24 * 60 * 60 * 1000;
+    var diffDate =endDate -startDate
     var days = diffDate / (1 * 24 * 60 * 60 * 1000);
     //alert(diffDate/(1*24*60*60*1000));
     return days;

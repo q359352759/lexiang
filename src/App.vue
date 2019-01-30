@@ -86,14 +86,6 @@ export default {
     mounted: function () {
         this.$store.state.weixin_ready = false;
 
-        // window.addEventListener("storage", e => {
-        //     if (e.key !== "vuex") return;
-        //     // exit if no change
-        //     if (e.newValue === JSON.stringify(this.$store.state)) return;
-        //     const persistedData = JSON.parse(e.newValue);
-        //     this.$store.commit("setAll", persistedData);
-        // });
-
         var this_1 = this;
         // var path = this.$route.path;
         var path = window.location.hash;
@@ -101,30 +93,12 @@ export default {
         try {
             this.userInfo = JSON.parse(localStorage.userInfo);
         } catch (error) { }
-        var baimingdan = [
-            "#/login",
-            "#/register",
-            "#/home",
-            "#/commodity/CommodityDetails", //首页商品详情
-            "#/BusinessDetails", //首页商家详情
-            "#/RedEnvelopesList", //首页商家领取红包页面
-            "#/RegistrationAgreement",
-            "#/ForgetPassword",
-            "#/Recommend", //分享页面
-            "#/BeInvited", //分享注册页面
-            "#/shizhe/tuiguang"
-        ]; //未登录可以访问的白名单
-        var index = path.indexOf("?");
-        if (index != -1) {
-            path = path.substring(0, index);
-        }
 
         if (!this.userInfo) {
-            console.log("没有登录准备跳转至登录");
-            if (baimingdan.indexOf(path) == -1) {
-                this.$router.push("/login");
-                return;
-            }
+            // if (baimingdan.indexOf(path) == -1) {
+            //     this.$router.push("/login");
+            //     return;
+            // }
         } else if (!this.userInfo.headImgUrl) {
             this.updated_user().then(x => {
                 this.get_user().then(res => {
@@ -233,19 +207,20 @@ export default {
         // console.group('destroyed 销毁完成状态===============》');
     },
     watch: {
-        // $route(to, from) {
-        //     var topath = to.path;
-        //     var formpath = from.path;
-        //     // sessionStorage.path=from.path;  //当前页面
-        //     // console.log(to)
-        //     // console.log(from)
-        //     if (to.meta.index > from.meta.index) {
-        //         //设置动画名称
-        //         this.transitionName = "slide-left";
-        //     } else {
-        //         this.transitionName = "slide-right";
-        //     }
-        // }
+        $route(to, from){
+            var meta=to.meta;
+            if(!meta.无需登录){
+                var userInfo=localStorage.userInfo;
+                if (!userInfo || userInfo == null || userInfo == undefined) {
+                    this.$router.push('/login')
+                }
+            }
+            // if (to.meta.index > from.meta.index) {
+            //     this.transitionName = "slide-left";
+            // } else {
+            //     this.transitionName = "slide-right";
+            // }
+        }
     }
 };
 </script>

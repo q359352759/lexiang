@@ -368,7 +368,8 @@ export default {
             获取位置: '获取位置/获取位置',
             评论初始化:'商家展示厅/初始化',
             查询评价:'商家展示厅/查询评价',
-            评价下一页:'商家展示厅/评价下一页'
+            评价下一页:'商家展示厅/评价下一页',
+            查询店铺评分:'商家展示厅/查询店铺评分'
         }),
         //显示新人红包弹出框
         setxinrenhongbao_show(x) {
@@ -827,7 +828,7 @@ export default {
                 this.$axios.get("/api-s/shops/findEffective", { params: query }).then(x => {
                     resolve(x);
                 }).catch(err => {
-                    resolve(x);
+                    resolve(err);
                 });
             });
         }
@@ -1004,6 +1005,7 @@ export default {
 
         this.评论初始化(this.shopid);
         this.查询评价();
+        this.查询店铺评分(this.shopid)
         // console.group('------mounted 挂载结束状态------');
     },
     beforeUpdate: function () {

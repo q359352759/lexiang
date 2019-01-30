@@ -71,6 +71,42 @@ export default {
                     reject(err)
                 })
             });
+        },
+        查询点赞({},query){
+            return new Promise((resolve, reject) => {
+                axios.get('/api-s/shops/findCommentDianzanAll',{params:query}).then(x=>{
+                    resolve(x);
+                }).catch(err=>{
+                    reject(err);
+                })
+            });
+        },
+        添加点赞({},[id,username]){
+            var obj={
+                    id:id,
+                    userid:username
+                }
+            return new Promise((resolve, reject) => {
+                axios.post('/api-s/shops/CommodityCommentDianzan/'+id,qs.stringify(obj)).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err);
+                })    
+            });
+        },
+        取消点赞({},[评论id,点赞id]){
+            //传评论id和点赞表的自增id
+            var obj={
+                    id:评论id,
+                    dianzanid:点赞id
+                }
+            return new Promise((resolve, reject) => {
+                axios.post('/api-s/shops/CommodityCommentQuxiaozan/'+评论id, qs.stringify(obj)).then(x=>{
+                    resolve(x)
+                }).catch(err=>{
+                    reject(err)
+                })
+            });
         }
     },
     modules: {}
