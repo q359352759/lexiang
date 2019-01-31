@@ -382,7 +382,9 @@ const ExampleOfRevenue = resolve => {
     });
 }; //区域代理商收益示例
 
-const 下载App = resolve => {require.ensure([], () => {resolve(require("@/views/下载App.vue"));});}; //代理人费用说明
+const 下载App = resolve => {require.ensure([], () => {resolve(require("@/views/下载App.vue"));});}; 
+const app扫一扫 = resolve => {require.ensure([], () => {resolve(require("@/views/app扫一扫.vue"));});}; 
+const app引导页 = resolve => {require.ensure([], () => {resolve(require("@/views/app引导页.vue"));});}; 
 // 协议
 const AgencyCost = resolve => {require.ensure([], () => {resolve(require("./views/xieyi/AgencyCost.vue"));});}; //代理人费用说明
 const RegistrationAgreement = () =>
@@ -439,7 +441,18 @@ export default new Router({
         ...mys,
         ...agents,
         ...红购使者,
-        { path: "/", name: "", component: login },
+        { 
+            path: "/", 
+            name: "", 
+            components: {
+                default: Home,
+                circularNav: circularNav
+            },
+            meta: {
+                无需登录:true,
+                keepAlive: true //缓存当前页面
+            }
+        },
         { path: "/editortest", name: "", component: editortest },
         {
             path: "/home",
@@ -457,6 +470,20 @@ export default new Router({
             path:'/appxiazai',
             name:"",
             component:下载App,
+            meta:{
+                无需登录:true
+            }
+        },{
+            path:'/appSaoyisao',
+            name:"",
+            component:app扫一扫,
+            meta:{
+                无需登录:true
+            }
+        },{
+            path:'/appYingdaoye',
+            name:"",
+            component:app引导页,
             meta:{
                 无需登录:true
             }

@@ -62,7 +62,6 @@ export default {
         if (agent.match(/MicroMessenger/i) == "micromessenger") {
             console.log("微信浏览器内访问");
             //判断是否是邀请页面
-
             var weixin = localStorage.weixin;
             var weixininfo = localStorage.weixininfo;
             if (!weixin || weixin == null || weixin == undefined || weixin == "undefined" || !weixininfo || weixininfo == null || weixininfo == undefined || weixininfo == "undefined") {
@@ -73,6 +72,14 @@ export default {
             }
         } else {
             console.log("不是微信");
+        }
+
+        //显示启动页
+        if(ApplicationType=='app'){
+            var diyici=localStorage.diyici;
+            if(!diyici || diyici=='' || diyici==null || diyici==undefined){
+                this.$router.push('/appYingdaoye');
+            }
         }
 
         // console.group('------beforeCreate创建前状态------');

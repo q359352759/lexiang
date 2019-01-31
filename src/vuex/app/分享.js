@@ -26,7 +26,6 @@ export default {
                     }
                     console.log('更新分享服务')
 					sweixin = shares['weixin'];
-                    console.log(JSON.stringify(sweixin))
                     base64分享()
 				}, function(e) {
 					alert('获取分享服务列表失败：' + e.message);
@@ -41,7 +40,6 @@ export default {
 			
 			// 分享
 			function share(srv, msg, button) {
-				alert('分享操作：');
 				if (!srv) {
 					alert('无效的分享服务！');
 					return;
@@ -49,10 +47,10 @@ export default {
 				button && (msg.extra = button.extra);
 				// 发送分享
 				if (srv.authenticated) {
-					alert('---已授权---');
+					// alert('已授权')
 					doShare(srv, msg);
 				} else {
-					alert('---未授权---');
+					// alert('未授权');
 					srv.authorize(function() {
 						doShare(srv, msg);
 					}, function(e) {
@@ -62,9 +60,9 @@ export default {
 			}
 			// 发送分享
 			function doShare(srv, msg) {
-				alert(JSON.stringify(msg));
+				// alert('发送分享',JSON.stringify(msg));
 				srv.send(msg, function() {
-					alert('分享到"' + srv.description + '"成功！');
+					// alert('分享到"' + srv.description + '"成功！');
 				}, function(e) {
 					alert('分享到"' + srv.description + '"失败: ' + JSON.stringify(e));
 				});
@@ -94,19 +92,16 @@ export default {
 			var bitmap=null;
 			// H5 plus事件处理
 			function base64分享(){
-                console.log(JSON.stringify(sweixin));
                 try {
-                    bitmap.clear();                
+                    bitmap.clear();           
                 } catch (error) {
                 }
                 var name=new Date().getTime()
 			    bitmap = new plus.nativeObj.Bitmap(name);
 			    bitmap.loadBase64Data(base64, function(){
 			        console.log("加载Base64图片数据成功");
-			        bitmap.save("_doc/"+name+".png",{},function(i){
-						console.log('保存图片成功：'+JSON.stringify(i));
-			
-						console.log('分享开始')
+			        bitmap.save("_doc/"+name+".jpg",{},function(i){
+						// alert('保存图片成功：'+JSON.stringify(i))
 						var msg = {
 							type: 'image'
 						};

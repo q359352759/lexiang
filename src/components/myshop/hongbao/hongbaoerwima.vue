@@ -49,9 +49,9 @@
         <div class="Rongqi" v-show="Rongqi">
             <div class="cont_1">
                 <div class="close_1" @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
-                <img :src="jietu_url" alt="">
-                <div class="二维码提示">
-                    长按二维码，点击“发送给朋友”
+                <img :src="jietu_url" @click="开始按下()">
+                <div class="二维码提示" @click="开始按下()">
+                    {{ApplicationType=='app' ? '点击分享' : '长按二维码，点击“发送给朋友”'}}
                 </div>
             </div>
         </div>
@@ -81,12 +81,14 @@ export default {
     name: "",
     data() {
         return {
+            ApplicationType:ApplicationType,
             Rongqi: false, //显示框
             jietu_url: "", //截图地址
             shangping: {},
             erweima_url: "",
             base64: "", //服务器返回的base64
-            userInfo: ""
+            userInfo: "",
+            定时器:''
         };
     },
     computed: {
@@ -105,8 +107,15 @@ export default {
     methods: {
         ...mapActions({
             get_shop: "shop/get_shop", //获取店铺
-            get_shangping_2: "shangPing/get_shangping_2" //获取商品
+            get_shangping_2: "shangPing/get_shangping_2", //获取商品
+            分享图片: 'app/分享/分享图片'
         }),
+        开始按下() {
+            if(ApplicationType=='app'){
+                this.分享图片(this.jietu_url)
+            }
+        },
+
         close_1() {
             this.Rongqi = false;
         },
@@ -124,16 +133,12 @@ export default {
             openloading(true);
             if (this.hongbao && this.hongbao.type != 1) {
                 //不是商品红包
-                this.get_shop(this.hongbao.shopid)
-                    .then(x => {
-                        console.log("获取店铺");
-                        this.imgtobase64(this.shop.signboard)
-                            .then(x => {
-                                this.shengcheng_erweima();
-                            })
-                            .catch(err => { });
-                    })
-                    .catch(err => { });
+                this.get_shop(this.hongbao.shopid).then(x => {
+                    console.log("获取店铺");
+                    this.imgtobase64(this.shop.signboard).then(x => {
+                        this.shengcheng_erweima();
+                    }).catch(err => { });
+                }).catch(err => { });
             } else if (this.hongbao && this.hongbao.type == 1) {
                 Promise.all([
                     this.get_shop(this.hongbao.shopid),
@@ -141,11 +146,9 @@ export default {
                 ]).then(x => {
                     console.log(x);
                     this.shangping = x[1].data.data;
-                    this.imgtobase64(this.shangping.img.split(",")[0])
-                        .then(x => {
-                            this.shengcheng_erweima();
-                        })
-                        .catch(err => { });
+                    this.imgtobase64(this.shangping.img.split(",")[0]).then(x => {
+                        this.shengcheng_erweima();
+                    }).catch(err => { });
                 });
             }
         },
@@ -156,42 +159,26 @@ export default {
                     method: "post",
                     url: "/api-u/users/imgtobase64",
                     data: this.$qs.stringify({ url: imgurl })
-                })
-                    .then(x => {
-                        if (x.data.code == 200) {
-                            this.base64 = "data:image/jpeg;base64," + x.data.data;
-                            resolve();
-                        } else {
-                            openloading(false);
-                            mui.toast("生成二维码失败，稍后再试。", {
-                                duration: "long",
-                                type: "div"
-                            });
-                            reject();
-                        }
-                    })
-                    .catch(err => {
+                }).then(x => {
+                    if (x.data.code == 200) {
+                        this.base64 = "data:image/jpeg;base64," + x.data.data;
+                        resolve();
+                    } else {
                         openloading(false);
-                        mui.toast("生成二维码失败，稍后再试。", {
-                            duration: "long",
-                            type: "div"
-                        });
+                        mui.toast("生成二维码失败，稍后再试。", { duration: "long", type: "div" });
                         reject();
-                    });
+                    }
+                }).catch(err => {
+                    openloading(false);
+                    mui.toast("生成二维码失败，稍后再试。", { duration: "long", type: "div" });
+                    reject();
+                });
             });
         },
         //生成二维码
         shengcheng_erweima() {
             // console.log('生成二维码');
-            var url =
-                window.location.origin +
-                window.location.pathname +
-                "#/BusinessDetails?shopid=" +
-                this.shop.shopid +
-                "&fenxiang=1&hongbaoid=" +
-                this.hongbao.id +
-                "&userid=" +
-                this.userInfo.username;
+            var url = 'http://m.lxad.vip/test/dist/index.html' + "#/BusinessDetails?shopid=" + this.shop.shopid + "&fenxiang=1&hongbaoid=" + this.hongbao.id + "&userid=" + this.userInfo.username;
             console.log(url);
             var el = this.$refs.erweima;
             el.innerHTML = "";
@@ -346,7 +333,7 @@ export default {
     .cont_1 {
         width: 250px;
         position: relative;
-        .二维码提示{
+        .二维码提示 {
             height: 35px;
             color: rgba(56, 56, 56, 1);
             background-color: rgba(255, 255, 255, 1);

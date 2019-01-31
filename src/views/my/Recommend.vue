@@ -87,9 +87,11 @@
                     <i class="icon iconfont icon-quxiao"></i>
                 </div>
                 <div class="图片容器">
-                    <img @touchend="松开()" @touchstart="开始按下()" @touchmove="划过()" :src="截图地址" alt="" srcset="">
+                    <img @click="开始按下()":src="截图地址">
                 </div>
-                <div class="文本">长按二维码，点击“发送给朋友”</div>
+                <div class="文本" @click="开始按下()">
+                    {{ApplicationType=='app' ? "点击分享" : '长按二维码，点击“发送给朋友”'}}
+                </div>
             </div>
         </div>
 
@@ -113,6 +115,7 @@ export default {
     },
     data() {
         return {
+            ApplicationType:ApplicationType,
             userInfo: "",
             index: 0,
             box_2_actvie: false,
@@ -133,7 +136,7 @@ export default {
             是否分享: false,
             头像base64: "",
             截图地址: "",
-            定时器:''
+            定时器: ''
         };
     },
     computed: {
@@ -153,22 +156,12 @@ export default {
     methods: {
         ...mapActions({
             获取认证: "实名认证/获取认证",
-            分享图片:'app分享/分享图片'
+            分享图片: 'app/分享/分享图片'
         }),
-        松开(){
-            console.log('松开');
-            clearTimeout(this.定时器);//清除定时器
-        },
-        开始按下(){
-            this.定时器 = setTimeout(x=>{
-                console.log('长按');
+        开始按下() {
+            if(ApplicationType=='app'){
                 this.分享图片(this.截图地址)
-            },2000)
-        },
-        划过(){
-            console.log('划过');
-            clearTimeout(this.定时器);//清除定时器
-            this.定时器 = 0;
+            }
         },
         //被邀请界面
         BeInvited() {
@@ -197,24 +190,19 @@ export default {
                 this.是否分享 = true;
             } else {
                 openloading(true);
-                Promise.all([this.生成二维码(), this.生成头像()])
-                    .then(x => {
-                        this.截图();
-                    })
-                    .catch(err => {
-                        openloading(false);
-                        console.log(err);
-                        mui.toast("生成二维码失败，稍后再试。", {
-                            duration: "long",
-                            type: "div"
-                        });
-                    });
+                Promise.all([this.生成二维码(), this.生成头像()]).then(x => {
+                    this.截图();
+                }).catch(err => {
+                    openloading(false);
+                    console.log(err);
+                    mui.toast("生成二维码失败，稍后再试。", { duration: "long", type: "div" });
+                });
             }
         },
         //生成二维码
         生成二维码() {
             return new Promise((resolve, reject) => {
-                var url = 'http://m.lxad.vip/test/dist/index.html' +"#/BeInvited?pid=" + this.userInfo.username + "&invitationtype=1";
+                var url = 'http://m.lxad.vip/test/dist/index.html' + "#/BeInvited?pid=" + this.userInfo.username + "&invitationtype=1";
                 console.log(url);
                 var el = this.$refs.二维码容器;
                 el.innerHTML = "";

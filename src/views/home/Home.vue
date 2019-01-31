@@ -25,8 +25,15 @@
                 </div>
             </li>
         </ul>
-        <div class="mui-content mui-fullscreen" ref="muiContent" @scroll="content_scroll($event)">
+        
+        <ul class="box_3" v-show="box_3_actvie"  :class="{'active':box_3_actvie}">
+                <li @click="change_type_1(1)" :class="{'active':type_1==1}">红包</li>
+                <li @click="change_type_1(4)" :class="{'active':type_1==4}">专享</li>
+                <li @click="change_type_1(2)" :class="{'active':type_1==2}">优购</li>
+                <li @click="change_type_1(3)" :class="{'active':type_1==3}">商家</li>
+            </ul>
 
+        <div class="mui-content mui-fullscreen" ref="muiContent" @scroll="content_scroll($event)">
             <div class="swiper-container">
                 <div class="swiper-wrapper">
                     <!-- <div class="swiper-slide"><img src="@/assets/image/1.png" alt=""></div> -->
@@ -60,18 +67,15 @@
             </ul>
 
             <div ref="box_4"></div>
-            <ul class="box_3" :class="{'active':box_3_actvie}">
+            
+            
+            <ul class="box_3 adfs">
                 <li @click="change_type_1(1)" :class="{'active':type_1==1}">红包</li>
                 <li @click="change_type_1(4)" :class="{'active':type_1==4}">专享</li>
                 <li @click="change_type_1(2)" :class="{'active':type_1==2}">优购</li>
                 <li @click="change_type_1(3)" :class="{'active':type_1==3}">商家</li>
             </ul>
-            <ul class="box_3" v-show="box_3_actvie">
-                <li @click="change_type_1(1)" :class="{'active':type_1==1}">红包</li>
-                <li @click="change_type_1(4)" :class="{'active':type_1==4}">专享</li>
-                <li @click="change_type_1(2)" :class="{'active':type_1==2}">优购</li>
-                <li @click="change_type_1(3)" :class="{'active':type_1==3}">商家</li>
-            </ul>
+            
 
             <!-- 红包 -->
             <div class="box_4" v-if="type_1==1">
@@ -160,9 +164,9 @@
                         <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
                         <div></div>
                     </div>
-                    <img @touchend="松开()" @touchstart="开始按下()" @touchmove="划过()" :src="qrcode" alt="" srcset="">
+                    <img @click="开始按下()" :src="qrcode" alt="" srcset="">
                     <div class="二维码提示">
-                        长按二维码，点击“发送给朋友”
+                        {{ApplicationType=='app' ? '点击分享' :"长按二维码，点击“发送给朋友”"}}
                     </div>
                 </div>
             </div>
@@ -228,6 +232,7 @@ export default {
     },
     data() {
         return {
+            ApplicationType:ApplicationType,
             首次进入:true,
             homeDialog_show: false,
             box_3_actvie: false,
@@ -235,7 +240,7 @@ export default {
             // type_list: [
             //     { url: "image/fenlei/1.jpg", name: "直购", path: "" },
             // ],
-            type_1: 1,
+            type_1: 2,
             shop: {
                 //商家
                 start: 0,
@@ -306,24 +311,13 @@ export default {
             优购下一页: "home/优购/优购下一页",
             获取代理人信息: "actions_agentUser",
             获取位置:'获取位置/获取位置',
-            分享图片:'app分享/分享图片'
+            分享图片:'app/分享/分享图片'
         }),
-        松开(){
-            console.log('松开');
-            clearTimeout(this.定时器);//清除定时器
-        },
         开始按下(){
-            this.定时器 = setTimeout(x=>{
-                console.log('长按');
+            if(ApplicationType=='app'){
                 this.分享图片(this.qrcode)
-            },2000)
+            }
         },
-        划过(){
-            console.log('划过');
-            clearTimeout(this.定时器);//清除定时器
-            this.定时器 = 0;
-        },
-
         async 测试(){
             // await this.获取位置();
             console.log(this.$refs.muiContent)
@@ -334,26 +328,30 @@ export default {
         },
         //扫一扫
         saoyisao() {
-            if (this.$store.state.weixin_ready) {
-                try {
-                    openloading(false);
-                    wx.scanQRCode({
-                        needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
-                        scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
-                        success: function (res) {
-                            var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
-                        }
-                    });
-                } catch (error) {
+            if(this.ApplicationType=='app'){
+                this.$router.push('/appSaoyisao');
+            }else{
+                if (this.$store.state.weixin_ready) {
+                    try {
+                        openloading(false);
+                        wx.scanQRCode({
+                            needResult: 0, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                            scanType: ["qrCode", "barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                            success: function (res) {
+                                var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                            }
+                        });
+                    } catch (error) {
+                        setTimeout(() => {
+                            this.saoyisao();
+                        }, 1000);
+                    }
+                } else {
+                    openloading(true);
                     setTimeout(() => {
                         this.saoyisao();
                     }, 1000);
                 }
-            } else {
-                openloading(true);
-                setTimeout(() => {
-                    this.saoyisao();
-                }, 1000);
             }
         },
         //生产二维码
@@ -571,16 +569,31 @@ export default {
         },
         //跳转微信内置地图
         weixinmaptest(item) {
-            var ditu = bd_decrypt(item.x, item.y);
-            console.log(ditu);
-            wx.openLocation({
-                latitude: ditu.lat, // 纬度，浮点数，范围为90 ~ -90
-                longitude: ditu.lng, // 经度，浮点数，范围为180 ~ -180。
-                name: item.name, // 位置名
-                address: item.address, // 地址详情说明
-                scale: 28, // 地图缩放级别,整形值,范围从1~28。默认为最大
-                infoUrl: "" // 在查看位置界面底部显示的超链接,可点击跳转
-            });
+            if(ApplicationType=='app'){
+                if (window.plus) {
+                    跳转地图();
+                } else {
+                    document.addEventListener('plusready', 跳转地图, false);
+                }
+                function 跳转地图(){
+                    // 设置目标位置坐标点和其实位置坐标点
+                    var dst = new plus.maps.Point(this.当前位置.x , this.当前位置.y);
+                    var src = new plus.maps.Point(item.x , item.y);
+                    // 调用系统地图显示 
+                    plus.maps.openSysMap(dst, item.name, src);
+                }
+            }else{
+                var ditu = bd_decrypt(item.x, item.y);
+                console.log(ditu);
+                wx.openLocation({
+                    latitude: ditu.lat, // 纬度，浮点数，范围为90 ~ -90
+                    longitude: ditu.lng, // 经度，浮点数，范围为180 ~ -180。
+                    name: item.name, // 位置名
+                    address: item.address, // 地址详情说明
+                    scale: 28, // 地图缩放级别,整形值,范围从1~28。默认为最大
+                    infoUrl: "" // 在查看位置界面底部显示的超链接,可点击跳转
+                });
+            }
         },
         //跳转更多
         classification() {

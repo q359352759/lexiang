@@ -17,9 +17,9 @@
                         </div>
                     </h1>
                     <div class="text_1">
-                        <div class="xiaoshou">
-                            <span>销</span>
-                            <span>{{item.sales}}笔</span>
+                        <div class="价格">
+                            <span class="xianjia">￥{{item.sellingPrice}}</span>
+                            <s class="yuanjia">{{item.marketPrice}}</s>
                         </div>
                         <div class="dikou">
                             <i class="icon iconfont icon-hongbao1"></i>
@@ -27,9 +27,9 @@
                         </div>
                     </div>
                     <div class="text_2">
-                        <div>
-                            <span class="xianjia">￥{{item.sellingPrice}}</span>
-                            <s class="yuanjia">{{item.marketPrice}}</s>
+                        <div class="xiaoshou">
+                            <span>销</span>
+                            <span>{{item.sales}}笔</span>
                         </div>
                         <div>
                             <span class="zhuanxiang mui-pull-right" v-if="item.EXTYPE==0">
@@ -113,23 +113,19 @@ export default {
         display: flex;
         justify-content: space-between;
         padding: 0px 0.06rem;
-        .xiaoshou {
-            > span:nth-child(1) {
-                margin: 0px 3px 0px 0px;
-                display: inline-block;
-                width: 0.12rem;
-                height: 0.12rem;
-                font-size: 0.08rem;
-                line-height: 0.12rem;
-                text-align: center;
-                border-radius: 100%;
-                background: #ff5733;
-                color: #ffffff;
-            }
-            > span:nth-child(2) {
-                color: rgba(166, 166, 166, 1);
-                font-size: 0.1rem;
-            }
+        .价格{
+            display: flex;
+            align-items: flex-end;
+        }
+        .xianjia {
+            color: #d43030;
+            font-size: 0.12rem;
+            font-weight: bold;
+        }
+        .yuanjia {
+            font-size: 0.1rem;
+            color: #a6a6a6;
+            margin: 0px 0px 0px 0.05rem;
         }
         .dikou {
             i {
@@ -148,19 +144,23 @@ export default {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        > div:nth-child(1) {
-            display: flex;
-            align-items: flex-end;
-        }
-        .xianjia {
-            color: #d43030;
-            font-size: 0.12rem;
-            font-weight: bold;
-        }
-        .yuanjia {
-            font-size: 0.1rem;
-            color: #a6a6a6;
-            margin: 0px 0px 0px 0.05rem;
+        .xiaoshou {
+            > span:nth-child(1) {
+                margin: 0px 3px 0px 0px;
+                display: inline-block;
+                width: 0.12rem;
+                height: 0.12rem;
+                font-size: 0.08rem;
+                line-height: 0.12rem;
+                text-align: center;
+                border-radius: 100%;
+                background: #ff5733;
+                color: #ffffff;
+            }
+            > span:nth-child(2) {
+                color: rgba(166, 166, 166, 1);
+                font-size: 0.1rem;
+            }
         }
         .zhuanxiang {
             border: 1px solid #e33c64;

@@ -9,7 +9,7 @@
                 <i class="icon iconfont icon-fenxiang2"></i>
             </span> -->
             <span @click="erweima_show()" class="erweima mui-pull-right">
-                <i class="icon iconfont icon-31erweima"></i>
+                <i class="icon iconfont icon-fenxiang2"></i>
             </span>
         </header>
         <div class="mui-content mui-fullscreen">
@@ -121,11 +121,11 @@
                         <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
                         <div></div>
                     </div>
-                    <div class="img_box1">
+                    <div class="img_box1" @click="开始按下()">
                         <img :src="qrcode" alt="">
                     </div>
-                    <div class="二维码提示">
-                        长按二维码，点击“发送给朋友”
+                    <div class="二维码提示" @click="开始按下()">
+                        {{ApplicationType=='app' ? "点击分享" : '长按二维码，点击“发送给朋友”'}}
                     </div>
                 </div>
             </div>
@@ -157,6 +157,7 @@ export default {
     name: "",
     data() {
         return {
+            ApplicationType:ApplicationType,
             isshop: true,
             QRCode_box: false,
             id: "",
@@ -167,7 +168,8 @@ export default {
             userInfo: "", //用户信息
             qrcode: null,
             img_base64: "",
-            专享: ""
+            专享: "",
+            定时器:''
         };
     },
     components: {
@@ -184,7 +186,13 @@ export default {
             修改商品: "shangPing/修改商品",
             评论初始化:'shangPing/评论/初始化',
             查询评价:'shangPing/评论/查询评价',
+            分享图片: 'app/分享/分享图片'
         }),
+        开始按下() {
+            if(ApplicationType=='app'){
+                this.分享图片(this.qrcode)
+            }
+        },
         //立即购买
         goumai() {
             this.$router.push("/commodity/PurchaseSingle?id=" + this.id);
@@ -322,14 +330,15 @@ export default {
         },
         //生成二维码
         shengcheng_erweima() {
-            console.log(location.href + "&isshop=1");
+            var url='http://m.lxad.vip/test/dist/index.html'+'#/commodity/CommodityDetails?id='+this.id+"&isshop=1";
+            console.log(url)
             return new Promise((resolve, reject) => {
                 var el = this.$refs.qrcode;
                 el.innerHTML = "";
                 let qrcode = new QRCode(el, {
                     width: 80,
                     height: 80, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                    text: location.href + "&isshop=1", // 二维码内容
+                    text: url, // 二维码内容
                     // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
                     background: "#fff",
                     foreground: "#fff"

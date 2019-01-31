@@ -160,9 +160,9 @@
                     <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
                     <div></div>
                 </div>
-                <img :src="qrcode" alt="" srcset="">
-                <div class="二维码提示">
-                    长按二维码，点击“发送给朋友”
+                <img :src="qrcode" @click="开始按下()">
+                <div class="二维码提示" @click="开始按下()">
+                    {{ApplicationType =='app' ? '点击分享' :"长按二维码，点击“发送给朋友”"}}
                 </div>
             </div>
         </div>
@@ -214,11 +214,13 @@ export default {
     },
     data() {
         return {
+            ApplicationType:ApplicationType,
             qrcode_show: false,
             qrcode: null,
             erweima_base64: "",
             weixin: {},
-            userInfo: ""
+            userInfo: "",
+            定时器:''
         };
     },
     filters: {
@@ -253,8 +255,15 @@ export default {
             获取店铺: "getMyshop",
             
             判断用户是否关注: 'user/判断用户是否关注',
-            设置手动关闭:'user/设置手动关闭'
+            设置手动关闭:'user/设置手动关闭',
+            分享图片:'app/分享/分享图片'
         }),
+        开始按下(){
+            if(ApplicationType=='app'){
+                this.分享图片(this.qrcode)
+            }
+        },
+
         判断关注() {
             this.判断用户是否关注().then(x=>{
                 if(!this.是否手动关闭 && !this.是否关注){
@@ -292,7 +301,6 @@ export default {
         },
         //生成二维码
         shengchengerweima() {
-            alert('开始生成二维码');
             var url ='http://m.lxad.vip/test/dist/index.html'+"#/BeInvited?pid=" +this.userInfo.username +"&invitationtype=1";
             var el = this.$refs.qrcode;
             el.innerHTML = "";
@@ -319,16 +327,11 @@ export default {
                 if (!this.userInfo.headImgUrl) {
                     this.shengchengerweima();
                 } else {
-                    alert('开始发送请求：'+ this.userInfo.headImgUrl)
                     this.$axios.post("/api-u/users/imgtobase64", this.$qs.stringify({ url: this.userInfo.headImgUrl })).then(x => {
                         console.log(x);
-                        alert("返回值code:"+x.data.code)
                         if (x.data.code == 200) {
-                            if(!x.data.data || x.data.data=='' || x.data.data==null){
-                                alert('没有图片base64返回值')
-                            }
+                            
                             this.erweima_base64 = "data:image/jpeg;base64," + x.data.data;
-                            alert('生成第一步')
                             this.shengchengerweima();
                         } else {
                             openloading(false);
@@ -342,7 +345,6 @@ export default {
             }
         },
         print() {
-            alert('开始截图')
             const el = this.$refs.printMe;
             const options = {
                 useCORS: true,
@@ -377,7 +379,6 @@ export default {
             }
         },
         go(x) {
-            // alert('开发中。')
             // return;
             this.$router.push(x);
         },

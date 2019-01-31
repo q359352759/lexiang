@@ -165,9 +165,9 @@
                         <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
                         <div></div>
                     </div>
-                    <img :src="qrcode" alt="" srcset="">
-                    <div class="二维码提示">
-                        长按二维码，点击“发送给朋友”
+                    <img :src="qrcode" @click="开始按下()" >
+                    <div class="二维码提示"  @click="开始按下()">
+                        {{ApplicationType=='app' ? '点击分享' :'长按二维码，点击“发送给朋友”'}}
                     </div>
                 </div>
             </div>
@@ -201,6 +201,7 @@ export default {
     },
     data() {
         return {
+            ApplicationType:ApplicationType,
             qrcode: null,
             qrcode_show: false,
             erweima_base64: "",
@@ -219,7 +220,8 @@ export default {
                 total: 0,
                 loading: false,
                 paget_index: 0
-            }
+            },
+            定时器:""
         };
     },
     computed: {
@@ -259,39 +261,36 @@ export default {
             查询班次: "myshops/班次/查询班次",
             考勤时间初始化: "myshops/班次/考勤时间初始化",
             查询考勤时间: "myshops/班次/查询考勤时间",
-            查询自己的打卡记录: "myshops/打卡/查询自己的打卡记录"
+            查询自己的打卡记录: "myshops/打卡/查询自己的打卡记录",
+            分享图片: 'app/分享/分享图片'
         }),
+        开始按下() {
+            if(ApplicationType=='app'){
+                this.分享图片(this.qrcode)
+            }
+        },
+
         跳转提现() {
-            // if (this.店铺身份 == 1) {
-                this.$router.push("/myshop/WithdrawMoney");
-            // } else {
-            //     mui.toast("员工不能提现哦~", { duration: "long", type: "div" });
-            // }
+            this.$router.push("/myshop/WithdrawMoney");
         },
         获取今日新增会员() {
-            this.$axios
-                .get("/api-s/shops/countTodayshopCustomer/" + this.myshop.shopid)
-                .then(x => {
-                    console.log("获取今日新增", x);
-                    if (x.data.code == 200) {
-                        this.今日新增 = x.data.data;
-                    }
-                })
-                .catch(err => { });
+            this.$axios.get("/api-s/shops/countTodayshopCustomer/" + this.myshop.shopid).then(x => {
+                console.log("获取今日新增", x);
+                if (x.data.code == 200) {
+                    this.今日新增 = x.data.data;
+                }
+            }).catch(err => { });
         },
         获取顾客() {
             this.顾客.query.start = this.顾客.query.length * this.顾客.paget_index;
             this.顾客.query.shopid = this.myshop.shopid;
-            this.$axios
-                .get("/api-s/shops/findShopCustomerAll", { params: this.顾客.query })
-                .then(x => {
-                    console.log("获取店铺顾客", x);
-                    if (x.data.code == 200) {
-                        this.顾客.list = this.顾客.list.concat(x.data.data.data);
-                        this.顾客.total = x.data.data.total;
-                    }
-                })
-                .catch(err => { });
+            this.$axios.get("/api-s/shops/findShopCustomerAll", { params: this.顾客.query }).then(x => {
+                console.log("获取店铺顾客", x);
+                if (x.data.code == 200) {
+                    this.顾客.list = this.顾客.list.concat(x.data.data.data);
+                    this.顾客.total = x.data.data.total;
+                }
+            }).catch(err => { });
         },
         进入店铺() {
             sessionStorage.removeItem("backUrl");
@@ -346,48 +345,40 @@ export default {
                     data: this.$qs.stringify({
                         url: this.myshop.signboard
                     })
-                })
-                    .then(x => {
-                        console.log(x);
-                        if (x.data.code == 200) {
-                            this.erweima_base64 = "data:image/jpeg;base64," + x.data.data;
-                            var url =
-                                window.location.origin +
-                                window.location.pathname +
-                                "#/BusinessDetails?shopid=" +
-                                this.myshop.shopid +
-                                "&fenxiang=1";
-                            console.log(url);
-                            var el = this.$refs.qrcode;
-                            el.innerHTML = "";
-                            let qrcode = new QRCode(el, {
-                                width: 200,
-                                height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
-                                // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容
-                                text: url, // 二维码内容
-                                // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
-                                background: "#fff",
-                                foreground: "#fff"
-                            });
-                            setTimeout(() => {
-                                this.print();
-                            }, 500);
-                        } else {
-                            openloading(false);
-                            mui.toast("生成二维码失败，稍后再试。", {
-                                duration: "long",
-                                type: "div"
-                            });
-                        }
-                    })
-                    .catch(err => {
+                }).then(x => {
+                    console.log(x);
+                    if (x.data.code == 200) {
+                        this.erweima_base64 = "data:image/jpeg;base64," + x.data.data;
+                        var url = 'http://m.lxad.vip/test/dist/index.html' + "#/BusinessDetails?shopid=" + this.myshop.shopid + "&fenxiang=1";
+                        var el = this.$refs.qrcode;
+                        el.innerHTML = "";
+                        let qrcode = new QRCode(el, {
+                            width: 200,
+                            height: 200, // 高度  [图片上传失败...(image-9ad77b-1525851843730)]
+                            // text: 'http://m.lxad.vip/test/dist/index.html#/BusinessDetails?id='+this.myshop.id, // 二维码内容
+                            text: url, // 二维码内容
+                            // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
+                            background: "#fff",
+                            foreground: "#fff"
+                        });
+                        setTimeout(() => {
+                            this.print();
+                        }, 500);
+                    } else {
                         openloading(false);
                         mui.toast("生成二维码失败，稍后再试。", {
                             duration: "long",
                             type: "div"
                         });
-                        console.log(err);
+                    }
+                }).catch(err => {
+                    openloading(false);
+                    mui.toast("生成二维码失败，稍后再试。", {
+                        duration: "long",
+                        type: "div"
                     });
+                    console.log(err);
+                });
             }
         },
         //生成带图片的二维码
@@ -420,18 +411,16 @@ export default {
                 type: 0,
                 shopid: this.myshop.shopid
             };
-            this.$request("/api-s/shops/redenvelope/findAll", query, "get")
-                .then(x => {
-                    console.log("查询店铺新人红包", x);
-                    if (x.data.code == 200) {
-                        if (x.data.data.data.length > 0) {
-                            this.xingren_hongbao = x.data.data.data[0];
-                        }
+            this.$request("/api-s/shops/redenvelope/findAll", query, "get").then(x => {
+                console.log("查询店铺新人红包", x);
+                if (x.data.code == 200) {
+                    if (x.data.data.data.length > 0) {
+                        this.xingren_hongbao = x.data.data.data[0];
                     }
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                }
+            }).catch(err => {
+                console.log(err);
+            });
         },
         弹出打卡框() {
             alert("点击了打卡");
@@ -457,13 +446,11 @@ export default {
             this.查询考勤时间();
             this.查询自己的打卡记录();
             if (this.myshop.referrerPhone) {
-                this.get_agentUser_phone(this.myshop.referrerPhone)
-                    .then(x => {
-                        if (x.data.code == 200) {
-                            this.设置推荐人(x.data.data);
-                        }
-                    })
-                    .catch(err => { });
+                this.get_agentUser_phone(this.myshop.referrerPhone).then(x => {
+                    if (x.data.code == 200) {
+                        this.设置推荐人(x.data.data);
+                    }
+                }).catch(err => { });
             }
         }
     },
@@ -609,7 +596,7 @@ export default {
         position: relative;
         z-index: 1;
         width: 270px;
-        .二维码提示{
+        .二维码提示 {
             height: 35px;
             color: rgba(56, 56, 56, 1);
             background-color: rgba(255, 255, 255, 1);

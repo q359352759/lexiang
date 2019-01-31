@@ -214,9 +214,9 @@
                         <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
                         <div></div>
                     </div>
-                    <img :src="qrcode" alt="" srcset="">
-                    <div class="二维码提示">
-                        长按二维码，点击“发送给朋友”
+                    <img :src="qrcode" @click="开始按下()">
+                    <div class="二维码提示" @click="开始按下()">
+                        {{ApplicationType=='app' ? '点击分享' :"长按二维码，点击“发送给朋友”"}}
                     </div>
                 </div>
             </div>
@@ -250,6 +250,7 @@ export default {
     },
     data() {
         return {
+            ApplicationType:ApplicationType,
             //分享进入店铺
             xinrenhongbao_box: false,
             isxinren: false, //是否领取了信任红包
@@ -369,8 +370,14 @@ export default {
             评论初始化:'商家展示厅/初始化',
             查询评价:'商家展示厅/查询评价',
             评价下一页:'商家展示厅/评价下一页',
-            查询店铺评分:'商家展示厅/查询店铺评分'
+            查询店铺评分:'商家展示厅/查询店铺评分',
+            分享图片: 'app/分享/分享图片'
         }),
+        开始按下() {
+            if(ApplicationType=='app'){
+                this.分享图片(this.qrcode)
+            }
+        },
         //显示新人红包弹出框
         setxinrenhongbao_show(x) {
             console.log("收到参数", x);
@@ -417,7 +424,7 @@ export default {
                     console.log(x);
                     if (x.data.code == 200) {
                         this.erweima_base64 = "data:image/jpeg;base64," + x.data.data;
-                        var url = window.location.origin + window.location.pathname + "#/BusinessDetails?shopid=" + this.shop.shopid + "&fenxiang=1";
+                        var url = 'http://m.lxad.vip/test/dist/index.html' + "#/BusinessDetails?shopid=" + this.shop.shopid + "&fenxiang=1";
                         var el = this.$refs.qrcode;
                         el.innerHTML = "";
                         let qrcode = new QRCode(el, {
