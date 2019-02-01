@@ -89,7 +89,12 @@ export default {
             删除专享: "shangPing/删除专享"
         }),
         back() {
-            this.$router.push("/myshop");
+            var back=this.$route.query.back
+            if(back){
+                history.back()
+            }else{
+                this.$router.push("/myshop");
+            }
         },
         //跳转添加商品
         AddGoods() {

@@ -8,6 +8,8 @@ import 班次 from "@/vuex/myshop/班次.js";
 import 店员 from "@/vuex/myshop/店员.js";
 import 打卡 from "@/vuex/myshop/打卡.js";
 import 评论 from "@/vuex/myshop/评论.js";
+import 分销 from "@/vuex/myshop/分销.js";
+
 export default {
     namespaced: true,
     state: {
@@ -98,6 +100,7 @@ export default {
         班次: 班次,
         店员: 店员,
         打卡: 打卡,
-        评论: 评论
+        评论: 评论,
+        分销: 分销
     }
 };

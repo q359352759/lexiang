@@ -2,7 +2,7 @@
     <div id="myshop">
         <header class="mui-bar mui-bar-nav">
             <!-- <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a> -->
-            <a @tap="$router.push('/my')" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
+            <a @tap="返回上一页()" class="mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">{{myshop.name}}</h1>
             <span class="erweima mui-pull-right " @tap="qrcode_1()"><i class="icon iconfont icon-31erweima"></i></span>
         </header>
@@ -32,7 +32,7 @@
                     <div>商品</div>
                 </li>
                 <li>
-                    <div @click="$router.push('/myshop/distribution/ApplicationDistribution')"><i class="icon iconfont icon-distribute"></i></div>
+                    <div @click="$router.push('/myshop/fenxiao/shenqingJieshao')"><i class="icon iconfont icon-distribute"></i></div>
                     <div>分销</div>
                 </li>
                 <li>
@@ -264,6 +264,14 @@ export default {
             查询自己的打卡记录: "myshops/打卡/查询自己的打卡记录",
             分享图片: 'app/分享/分享图片'
         }),
+        返回上一页(){
+            var back=this.$route.query.back;
+            if(back){
+                history.back();
+            }else{
+                this.$router.push('/my')
+            }
+        },
         开始按下() {
             if(ApplicationType=='app'){
                 this.分享图片(this.qrcode)

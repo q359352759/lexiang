@@ -69,7 +69,7 @@
             </div>
 
             <!-- <div class="btn_1">申请开通</div> -->
-            <btn class="btn_1" value="申请开店"/>
+            <btn @click.native="$router.push('/myshop/fenxiao/fabuzhaomu')" class="btn_1" value="申请分销"/>
         </div>
     </div>
 </template>

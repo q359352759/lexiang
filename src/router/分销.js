@@ -1,0 +1,22 @@
+const 申请分销介绍 = () => import("@/views/myshop/分销/申请介绍.vue"); 
+const 发布招募 = () => import("@/views/myshop/分销/发布招募.vue");
+const 编辑宣传页 = () => import("@/views/myshop/分销/编辑宣传页.vue");
+const 分销=[
+    {
+        path: "/myshop/fenxiao/shenqingJieshao",
+        name: "",
+        component: 申请分销介绍
+    },
+    {
+        path:"/myshop/fenxiao/fabuzhaomu",
+        name:"",
+        component:发布招募
+    },
+    {
+        path:"/myshop/fenxiao/bianjiye",
+        name:"",
+        component:编辑宣传页
+    }
+]
+
+export default 分销;

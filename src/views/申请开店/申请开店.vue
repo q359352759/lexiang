@@ -405,10 +405,7 @@ export default {
             } else if (!this.店铺.phone) {
                 mui.toast("请输入联系电话。", { duration: 2000, type: "div" });
                 return;
-            } else if (
-                !phone_test.test(this.店铺.phone) &&
-                !zuoji_test.test(this.店铺.phone)
-            ) {
+            } else if (!phone_test.test(this.店铺.phone) && !zuoji_test.test(this.店铺.phone) ){
                 mui.toast("联系电话输入有误。", { duration: 2000, type: "div" });
                 return;
             } else if (!this.店铺.areaCode) {
@@ -423,10 +420,7 @@ export default {
             } else if (!this.店铺.iaiName) {
                 mui.toast("请完成法人认证。", { duration: 2000, type: "div" });
                 return;
-            } else if (
-                !test_zhizhao.test(this.店铺.blnumber) ||
-                !this.店铺.businessLicense
-            ) {
+            } else if (!test_zhizhao.test(this.店铺.blnumber) || !this.店铺.businessLicense) {
                 mui.toast("营业执照信息有误。", { duration: 2000, type: "div" });
                 return;
             } else if (!this.店铺.signboard) {

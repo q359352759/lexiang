@@ -432,7 +432,6 @@ import 红购使者 from "@/router/红购使者.js";
 // require('@/router/myshop.js'),
 
 Vue.use(Router);
-
 export default new Router({
     routes: [
         ...myshops,
