@@ -65,9 +65,9 @@
                     <span>更多</span>
                 </li>
             </ul>
+            <!-- <button @click="获取位置()">点击获取位置</button> -->
 
             <div ref="box_4"></div>
-            
             
             <ul class="box_3 adfs">
                 <li @click="change_type_1(1)" :class="{'active':type_1==1}">红包</li>
@@ -240,7 +240,7 @@ export default {
             // type_list: [
             //     { url: "image/fenlei/1.jpg", name: "直购", path: "" },
             // ],
-            type_1: 2,
+            type_1: 1,
             shop: {
                 //商家
                 start: 0,
@@ -570,21 +570,22 @@ export default {
         //跳转微信内置地图
         weixinmaptest(item) {
             if(ApplicationType=='app'){
+                var this_1=this;
+                function 跳转地图(){
+                    var name=item.shopName ? item.shopName : item.name
+                    // 设置目标位置坐标点和其实位置坐标点
+                    var dst = new plus.maps.Point(this_1.当前位置.x , this_1.当前位置.y);
+                    var src = new plus.maps.Point(item.x , item.y);
+                    // 调用系统地图显示 
+                    plus.maps.openSysMap(dst, name , src);
+                }
                 if (window.plus) {
                     跳转地图();
                 } else {
                     document.addEventListener('plusready', 跳转地图, false);
                 }
-                function 跳转地图(){
-                    // 设置目标位置坐标点和其实位置坐标点
-                    var dst = new plus.maps.Point(this.当前位置.x , this.当前位置.y);
-                    var src = new plus.maps.Point(item.x , item.y);
-                    // 调用系统地图显示 
-                    plus.maps.openSysMap(dst, item.name, src);
-                }
             }else{
                 var ditu = bd_decrypt(item.x, item.y);
-                console.log(ditu);
                 wx.openLocation({
                     latitude: ditu.lat, // 纬度，浮点数，范围为90 ~ -90
                     longitude: ditu.lng, // 经度，浮点数，范围为180 ~ -180。

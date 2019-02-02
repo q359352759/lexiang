@@ -3,7 +3,7 @@
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">发布招募信息</h1>
-            <span>预览</span>
+            <span @click="$router.push('/myshop/fenxiao/yulan')">预览</span>
         </header>
         <div class="mui-content mui-fullscreen" >
 
@@ -177,7 +177,7 @@
 <script>
 import btn from '@/components/button.vue';
 import { get_url , openloading} from "@/assets/js/currency.js";
-import { mapGetters , mapActions } from "vuex";
+import { mapGetters , mapActions, mapMutations } from "vuex";
 export default {
     name:'',
     components:{
@@ -195,6 +195,7 @@ export default {
         ...mapGetters({
             店铺:'get_myshop',
             招募信息:'myshops/分销/招募信息',
+            zhaomuxinxi:'myshops/分销/招募信息',
             分销类型:'myshops/分销/分销类型',
             自定义业务:'myshops/分销/自定义业务'
         }),
@@ -232,6 +233,9 @@ export default {
         }
     },
     methods: {
+        ...mapMutations({
+            修改招募信息:'myshops/分销/修改招募信息'
+        }),
         ...mapActions({
             查询分销类型:'myshops/分销/查询分销类型',
             查询店铺:'getMyshop',
@@ -253,8 +257,14 @@ export default {
             }else if(!this.招募信息.position){
                 mui.toast('请填写职责',{ duration: "long", type: "div" })
                 return;
-            }else if(!this.招募信息.minage || this.招募信息.minage<18 || zhengshu_test.test(this.招募信息.minage)){
-                mui.toast('招募最小年龄为18岁',{ duration: "long", type: "div" })
+            }else if(!this.招募信息.minage || this.招募信息.minage<18 || !zhengshu_test.test(this.招募信息.minage)){
+                mui.toast('招募最小年龄为18岁。',{ duration: "long", type: "div" })
+                return
+            }else  if(!this.招募信息.maxage || this.招募信息.maxage>65 || !zhengshu_test.test(this.招募信息.minage)){
+                mui.toast('招募最大年龄为65岁。',{ duration: "long", type: "div" })
+                return
+            }else if(this.招募信息.minage>this.招募信息.maxage){
+                mui.toast('招募年龄填写有误',{ duration: "long", type: "div" })
                 return
             }else if(!this.招募信息.allrecruitment || this.招募信息.allrecruitment<1 || !zhengshu_test.test(this.招募信息.allrecruitment)){
                 console.log(this.招募信息.recruitment)
@@ -269,7 +279,7 @@ export default {
             }else if(!this.招募信息.leaflets){
                 mui.toast('请编辑宣传页',{ duration: "long", type: "div" })
                 return
-            }else if(!this.招募信息.mincommissionscale || !zhengshu_test.test(this.招募信息.recruitment) || this.招募信息.recruitment<1 || this.招募信息.recruitment>100){
+            }else if(!this.招募信息.mincommissionscale || !zhengshu_test.test(this.招募信息.mincommissionscale) || this.招募信息.mincommissionscale<1 || this.招募信息.mincommissionscale>100){
                 mui.toast('分佣比例须为1-100整数',{ duration: "long", type: "div" })
                 return                
             }
@@ -305,6 +315,7 @@ export default {
                 this.招募信息.cbonum=选择的类型.join(',');
                 this.Picker3.dispose();
                 this.Picker3 = null;
+                this.显示自定义按钮=false;
             })
         },
         自定义业务添加按钮(){
@@ -361,6 +372,15 @@ export default {
     mounted() {
         this.初始化()
         
+    },
+    watch: {
+        zhaomuxinxi:{
+            deep:true,
+            handler(newName, oldName) {
+                // console.log(this.招募信息)
+                this.修改招募信息()   
+            }
+        }
     },
 }
 </script>

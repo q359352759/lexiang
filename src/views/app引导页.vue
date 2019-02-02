@@ -117,8 +117,15 @@ export default {
 
 <style lang="scss">
 #引导页 {
-    .swiper-pagination-bullet-active{
+    .swiper-pagination-bullets{
+        bottom:28px;
+    }
+    .swiper-pagination-bullet.swiper-pagination-bullet-active{
         background: rgba(252, 102, 33, 1);
+    }
+    .swiper-pagination-bullet{
+        background:#ffffff;
+        opacity: 1;
     }
 }
 </style>

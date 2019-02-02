@@ -54,7 +54,10 @@ export default new Vuex.Store({
             reducer(val) {
                 return {
                     // 红购使者:val.红购使者,
-                    申请开店: val.申请开店
+                    申请开店: val.申请开店,
+                    myshops:{
+                        分销:val.myshops.分销                        
+                    }
                 };
             }
         })

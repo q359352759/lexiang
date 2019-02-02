@@ -10,8 +10,8 @@
                 <li>开心、快乐用红购</li>
             </ul>
             <ul class="按钮">
-                <!-- <a href="http://m.lxad.vip/test/dist.zip"> -->
-                <a @click="下载()">
+                <a href="http://m.lxad.vip/test/honggou.apk">
+                <!-- <a @click="下载()"> -->
                     安卓app
                 </a>
                 <!-- <a href="http://m.lxad.vip/test/dist.zip"> -->
@@ -22,7 +22,6 @@
         </div>
     </div>
 </template>
-
 <script>
 export default {
     name:"",

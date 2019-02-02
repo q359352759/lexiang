@@ -267,7 +267,7 @@ export default {
             // swiper_type:[], //服务类型列表
             swiper_type: "",
             type_list: [],
-            type_1: 2,
+            type_1: 0,
             slider: "",
             id: "",
             shop: {},
@@ -600,16 +600,31 @@ export default {
         },
         //跳转微信内置地图
         weixinmap() {
-            var ditu = bd_decrypt(this.shop.x, this.shop.y);
-            console.log(ditu);
-            wx.openLocation({
-                latitude: ditu.lat, // 纬度，浮点数，范围为90 ~ -90
-                longitude: ditu.lng, // 经度，浮点数，范围为180 ~ -180。
-                name: this.shop.name, // 位置名
-                address: this.shop.address, // 地址详情说明
-                scale: 28, // 地图缩放级别,整形值,范围从1~28。默认为最大
-                infoUrl: "" // 在查看位置界面底部显示的超链接,可点击跳转
-            });
+            if(ApplicationType=='app'){
+                var this_1=this;
+                function 跳转地图(){
+                    // 设置目标位置坐标点和其实位置坐标点
+                    var dst = new plus.maps.Point(this_1.当前位置.x , this_1.当前位置.y);
+                    var src = new plus.maps.Point(this_1.shop.x , this_1.shop.y);
+                    // 调用系统地图显示 
+                    plus.maps.openSysMap(dst, this_1.shop.name, src);
+                }
+                if (window.plus) {
+                    跳转地图();
+                } else {
+                    document.addEventListener('plusready', 跳转地图, false);
+                }
+            }else{
+                var ditu = bd_decrypt(this.shop.x, this.shop.y);
+                wx.openLocation({
+                    latitude: ditu.lat, // 纬度，浮点数，范围为90 ~ -90
+                    longitude: ditu.lng, // 经度，浮点数，范围为180 ~ -180。
+                    name: this.shop.name, // 位置名
+                    address: this.shop.address, // 地址详情说明
+                    scale: 28, // 地图缩放级别,整形值,范围从1~28。默认为最大
+                    infoUrl: "" // 在查看位置界面底部显示的超链接,可点击跳转
+                });
+            }
         },
         //点击收藏和取消
         Collection() {

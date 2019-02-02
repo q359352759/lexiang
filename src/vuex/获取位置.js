@@ -15,6 +15,7 @@ export default {
                         resolve()
                     })
                 } else {
+                    console.log('ApplicationType:'+ApplicationType)
                     if (ApplicationType == 'app') {
                         dispatch('百度sdk获取位置').then(x => {
                             console.log('获取位置完成')
@@ -77,7 +78,7 @@ export default {
 
         },
         百度地图获取位置({ rootState }) {
-            console.log('使用百度地图获取位置');
+            console.log('使用百度地图获js取位置');
             return new Promise((resolve, reject) => {
                 try {
                     var geolocation = new BMap.Geolocation();
@@ -91,20 +92,17 @@ export default {
                         { enableHighAccuracy: true }
                     );
                 } catch (error) {
-                    console.log(JSON.stringify('使用百度地图获取位置错误', error))
+                    console.log(JSON.stringify('使用百度地图js获取位置错误', error))
                     resolve()
                 }
             });
         },
         百度sdk获取位置({rootState}) {
             return new Promise((resolve, reject) => {
-                if (window.plus) {
-                    获取地图();
-                } else {
-                    document.addEventListener('plusready', 获取地图, false);
-                }
+                console.log('准备使用百度sdk获取位置')
                 function 获取地图() {
-                    plus.geolocation.getCurrentPosition(p => {
+                    console.log('开始使用百度sdk获取位置')
+                    plus.geolocation.getCurrentPosition(function(p){
                         console.log('获取位置正确：' + JSON.stringify(p))
                         var x = p.coords.longitude
                         var y = p.coords.latitude;
@@ -119,11 +117,16 @@ export default {
                             rootState.my_position.y = data.points[0].lat;
                             resolve()
                         })
-                        resolve()
-                    }, e => {
+                    }, function(e){
                         console.log('获取位置错误:' + JSON.stringify(e));
                         resolve()
-                    }, { 'provider': 'baidu' });
+                    });
+                    // {provider:'baidu'}
+                }
+                if (window.plus) {
+                    获取地图();
+                } else {
+                    document.addEventListener('plusready', 获取地图, false);
                 }
             });
         }

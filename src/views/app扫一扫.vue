@@ -18,15 +18,14 @@
 </template>
 
 <script>
+import { openloading } from "@/assets/js/currency.js";
 export default {
     name:"",
     data () {
         return {
             开灯:false,
-
             scan:'',
             wo:'',
-            scan:''
         }
     },
     methods: {
@@ -39,7 +38,8 @@ export default {
             history.back()
         },
         开始扫描(){
-            this.scan=new plus.barcode.Barcode('bcid',['QR'],{'width':"100%","height":"100%"});
+            this.scan=new plus.barcode.Barcode('bcid');
+            // this.scan=new plus.barcode.Barcode('bcid',['QR'],{'width':"100%","height":"100%"});
             // this.scan=new plus.barcode.Barcode(this.$refs.bcid,['QR'],{'background':'#8e8e8e','width':"100%","height":"100%"});
             this.scan.onmarked=this.onmarked;
             this.scan.start();
@@ -88,7 +88,7 @@ export default {
                     plus.nativeUI.alert('无法识别此图片');
                 });
             }, function(err){
-                console.log('Failed: '+err.message);
+                console.log('Failed: ' + err.message);
             });
         }
     },
@@ -96,14 +96,19 @@ export default {
         // var ws=null;
         // var wo=null;
         // var scan=null;
+            openloading(true)
         if (window.plus) {
-            this.开始扫描();
+            setTimeout(x=>{
+                openloading(false)
+                this.开始扫描();
+            },1000)
         } else {
-            document.addEventListener('plusready', this.开始扫描, false);
+            setTimeout(x=>{
+                openloading(false)
+                document.addEventListener('plusready', this.开始扫描, false);
+            },1000)
         }
-
         // 13802510758 石小雨
-
     },
 }
 </script>

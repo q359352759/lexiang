@@ -26,7 +26,7 @@ export default {
             needrecruitment:"", //供需招募人数
             allrecruitment:"",  //总招募人数
             nowrecruitment:"",  //当前招募人数
-            regionalscope:"本市",   //招募地区
+            regionalscope:"",   //招募地区
             createtime:"",      //招募开始时间
             overtime:"",        //招募结束时间
             mincommissionscale:"",  //最低分佣比例
@@ -48,7 +48,12 @@ export default {
             return state.自定义业务
         }
     },
-    mutations: {},
+    mutations: {
+        修改招募信息(state){
+            // console.log(state.招募信息);
+            // state.招募信息.tagline;
+        }
+    },
     actions: {
         查询分销类型({state}){
             return new Promise((resolve, reject) => {

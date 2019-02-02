@@ -52,7 +52,7 @@
 import { isAndroid } from "@/assets/js/currency";
 import Album from "@/components/Album.vue";
 import $ from "jquery";
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 export default {
     name: "",
     components: {
@@ -87,6 +87,9 @@ export default {
         })
     },
     methods: {
+        ...mapMutations({
+            修改招募信息:'myshops/分销/修改招募信息'
+        }),
         //选择字体大小
         change_font_size() {
             console.log(this.font_size);
@@ -141,7 +144,8 @@ export default {
             var str=this.$refs.content_box.innerHTML;
                 str=str.replace('contenteditable="true"','');
                 str=str.replace('class="content_1"','');
-            this.招募信息.leaflets=str
+            this.招募信息.leaflets=str;
+            this.修改招募信息();
             history.back();
         },
         初始化() {
