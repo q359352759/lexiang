@@ -235,6 +235,9 @@ export default {
 
 <style lang="scss">
 @import "@/assets/css/config.scss";
+.mui-fullscreen{
+    background-color: #f6f6f6;
+}
 .mui-poppicker {
     z-index: 1000;
 }

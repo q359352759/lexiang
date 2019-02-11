@@ -104,7 +104,7 @@ export default {
   > li.header {
     color: rgba(80, 80, 80, 1);
     font-size: 14px;
-    background: #efeff4;
+    background: #f6f6f6;
   }
   > li.list {
     background: #ffffff;

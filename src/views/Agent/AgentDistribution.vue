@@ -169,7 +169,7 @@ export default {
     content: "";
     width: 1px;
     height: 60%;
-    background: #efeff4;
+    background: #f6f6f6;
   }
   .active::before {
     position: absolute;

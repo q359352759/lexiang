@@ -414,7 +414,7 @@ export default {
   align-items: center;
   position: relative;
   z-index: 2;
-  border-bottom: 1px solid #efeff4;
+  border-bottom: 1px solid #f6f6f6;
   > li {
     width: 25%;
   }

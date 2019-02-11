@@ -184,7 +184,7 @@ export default {
 .box_1 {
     > li {
         background: #ffffff;
-        border-bottom: 1px solid #efeff4;
+        border-bottom: 1px solid #f6f6f6;
         display: flex;
         position: relative;
         padding: 6px;

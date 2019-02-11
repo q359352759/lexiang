@@ -33,8 +33,14 @@
                     <div class="标题">业务选项：(选择你的业务类型，最多5个）</div>
                     <ul class="类型显示">
                         <li class="类型列表">
-                            <div v-for="(item, index) in 新cbonum" :key="index"><div class="名称">{{item.信息.cbotype}}</div><span class="删除"><i class="icon iconfont icon-quxiao"></i></span></div>
-                            <div v-for="(item, index) in 自定义业务" :key="'a'+index"><div class="名称">{{item.name}}</div><span @click="删除自定义业务_1(item.id)" class="删除"><i class="icon iconfont icon-quxiao"></i></span></div>
+                            <div v-for="(item, index) in 新cbonum" :key="index">
+                                <div class="名称">{{item.信息.cbotype}}</div>
+                                <span @click="删除选择的分类(item)" class="删除"><i class="icon iconfont icon-quxiao"></i></span>
+                            </div>
+                            <div v-for="(item, index) in 自定义业务" :key="'a'+index">
+                                <div class="名称">{{item.name}}</div>
+                                <span @click="删除自定义业务_1(item.id)" class="删除"><i class="icon iconfont icon-quxiao"></i></span>
+                            </div>
                         </li>
                         <li class="添加类型" @click="选择类型()"><i class="cion iconfont icon-plus-add"></i></li>
                     </ul>
@@ -87,12 +93,14 @@
             <div class="列表1 列表3">
                 <ul class="mui-table-view">
                     <li class="mui-table-view-cell item">
-                        <div class="标题">
-                            招募区域：
-                        </div>
-                        <div class="文本1">{{招募信息.regionalscope}}</div>
-                        <div class="提示1">(申请通过后可扩大范围)</div>
-                        <!-- <input type="text" placeholder="本市" readonly /> -->
+                        <!-- <a class="mui-navigate-right item" @click="$router.push('/myshop/fenxiao/xuanzeQuyu')"> -->
+                            <div class="标题">
+                                招募区域：
+                            </div>
+                            <div class="文本1">{{招募信息.regionalscope}}</div>
+                            <div class="提示1">(申请通过后可扩大范围)</div>
+                            <!-- <input type="text" placeholder="本市" readonly /> -->
+                        <!-- </a> -->
                     </li>
                     <li class="mui-table-view-cell item">
                         <div class="标题">
@@ -171,6 +179,14 @@
                 <div class="确定按钮"><span @click="添加自定义()">添加</span></div>
             </div>
         </div>
+
+        <div class="获取信息失败" v-show="获取招募信息==2">
+            <span>网络异常</span>
+        </div>
+        <div class="申请审核中" v-show="获取招募信息==1">
+            <i class="icon iconfont icon-tupian1"></i>
+            <div>您已提交资料，正在审核中，请耐心等待</div>
+        </div>
     </div>
 </template>
 
@@ -194,6 +210,7 @@ export default {
     computed: {
         ...mapGetters({
             店铺:'get_myshop',
+            获取招募信息:"myshops/分销/获取招募信息",
             招募信息:'myshops/分销/招募信息',
             zhaomuxinxi:'myshops/分销/招募信息',
             分销类型:'myshops/分销/分销类型',
@@ -239,12 +256,14 @@ export default {
         ...mapActions({
             查询分销类型:'myshops/分销/查询分销类型',
             查询店铺:'getMyshop',
+            查询店铺招募信息:'myshops/分销/查询店铺招募信息',
             添加自定义业务:'myshops/分销/添加自定义业务',
             删除自定义业务:'myshops/分销/删除自定义业务',
             查询自定义业务:'myshops/分销/查询自定义业务',
             添加招募信息:'myshops/分销/添加招募信息'
         }),
         提交(){
+            var this_1=this;
             var zhengshu_test = /^[1-9]+[0-9]*]*$/; //整数
             var phone_test = /^1(3|4|5|7|8)\d{9}$/;
             var zuoji_test = /^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/;
@@ -267,7 +286,6 @@ export default {
                 mui.toast('招募年龄填写有误',{ duration: "long", type: "div" })
                 return
             }else if(!this.招募信息.allrecruitment || this.招募信息.allrecruitment<1 || !zhengshu_test.test(this.招募信息.allrecruitment)){
-                console.log(this.招募信息.recruitment)
                 mui.toast('招募人数有误',{ duration: "long", type: "div" })
                 return
             }else if(!phone_test.test(this.招募信息.phone) && !zuoji_test.test(this.招募信息.phone)){
@@ -283,8 +301,28 @@ export default {
                 mui.toast('分佣比例须为1-100整数',{ duration: "long", type: "div" })
                 return                
             }
-            console.log('可以提交')
-            this.添加招募信息()
+            console.log('可以提交');
+            this.招募信息.recruitment=this.招募信息.allrecruitment;
+            this.招募信息.needrecruitment=this.招募信息.needrecruitment ? this.招募信息.needrecruitment : this.招募信息.allrecruitment;
+            this.招募信息.nowrecruitment=this.招募信息.nowrecruitment ? this.招募信息.nowrecruitment : 0;
+            if(this.招募信息.regionalscope=='本市'){
+                this.招募信息.createtime="";      //招募开始时间
+                this.招募信息.overtime="";       //招募结束时间
+            }
+            openloading(true)
+            this.添加招募信息().then(x=>{
+                if(x.data.code==200){
+                    mui.alert("提交成功，等待审核。","提示",function () {
+                        this_1.$router.push('/myshop')
+                    },"div");
+                }else{
+                    mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: "long", type: "div" })
+                }
+                openloading(false)
+            }).catch(err=>{
+                mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
+                openloading(false)
+            })
         },
         选择要求(key,type){
             this.招募信息[key]=type;
@@ -347,6 +385,14 @@ export default {
             }
             this.显示自定义添加=false
         },
+        删除选择的分类(item){
+            console.log(item);
+            var id=item.id;
+            var cbonum=this.招募信息.cbonum.split(',');
+            var list=cbonum.filter(x=>x!=id);
+            console.log(list);
+            this.招募信息.cbonum=list.join(',')
+        },
         删除自定义业务_1(id){
             openloading(true)
             this.删除自定义业务(id).then(x=>{
@@ -362,11 +408,11 @@ export default {
                 await this.查询店铺()
             }
             this.招募信息.shopid=this.店铺.shopid;
-            Promise.all([this.查询分销类型(),this.查询自定义业务()]).then(x=>{
+            Promise.all([this.查询分销类型(),this.查询自定义业务(),this.查询店铺招募信息()]).then(x=>{
                 openloading(false)
             }).catch(err=>{
                 openloading(false)
-            })
+            });
         }
     },
     mounted() {
@@ -619,6 +665,36 @@ export default {
             font-size: 14px;
             color: rgba(44, 172, 236, 1);
         }
+    }
+}
+
+.获取信息失败{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.申请审核中{
+    position: fixed;
+    background: #ffffff;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    padding: 123px 0px 0px;
+    text-align: center;
+    i{
+        font-size: 128px;
+        color: rgba(248, 204, 132, 1);
+    }
+    div{
+        color: rgba(80, 80, 80, 1);
+    	font-size: 14px;
     }
 }
 </style>

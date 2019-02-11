@@ -358,7 +358,7 @@ export default {
 
 .box_3 {
     background: #ffffff;
-    border-bottom: 1px solid #efeff4;
+    border-bottom: 1px solid #f6f6f6;
     padding: 0px 17px;
     margin: 3px 0px 0px;
     height: 44px;

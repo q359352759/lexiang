@@ -1031,7 +1031,6 @@ export default {
         border: none;
     }
     li.active::after {
-        // background: #efeff4;
         position: absolute;
         width: 60%;
         height: 2px;
@@ -1045,7 +1044,7 @@ export default {
         padding: 0.1rem 0px 0.08rem;
         background: #ffffff;
         text-align: center;
-        border-left: 1px solid #efeff4;
+        border-left: 1px solid #f6f6f6;
         position: relative;
         .img_box {
             width: 0.37rem;

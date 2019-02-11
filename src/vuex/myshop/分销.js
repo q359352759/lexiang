@@ -7,6 +7,8 @@ export default {
     state: {
         分销类型:[],
         自定义业务:[],
+        获取招募信息:2,     //0没有申请 1已经申请过了 2 失败
+        是否再次提交:false,
         招募信息:{
             id:"",
             shopid:"",
@@ -25,8 +27,8 @@ export default {
             recruitment:"", //招募人数
             needrecruitment:"", //供需招募人数
             allrecruitment:"",  //总招募人数
-            nowrecruitment:"",  //当前招募人数
-            regionalscope:"",   //招募地区
+            nowrecruitment:"0",  //当前招募人数
+            regionalscope:"本市",   //招募地区
             createtime:"",      //招募开始时间
             overtime:"",        //招募结束时间
             mincommissionscale:"",  //最低分佣比例
@@ -46,6 +48,12 @@ export default {
         },
         自定义业务(state){
             return state.自定义业务
+        },
+        获取招募信息(state){
+            return state.获取招募信息
+        },
+        是否再次提交(state){
+            return state.是否再次提交
         }
     },
     mutations: {
@@ -115,6 +123,33 @@ export default {
                     resolve(x)
                 }).catch(err=>{
                     reject(err)
+                })
+            });
+        },
+        查询店铺招募信息({state , rootGetters}){
+            return new Promise((resolve, reject) => {
+                var 店铺=rootGetters['get_myshop'];
+                var query={
+                    start:0,
+                    length:10,
+                    shopid:店铺.shopid
+                }
+                axios.get('/api-s/shops/findShopRecruitmentAll',{params:query}).then(x=>{
+                    console.log('查询店铺招募信息',x);
+                    if(x.data.code==200){
+                        var data=x.data.data.data;
+                        if(data.length==0){
+                            state.获取招募信息=0;
+                        }else{
+                            state.获取招募信息=1;
+                        }
+                    }else{
+                        state.获取招募信息=2
+                    }
+                    resolve()
+                }).catch(err=>{
+                    state.获取招募信息=2
+                    reject()
                 })
             });
         }

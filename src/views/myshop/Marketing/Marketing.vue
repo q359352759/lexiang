@@ -168,7 +168,7 @@ export default {
   > li {
     display: flex;
     background: #ffffff;
-    border-bottom: 1px solid #efeff4;
+    border-bottom: 1px solid #f6f6f6;
     padding: 11px;
     .img_box {
       width: 32px;

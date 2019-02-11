@@ -313,7 +313,7 @@ export default {
         display: flex;
         padding: 6px 8px;
         background: #ffffff;
-        border-bottom: 1px solid #efeff4;
+        border-bottom: 1px solid #f6f6f6;
         .img_box {
             flex-shrink: 0;
             width: 53px;

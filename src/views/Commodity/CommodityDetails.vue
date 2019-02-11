@@ -608,7 +608,7 @@ export default {
 
 .box_3 {
     margin: 3px 0px 0px;
-    border-bottom: 1px solid #efeff4;
+    border-bottom: 1px solid #f6f6f6;
     .item {
         padding-right: 40px;
         display: flex;

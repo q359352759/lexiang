@@ -207,11 +207,11 @@
                 </ul>
             </div>
 
-            <div class="QRCode" v-show="qrcode_show" @tap="qrcode_show=false">
+            <div class="QRCode" v-show="qrcode_show">
                 <div class="mask"></div>
                 <div class="content_1">
                     <div class="close_1">
-                        <div @click="close_1()"><i class="icon iconfont icon-quxiao"></i></div>
+                        <div @click="qrcode_show=false"><i class="icon iconfont icon-quxiao"></i></div>
                         <div></div>
                     </div>
                     <img :src="qrcode" @click="开始按下()">
@@ -1519,7 +1519,7 @@ export default {
             position: absolute;
             width: 17px;
             height: 17px;
-            background: #efeff4;
+            background: #f6f6f6;
             border-radius: 100%;
             left: -9px;
             content: "";

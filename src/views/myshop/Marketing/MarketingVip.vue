@@ -202,7 +202,7 @@ export default {
     > li {
         background: #ffffff;
         padding: 7px 10px;
-        border-top: 1px solid #efeff4;
+        border-top: 1px solid #f6f6f6;
         // display: flex;
         position: relative;
         left: 0px;

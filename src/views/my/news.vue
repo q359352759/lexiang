@@ -132,7 +132,7 @@ export default {
 .box_3 {
   > li {
     background: #ffffff;
-    border-bottom: 1px solid #efeff4;
+    border-bottom: 1px solid #f6f6f6;
     padding: 9px 13px 14px;
   }
   .img_box {

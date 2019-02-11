@@ -252,7 +252,7 @@ export default {
         }
     }
     > li:nth-child(1) {
-        border-right: 1px solid #efeff4;
+        border-right: 1px solid #f6f6f6;
     }
 }
 

@@ -513,7 +513,7 @@ export default {
         align-items: center;
         padding: 0px 15px;
         height: 43px;
-        border-bottom: 1px solid #efeff4;
+        border-bottom: 1px solid #f6f6f6;
         .商品图片{
             width: 40px;
         	height: 30px;

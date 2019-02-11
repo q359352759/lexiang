@@ -108,6 +108,7 @@ function getDateStr(AddDayCount, time) {
     } else {
         var dd = new Date();
     }
+    AddDayCount=parseInt(AddDayCount)
     dd.setDate(dd.getDate() + AddDayCount); //获取AddDayCount天后的日期
     var year = dd.getFullYear();
     var mon = dd.getMonth() + 1; //获取当前月份的日期

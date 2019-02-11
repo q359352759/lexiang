@@ -350,7 +350,7 @@ export default {
     background: #ffffff;
     .header_1 {
         position: relative;
-        border-bottom: 1px solid #efeff4;
+        border-bottom: 1px solid #f6f6f6;
         padding: 7px 0px;
         display: flex;
         align-items: center;

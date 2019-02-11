@@ -520,7 +520,7 @@ export default {
     width: 100%;
     height: 100%;
     padding: 44px 0px 10px;
-    background: #efeff4;
+    background: #f6f6f6;
     z-index: 2;
     .mask {
         position: absolute;
@@ -577,7 +577,7 @@ export default {
     line-height: 45px;
     background-color: rgba(255, 255, 255, 1);
     font-size: 14px;
-    border-bottom: 1px solid #efeff4;
+    border-bottom: 1px solid #f6f6f6;
     text-align: center;
     li {
         width: 25%;

@@ -69,7 +69,7 @@
 
             <div ref="box_4"></div>
             
-            <ul class="box_3 adfs">
+            <ul class="box_3">
                 <li @click="change_type_1(1)" :class="{'active':type_1==1}">红包</li>
                 <li @click="change_type_1(4)" :class="{'active':type_1==4}">专享</li>
                 <li @click="change_type_1(2)" :class="{'active':type_1==2}">优购</li>
@@ -165,7 +165,7 @@
                         <div></div>
                     </div>
                     <img @click="开始按下()" :src="qrcode" alt="" srcset="">
-                    <div class="二维码提示">
+                    <div @click="开始按下()" class="二维码提示">
                         {{ApplicationType=='app' ? '点击分享' :"长按二维码，点击“发送给朋友”"}}
                     </div>
                 </div>
@@ -441,8 +441,7 @@ export default {
                     if (value.index == 1) {
                         this.$router.push("/login");
                     }
-                }
-                );
+                });
                 return;
             }
 
@@ -951,6 +950,8 @@ export default {
 }
 
 #home .box_3 {
+    position: relative;
+    z-index: 1;
     display: flex;
     background: #ffffff;
     text-align: center;
@@ -1026,13 +1027,13 @@ export default {
     > li:nth-child(2) {
         width: 1px;
         flex-shrink: 0;
-        background: #efeff4;
         position: relative;
+        border-left: 1px dashed #ff5733;
         > div:nth-child(1) {
             position: absolute;
             width: 0.2rem;
             height: 0.2rem;
-            background: #efeff4;
+            background: #f6f6f6;
             top: -0.1rem;
             left: -0.1rem;
             border-radius: 50%;
@@ -1041,7 +1042,7 @@ export default {
             position: absolute;
             width: 0.2rem;
             height: 0.2rem;
-            background: #efeff4;
+            background: #f6f6f6;
             bottom: -0.1rem;
             left: -0.1rem;
             border-radius: 50%;

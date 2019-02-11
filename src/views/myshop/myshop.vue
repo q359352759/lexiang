@@ -32,7 +32,7 @@
                     <div>商品</div>
                 </li>
                 <li>
-                    <div @click="$router.push('/myshop/fenxiao/shenqingJieshao')"><i class="icon iconfont icon-distribute"></i></div>
+                    <div @click="跳转分销()"><i class="icon iconfont icon-distribute"></i></div>
                     <div>分销</div>
                 </li>
                 <li>
@@ -128,11 +128,16 @@
                             </div>
                         </a>
                     </li>
+                    <li class="mui-table-view-cell">
+                        <a class="mui-navigate-right" @click="进入店铺()">
+                            <div class="cont_1">
+                                <div>
+                                    店铺预览
+                                </div>
+                            </div>
+                        </a>
+                    </li>
                 </ul>
-            </div>
-
-            <div class="进入店铺">
-                <btn @click.native="进入店铺()" value="进入店铺" />
             </div>
 
             <!-- 生成带图片的容器 -->
@@ -158,7 +163,7 @@
                 </ul>
             </div>
 
-            <div class="QRCode" v-show="qrcode_show" @tap="qrcode_show=false">
+            <div class="QRCode" v-show="qrcode_show">
                 <div class="mask"></div>
                 <div class="content_1">
                     <div class="close_1">
@@ -236,7 +241,8 @@ export default {
             今日销售: "myshops/销售/今日销售",
             本月销售: "myshops/销售/本月销售",
             店铺身份: "myshops/身份",
-            显示打卡框: "myshops/显示打卡框"
+            显示打卡框: "myshops/显示打卡框",
+            获取招募信息:"myshops/分销/获取招募信息",
         }),
         ketixian() {
             if (this.zichan && this.zichan.balance) {
@@ -262,7 +268,8 @@ export default {
             考勤时间初始化: "myshops/班次/考勤时间初始化",
             查询考勤时间: "myshops/班次/查询考勤时间",
             查询自己的打卡记录: "myshops/打卡/查询自己的打卡记录",
-            分享图片: 'app/分享/分享图片'
+            分享图片: 'app/分享/分享图片',
+            查询店铺招募信息:'myshops/分销/查询店铺招募信息',
         }),
         返回上一页(){
             var back=this.$route.query.back;
@@ -433,6 +440,15 @@ export default {
         弹出打卡框() {
             alert("点击了打卡");
         },
+        跳转分销(){
+            if(this.获取招募信息==0){
+                this.$router.push('/myshop/fenxiao/shenqingJieshao')
+            }else if(this.获取招募信息==1){
+                this.$router.push('/myshop/fenxiao/fabuzhaomu')
+            }else{
+                mui.toast("正在获取招募信息，稍后再试", { duration: "long", type: "div" });
+            }
+        },
         async shopinit() {
             openloading(true);
             if (!this.myshop || !this.myshop.shopid) {
@@ -453,6 +469,7 @@ export default {
             this.查询班次();
             this.查询考勤时间();
             this.查询自己的打卡记录();
+            this.查询店铺招募信息();
             if (this.myshop.referrerPhone) {
                 this.get_agentUser_phone(this.myshop.referrerPhone).then(x => {
                     if (x.data.code == 200) {
