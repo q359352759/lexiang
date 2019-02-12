@@ -14,15 +14,15 @@
                                 招募区域：
                             </div>
                             <div class="文本1">{{招募信息.regionalscope ? 招募信息.regionalscope : '本市'}}</div>
-                            <div class="文本2">（申请通过后可扩大范围）</div>
+                            <!-- <div class="文本2">（申请通过后可扩大范围）</div> -->
                         </a>
                     </li>
-                    <li class="mui-table-view-cell">
-                        <a class="mui-navigate-right item">
+                    <li class="mui-table-view-cell" v-show="招募信息.regionalscope!='本市'">
+                        <a class="mui-navigate-right item" @click="选择天数()">
                             <div class="标题">
                                 展示天数：
                             </div>
-                            <input type="text" v-model="展示天数" placeholder="请输入天数">
+                            <input type="text" :value="展示天数_1" placeholder="请选择天数" readonly>
                         </a>
                     </li>
                 </ul>
@@ -52,7 +52,7 @@
                 <li class="文本">微信支付</li>
             </ul>
             <div class="按钮">
-                <btn :value="按钮文字" @click.native="确定()"/>
+                <btn value="确定" @click.native="确定()"/>
             </div>
         </div>
     </div>
@@ -61,7 +61,7 @@
 <script>
 import btn from '@/components/button.vue'
 import { getDateStr } from "@/assets/js/currency.js";
-import { mapGetters , mapMutations } from "vuex";
+import { mapGetters , mapMutations, mapActions } from "vuex";
 export default {
     name:"",
     components:{
@@ -78,6 +78,13 @@ export default {
             招募信息:'myshops/分销/招募信息',
             zhaomuxinxi:'myshops/分销/招募信息',
         }),
+        展示天数_1(){
+            if(this.展示天数){
+                return this.展示天数+'天';
+            }else{
+                return '';
+            }
+        },
         按钮文字(){
             return (this.招募信息.regionalscope=='本市' || this.招募信息.regionalscope=='') ? '确定' : "确定支付"
         },
@@ -99,11 +106,12 @@ export default {
     },
     methods: {
         ...mapMutations({
-            修改招募信息:'myshops/分销/修改招募信息'
+            修改招募信息:'myshops/分销/修改招募信息',
+        }),
+        ...mapActions({
+            设置天数:"myshops/分销/设置天数",
         }),
         选择区域(){
-            mui.toast("申请通过后可扩大范围", { duration: "long", type: "div" });
-            return;
             var list=[
                 {value:"本市",text:"本市"},
                 {value:"本省",text:"本省"},
@@ -118,15 +126,38 @@ export default {
                 this.Picker1 = null;
             })
         },
+        选择天数(){
+            var list=[
+                {value:7,text:7},
+                {value:15,text:15},
+                {value:30,text:30},
+            ]
+            this.Picker1 = new mui.PopPicker({layer: 1});            
+            this.Picker1.setData(list);
+            this.Picker1.show(x=>{
+                console.log(x);
+                this.展示天数=x[0].value;
+                this.Picker1.dispose();
+                this.Picker1 = null;
+            })
+        },
         确定(){
             var number_test = /^[0-9]+.?[0-9]*$/; //可带小数
-            if(!number_test.test(this.展示天数)){
-                mui.toast("请输入天数", { duration: "long", type: "div" });
-                return
+            if(this.招募信息.regionalscope=='本市'){
+                this.设置天数('');
+                history.back();
+            }else{
+                if(!number_test.test(this.展示天数)){
+                    mui.toast("请输入天数", { duration: "long", type: "div" });
+                    return
+                }
+                this.设置天数(this.展示天数);
+                history.back()
+                // console.log(getDateStr(this.展示天数))
             }
-            console.log(getDateStr(this.展示天数))
-            this.招募信息.overtime=getDateStr(this.展示天数);
-            history.back();
+            
+            // this.招募信息.overtime=getDateStr(this.展示天数);
+            
         }
     },
     watch: {

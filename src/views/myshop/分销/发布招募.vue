@@ -3,10 +3,21 @@
         <header class="mui-bar mui-bar-nav">
             <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
             <h1 class="mui-title">发布招募信息</h1>
-            <span @click="$router.push('/myshop/fenxiao/yulan')">预览</span>
+            <span @click="$router.push('/myshop/fenxiao/yulan?shopid='+店铺.shopid)">预览</span>
         </header>
         <div class="mui-content mui-fullscreen" >
-
+            <!-- <ul class="修改时间" v-if="招募修改信息">
+                <li class="时间">
+                    <span>上次修改时间：</span>
+                    <span v-show="招募修改信息.updatetime">{{招募修改信息.updatetime | 时间格式化}}</span>
+                    <span v-show="!招募修改信息.updatetime">{{招募修改信息.applytime | 时间格式化}}</span>
+                </li>
+                <li>
+                    <span class="状态0" v-show="招募修改信息.state==0">审核中</span>
+                    <span class="状态1" v-show="招募修改信息.state==1">已通过</span>
+                    <span class="状态2" @click="查看未通过原因()" v-show="招募修改信息.state==2">未通过，查看原因</span>
+                </li>
+            </ul> -->
             <div class="列表1">
                 <ul class="mui-table-view">
                     <li class="mui-table-view-cell">
@@ -34,7 +45,7 @@
                     <ul class="类型显示">
                         <li class="类型列表">
                             <div v-for="(item, index) in 新cbonum" :key="index">
-                                <div class="名称">{{item.信息.cbotype}}</div>
+                                <div class="名称">{{(item && item.信息) ? item.信息.cbotype : ''}}</div>
                                 <span @click="删除选择的分类(item)" class="删除"><i class="icon iconfont icon-quxiao"></i></span>
                             </div>
                             <div v-for="(item, index) in 自定义业务" :key="'a'+index">
@@ -92,7 +103,7 @@
 
             <div class="列表1 列表3">
                 <ul class="mui-table-view">
-                    <li class="mui-table-view-cell item">
+                    <li class="mui-table-view-cell item" v-show="招募信息.state!=1">
                         <!-- <a class="mui-navigate-right item" @click="$router.push('/myshop/fenxiao/xuanzeQuyu')"> -->
                             <div class="标题">
                                 招募区域：
@@ -101,6 +112,15 @@
                             <div class="提示1">(申请通过后可扩大范围)</div>
                             <!-- <input type="text" placeholder="本市" readonly /> -->
                         <!-- </a> -->
+                    </li>
+                    <li class="mui-table-view-cell" v-show="招募信息.state==1">
+                        <a class="mui-navigate-right item" @click="$router.push('/myshop/fenxiao/xuanzeQuyu')">
+                            <div class="标题">
+                                招募区域：
+                            </div>
+                            <div class="文本1">{{招募信息.regionalscope}}</div>
+                            <!-- <input type="text" placeholder="本市" readonly /> -->
+                        </a>
                     </li>
                     <li class="mui-table-view-cell item">
                         <div class="标题">
@@ -158,13 +178,13 @@
                             <input type="text" v-model="招募信息.mincommissionscale" />
                             <span>%</span>
                         </div>
-                        <div class="问号"><i class="icon iconfont icon-help"></i></div>
+                        <div class="问号" @click="佣金说明()"><i class="icon iconfont icon-help"></i></div>
                     </li>
                     
                 </ul>
             </div>
             <div class="按钮">
-                <btn @click.native="提交()" value="提交审核"/>
+                <btn @click.native="提交()" :value="提交按钮"/>
             </div>
         </div>
 
@@ -183,16 +203,34 @@
         <div class="获取信息失败" v-show="获取招募信息==2">
             <span>网络异常</span>
         </div>
-        <div class="申请审核中" v-show="获取招募信息==1">
+        <!-- 0没有申请 1已经申请过了 2 失败 -->
+        <div class="申请审核中" v-show="获取招募信息==1 && 招募信息.state==0">
             <i class="icon iconfont icon-tupian1"></i>
             <div>您已提交资料，正在审核中，请耐心等待</div>
+        </div>
+        <div class="未通过" v-show="获取招募信息==1 && 招募信息.state==2 && !是否再次提交">
+            <div class="图标">
+                <i class="icon iconfont icon-weitongguo"></i>
+            </div>
+            <div class="text_1">审核未通过</div>
+            <div class="text_box" v-html="招募信息.cause"></div>
+            <btn @click.native="设置重新提交(true)" value="重新提交" />
+        </div>
+        <!-- 被隐藏 -->
+        <div class="未通过" v-show="获取招募信息==1 && 招募信息.state==3">
+            <div class="图标">
+                <i class="icon iconfont icon-weitongguo"></i>
+            </div>
+            <div class="text_1">店铺已被隐藏</div>
+            <div class="text_box" v-html="招募信息.cause"></div>
+            <!-- <btn @click.native="设置重新提交(true)" value="重新提交" /> -->
         </div>
     </div>
 </template>
 
 <script>
 import btn from '@/components/button.vue';
-import { get_url , openloading} from "@/assets/js/currency.js";
+import { get_url , openloading , dateFtt} from "@/assets/js/currency.js";
 import { mapGetters , mapActions, mapMutations } from "vuex";
 export default {
     name:'',
@@ -201,6 +239,7 @@ export default {
     },
     data () {
         return {
+            暂存修改前:{},
             Picker3:null,
             显示自定义按钮:false,
             显示自定义添加:false,
@@ -212,10 +251,16 @@ export default {
             店铺:'get_myshop',
             获取招募信息:"myshops/分销/获取招募信息",
             招募信息:'myshops/分销/招募信息',
+            是否再次提交:'myshops/分销/是否再次提交',
             zhaomuxinxi:'myshops/分销/招募信息',
             分销类型:'myshops/分销/分销类型',
-            自定义业务:'myshops/分销/自定义业务'
+            自定义业务:'myshops/分销/自定义业务',
+            招募修改信息:"myshops/分销/招募修改信息",
+            招募天数:"myshops/分销/招募天数"
         }),
+        提交按钮(){
+            return this.招募信息.state==1 ? '提交' : '提交审核';
+        },
         新cbonum(){
             var list=this.招募信息.cbonum ? this.招募信息.cbonum.split(',') : [];
             var newlist=[]
@@ -249,6 +294,15 @@ export default {
             return list
         }
     },
+    filters:{
+        时间格式化(time){
+            try {
+                return dateFtt(time,'yyyy.MM.dd hh:mm')
+            } catch (error) {
+                return time;
+            }
+        }
+    },
     methods: {
         ...mapMutations({
             修改招募信息:'myshops/分销/修改招募信息'
@@ -260,9 +314,15 @@ export default {
             添加自定义业务:'myshops/分销/添加自定义业务',
             删除自定义业务:'myshops/分销/删除自定义业务',
             查询自定义业务:'myshops/分销/查询自定义业务',
-            添加招募信息:'myshops/分销/添加招募信息'
+            添加招募信息:'myshops/分销/添加招募信息',
+            设置重新提交:"myshops/分销/设置重新提交",
+            修改招募资料:"myshops/分销/修改招募资料",
+            查询店铺修改信息:"myshops/分销/查询店铺修改信息",
+            已通过添加修改:"myshops/分销/已通过添加修改",
+            已通过修改:"myshops/分销/已通过修改",
+            调用支付接口:'myshops/分销/调用支付接口'
         }),
-        提交(){
+        async 提交(){
             var this_1=this;
             var zhengshu_test = /^[1-9]+[0-9]*]*$/; //整数
             var phone_test = /^1(3|4|5|7|8)\d{9}$/;
@@ -309,20 +369,132 @@ export default {
                 this.招募信息.createtime="";      //招募开始时间
                 this.招募信息.overtime="";       //招募结束时间
             }
+            this.招募信息.isconsulted=0;
             openloading(true)
-            this.添加招募信息().then(x=>{
-                if(x.data.code==200){
-                    mui.alert("提交成功，等待审核。","提示",function () {
-                        this_1.$router.push('/myshop')
-                    },"div");
+            if(!this.招募信息.id){
+                this.招募信息.state=0;
+                //添加
+                this.添加招募信息().then(x=>{
+                    if(x.data.code==200){
+                        mui.alert("提交成功，等待审核。","提示",function () {
+                            this_1.设置重新提交(false)
+                            this_1.$router.push('/myshop')
+                        },"div");
+                    }else{
+                        mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: "long", type: "div" })
+                    }
+                    openloading(false)
+                }).catch(err=>{
+                    mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
+                    openloading(false)
+                })
+            }else if(this.招募信息.state==1){
+                //通过后修改资料
+                if(!this.招募天数){
+                    try {
+                        var r = await this.修改招募资料(this.招募信息);
+                        if(r.data.code==200){
+                            mui.alert("提交成功","提示",function () {
+                                this_1.设置重新提交(false)
+                                this_1.$router.push('/myshop')
+                            },"div");
+                        }else if(r.data.code!=200){
+                            mui.toast(r.data.msg ? r.data.msg : r.data.message,{ duration: "long", type: "div" });
+                            openloading(false)
+                            return
+                        }
+
+                    } catch (error) {
+                        mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
+                        openloading(false)
+                        return
+                    }
                 }else{
-                    mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: "long", type: "div" })
+                    this.调用支付接口().then(x=>{
+                        console.log(x);
+                        openloading(false)
+                    }).catch(err=>{
+                        mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
+                        openloading(false)
+                        return
+                    })
                 }
-                openloading(false)
-            }).catch(err=>{
-                mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
-                openloading(false)
-            })
+                
+                //已通过的修改
+                // if(!this.招募修改信息){
+                //     var obj=Object.assign({},this.招募信息);
+                //         obj.state=0;
+                //         obj.id='';
+                //     this.已通过添加修改(obj).then(x=>{
+                //         if(x.data.code==200){
+                //             mui.alert("提交成功，等待审核。","提示",function () {
+                //                 this_1.设置重新提交(false)
+                //                 this_1.$router.push('/myshop')
+                //             },"div");
+                //         }else{
+                //             mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: "long", type: "div" })
+                //         }
+                //         openloading(false)
+                //     }).catch(err=>{
+                //         mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
+                //         openloading(false)
+                //     })
+                // }else{
+                //     if(this.招募修改信息.state==0){
+                //         mui.toast('请等待上次修改审核完成。',{ duration: "long", type: "div" })
+                //         openloading(false)
+                //         return
+                //     }
+                //     var obj=Object.assign({},this.招募信息);
+                //         obj.state=0;
+                //         obj.id=this.招募修改信息.id;
+                //     this.已通过修改(obj).then(x=>{
+                //         if(x.data.code==200){
+                //             mui.alert("提交成功，等待审核。","提示",function () {
+                //                 this_1.设置重新提交(false)
+                //                 this_1.$router.push('/myshop')
+                //             },"div");
+                //         }else{
+                //             mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: "long", type: "div" })
+                //         }
+                //         openloading(false)
+                //     }).catch(err=>{
+                //         mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
+                //         openloading(false)
+                //     })
+                // }
+            }else if(this.招募信息.state==2){
+                //未通过再次提交
+                var obj=Object.assign({},this.招募信息);
+                    obj.state=0
+                this.修改招募资料(obj).then(x=>{
+                    if(x.data.code==200){
+                        mui.alert("提交成功，等待审核。","提示",function () {
+                            this_1.招募信息.state=0;
+                            this_1.设置重新提交(false)
+                            this_1.$router.push('/myshop')
+                        },"div");
+                    }else{
+                        mui.toast(x.data.msg ? x.data.msg : x.data.message,{ duration: "long", type: "div" })
+                    }
+                    openloading(false)
+                }).catch(err=>{
+                    mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
+                    openloading(false)
+                })
+            }
+            
+        },
+        佣金说明(){
+            var html="<div style='text-align: left'>"+
+                        "<div>1、你所设置的分佣比例为基础分佣比例（最低分佣比例）。</div>"+
+                        "<div>2、部分分销商品利润较高时，可单独设定商品分佣比例，通过较高的分佣比例来促进分销员的推广。</div>"+
+                    "</div>";
+            mui.alert(html, "佣金说明", "确定", function () { }, "div");
+        },
+        查看未通过原因(){
+            var html="<div style='text-align: left'>"+this.招募修改信息.cause+"</div>";
+            mui.alert(html, "驳回理由", "我知道了", function () { }, "div");
         },
         选择要求(key,type){
             this.招募信息[key]=type;
@@ -407,8 +579,12 @@ export default {
             if(!this.店铺 || !this.店铺.shopid){
                 await this.查询店铺()
             }
+            if(!this.分销类型 || this.分销类型.length==0){
+                this.查询分销类型();
+            }
             this.招募信息.shopid=this.店铺.shopid;
-            Promise.all([this.查询分销类型(),this.查询自定义业务(),this.查询店铺招募信息()]).then(x=>{
+            // this.查询店铺修改信息()
+            Promise.all([this.查询自定义业务(),this.查询店铺招募信息()]).then(x=>{
                 openloading(false)
             }).catch(err=>{
                 openloading(false)
@@ -440,6 +616,29 @@ export default {
         top: 0px;
         right: 10px;
         line-height: 44px;
+    }
+}
+.修改时间{
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 15px;
+    .时间{
+        color: rgba(166, 166, 166, 1);
+        font-size: 12px;
+    }
+    .状态0{
+        color: rgba(255, 141, 26, 1);
+    	font-size: 12px;
+    }
+    .状态1{
+        color: rgba(0, 186, 173, 1);
+    	font-size: 12px;
+    }
+    .状态2{
+        color: rgba(212, 48, 48, 1);
+    	font-size: 12px;
     }
 }
 .列表1{
@@ -695,6 +894,32 @@ export default {
     div{
         color: rgba(80, 80, 80, 1);
     	font-size: 14px;
+    }
+}
+
+.未通过{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    background: #ffffff;
+    padding: 123px 0px 0px;
+    overflow: auto;
+    .图标{
+        text-align: center;
+        font-size: 90px;
+        color: rgba(212, 48, 48, 1);
+    }
+    .text_1{
+        color: rgba(212, 48, 48, 1);
+    	font-size: 14px;
+        text-align: center;
+    }
+    .text_box{
+        color: rgba(80, 80, 80, 1);
+    	font-size: 14px;
+        padding: 15px 31px 43px;
     }
 }
 </style>

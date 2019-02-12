@@ -549,9 +549,8 @@ export default {
         display: flex;
         flex-wrap: wrap;
         padding: 0px 0px 6px;
-
         li {
-            width: calc(100% / 3);
+            width: calc(100% / 4);
             text-align: center;
             padding: 0px 2px;
             margin: 0px 0px 6px 0px;

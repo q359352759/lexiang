@@ -170,6 +170,9 @@ export default new Vuex.Store({
         },
         g_agentUser(state) {
             return state.agentUser;
+        },
+        shops_tree_list(state){
+            return state.shops_tree_list
         }
     },
     mutations: {

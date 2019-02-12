@@ -364,9 +364,7 @@ export default {
             this.$store.state.apply_for_a_shop.businessLicense = this.myshop.businessLicense;
             this.$store.state.apply_for_a_shop.shopType = this.myshop.businessNature;
             this.$store.state.apply_for_a_shop.blnumber = this.myshop.blnumber;
-            this.img_list = this.myshop.environmentalImg
-                ? this.myshop.environmentalImg.split(",")
-                : [];
+            this.img_list = this.myshop.environmentalImg ? this.myshop.environmentalImg.split(",") : [];
 
             if (this.serviceType_list > 0) {
                 var serviceType = this.myshop.serviceType

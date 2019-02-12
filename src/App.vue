@@ -147,8 +147,8 @@ export default {
         this.$axios({
             method: "post",
             // url: '/api-v/pay/getSandboxSignKey',
-            url: "http://m.lxad.vip/test/jssdk/jssdk.php"
-            // url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
+            // url: "http://m.lxad.vip/test/jssdk/jssdk.php"
+            url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
         }).then(x => {
             console.log("jssdk签名", x);
             var data = x.data;
