@@ -243,6 +243,7 @@ export default {
             店铺身份: "myshops/身份",
             显示打卡框: "myshops/显示打卡框",
             获取招募信息:"myshops/分销/获取招募信息",
+            招募信息:'myshops/分销/招募信息',
         }),
         ketixian() {
             if (this.zichan && this.zichan.balance) {
@@ -270,6 +271,7 @@ export default {
             查询自己的打卡记录: "myshops/打卡/查询自己的打卡记录",
             分享图片: 'app/分享/分享图片',
             查询店铺招募信息:'myshops/分销/查询店铺招募信息',
+            设置重新提交:"myshops/分销/设置重新提交"
         }),
         返回上一页(){
             var back=this.$route.query.back;
@@ -469,7 +471,11 @@ export default {
             this.查询班次();
             this.查询考勤时间();
             this.查询自己的打卡记录();
-            this.查询店铺招募信息();
+            this.查询店铺招募信息().then(x=>{
+                if(this.招募信息.state==1){
+                    this.设置重新提交(false);
+                }
+            })
             if (this.myshop.referrerPhone) {
                 this.get_agentUser_phone(this.myshop.referrerPhone).then(x => {
                     if (x.data.code == 200) {

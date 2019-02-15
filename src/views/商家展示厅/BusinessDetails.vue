@@ -17,7 +17,7 @@
             <ul class="box_1">
                 <li>
                     <div class="title_1">{{shop.name}}</div>
-                    <div class="fenshu">5分</div>
+                    <div class="fenshu">{{fenshu.scoreAvg ? fenshu.scoreAvg : 5}}分</div>
                     <div>
                         <button @tap="Check()" class="maidan">买单</button>
                     </div>
@@ -314,7 +314,8 @@ export default {
     computed: {
         ...mapGetters({
             state_isfenxiang: "shop/isfenxiang",
-            当前位置: '当前位置'
+            当前位置: '当前位置',
+            fenshu: '商家展示厅/分数',
         }),
         是否有新人专享() {
             var list = this.Exclusive.list ? this.Exclusive.list : [];
@@ -371,7 +372,7 @@ export default {
             查询评价:'商家展示厅/查询评价',
             评价下一页:'商家展示厅/评价下一页',
             查询店铺评分:'商家展示厅/查询店铺评分',
-            分享图片: 'app/分享/分享图片'
+            分享图片: 'app/分享/分享图片',
         }),
         开始按下() {
             if(ApplicationType=='app'){

@@ -83,6 +83,7 @@ export default {
                 try {
                     var geolocation = new BMap.Geolocation();
                     geolocation.getCurrentPosition(function (r) {
+                        console.log(r);
                             if (this.getStatus() == BMAP_STATUS_SUCCESS) {
                                 rootState.my_position.x = r.point.lng;
                                 rootState.my_position.y = r.point.lat;

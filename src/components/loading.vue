@@ -38,7 +38,7 @@ export default {
   color: rgba(80, 80, 80, 1);
 }
 .config_No_data {
-  padding: 50px 0px 0px;
+  padding: 100px 0px 0px;
   font-size: 0.14rem;
   color: rgba(80, 80, 80, 1);
 }

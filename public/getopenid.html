@@ -59,13 +59,6 @@
                         localStorage.weixin=JSON.stringify(data);
                         setoken(data);
                         get_weiinfo(data);
-                        // if(!geturl || geturl==null){
-                        //     console.log('没有Url地址');
-                        //     location.href="http://m.lxad.vip/test/dist/index.html#/login"
-                        // }else{
-                        //     console.log('有地址')
-                        //     location.href="http://m.lxad.vip/test/dist/index.html"+geturl
-                        // }
                     }
                     console.log(data)
                 }
@@ -89,10 +82,10 @@
                     }
                     if(!geturl || geturl==null){
                         // console.log('没有Url地址');
-                        location.href="http://m.lxad.vip/test/dist/index.html#/login"
+                        location.href="index.html#/login"
                     }else{
                         // console.log('有地址')
-                        location.href="http://m.lxad.vip/test/dist/index.html"+geturl
+                        location.href="index.html"+geturl
                     }
                 }
             })

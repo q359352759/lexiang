@@ -390,7 +390,7 @@ export default {
                 })
             }else if(this.招募信息.state==1){
                 //通过后修改资料
-                if(!this.招募天数){
+                // if(!this.招募天数){
                     try {
                         var r = await this.修改招募资料(this.招募信息);
                         if(r.data.code==200){
@@ -409,16 +409,32 @@ export default {
                         openloading(false)
                         return
                     }
-                }else{
-                    this.调用支付接口().then(x=>{
-                        console.log(x);
-                        openloading(false)
-                    }).catch(err=>{
-                        mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
-                        openloading(false)
-                        return
-                    })
-                }
+                // }else{
+                //     this.调用支付接口().then(x=>{
+                //         console.log(x);
+                //         if(x.data.code==200){
+                //             var data=x.data.data;
+                //             wx.chooseWXPay({
+                //                 timestamp: data.timeStamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                //                 nonceStr: data.nonceStr, // 支付签名随机串，不长于 32 位
+                //                 package: data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                //                 signType: data.signType, // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                //                 paySign: data.paysign, // 支付签名
+                //                 success: function (res) {
+                //                     mui.toast('支付成功。',{ duration: "long", type: "div" })
+                //                     history.back()
+                //                 }
+                //             });
+                //         }else{
+                //             mui.alert(x.data.msg ? x.data.msg : x.data.message, "提示", "我知道了", function () { }, "div");
+                //         }
+                //         openloading(false)
+                //     }).catch(err=>{
+                //         mui.toast('系统错误，稍后再试。',{ duration: "long", type: "div" })
+                //         openloading(false)
+                //         return
+                //     })
+                // }
                 
                 //已通过的修改
                 // if(!this.招募修改信息){
@@ -593,7 +609,7 @@ export default {
     },
     mounted() {
         this.初始化()
-        
+        // console.log('%c一张网页需要经历多少风雨才能到达用户面前\n一场游戏需要爬过多少坑才能胜利\n一场人生需要经过多少苦难才能结束','color:#007aff;font-size:20px');
     },
     watch: {
         zhaomuxinxi:{

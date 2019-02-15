@@ -87,7 +87,7 @@ export default {
     },
     methods: {
         market() {
-            this.$router.push("/market");
+            this.$router.push("/yewushichang");
         }
     }
 };

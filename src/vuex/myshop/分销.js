@@ -1,14 +1,16 @@
 import axios from "@/api/axios.js";
 
-import qs from "qs";
+import { api_获取业务类型列表,api_获取自定义业务 } from "@/api/招募接口.js";
 
+import qs from "qs";
+import { dateFtt } from "@/assets/js/currency.js";
 export default {
     namespaced: true,
     state: {
         分销类型:[],
         自定义业务:[],
         获取招募信息:2,     //0没有申请 1已经申请过了 2 失败
-        是否再次提交:false,
+        是否再次提交:false,     //false 表示需要更新数据;
         招募修改信息:'',
         招募信息:{
             id:"",
@@ -41,6 +43,7 @@ export default {
             isconsulted:0,  //查阅
             assessorid:"",  // 查阅员
             hidecause:"",   //隐藏原因
+            days:0
         },
         招募天数:'',
     },
@@ -82,7 +85,7 @@ export default {
         },
         查询分销类型({state}){
             return new Promise((resolve, reject) => {
-                axios.get('/api-s/shops/businessOptionsTypeGetFindAll').then(x=>{
+                api_获取业务类型列表().then(x=>{
                     if(x.data.code==200){
                         state.分销类型=x.data.data;
                     }
@@ -90,6 +93,14 @@ export default {
                 }).catch(err=>{
                     reject(err);
                 })
+                // axios.get('/api-s/shops/businessOptionsTypeGetFindAll').then(x=>{
+                //     if(x.data.code==200){
+                //         state.分销类型=x.data.data;
+                //     }
+                //     resolve(x);
+                // }).catch(err=>{
+                //     reject(err);
+                // })
             });
         },
         添加自定义业务({},obj){
@@ -113,14 +124,18 @@ export default {
                         length:10,
                         shopid:店铺.shopid
                     }
-                axios.get('/api-s/shops/findShopBusinessOptionsAll',{params:query}).then(x=>{
+                api_获取自定义业务(query).then(x=>{
                     if(x.data.code==200){
                         state.自定义业务=x.data.data.data;
                     }
                     resolve(x)
-                }).catch(err=>{
+                }).catch(errr=>{
                     reject(err)
                 })
+                // axios.get('/api-s/shops/findShopBusinessOptionsAll',{params:query}).then(x=>{
+                    
+                // }).catch(err=>{
+                // })
             });
         },
         删除自定义业务({},id){
@@ -192,8 +207,10 @@ export default {
                     if(x.data.code==200){
                         var data=x.data.data.data;
                         if(data.length>0){
-                            if(data[0].state!=state.招募信息.state || !state.是否再次提交){
-                                console.log(123)
+                            console.log(state.是否再次提交)
+                            state.招募信息.days=data[0].days;
+                            state.招募信息.regionalscope=data[0].regionalscope;
+                            if(data[0].state!=state.招募信息.state || !state.是否再次提交){                                
                                 state.招募信息=data[0];
                                 if(state.招募信息.state==1){
                                     state.是否再次提交=true;
@@ -253,12 +270,10 @@ export default {
                 try {
                     var weixin = JSON.parse(localStorage.weixin);
                 } catch (error) {}
-                var obj={
-                        openid:weixin.openid,
-                        shopRecruitment:state.招募信息,
-                        day:state.招募天数
-                    }
-                axios.post('/api-s/shops/shopRecruitment/pay',obj).then(x=>{
+                var obj = Object.assign({},state.招募信息);
+                    obj.openid = weixin.openid;
+                    obj.day = state.招募天数;
+                axios.post('/api-s/shops/shopRecruitment/pay',qs.stringify(obj)).then(x=>{
                     resolve(x);
                 }).catch(err=>{
                     reject(err);

@@ -91,6 +91,8 @@ export default {
         // console.group('------beforeMount挂载前状态------');
     },
     mounted: function () {
+        console.log('%c一直被模仿，从未被超越!','color:#d9393b;font-size:20px',"——");
+
         this.$store.state.weixin_ready = false;
 
         var this_1 = this;
@@ -147,8 +149,8 @@ export default {
         this.$axios({
             method: "post",
             // url: '/api-v/pay/getSandboxSignKey',
-            // url: "http://m.lxad.vip/test/jssdk/jssdk.php"
-            url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
+            url: "http://m.lxad.vip/test/jssdk/jssdk.php"
+            // url: "http://m.lxad.vip/test/jssdk/jssdktest.php"
         }).then(x => {
             console.log("jssdk签名", x);
             var data = x.data;

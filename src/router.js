@@ -165,6 +165,7 @@ const AgentDistribution = resolve => {
         resolve(require("./views/Agent/AgentDistribution.vue"));
     });
 }; //代理人分销管理
+
 const MarketManagement = resolve => {
     require.ensure([], () => {
         resolve(require("./views/Agent/MarketManagement.vue"));
@@ -180,16 +181,6 @@ const EmbodyRecord = resolve => {
         resolve(require("./views/EmbodyRecord.vue"));
     });
 }; //提现记录
-const market = resolve => {
-    require.ensure([], () => {
-        resolve(require("./views/market.vue"));
-    });
-}; //业务市场
-const MarketDetails = resolve => {
-    require.ensure([], () => {
-        resolve(require("./views/MarketDetails.vue"));
-    });
-}; //业务市场类型详情
 
 const Advertising = resolve => {
     require.ensure([], () => {
@@ -428,6 +419,7 @@ import mys from "@/router/my.js";
 import agents from "@/router/agents.js";
 
 import 红购使者 from "@/router/红购使者.js";
+import 业务市场 from "@/router/业务市场.js";
 // console.log(myshops)
 // require('@/router/myshop.js'),
 
@@ -440,6 +432,7 @@ export default new Router({
         ...mys,
         ...agents,
         ...红购使者,
+        ...业务市场,
         { 
             path: "/", 
             name: "", 
@@ -658,16 +651,6 @@ export default new Router({
             path: "/EmbodyRecord",
             name: "",
             component: EmbodyRecord
-        },
-        {
-            path: "/market",
-            name: "",
-            component: market
-        },
-        {
-            path: "/MarketDetails",
-            name: "",
-            component: MarketDetails
         },
         {
             path: "/RegistrationAgreement",

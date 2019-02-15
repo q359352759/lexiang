@@ -23,7 +23,8 @@
         function getcode(){
             var APPID='wxe81f5f8fa2e34ac6';
             // var REDIRECT_URI='http://m.lxad.vip/test/dist/index.html#/ApplicationAgent';    //回调地址
-            var REDIRECT_URI='http://m.lxad.vip/test/dist/getopenid.html';    //回调地址
+            // var REDIRECT_URI='http://m.lxad.vip/test/dist/getopenid.html';    //回调地址
+            var REDIRECT_URI=window.location.origin+window.location.pathname
             var SCOPE='snsapi_userinfo';                //应用授权作用域，snsapi_base （不弹出授权页面，直接跳转，只能获取用户openid），snsapi_userinfo （弹出授权页面，可通过openid拿到昵称、性别、所在地。并且， 即使在未关注的情况下，只要用户授权，也能获取其信息 ）
             var url='https://open.weixin.qq.com/connect/oauth2/authorize?appid='+APPID+'&redirect_uri='+REDIRECT_URI+'&response_type=code&scope='+SCOPE+'&state=STATE#wechat_redirect';    
             location.href=url;
@@ -58,13 +59,6 @@
                         localStorage.weixin=JSON.stringify(data);
                         setoken(data);
                         get_weiinfo(data);
-                        // if(!geturl || geturl==null){
-                        //     console.log('没有Url地址');
-                        //     location.href="http://m.lxad.vip/test/dist/index.html#/login"
-                        // }else{
-                        //     console.log('有地址')
-                        //     location.href="http://m.lxad.vip/test/dist/index.html"+geturl
-                        // }
                     }
                     console.log(data)
                 }
@@ -88,10 +82,10 @@
                     }
                     if(!geturl || geturl==null){
                         // console.log('没有Url地址');
-                        location.href="http://m.lxad.vip/test/dist/index.html#/login"
+                        location.href="index.html#/login"
                     }else{
                         // console.log('有地址')
-                        location.href="http://m.lxad.vip/test/dist/index.html"+geturl
+                        location.href="index.html"+geturl
                     }
                 }
             })

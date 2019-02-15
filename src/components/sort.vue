@@ -24,65 +24,65 @@
 
 <script>
 export default {
-  name: "sort",
-  props: {
-    //下面3个参数最好是都传递
-    type: {
-      default: ""
+    name: "sort",
+    props: {
+        //下面3个参数最好是都传递
+        type: {
+            default: ""
+        },
+        sortType: {
+            default: ""
+        },
+        list: {
+            default: []
+        }
     },
-    sortType: {
-      default: ""
+    data() {
+        return {
+            type_1: this.type,
+            sort_type_1: this.sortType,
+            list_1: this.list
+        };
     },
-    list: {
-      default: []
+    methods: {
+        set_type(x) {
+            // console.log(x);
+            if (this.type_1 == x.type) {
+                this.sort_type_1 = this.sort_type_1 == 1 ? 2 : 1;
+            } else {
+                this.sort_type_1 = 1;
+            }
+            this.type_1 = x.type;
+            let obj = {
+                type: this.type_1,
+                sort_type: this.sort_type_1
+            };
+            this.$emit("setSort", obj);
+        }
     }
-  },
-  data() {
-    return {
-      type_1: this.type, //时间类型
-      sort_type_1: this.sortType,
-      list_1: this.list
-    };
-  },
-  methods: {
-    set_type(x) {
-      // console.log(x);
-      if (this.type_1 == x.type) {
-        this.sort_type_1 = this.sort_type_1 == 1 ? 2 : 1;
-      } else {
-        this.sort_type_1 = 1;
-      }
-      this.type_1 = x.type;
-      let obj = {
-        type: this.type_1,
-        sort_type: this.sort_type_1
-      };
-      this.$emit("setSort", obj);
-    }
-  }
 };
 </script>
 
 <style lang="scss" scoped>
 .sort {
-  display: flex;
-  flex-wrap: wrap;
-  color: rgba(80, 80, 80, 1);
-  font-size: 12px;
-  > li {
     display: flex;
-    align-items: center;
-    height: 26px;
-    justify-content: center;
-    margin: 0px 15px 0px 0px;
-    .img_box {
-      font-size: 0px;
-      margin: 0px 0px 0px 3px;
+    flex-wrap: wrap;
+    color: rgba(80, 80, 80, 1);
+    font-size: 12px;
+    > li {
+        display: flex;
+        align-items: center;
+        height: 26px;
+        justify-content: center;
+        margin: 0px 15px 0px 0px;
+        .img_box {
+            font-size: 0px;
+            margin: 0px 0px 0px 3px;
+        }
+        img {
+            width: 16px;
+            height: 16px;
+        }
     }
-    img {
-      width: 16px;
-      height: 16px;
-    }
-  }
 }
 </style>

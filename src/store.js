@@ -55,8 +55,8 @@ export default new Vuex.Store({
                 return {
                     // 红购使者:val.红购使者,
                     申请开店: val.申请开店,
-                    myshops:{
-                        分销:val.myshops.分销                        
+                    myshops: {
+                        分销: val.myshops.分销
                     }
                 };
             }
@@ -131,7 +131,7 @@ export default new Vuex.Store({
         redid: "" //红包id
     },
     getters: {
-        当前位置(state){
+        当前位置(state) {
             return state.my_position
         },
         geographical_position(state) {
@@ -171,9 +171,9 @@ export default new Vuex.Store({
         g_agentUser(state) {
             return state.agentUser;
         },
-        shops_tree_list(state){
+        shops_tree_list(state) {
             return state.shops_tree_list
-        }
+        },
     },
     mutations: {
         filter_area() { },
@@ -264,34 +264,61 @@ export default new Vuex.Store({
                 method: "get",
                 // url:'http://122.114.169.178:10002/api-s/shops/tree/findAll',
                 url: "/api-s/shops/tree/findAll"
-            })
-                .then(x => {
-                    console.log("获取店铺类型", x);
-                    //增加一个key
-                    function addKey(list) {
-                        for (var i = 0; i < list.length; i++) {
-                            list[i].value = list[i].id;
-                            list[i].text = list[i].name;
-                            if (list[i].children) {
-                                list[i].children = addKey(list[i].children);
-                            }
+            }).then(x => {
+                console.log("获取店铺类型", x);
+                //增加一个key
+                function addKey(list) {
+                    for (var i = 0; i < list.length; i++) {
+                        list[i].value = list[i].id;
+                        list[i].text = list[i].name;
+                        if (list[i].children) {
+                            list[i].children = addKey(list[i].children);
                         }
-                        return list;
                     }
-                    if (x.data.code == 200) {
-                        var list = addKey(x.data.data);
-                        localStorage.shops_tree_list = JSON.stringify(list);
-                        this.state.shops_tree_list = list;
-                    } else {
-                        console.log("获取店铺类型失败", x);
-                    }
-                })
-                .catch(error => {
-                    console.log("获取店铺类型失败", error);
-                });
+                    return list;
+                }
+                if (x.data.code == 200) {
+                    var list = addKey(x.data.data);
+                    localStorage.shops_tree_list = JSON.stringify(list);
+                    this.state.shops_tree_list = list;
+                } else {
+                    console.log("获取店铺类型失败", x);
+                }
+            }).catch(error => {
+                console.log("获取店铺类型失败", error);
+            });
         },
     },
     actions: {
+        获取店铺类型() {
+            axios({
+                method: "get",
+                // url:'http://122.114.169.178:10002/api-s/shops/tree/findAll',
+                url: "/api-s/shops/tree/findAll"
+            }).then(x => {
+                console.log("获取店铺类型", x);
+                //增加一个key
+                function addKey(list) {
+                    for (var i = 0; i < list.length; i++) {
+                        list[i].value = list[i].id;
+                        list[i].text = list[i].name;
+                        if (list[i].children) {
+                            list[i].children = addKey(list[i].children);
+                        }
+                    }
+                    return list;
+                }
+                if (x.data.code == 200) {
+                    var list = addKey(x.data.data);
+                    localStorage.shops_tree_list = JSON.stringify(list);
+                    this.state.shops_tree_list = list;
+                } else {
+                    console.log("获取店铺类型失败", x);
+                }
+            }).catch(error => {
+                console.log("获取店铺类型失败", error);
+            });
+        },
         actions_agentUser({ dispatch, state }) {
             //获取代理人信息
             return new Promise((resolve, reject) => {
@@ -320,7 +347,7 @@ export default new Vuex.Store({
             // console.log(rootGetters['vip/get']) // 打印其他模块的 getters
             // dispatch('vip/get', {}, {root: true}) // 调用其他模块的 actions
             // commit('vip/receive', data, {root: true}) // 调用其他模块的 mutations
-            
+
             var 员工信息 = await dispatch("myshops/员工查询自己的信息");
             var 身份 = rootGetters["myshops/身份"];
             // 身份:0,  // -1 查询失败 0 没有店铺 1 老板 2 员工
@@ -385,10 +412,10 @@ export default new Vuex.Store({
         红购使者: 红购使者,
         买单: 买单,
         home: home,
-        获取位置:获取位置,
-        评论:评论,
-        商家展示厅:商家展示厅,
-        app:app
+        获取位置: 获取位置,
+        评论: 评论,
+        商家展示厅: 商家展示厅,
+        app: app
     }
 });
 // })

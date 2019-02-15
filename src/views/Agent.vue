@@ -28,7 +28,7 @@
                     </div>
                     <span>分销管理</span>
                 </div>
-                <div @click="$router.push('/market')" class="market">
+                <div @click="$router.push('/yewushichang')" class="market">
                     <div>
                         <i class="icon iconfont icon-fod-business"></i>
                     </div>
@@ -462,12 +462,7 @@ export default {
         }),
         //生成二维码
         shengchengerweima() {
-            var url =
-                window.location.origin +
-                window.location.pathname +
-                "#/BeInvited?pid=" +
-                this.userInfo.username +
-                "&invitationtype=1";
+            var url ='http://m.lxad.vip/test/dist/index.html' +"#/BeInvited?pid=" +this.userInfo.username +"&invitationtype=1";
             var el = this.$refs.qrcode;
             el.innerHTML = "";
             let qrcode = new QRCode(el, {
@@ -899,15 +894,20 @@ export default {
         this.subsidies();
         //查询支付宝账号
         this.findAccount();
-        //获取代理商信息
+        //获取代理人信息
         this.areaManager();
-        // console.group('------mounted 挂载结束状态------');
-
+        //获取代理商信息
+        this.$axios.get("/api-u/areaManager/findme?userid=" + this.userInfo.username).then(x => {
+            console.log('获取代理商信息',x)
+            if(x.data.code==200 && x.data.data){
+                this.isareaManager=true
+            }
+        })
         this.ShopBonus_init();
 
         this.获取会员分润列表();
         this.获取商家分润列表();
-        //代理商分润资产
+        //代理人分润资产
         this.dailiren_fenrun();
         //获取实名认证信息
         this.获取认证(this.userInfo.username);
